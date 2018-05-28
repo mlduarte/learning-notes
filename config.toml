@@ -1,6 +1,6 @@
 #Users/losduartes/Library/Application Support/Hugo
 
-baseurl = "https://quirky-leavitt-98693f.netlify.com"
+baseurl = "https://quirky-leavitt-98693f.netlify.com/"
 title = "Do-Artie Does"
 theme = "hugo-universal-theme"
 languageCode = "en-us"
