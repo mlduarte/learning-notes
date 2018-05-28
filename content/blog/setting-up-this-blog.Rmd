@@ -1,0 +1,18 @@
+---
+title: Setting up this blog
+author: Marie
+date: '2018-05-28'
+categories: []
+tags: [R]
+banner: "img/banners/blogdown_logo.jpg"
+---
+
+This blog is written using the  [blogdown](https://bookdown.org/yihui/blogdown/) R package
+
+I pretty much followed the instructions given by [Alison Presmanes Hill](https://alison.rbind.io/post/up-and-running-with-blogdown/).
+
+Stumbling Blocks
+
+* At first, I didn't commit the themes directory to gitHub
+* I then updated the BaseUrl incorrectly to "https://quirky-leavitt-98693f.netlify.com" instead of "https://quirky-leavitt-98693f.netlify.com<span style="color:blue">/</span>"; note the missing trailing forward slash (using the Netlify domain name)
+
