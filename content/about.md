@@ -11,4 +11,4 @@ I studied undergraduate mathematics and commerce in Brisbane; worked with one of
 
 I now work for an insurance company, doing a fair bit of ad-hoc analysis and reporting; although I am getting more and more opportunity to create predictive models which is  motivating me to up my skills at a much quicker pace.  Not so easy with a 3 year old that loves attention.
 
-Aside from work, with my family I spend my time playing boardgames/cards, camping, latin-dancing and doing art / craft (e.g. pattern-making / sewing). 
+Aside from work, with my family I enjoy playing boardgames/cards, camping, latin-dancing and doing art / craft (e.g. pattern-making / sewing). 

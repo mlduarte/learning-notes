@@ -1,0 +1,47 @@
+---
+title: Online Courses
+author: Marie
+date: '2018-05-30'
+slug: online-courses
+categories: []
+tags: []
+main: "main"
+banner: "img/banners/online_courses.jpg"
+---
+
+
+
+
+# Online course providers:
+
+* [Coursera](https://www.coursera.org)
+* [edX](https://www.edx.org)
+* [Udacity](https://www.udacity.com)
+* [DataCamp](https://www.datacamp.com)
+* [Udemy](https://www.udemy.com/)
+* [Kaggle](https://www.kaggle.com/learn)
+
+# Courses I've Taken
+<!-- <i class="fa fa-star-o"></i> -->
+* **[Machine Learning](https://www.coursera.org/learn/machine-learning)** by [Coursera](https://www.coursera.org) and Stanford University
+    + **My Rating**: <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+    + **Cost**: $102 (for certificate / free to audit)
+    + **Time to Complete**: 11 weeks
+    + **Comments**: This is a great course for understanding how different algorithms work; I would like to take this course again
+
+* **Computing for Data Analysis** (no longer offered) by [Coursera](https://www.coursera.org) and John Hopkins University
+    + **My Rating**: <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+    + **Cost**: free to audit
+    + **Time to Complete**: 4 weeks
+    + **Comments**: The courses now seem to make up the [Data Science Specialization](https://www.coursera.org/specializations/jhu-data-science) with a suggested timeline of 9 months
+    
+    
+* **[Maps and the Geospatial Revolution](https://www.coursera.org/learn/geospatial)** by [Coursera](https://www.coursera.org) and The Pennsylvania State University
+    + **My Rating**: <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+    + **Cost**: $63 (for certificate / free to audit)
+    + **Time to Complete**: 5 weeks
+    + **Comments**: This is a great course for understanding how different algorithms work; I plan to take this course again
+    
+    
+    
+Credits: I borrowed the layout of this page from [Amber Thomas](http://amber.rbind.io/blog/2016/12/17/dscourses/)

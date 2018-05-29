@@ -1,0 +1,14 @@
+---
+title: Public Datasets
+author: Marie
+date: '2018-05-30'
+slug: public-datasets
+categories: []
+tags: []
+draft: true
+banner: "img/banners/online_data.jpg"
+---
+
+Ames Housing Dataset
+https://ww2.amstat.org/publications/jse/v19n3/decock.pdf
+https://www.kaggle.com/c/house-prices-advanced-regression-techniques
