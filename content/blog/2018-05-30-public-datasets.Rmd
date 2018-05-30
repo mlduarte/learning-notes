@@ -1,9 +1,9 @@
 ---
-title: Public Datasets
-author: Marie
-date: '2018-05-30'
-slug: public-datasets
-categories: []
+title: "Public Datasets"
+author: "Marie"
+date: "2018-05-30"
+slug: "public-datasets"
+categories: [My-Learning-Path]
 tags: []
 draft: true
 banner: "img/banners/online_data.jpg"

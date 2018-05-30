@@ -3,7 +3,7 @@ title: Learning Goals
 author: Marie
 date: '2018-05-30'
 slug: learning-goals
-categories: []
+categories: [My-Learning-Path]
 tags: []
 banner: "img/banners/learning_forwards.jpg"
 ---

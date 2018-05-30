@@ -3,7 +3,7 @@ title: Online Courses
 author: Marie
 date: '2018-05-30'
 slug: online-courses
-categories: []
+categories: [My-Learning-Path]
 tags: []
 main: "main"
 banner: "img/banners/online_courses.jpg"

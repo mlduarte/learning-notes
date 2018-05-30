@@ -1,8 +1,8 @@
 ---
 title: Setting up this blog
 author: Marie
-date: '2018-05-28'
-categories: []
+date: '2018-05-30'
+categories: [My-Learning-Path]
 tags: [R]
 banner: "img/banners/blogdown_logo.jpg"
 ---
