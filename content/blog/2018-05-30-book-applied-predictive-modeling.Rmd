@@ -1,0 +1,113 @@
+---
+title: 'Book: Applied Predictive Modeling'
+author: Marie
+date: '2018-05-30'
+slug: book-applied-predictive-modeling
+draft: TRUE
+categories:
+  - Study-Notes
+tags:
+  - R
+  - Study-Notes
+  - Book
+---
+
+# Overview
+This post includes my notes and reproduction of examples in the book [Applied Predictive Modeling](http://appliedpredictivemodeling.com) (2013), by Max Kuhn and Kjell Johnson.
+
+# Notes
+
+## Introduction
+Common reasons for predictive model failure:
+
+* Inadequate pre-processing of data
+* Inadequate model validation
+* Unjustified extrapolation
+* Overfitting 
+* Insufficient number of models explorer
+
+When prediction accuracy is the primary goal, should not choose a second-rate model for interpretability.
+To improve accuracy, generally need a more complex model which is more difficult to interpret.  
+
+Foundation for effective predictive model:
+
+* intuition and deep knowledge (to obtain relevant data, eliminate noise)
+* Relevant data
+* Versatile computation toolbox (pre-processing, modelling, visulations)
+The combined force of predictive modelling and intuition will be better than the parts.
+
+## Data
+
+```{r load_libraries, include=FALSE}
+
+if (!requireNamespace("AppliedPredictiveModeling")) install.packages("AppliedPredictiveModeling")
+require("AppliedPredictiveModeling")
+
+# Source: https://github.com/gimoya/theBioBucket-Archives/blob/master/R/Functions/instant_pkgs.R#L7
+# e.g. loadPackages(c("base", "jpeg"))
+loadPackages <- function(pkgs) { 
+  # determine which packages are not installed
+  pkgs_miss <- pkgs[which(!pkgs %in% installed.packages()[, 1])]
+  #return(pkgs_miss)
+  
+  #install and load packages not installed
+  if (length(pkgs_miss) > 0) {
+    install.packages(pkgs_miss, dependencies = c("Depends", "Suggests"))
+  }
+
+  # load packages not already loaded
+  attached <- search()
+  attached_pkgs <- attached[grepl("package", attached)]
+  need_to_attach <- pkgs[which(!pkgs %in% gsub("package:", "", attached_pkgs))]
+  #return(need_to_attach)
+  
+  if (length(need_to_attach) > 0) {
+    for (i in 1:length(need_to_attach)) suppressPackageStartupMessages(require(need_to_attach[i],character.only=TRUE))
+  }
+}
+
+
+# alternative use: AppliedPredictiveModeling:getPackages()
+loadPackages(c(
+               "caret"
+              , "CORElearn"
+              , "corrplot"
+              , "Cubist"
+              , "C50"
+              , "DMwR"
+              #, "DWD" # Disstance Weighted Discrimination; not current on CRAN
+              , "earth"
+              , "elasticnet"
+              , "ellipse"
+              , "e1071"
+              , "gbm"
+              , "glmnet"
+              , "Hmisc"
+              , "ipred"
+              , "kernlab"
+              , "klaR"
+              , "latticeExtra"
+              , "MASS"
+              , "mda"
+              , "minerva"
+              , "nnet"
+              , "pamr"
+              , "party"
+              , "partykit"
+              , "pls"
+              , "pROC"
+              , "randomForest"
+              , "RColorBrewer"
+              , "rpart"
+             # , "RWeka" # requires Java; http://www.oracle.com/technetwork/java/javase/downloads/jdk10-downloads-4416644.html
+              , "sparseLDA"
+              , "tabplot"
+              , "tidyverse"
+               ))
+
+```
+
+
+
+
+

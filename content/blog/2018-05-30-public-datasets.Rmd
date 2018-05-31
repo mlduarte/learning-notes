@@ -5,10 +5,110 @@ date: "2018-05-30"
 slug: "public-datasets"
 categories: [My-Learning-Path]
 tags: []
-draft: true
+draft: false
 banner: "img/banners/online_data.jpg"
 ---
 
-Ames Housing Dataset
-https://ww2.amstat.org/publications/jse/v19n3/decock.pdf
-https://www.kaggle.com/c/house-prices-advanced-regression-techniques
+
+
+**[Titanic](https://www.coursera.org/learn/machine-learning)** 
+
+
+
+**[Ames Housing](https://ww2.amstat.org/publications/jse/v19n3/decock.pdf)**
+
+  * **SampleSource**: 2,930
+  * **Features**: 81
+  * **Response Variable**: SalePrice
+  * **Response Type**: Continous
+  * **Comments**:
+      * See also [https://www.kaggle.com/c/house-prices-advanced-regression-techniques](https://www.kaggle.com/c/house-prices-advanced-regression-techniques)
+
+```{r load_dataset_ames, include=FALSE}
+ames <- readr::read_tsv("../../static/datasets/amesHousing/AmesHousing.txt")
+str(ames)
+```
+
+**[Music Genre](http://tunedit.org/challenge/music-retrieval/genres)**
+
+  + **Objective**: Classify music into 6 categories
+  + **Sample size**: 12,495
+  + **Features**: 191 
+  + **Response Type**: Categorical
+  + **Comments**: 
+    * Unbalanced Response
+    * Correlated predictors 
+    * Predictors spanned different scales of measurement
+    * Samples not independent (15-20 pieces of music for each performer, then each piece split into 20 segments)
+    * Closed Contest, : 0.87507 standard accuracy (correctly predictions/ n).  Baseline provided: generated using 1-NN algorithm without any preprocessing
+
+
+```{r load_dataset_genres, include=FALSE}
+genres <- readr::read_csv("../../static/datasets/musicGenres/genresTrain.csv")
+```
+
+**[Grant Applications](https://www.kaggle.com/c/unimelb/data)**
+
+  + **Objective**: Predict probaiblity of success of a grant application
+  + **Sample size**: 8,707
+  + **Features**: 249
+  + **Response Type**: Categorical
+  + **Comments**:
+    * Missing values (83%)
+    * Dependent samples; same grant writters occurred mlutiple times
+
+```{r load_dataset_grants, include=FALSE}
+require(tidyverse)
+grants <- readr::read_csv("../../static/datasets/grantApplications/unimelb_training.csv") %>%
+  select(-X252)
+```
+
+
+**[Hepatic Injury](http://appliedpredictivemodeling.com/data/)**
+
+  + **Objective**:
+  + **Sample Size**: 281
+  + **Features**: 376 (184 bio, 192 chem)
+  + **Response Type**: Categorical
+  + **Comments**:
+     * Data available within R package `AppliedPredictiveModeling` as `bio` and `chem`.
+     * Unbalanced response
+
+```{r load_dataset_hepatic, include=FALSE}
+require(AppliedPredictiveModeling)
+data(bio)
+data(chem)
+```
+
+
+**[Permeability](http://appliedpredictivemodeling.com/data/)**
+
+  + **Sample Size**: 165
+  + **Features**: 1,107
+  + **Response Type**: Continuous
+  + **Comments**: 
+    * Data available within R package `AppliedPredictiveModeling` as `permeability`
+    * Correlated samples
+    * Sparse data set
+```{r load_dataset_permeability, include=FALSE}
+require(AppliedPredictiveModeling)
+data(permeability)
+#see also fingerprints
+```
+
+**[Chemical Manufacturing Process](http://appliedpredictivemodeling.com/data/)**
+
+  + **Sample size**: 177
+  + **Features**: 57
+  + **Response Type**: Continuous
+  + **Comments**
+    * Data available within R package `AppliedPredictiveModeling` as `ChemicalManufacturingProcess`
+    * Correlated data
+    * Missing Values
+  
+```{r load_dataset_chemicalmanufacturingprocess, include=FALSE}
+require(AppliedPredictiveModeling)
+data(ChemicalManufacturingProcess)
+```
+
+
