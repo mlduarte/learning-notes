@@ -36,7 +36,6 @@ Foundation for effective predictive model:
 * Versatile computation toolbox (pre-processing, modelling, visulations)
 The combined force of predictive modelling and intuition will be better than the parts.
 
-## Data
 
 ```{r load_libraries, include=FALSE}
 
@@ -107,7 +106,25 @@ loadPackages(c(
 
 ```
 
+## Predictive Modeling Process
 
+Steps:
+
+  1. Understand data and modelling objectives; critical for a reliable and trustworthy model for predicting new samples; necessary before moving to the next steps.
+  2. Preprocess and split the data
+  3. Build & evaluate model
+  
+    * Split dataset into training set and validation set.     Using MPG for 2010-2011 model year cars, if goal is to predict MPG for a new car line, then model could be created using all 2010 model cars and tested on the new 2011 cars.  This, in contrast, to taking a random sample fo the data for model building.  Use training set to try a number of techniques; only use validation set for a few strong candidate modesl.  Repeatedly using test set negates its utility as  final arbitrator
+    * Alternatively can use resampling (cross-validation) to evaludate model
+  4. Select model
+  
+Themes
+
+* Data splitting.  How the model will be applied (e.g. whether it will be extrapolated to a new population) should determine how the training and test sets are determined.  The amount of data available will also influence data splitting decisions.  With a small dataset (and therefore test), resampling advised.
+* Predictors: feature selection
+* Estimating performance: Statistics (e.g. RMSE) and visualisations.  Both are important.
+* Evaluating several models: There is no single model that will always do better than another.
+* Model selection: Involves choosing between models and selecting tuning parametesr (within model)
 
 
 

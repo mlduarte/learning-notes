@@ -38,7 +38,26 @@ tags:
 <li>Versatile computation toolbox (pre-processing, modelling, visulations) The combined force of predictive modelling and intuition will be better than the parts.</li>
 </ul>
 </div>
-<div id="data" class="section level2">
-<h2>Data</h2>
+<div id="predictive-modeling-process" class="section level2">
+<h2>Predictive Modeling Process</h2>
+<p>Steps:</p>
+<ol style="list-style-type: decimal">
+<li>Understand data and modelling objectives; critical for a reliable and trustworthy model for predicting new samples; necessary before moving to the next steps.</li>
+<li>Preprocess and split the data</li>
+<li><p>Build &amp; evaluate model</p>
+<ul>
+<li>Split dataset into training set and validation set. Using MPG for 2010-2011 model year cars, if goal is to predict MPG for a new car line, then model could be created using all 2010 model cars and tested on the new 2011 cars. This, in contrast, to taking a random sample fo the data for model building. Use training set to try a number of techniques; only use validation set for a few strong candidate modesl. Repeatedly using test set negates its utility as final arbitrator</li>
+<li>Alternatively can use resampling (cross-validation) to evaludate model</li>
+</ul></li>
+<li><p>Select model</p></li>
+</ol>
+<p>Themes</p>
+<ul>
+<li>Data splitting. How the model will be applied (e.g. whether it will be extrapolated to a new population) should determine how the training and test sets are determined. The amount of data available will also influence data splitting decisions. With a small dataset (and therefore test), resampling advised.</li>
+<li>Predictors: feature selection</li>
+<li>Estimating performance: Statistics (e.g. RMSE) and visualisations. Both are important.</li>
+<li>Evaluating several models: There is no single model that will always do better than another.</li>
+<li>Model selection: Involves choosing between models and selecting tuning parametesr (within model)</li>
+</ul>
 </div>
 </div>
