@@ -15,4 +15,5 @@ Stumbling Blocks
 
 * At first, I didn't commit the themes directory to gitHub
 * I then updated the BaseUrl incorrectly to "https://quirky-leavitt-98693f.netlify.com" instead of "https://quirky-leavitt-98693f.netlify.com<span style="color:blue">/</span>"; note the missing trailing forward slash (using the Netlify domain name)
+* I needed to edit footer.html in themes\hugo-universal-theme\layout\partials to display latex equations as documented on [blogdown: Creating Websites with R Markdown](https://bookdown.org/yihui/blogdown/templates.html#how-to))
 

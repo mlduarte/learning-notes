@@ -35,7 +35,7 @@ tags:
 <ul>
 <li>intuition and deep knowledge (to obtain relevant data, eliminate noise)</li>
 <li>Relevant data</li>
-<li>Versatile computation toolbox (pre-processing, modelling, visulations) The combined force of predictive modelling and intuition will be better than the parts.</li>
+<li>Versatile computation toolbox (pre-processing, modelling, visualizations) The combined force of predictive modelling and intuition will be better than the parts.</li>
 </ul>
 </div>
 <div id="predictive-modeling-process" class="section level2">
@@ -46,8 +46,8 @@ tags:
 <li>Preprocess and split the data</li>
 <li><p>Build &amp; evaluate model</p>
 <ul>
-<li>Split dataset into training set and validation set. Using MPG for 2010-2011 model year cars, if goal is to predict MPG for a new car line, then model could be created using all 2010 model cars and tested on the new 2011 cars. This, in contrast, to taking a random sample fo the data for model building. Use training set to try a number of techniques; only use validation set for a few strong candidate modesl. Repeatedly using test set negates its utility as final arbitrator</li>
-<li>Alternatively can use resampling (cross-validation) to evaludate model</li>
+<li>Split dataset into training set and validation set. Using MPG for 2010-2011 model year cars, if goal is to predict MPG for a new car line, then model could be created using all 2010 model cars and tested on the new 2011 cars. This, in contrast, to taking a random sample of the data for model building. Use training set to try a number of techniques; only use validation set for a few strong candidate models. Repeatedly using test set negates its utility as final arbitrator</li>
+<li>Alternatively can use resampling (cross-validation) to evaluate model</li>
 </ul></li>
 <li><p>Select model</p></li>
 </ol>
@@ -57,7 +57,420 @@ tags:
 <li>Predictors: feature selection</li>
 <li>Estimating performance: Statistics (e.g. RMSE) and visualisations. Both are important.</li>
 <li>Evaluating several models: There is no single model that will always do better than another.</li>
-<li>Model selection: Involves choosing between models and selecting tuning parametesr (within model)</li>
+<li>Model selection: Involves choosing between models and selecting tuning parameters (within model)</li>
 </ul>
 </div>
+<div id="data-pre-processing" class="section level2">
+<h2>Data Pre-Processing</h2>
+<ul>
+<li>Addition, deletion or transformation of <strong>training set</strong> data</li>
+<li>Can make or break model’s predictive ability</li>
+<li>Feature extraction/feature engineering: how predictors are encoded, e.g. combinations, ratios</li>
+<li>Feature selection: Include predictors to maximise accuracy</li>
+<li>Method depends on model being used and true relationship with outcome</li>
+<li>Model may require:</li>
+<li>Predictors have common scale (e.g PLS)</li>
+<li>Removal of outliers</li>
+</ul>
+<div id="data-tranformations-individual-predictors" class="section level3">
+<h3>Data Tranformations (Individual Predictors)</h3>
+<ul>
+<li>Pre-processing techniques include:</li>
+<li>Centering: Subtract average <span class="math inline">\(\rightarrow \bar{x} = 1\)</span></li>
+<li>Scaling: Divide by standard deviation <span class="math inline">\(\rightarrow s = 1\)</span></li>
+<li>Skewness transformations.<br />
+</li>
+<li>Disadvantage of transformations is loss of interpretability</li>
+</ul>
+<p>** Centering and Scaling **</p>
+<p>** Skewness ** Skewed if <span class="math inline">\(\frac{x_\max}{x_\min} &gt; 20\)</span>, or if |skewness statistic| &gt;&gt; 0 <span class="math display">\[
+    \begin{align}
+      \text{skewness} &amp; = \frac{\sum (x_i - \bar{x})^3}{(n-1)v^{2/3}} \\
+      v &amp; = \frac{\sum(x_i - \bar{x})^2}{(n-1)}
+   \end{align}\]</span></p>
+<p>Skewness can be removed by replacing data with log, square root or inverse, or by using the Box and Cox family of transformations and determining the appropriate parameter, <span class="math inline">\(\lambda\)</span>,</p>
+<span class="math display">\[\begin{align}
+  x^\star =  \begin{cases}\frac{x^\lambda - 1 }{\lambda} &amp; \text{if } \lambda \neq 0 \\
+                    \log(x) &amp; \text{if } \lambda = 0
+              \end{cases}
+        
+\end{align}\]</span>
+<p>Note</p>
+<ul>
+<li>Square, <span class="math inline">\(\lambda = 2\)</span></li>
+<li>Square root, <span class="math inline">\(\lambda = 0.5\)</span></li>
+<li>Inverse, <span class="math inline">\(\lambda = -1\)</span></li>
+</ul>
+<p><span class="math inline">\(\lambda\)</span> can be estimated using training data for each feature with skewness. Transformations should only be applied if <span class="math inline">\(\lambda\)</span> outside <span class="math inline">\(1 \pm 0.02\)</span>.</p>
+<p>The <code>MASS::boxcox</code> function can estimate <span class="math inline">\(\lambda\)</span> but will not create the transformed variables. The <code>caret::BoxCoxTrans</code> function will find the appropriate transformation and apply them to the new data.</p>
+<p><strong>Example</strong>: Segmentation data</p>
+<pre class="r"><code># load case study training data
+data(&quot;segmentationOriginal&quot;)
+segTrain &lt;- subset(segmentationOriginal, Case == &quot;Train&quot;)
+
+## Remove response variables (first three columns)
+segTrainId &lt;- segTrain$Cell
+segTrainClass &lt;- segTrain$Class
+segTrainCase &lt;- segTrain$Case
+segTrainX &lt;- select(segTrain, -c(Cell, Class, Case)) 
+#%&gt;% select(-contains(&quot;Status&quot;))
+
+# https://topepo.github.io/caret/pre-processing.html#the-preprocess-function
+
+# Summarise the predictors
+segMetrics &lt;- segTrainX %&gt;%
+  select_if(is.numeric) %&gt;%
+  summarise_all(funs(skewness, n_distinct, max, min)) %&gt;%
+  gather(key=&quot;key&quot;, value=&quot;value&quot;) %&gt;%
+  extract(key, c(&quot;variable&quot;, &quot;metric&quot;), &quot;(.*)_(skewness|n_distinct|max|min)&quot;) %&gt;%
+  tidyr::spread(metric, value) %&gt;%
+  mutate(max_min_ratio = ifelse(min==0, (max+1)/(min+1), max/min)) %&gt;%
+  select(variable, n_distinct, skewness, max_min_ratio, min, max)
+
+## Use caret&#39;s preProcess function to transform for skewness
+segPP &lt;- caret::preProcess(segTrainX, method = &quot;BoxCox&quot;)
+
+## Apply the transformations
+segTrainTrans &lt;- predict(segPP, segTrainX)
+
+#Transformation used
+# pp2df &lt;- function(object, ...) {
+#   vars &lt;- unlist(object$method)
+#   nums &lt;- vapply(object$method, length, c(num = 0))
+#   meth &lt;- rep(names(nums), nums)
+#   
+#   data.frame(variable = unname(vars), method = meth)
+# }
+
+# Record results
+res &lt;- data.frame(lambda = sapply(segPP$bc, `[[`, 1))
+res &lt;- data.frame(variable = rownames(res), res, row.names = NULL, stringsAsFactors = FALSE)
+
+segMetrics &lt;- segMetrics %&gt;% 
+  left_join(res, by=&quot;variable&quot;) %&gt;% 
+  arrange(lambda)
+
+head(segMetrics)</code></pre>
+<pre><code>##                 variable n_distinct skewness max_min_ratio        min
+## 1 ConvexHullAreaRatioCh1       1000 2.476582      2.878292   1.007653
+## 2          EqCircDiamCh1        399 1.955530      3.806062  13.862944
+## 3               PerimCh1        657 2.589488      9.631097  47.737594
+## 4            ShapeLWRCh1       1009 2.490995      7.737628   1.002813
+## 5                AreaCh1        399 3.525107     14.573333 150.000000
+## 6    DiffIntenDensityCh1       1009 2.760473     16.563239  26.732283
+##           max lambda
+## 1    2.900320   -2.0
+## 2   52.763230   -1.7
+## 3  459.765378   -1.1
+## 4    7.759391   -1.0
+## 5 2186.000000   -0.9
+## 6  442.773196   -0.9</code></pre>
+<pre class="r"><code>rm(res)</code></pre>
+<p>In this data set there were a total of 116 features, for which:</p>
+<ul>
+<li><p>69 were not transformed because they had a minimum value of <span class="math inline">\(\leq 0\)</span></p></li>
+<li>the remaining features had a <span class="math inline">\(\lambda\)</span> between -2 and 2</li>
+<li><p>Features with a lambda between 0.98 and 1.02 would not be transformed</p></li>
+</ul>
+<p><strong>Question</strong>: Why not add an offset variable to ensure all variables are positive?</p>
+<p>As an example, the feature <em>VarIntenCh3</em>, which records the standard deviation of pix intensity in actin filaments, had the following properties:</p>
+<ul>
+<li>Metrics</li>
+</ul>
+<pre class="r"><code>filter(segMetrics, variable == &quot;VarIntenCh3&quot;)</code></pre>
+<pre><code>##      variable n_distinct skewness max_min_ratio       min     max lambda
+## 1 VarIntenCh3       1009 2.391624      870.8872 0.8692526 757.021    0.1</code></pre>
+<ul>
+<li>Strong right skewness</li>
+<li>Original data distribution</li>
+</ul>
+<pre class="r"><code>histogram(~segTrainX$VarIntenCh3,
+          xlab = &quot;Natural Units&quot;,
+          type = &quot;count&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_featureEG_orig-1.png" width="672" /> * Transformed data distribution</p>
+<pre class="r"><code>histogram(~log(segTrainX$VarIntenCh3),
+          xlab = &quot;Log Units&quot;,
+          ylab = &quot; &quot;,
+          type = &quot;count&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_featureEG_trans-1.png" width="672" /></p>
+</div>
+<div id="data-transformations-multiple-predictors" class="section level3">
+<h3>Data Transformations (Multiple Predictors)</h3>
+<p><strong>Outliers</strong></p>
+<ul>
+<li>Is value valid or has recording error occurred?</li>
+<li>Take care to remove or change values, especially if sample size is small (as could be a result of a skewed distribution without enough data to see the skewness, or could be an indication of a special part of the population)</li>
+<li>Decision trees and SVMs are insensitive to outliers</li>
+<li>The <em>spatial sign</em> transformation can minimize the problem of a model’s sensitivity to outliers</li>
+</ul>
+<p>Spatial Sign Transformation</p>
+<ul>
+<li>Projects predictor values onto a multidimensional sphere</li>
+<li>Makes all samples the same distance from the centre of the sphere</li>
+<li>Each sample is divided by its squared norm: <span class="math display">\[ x_{ij}^* = \frac{x_{ij}}{\sum^P_{j=1} x^2_{ij}}\]</span></li>
+<li>The denominator measures the squared distance to the centre of the predictors distribution</li>
+<li>It is important to center and scale the predictor data prior to using this transformation</li>
+<li>The predictors are transformed as a group, making removal of a predictor problematic</li>
+</ul>
+<p>Example:</p>
+<ul>
+<li>Investigation of ~ 8 outliers shows valid but poorly sampled population (e.g. highly profitable customers)</li>
+<li>Spatial sign transformation applied; outliers reside in northwest section of distribution but contracted inwards</li>
+<li>Mitigates effect on model training</li>
+</ul>
+<pre class="r"><code>trellis.par.set(caretTheme())
+featurePlot(x=iris[,-5], y=iris[,5], &quot;pairs&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/spatialsign_egIris-1.png" width="672" /></p>
+<pre class="r"><code>featurePlot(spatialSign(scale(iris[,-5])), iris[,5], &quot;pairs&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/spatialsign_egIris-2.png" width="672" /></p>
+<pre class="r"><code>set.seed(1)
+n &lt;- 10000
+tmp &lt;- data.frame(x=c(rnorm(n, 0, 0.02), -1, 1, 0.5),
+                  y=c(rnorm(n, 0, 0.2), -1, 1, -2))
+
+plot(tmp, asp=1, col=c(rep(1,n), 2, 3, 4), pch=19)
+grid()</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/spatialsign_eg_rand-1.png" width="672" /></p>
+<pre class="r"><code>plot(spatialSign(tmp), asp=1, col=c(rep(1,n), 2, 3, 4), pch=19)
+grid()</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/spatialsign_eg_rand-2.png" width="672" /></p>
+<p><strong>Data Reduction and Feature Extraction</strong></p>
+<p>Data reduction techniques</p>
+<ul>
+<li>Generate smaller set of predictors that capture most of the information within the original variables</li>
+<li><em>Signal (Feature) Extraction</em> techniques: New predictors are functions of original variables (; therefore all original variables required)</li>
+<li><p>PCA</p></li>
+<li>Finds linear combinations of predictors (principal components) to capture most possible variance</li>
+<li>First PC captures more variability than any other linear combination</li>
+<li>Subsequent PCs are uncorrelated with all previous PCs</li>
+<li>Principal Component can be written as: <span class="math display">\[PC_j = (a_{j1} x \text{Predictor} 1) + (a_{j2} x \text{Predictor} 2) + \ldots + (a_{jP} x \text{Predictor} P)\]</span> where P = # predictors, coefficients = component weights (or loadings) that show which predictors are important for given PC.</li>
+<li>Advantage: creates uncorrelated components, which is required for stability of some models</li>
+<li><p>Disadvantages: Seeks predictor-set variation without regard to predictor measurement scales/distributions or response variable; without guidance can summarize data characteristics that are irrelevant to structure of data and modelling objective</p>
+<ul>
+<li>Seeks linear combinations that maximize variability, and therefore will first summarise predictors with more variation. If original predictors are on measurements scales then first few components will summarise higher magnitude predictors; consequently it will focus on identifying data structure based on measurement scales rather than based on important relationships within the data for the current problem.</li>
+<li>Unsupervised technique; Does not consider consider modelling objective / response variability.</li>
+</ul></li>
+<li>Should first transform skewed predictors and then center and scale prior to performing PCA; prevent PCA being influenced by original measurement scales</li>
+<li>Consider Partial Least Squares (PLS) to derive components with response variable in mind.</li>
+<li>Use scree plot to decide number of components to keep; in automated model building process, optimal number can be determined by cross-validation</li>
+<li><p>Should also visually examine the PCs; plot first few PCs against each other and color points by, e.g., class labels. If PCA has captured sufficient amount of information in data, may demonstrate clusters of samples/outliers requiring closer examination. Ensure to use the same scale as later components will often have smaller data ranges and plotting on separate scales may lead to potential to over-interpret patterns.</p></li>
+</ul>
+<p>Example: PCA applied to two features</p>
+<ul>
+<li>For channel 1, Intensity Entropy is highly correlated with Fiber Width (0.93)</li>
+<li>Could use just one predictor, or could use PCA to instead use a linear combination of these two predictors</li>
+</ul>
+<pre class="r"><code>## R&#39;s prcomp is used to conduct PCA
+pr &lt;- prcomp(~ AvgIntenCh1 + EntropyIntenCh1, 
+             data = segTrainTrans, #already pre-preprocessed for skewness
+             scale. = TRUE)
+
+
+transparentTheme(pchSize = .7, trans = .3)
+
+xyplot(AvgIntenCh1 ~ EntropyIntenCh1,
+       data = segTrainTrans,
+       groups = segTrain$Class,
+       xlab = &quot;Channel 1 Fiber Width&quot;,
+       ylab = &quot;Intensity Entropy Channel 1&quot;,
+       auto.key = list(columns = 2),
+       type = c(&quot;p&quot;, &quot;g&quot;),
+       main = &quot;Original Data&quot;,
+       aspect = 1)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segPCS_EGplot-1.png" width="672" /></p>
+<pre class="r"><code>xyplot(PC2 ~ PC1,
+       data = as.data.frame(pr$x),
+       groups = segTrain$Class,
+       xlab = &quot;Principal Component #1&quot;,
+       ylab = &quot;Principal Component #2&quot;,
+       main = &quot;Transformed&quot;,
+       xlim = extendrange(pr$x),
+       ylim = extendrange(pr$x),
+       type = c(&quot;p&quot;, &quot;g&quot;),
+       aspect = 1)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segPCS_EGplot-2.png" width="672" /> * Because first PC summarises 96.6% variation and the second 3.42%, in this case could just use the first PC.</p>
+<p>Example: PCA applied to all features</p>
+<p>The scree plot shows that four PCs would be retained.</p>
+<pre class="r"><code>## Apply PCA to the entire set of predictors.
+
+## There are a few predictors with only a single value, so we remove these first
+## (since PCA uses variances, which would be zero)
+isZV &lt;- apply(segTrainX, 2, function(x) length(unique(x)) == 1)
+
+segPP &lt;- preProcess(segTrainX[, !isZV], c(&quot;BoxCox&quot;, &quot;center&quot;, &quot;scale&quot;))
+segTrainTrans &lt;- predict(segPP, segTrainX[, !isZV])
+
+segPCA &lt;- prcomp(segTrainTrans, center = TRUE, scale. = TRUE)
+
+tab &lt;- summary(segPCA)$importance[2,]
+tab &lt;- data.frame(PC = names(tab), Var = tab, row.names=NULL, stringsAsFactors = FALSE) %&gt;% mutate(PC=parse_number(PC))
+ggplot(tab, aes(x = PC, y=Var))+ 
+         geom_line() + 
+  geom_point()</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segPCS_EGscree-1.png" width="672" /></p>
+<p>Scatterplot matrix of first 3 PCs (with points coloured by class):</p>
+<ul>
+<li>Appears to be some separation between classes when plotting first and second component (but remember that these two components only explain 26.6% of variance and so don’t over-interpret!). However distribution of well-segmented cells roughly contained within poorly identified cells; cell types don’t appear to be easily separated. Don’t despair!; it does not mean other models, e.g. that can accommodate non-linear relationships, will reach the same conclusions.</li>
+</ul>
+<pre class="r"><code>## Plot a scatterplot matrix of the first three components
+transparentTheme(pchSize = .8, trans = .3)
+panelRange &lt;- extendrange(segPCA$x[, 1:3])
+splom(as.data.frame(segPCA$x[, 1:3]),
+      groups = segTrainClass,
+      type = c(&quot;p&quot;, &quot;g&quot;),
+      as.table = TRUE,
+      auto.key = list(columns = 2),
+      prepanel.limits = function(x) panelRange)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segPCS_EGscat-1.png" width="672" /></p>
+<ul>
+<li>Can also visualise which predictor is associated with each principal component. A coefficient (loading) close to zero within the PC linear equation indicates that that predictors did not contribute much to that component. In the following figure, each point corresponds to a predictor variable and is coloured by thte opitcal channel used int eh exerpiment. For the first PC, channel 1 (cell body) loadings are greater and therefore have largest effect on PC. However, event though cell body measurements account fo rmore variation in the data, this does not imply that these variables will be associated with predicting segmentation quality.</li>
+</ul>
+<pre class="r"><code>## Format the rotation values for plotting
+segRot &lt;- as.data.frame(segPCA$rotation[, 1:3])
+
+## Derive the channel variable
+vars &lt;- rownames(segPCA$rotation)
+channel &lt;- rep(NA, length(vars))
+channel[grepl(&quot;Ch1$&quot;, vars)] &lt;- &quot;Channel 1&quot;
+channel[grepl(&quot;Ch2$&quot;, vars)] &lt;- &quot;Channel 2&quot;
+channel[grepl(&quot;Ch3$&quot;, vars)] &lt;- &quot;Channel 3&quot;
+channel[grepl(&quot;Ch4$&quot;, vars)] &lt;- &quot;Channel 4&quot;
+
+segRot$Channel &lt;- channel
+segRot &lt;- segRot[complete.cases(segRot),]
+segRot$Channel &lt;- factor(as.character(segRot$Channel))
+
+## Plot a scatterplot matrix of the first three rotation variable
+transparentTheme(pchSize = .8, trans = .7)
+panelRange &lt;- extendrange(segRot[, 1:3])
+upperp &lt;- function(...)
+  {
+    args &lt;- list(...)
+    circ1 &lt;- ellipse(diag(rep(1, 2)), t = .1)
+    panel.xyplot(circ1[,1], circ1[,2],
+                 type = &quot;l&quot;,
+                 lty = trellis.par.get(&quot;reference.line&quot;)$lty,
+                 col = trellis.par.get(&quot;reference.line&quot;)$col,
+                 lwd = trellis.par.get(&quot;reference.line&quot;)$lwd)
+    circ2 &lt;- ellipse(diag(rep(1, 2)), t = .2)
+    panel.xyplot(circ2[,1], circ2[,2],
+                 type = &quot;l&quot;,
+                 lty = trellis.par.get(&quot;reference.line&quot;)$lty,
+                 col = trellis.par.get(&quot;reference.line&quot;)$col,
+                 lwd = trellis.par.get(&quot;reference.line&quot;)$lwd)
+    circ3 &lt;- ellipse(diag(rep(1, 2)), t = .3)
+    panel.xyplot(circ3[,1], circ3[,2],
+                 type = &quot;l&quot;,
+                 lty = trellis.par.get(&quot;reference.line&quot;)$lty,
+                 col = trellis.par.get(&quot;reference.line&quot;)$col,
+                 lwd = trellis.par.get(&quot;reference.line&quot;)$lwd)
+    panel.xyplot(args$x, args$y, groups = args$groups, subscripts = args$subscripts)
+  }
+splom(~segRot[, 1:3],
+      groups = segRot$Channel,
+      lower.panel = function(...){}, upper.panel = upperp,
+      prepanel.limits = function(x) panelRange,
+      auto.key = list(columns = 2))</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+<div id="missing-values" class="section level3">
+<h3>Missing Values</h3>
+</div>
+</div>
+<div id="removing-predictors" class="section level2">
+<h2>Removing Predictors</h2>
+<pre class="r"><code>## To filter on correlations, we first get the correlation matrix for the 
+## predictor set
+
+segCorr &lt;- cor(segTrainTrans)
+
+library(corrplot)
+corrplot(segCorr, order = &quot;hclust&quot;, tl.cex = .35)</code></pre>
+<pre><code>## Warning in plot.window(...): &quot;order&quot; is not a graphical parameter</code></pre>
+<pre><code>## Warning in plot.window(...): &quot;tl.cex&quot; is not a graphical parameter</code></pre>
+<pre><code>## Warning in plot.xy(xy, type, ...): &quot;order&quot; is not a graphical parameter</code></pre>
+<pre><code>## Warning in plot.xy(xy, type, ...): &quot;tl.cex&quot; is not a graphical parameter</code></pre>
+<pre><code>## Warning in axis(side = side, at = at, labels = labels, ...): &quot;order&quot; is not
+## a graphical parameter</code></pre>
+<pre><code>## Warning in axis(side = side, at = at, labels = labels, ...): &quot;tl.cex&quot; is
+## not a graphical parameter</code></pre>
+<pre><code>## Warning in axis(side = side, at = at, labels = labels, ...): &quot;order&quot; is not
+## a graphical parameter</code></pre>
+<pre><code>## Warning in axis(side = side, at = at, labels = labels, ...): &quot;tl.cex&quot; is
+## not a graphical parameter</code></pre>
+<pre><code>## Warning in box(...): &quot;order&quot; is not a graphical parameter</code></pre>
+<pre><code>## Warning in box(...): &quot;tl.cex&quot; is not a graphical parameter</code></pre>
+<pre><code>## Warning in title(...): &quot;order&quot; is not a graphical parameter</code></pre>
+<pre><code>## Warning in title(...): &quot;tl.cex&quot; is not a graphical parameter</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>## caret&#39;s findCorrelation function is used to identify columns to remove.
+highCorr &lt;- findCorrelation(segCorr, .75)</code></pre>
+</div>
+<div id="adding-predictors" class="section level2">
+<h2>Adding Predictors</h2>
+</div>
+<div id="binning-predictors" class="section level2">
+<h2>Binning Predictors</h2>
+<div id="removing-predictors-1" class="section level3">
+<h3>Removing Predictors</h3>
+<pre class="r"><code>data(cars)
+type &lt;- c(&quot;convertible&quot;, &quot;coupe&quot;, &quot;hatchback&quot;, &quot;sedan&quot;, &quot;wagon&quot;)
+cars$Type &lt;- factor(apply(cars[, 14:18], 1, function(x) type[which(x == 1)]))
+
+carSubset &lt;- cars[sample(1:nrow(cars), 20), c(1, 2, 19)]
+
+head(carSubset)</code></pre>
+<pre><code>##        Price Mileage  Type
+## 477 16646.77   20154 sedan
+## 444 48310.33     788 sedan
+## 479 17089.92    8732 sedan
+## 315 13594.09   20682 coupe
+## 209 21908.37   17353 sedan
+## 592 16033.93   18391 wagon</code></pre>
+<pre class="r"><code>levels(carSubset$Type)</code></pre>
+<pre><code>## [1] &quot;convertible&quot; &quot;coupe&quot;       &quot;hatchback&quot;   &quot;sedan&quot;       &quot;wagon&quot;</code></pre>
+<pre class="r"><code>simpleMod &lt;- dummyVars(~Mileage + Type,
+                       data = carSubset,
+                       ## Remove the variable name from the
+                       ## column name
+                       levelsOnly = TRUE)
+simpleMod</code></pre>
+<pre><code>## Dummy Variable Object
+## 
+## Formula: ~Mileage + Type
+## 2 variables, 1 factors
+## Factor variable names will be removed
+## A less than full rank encoding is used</code></pre>
+<pre class="r"><code>withInteraction &lt;- dummyVars(~Mileage + Type + Mileage:Type,
+                             data = carSubset,
+                             levelsOnly = TRUE)
+withInteraction</code></pre>
+<pre><code>## Dummy Variable Object
+## 
+## Formula: ~Mileage + Type + Mileage:Type
+## 2 variables, 1 factors
+## Factor variable names will be removed
+## A less than full rank encoding is used</code></pre>
+<pre class="r"><code>predict(withInteraction, head(carSubset))</code></pre>
+<pre><code>##     Mileage convertible coupe hatchback sedan wagon Mileage:convertible
+## 477   20154           0     0         0     1     0                   0
+## 444     788           0     0         0     1     0                   0
+## 479    8732           0     0         0     1     0                   0
+## 315   20682           0     1         0     0     0                   0
+## 209   17353           0     0         0     1     0                   0
+## 592   18391           0     0         0     0     1                   0
+##     Mileage:coupe Mileage:hatchback Mileage:sedan Mileage:wagon
+## 477             0                 0         20154             0
+## 444             0                 0           788             0
+## 479             0                 0          8732             0
+## 315         20682                 0             0             0
+## 209             0                 0         17353             0
+## 592             0                 0             0         18391</code></pre>
+</div>
+</div>
+</div>
+<div id="new-r-commands" class="section level1">
+<h1>New R commands</h1>
+<p><code>apropos</code>: search R packages for a given term in currently loaded packages</p>
+<p><code>RSiteSearch</code>: find function in any package</p>
 </div>
