@@ -1,0 +1,272 @@
+---
+title: 'Book: Using Multivariate Statistics'
+author: Marie
+date: '2018-06-11'
+slug: book-using-multivariate-statistics
+categories:
+  - Study-Notes
+tags:
+  - Book
+  - Study-Notes
+---
+
+
+
+<div id="principal-components-and-factor-analysis" class="section level1">
+<h1>Principal Components and Factor Analysis</h1>
+<div id="general-purpose" class="section level2">
+<h2>General Purpose</h2>
+<ul>
+<li>To find subsets of variables (factors/components/latent variables) that are independent, where variables in a subset are correlated</li>
+<li>To summarise patterns of correlations among variables</li>
+<li>To decrease number of variables to a smaller number of factors/components, by using linear combinations of observed variables (more parsimonious and because factors/components are uncorrelated, more reliable)</li>
+<li>To understand underlying processes</li>
+<li>To describe (and maybe understand) relationship between variables</li>
+<li>To test theory about underlying processes</li>
+</ul>
+</div>
+<div id="steps" class="section level2">
+<h2>Steps:</h2>
+<ul>
+<li>Hypothesise factors underlying domain of interest</li>
+<li>Select and measure variables</li>
+<li>Prepare correlation matrix</li>
+<li>Extract factors/components</li>
+<li>Determine number of factors/components</li>
+<li>Rotate to increase interpretability</li>
+<li>Interpret results</li>
+<li>Should make sense</li>
+<li>Easier if variables within one factor do not correlate with variables in another factor</li>
+<li>Verify factor structure by establishing validity, for example, confirm that factor scores change with experimental conditions as predicted</li>
+</ul>
+<p>For factor analysis</p>
+<ul>
+<li>Hypothesise factors underlying domain of interest</li>
+<li>Select 5-6 variables thought to be a pure measure of the factor (marker variables); consider variable complexity (i.e the number of factors for which a variable may correlate)</li>
+<li>Choose a sample across variables/factors with spread of scores</li>
+<li>Be wary to pool results of several samples; samples differing, for example, in SES may also have different factors. Only pool if different samples produce the same factors.</li>
+</ul>
+</div>
+<div id="types-of-factor-analysis" class="section level2">
+<h2>Types of Factor Analysis</h2>
+<table>
+<colgroup>
+<col width="56%" />
+<col width="43%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Exploratory</th>
+<th>Confirmatory</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Early stages of research</td>
+<td>Advanced stages of research</td>
+</tr>
+<tr class="even">
+<td>To summarise data by grouping together correlated variables</td>
+<td>To test theory about latent processes</td>
+</tr>
+<tr class="odd">
+<td>Variables may not have been chosen with underlying processes in mind</td>
+<td>Variables chosen to reveal underlying processes</td>
+</tr>
+<tr class="even">
+<td>Factor Analysis / PCA</td>
+<td>Usually via Structural Equation Modelling (SEM)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="definitions" class="section level2">
+<h2>Definitions</h2>
+<p>TODO: Move</p>
+<ul>
+<li><strong>Observed Correlation Matrix</strong>: Variable correlation</li>
+<li><strong>Reproduced Correlation Matrix</strong>: Factor correlation</li>
+<li><strong>Residual Correlation Matrix</strong>: Observed - Reproduced (small for good factor analysis)</li>
+<li><strong>Orthogonal Rotation</strong>: When factors are uncorrelated; produces a loading matrix (correlations between factors and variables)</li>
+<li><strong>Oblique Rotation</strong>: When factors are correlated; the loading matrix is decomposed into a structure matrix (correlations between factors and variables) and a pattern matrix (correlations between factors and variables without overlap amount factors). Also produces a factor correlation matrix</li>
+<li><strong>Factor Score Coefficients Matrix</strong>: Coefficients from linear combinations of variables</li>
+</ul>
+</div>
+<div id="comparison-of-pca-to-fa" class="section level2">
+<h2>Comparison of PCA to FA</h2>
+<p>Factor Analysis</p>
+<ul>
+<li>Factors</li>
+<li>Only shared variable is analysed; attempts are made to estimate and eliminate variance due to error and variance unique to each variable</li>
+<li>Factors are thought to cause variables, <em>what are the underlying processes that could have produced correlations among these variables?</em>; <em>are the correlations among variables consistent with a hypothesised factor structure</em>?</li>
+</ul>
+<p>Principal Component Analysis</p>
+<ul>
+<li>Components</li>
+<li>All variance in observed variables is analysed</li>
+<li>Variables cause the component; no underlying theory about which variables should be associated with which factors</li>
+</ul>
+</div>
+<div id="research-questions" class="section level2">
+<h2>Research Questions</h2>
+<ul>
+<li>How many factors</li>
+<li>What do the factors mean</li>
+<li>How much variability is accounted for by each/all factors</li>
+<li>How well does the factor solution fit that expected</li>
+<li>Had factors been measured directly, what scored would subjects have received?</li>
+</ul>
+</div>
+<div id="limitations" class="section level2">
+<h2>Limitations</h2>
+<p>TODO: move after definition of loadings…</p>
+<ul>
+<li>No ready criteria for verification</li>
+<li>Infinite rotations; final choice is based on subjective assessment of interpretability</li>
+<li>Often used as a last resort to make order from chaos (i.e. suffers from a poor reputation)</li>
+<li>Exploratory</li>
+<li>Subjective</li>
+<li>Sensitive to outliers, missing data, poorly distributed samples, small samples</li>
+</ul>
+<div id="outliers" class="section level3">
+<h3>Outliers</h3>
+<p><strong>Outliers among cases</strong></p>
+<ul>
+<li>Univariate and multivariate (combination of variables) outliers will have greater influence on factor solution</li>
+<li>TODO chapter 4 and 13.7.4.14 to detect and reduce influence</li>
+</ul>
+<p><strong>Outliers among variables (FA only)</strong> If there is a factor with <span class="math inline">\(\leq\)</span> 2 variables and significant variable accounted for:</p>
+<ul>
+<li>Ignore, or treat with caution</li>
+<li>The factor should be researched further with structural equation modelling (SEM)</li>
+</ul>
+<p>Factors with few variables and small variance accounted for are unreliable.</p>
+</div>
+<div id="missing-data" class="section level3">
+<h3>Missing data</h3>
+<p>Estimate if</p>
+<ul>
+<li>Missing distribution of values not random</li>
+<li>Sample size will be too small if delete cases;</li>
+</ul>
+<p>Otherwise, delete cases</p>
+</div>
+<div id="poorly-distributed-variables-non-normality" class="section level3">
+<h3>Poorly distributed variables (Non-Normality)</h3>
+<ul>
+<li>If PCA/FA used descriptively, i.e. to summarise relationships, normality assumptions not in force, but solution is enhanced with normality</li>
+<li>If statistical inference used to determine number of factors, single variable and multivariate normality (linear combinations of variables are normally distributed) is assumed</li>
+<li>If variable has substantial skewness and kurtosis, consider variable transformation</li>
+<li>Multivariate normality tests are sensitive</li>
+<li>Note that some SEMS permit PCA/FA with non-normal variables</li>
+</ul>
+</div>
+<div id="non-linearity" class="section level3">
+<h3>Non-Linearity</h3>
+<ul>
+<li>Correlations measures linear relationships therefore analysis is degraded by non-linear relationship (as not captured)</li>
+<li>Assessed visually using scatterplots</li>
+</ul>
+</div>
+<div id="small-samples-sample-size-required-will-depend-on-population-correlations-and-the-number-of-factors" class="section level3">
+<h3>Small samples; sample size required will depend on population correlations and the number of factors</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Characteristics</th>
+<th>Recommended Sample Size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Communalities &gt; 0.6</td>
+<td>&lt; 100</td>
+</tr>
+<tr class="even">
+<td>Communalities ~ 0.5, loadings &gt; 0.8</td>
+<td>100-200</td>
+</tr>
+<tr class="odd">
+<td>Low communality; small # factors,3-4 indicators for each factor</td>
+<td>&gt; 300</td>
+</tr>
+<tr class="even">
+<td>Low communality, large # weakly determined factors</td>
+<td>&gt; 500</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="multicollinearity-and-singularity-fa-only" class="section level3">
+<h3>Multicollinearity and Singularity (FA only)</h3>
+<p>Although in FA/PCA interest is in finding correlated variables, if correlation is too high, matrix inversion becomes unstable (multicollinearity) or impossible (singularity). If determinant of correlation matrix (**R*$$**) is close to zero, then multicollinearity or singularity may be present</p>
+<p>To detect, look at Squared Multiple Correlation (<strong>SMC</strong>), if SMC is high (&gt; 0.9 multicollinearity, 1=singularity) then delete that variable</p>
+</div>
+<div id="lack-of-factorability-within-correlation-matrix-r" class="section level3">
+<h3>Lack of Factorability within Correlation Matrix (R)</h3>
+<p>FA assumes relationships between variables; ; a factorable matrix should have several sizeable correlations. Note however that high bivariate correlations are not a guarantee of factors; they may merely be two similar variables and not reflect an underlying process simultaneously affecting them.</p>
+<p>If factors are present, then</p>
+<ul>
+<li>Look at correlation matrix (<strong>R</strong>): Should expect many sizeable correlations. if no correlation within the correlation matrix (<strong>R</strong>) with exceeds 0.3 then there is probably nothing to factor analyse.<br />
+</li>
+<li>the anti-image correlations matrix (pairwise correlations adjusted for the effects of all other variables) will have mostly small values among the off-diagonal elements.</li>
+<li>Kaiser’s measure of sampling adequacy, <span class="math inline">\(\sum(\text{squared correlations})/(\sum(\text{squared correlations}) + \sum(\text{squared partial correlations}))\)</span> &gt; 0.6</li>
+</ul>
+</div>
+</div>
+<div id="fundamental-equations-for-factor-analysis" class="section level2">
+<h2>Fundamental Equations for Factor Analysis</h2>
+<div id="eigenvalues-eigenvector-diagonalisation-recap-elementary-linear-algebra-anton" class="section level3">
+<h3>Eigenvalues, Eigenvector, diagonalisation Recap (Elementary Linear Algebra, Anton)</h3>
+<p>If <span class="math inline">\(A\)</span> is an <span class="math inline">\(n \text{x} n\)</span> matrix, then vector <span class="math inline">\(\mathbf{x}\)</span> in <span class="math inline">\(R^n\)</span> is an eigenvector of <span class="math inline">\(A\)</span> if <span class="math inline">\(A\mathbf{x}\)</span> is a scalar multiple of <span class="math inline">\(\mathbf{x}\)</span>, i.e., if <span class="math display">\[A\mathbf{x} = \lambda \mathbf{x}\]</span> <span class="math inline">\(\lambda\)</span> is called the eigenvalue of <span class="math inline">\(A\)</span> and <span class="math inline">\(\textbf{x}\)</span> is the eigenvector corresponding to <span class="math inline">\(\lambda\)</span>.</p>
+<p>Example: <span class="math inline">\(\mathbf{x} = \begin{bmatrix}1\\2\end{bmatrix}\)</span> is an eigenvector of <span class="math inline">\(A = \begin{pmatrix}3 &amp; 0 \\ 8 &amp; -1\end{pmatrix}\)</span> corresponding to the eigenvalue <span class="math inline">\(\lambda = 3\)</span> since <span class="math display">\[\begin{pmatrix}3 &amp; 0 \\ 8 &amp; -1\end{pmatrix}\begin{bmatrix}1\\2\end{bmatrix} = \begin{bmatrix}3\\6\end{bmatrix} = 3 \mathbf{x}\]</span></p>
+<p><strong>To find eigenvalues</strong>: <span class="math display">\[\begin{align}
+  A\mathbf{x} &amp; = \lambda \mathbf{x} \\
+  A\mathbf{x} &amp; = \lambda I \mathbf{x} \\
+ (\lambda I - A ) \mathbf{x} &amp; =  0
+ \end{align}\]</span></p>
+<p>This will have a non-zero solution iff <span class="math inline">\(\det(\lambda I - A ) = 0\)</span> (characteristic equation). The scalars satisfying this equation are the eigenvalues of <span class="math inline">\(A\)</span>. The eigenvectors are then found by solving <span class="math inline">\((\lambda I - A ) \mathbf{x} = 0\)</span></p>
+<p><strong>Example</strong>: Find the eigenvalues of <span class="math inline">\(A = \begin{pmatrix}1 &amp; 0 \\ 6 &amp; -1\end{pmatrix}\)</span></p>
+<p><span class="math display">\[\begin{align}
+ \lambda I - A  &amp; =  \lambda \begin{pmatrix}1 &amp; 0 \\ 0 &amp; 1\end{pmatrix} - \begin{pmatrix}1 &amp; 0 \\ 6 &amp; -1\end{pmatrix} \\
+                &amp; = \begin{pmatrix}\lambda - 1 &amp; 0 \\ -6 &amp; \lambda + 1\end{pmatrix} \\
+\det(\lambda I - A) &amp; = (\lambda - 1) (\lambda + 1) - (0)(-6)\\
+                  &amp; = \lambda ^2 -1 \text{  (a.k.a. characteristic polynomial)}
+  \end{align}\]</span> The solutions to <span class="math inline">\(\det(\lambda I - A)\)</span> are <span class="math inline">\(\lambda=1\)</span> and <span class="math inline">\(\lambda=-1\)</span></p>
+<p><em>To find eigenvectors</em>: <span class="math display">\[\begin{align}
+ (\lambda I - A ) \mathbf{x} &amp; =  0 \\
+ \begin{pmatrix}\lambda - 1 &amp; 0 \\ -6 &amp; \lambda + 1\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} &amp; = \begin{bmatrix}0\\0\end{bmatrix}\\
+ \text{with $\lambda = 1$, } \begin{pmatrix}0 &amp; 0 \\ -6 &amp; 2\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} &amp; = \begin{bmatrix}0\\0\end{bmatrix}\\
+  \text{with $\lambda = -1$, } \begin{pmatrix}-2 &amp; 0 \\ -6 &amp; 0\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} &amp; = \begin{bmatrix}0\\0\end{bmatrix}
+  \end{align}\]</span></p>
+<p>For <span class="math inline">\(\lambda=1\)</span>, <span class="math display">\[\begin{align}
+  -6x_1 + 2x_2 &amp;= 0 \\
+  3x_1 &amp; = x_2 \\
+  x_1 &amp;= x_2/3
+  \end{align}\]</span> If <span class="math inline">\(x_2=t\)</span> then <span class="math inline">\(\begin{bmatrix} 1/3 \\ 1\end{bmatrix}\)</span> is an eigenvector</p>
+<p>For <span class="math inline">\(\lambda=-1\)</span>, <span class="math display">\[\begin{align}
+  -2x_1  &amp;= 0 \\
+  -6x_1 &amp; = 0 
+  \end{align}\]</span> If <span class="math inline">\(x_2=t\)</span> then <span class="math inline">\(\begin{bmatrix} 0 \\ 1\end{bmatrix}\)</span> is an eigenvector</p>
+<p><strong>Diagonalisation</strong></p>
+<ul>
+<li>An <span class="math inline">\(n \text{x} n\)</span> matrix <span class="math inline">\(A\)</span> is diagonisable <span class="math inline">\(\leftrightarrow\)</span> <span class="math inline">\(A\)</span> has n linear independent eigenvectors.<br />
+</li>
+<li><p>Solution to diagonalise <span class="math inline">\(A\)</span>:</p></li>
+<li>Find <span class="math inline">\(n\)</span> linear independent eigenvectors of <span class="math inline">\(A\)</span>, <span class="math inline">\(\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n\)</span></li>
+<li>Form the matrix <span class="math inline">\(P\)</span> having <span class="math inline">\(\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n\)</span> as its column vectors</li>
+<li><p><span class="math inline">\(P^{-1}AP\)</span> will be diagonal with <span class="math inline">\(\lambda_1, \lambda_2, \ldots, \lambda_n\)</span> as successive diagonal entries, where <span class="math inline">\(\lambda_i\)</span> is the eigenvalue corresponding to <span class="math inline">\(\mathbf{p}_i\)</span></p></li>
+</ul>
+<p>Example: <span class="math display">\[\begin{align}
+P &amp; = \begin{pmatrix}1/3 &amp; 0 \\ 1 &amp; 1\end{pmatrix} \\
+P^{-1} &amp;= 3 \begin{pmatrix}1 &amp; 0 \\ -1 &amp; 1/3\end{pmatrix} \\
+  &amp; = \begin{pmatrix}3 &amp; 0 \\ -3 &amp; 1\end{pmatrix} \\
+P^{-1}AP &amp;=  \begin{pmatrix}3 &amp; 0 \\ -3 &amp; 1\end{pmatrix}\begin{pmatrix}1 &amp; 0 \\ 6 &amp; -1\end{pmatrix}\begin{pmatrix}1/3 &amp; 0 \\ 1 &amp; 1\end{pmatrix}\\
+ &amp;= \begin{pmatrix}3 &amp; 0 \\ 3 &amp; 11\end{pmatrix}\begin{pmatrix}1/3 &amp; 0 \\ 1 &amp; 1\end{pmatrix}\\
+ &amp;= \begin{pmatrix}1 &amp; 0 \\ 0 &amp; -1\end{pmatrix} \\
+ &amp;=\begin{pmatrix}\lambda_1  &amp; 0 \\ 0 &amp; \lambda_2\end{pmatrix}
+\end{align}\]</span></p>
+<p><strong>Orthogonal Diagonalisation</strong></p>
+</div>
+</div>
+</div>

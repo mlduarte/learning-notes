@@ -1,0 +1,226 @@
+---
+title: 'Book: Using Multivariate Statistics'
+author: Marie
+date: '2018-06-11'
+slug: book-using-multivariate-statistics
+categories:
+  - Study-Notes
+tags:
+  - Book
+  - Study-Notes
+---
+
+# Principal Components and Factor Analysis
+
+## General Purpose 
+
+* To find subsets of variables (factors/components/latent variables) that are independent, where variables in a subset are correlated
+* To summarise patterns of correlations among variables
+* To decrease number of variables to a smaller number of factors/components, by using linear combinations of observed variables (more parsimonious and because factors/components are uncorrelated, more reliable)
+* To understand underlying processes
+* To describe (and maybe understand) relationship between variables
+* To test theory about underlying processes
+
+## Steps:
+
+* Hypothesise factors underlying domain of interest
+* Select and measure variables
+* Prepare correlation matrix
+* Extract factors/components
+* Determine number of factors/components
+* Rotate to increase interpretability
+* Interpret results
+  * Should make sense
+  * Easier if variables within one factor do not correlate with variables in another factor
+* Verify factor structure by establishing validity, for example, confirm that factor scores change with experimental conditions as predicted
+
+For factor analysis
+
+* Hypothesise factors underlying domain of interest
+* Select 5-6 variables thought to be a pure measure of the factor (marker variables); consider variable complexity (i.e the number of factors for which a variable may correlate)
+* Choose a sample across variables/factors with spread of scores
+* Be wary to pool results of several samples; samples differing, for example, in SES may also have different factors.  Only pool if different samples produce the same factors.
+
+  
+## Types of Factor Analysis
+
+Exploratory | Confirmatory
+-------------------------------------------- | ----------------------------------
+Early stages of research  |  Advanced stages of research
+To summarise data by grouping together correlated variables | To test theory about latent processes
+Variables may not have been chosen with underlying processes in mind | Variables chosen to reveal underlying processes
+Factor Analysis / PCA | Usually via Structural Equation Modelling (SEM)
+
+ 
+ 
+## Definitions
+ TODO: Move
+ 
+* **Observed Correlation Matrix**: Variable correlation
+* **Reproduced Correlation Matrix**: Factor correlation
+* **Residual Correlation Matrix**: Observed - Reproduced (small for good factor analysis)
+* **Orthogonal Rotation**: When factors are uncorrelated; produces a loading matrix (correlations between factors and variables)
+* **Oblique Rotation**: When factors are correlated; the loading matrix is decomposed into a structure matrix (correlations between factors and variables) and a pattern matrix (correlations between factors and variables without overlap amount factors).  Also produces a factor correlation matrix
+* **Factor Score Coefficients Matrix**: Coefficients from linear combinations of variables
+
+## Comparison of PCA to FA
+
+Factor Analysis 
+
+* Factors
+* Only shared variable is analysed; attempts are made to estimate and eliminate variance due to error and variance unique to each variable
+* Factors are thought to cause variables, _what are the underlying processes that could have produced correlations among these variables?_; _are the correlations among variables consistent with a hypothesised factor structure_?
+
+Principal Component Analysis
+
+* Components
+* All variance in observed variables is analysed
+* Variables cause the component; no underlying theory about which variables should be associated with which factors
+
+## Research Questions
+* How many factors
+* What do the factors mean
+* How much variability is accounted for by each/all factors
+* How well does the factor solution fit that expected
+* Had factors been measured directly, what scored would subjects have received?
+
+## Limitations
+TODO: move after definition of loadings...
+
+  * No ready criteria for verification
+  * Infinite rotations; final choice is based on subjective assessment of interpretability
+  * Often used as a last resort to make order from chaos (i.e. suffers from a poor reputation)
+  * Exploratory
+  * Subjective
+  * Sensitive to outliers, missing data, poorly distributed samples, small samples
+
+### Outliers
+**Outliers among cases**
+
+* Univariate and multivariate (combination of variables) outliers will have greater influence on factor solution 
+* TODO chapter 4 and 13.7.4.14 to detect and reduce influence
+
+**Outliers among variables (FA only)**
+If there is a factor with $\leq$ 2 variables and significant variable accounted for:
+
+* Ignore, or treat with caution
+* The factor should be researched further with structural equation modelling (SEM)
+
+Factors with few variables and small variance accounted for are unreliable.
+
+### Missing data
+Estimate if 
+
+* Missing distribution of values not random
+* Sample size will be too small if delete cases; 
+
+Otherwise, delete cases
+
+### Poorly distributed variables (Non-Normality)
+* If PCA/FA used descriptively, i.e. to summarise relationships, normality assumptions not in force, but solution is enhanced with normality
+* If statistical inference used to determine number of factors, single variable and multivariate normality (linear combinations of variables are normally distributed) is assumed
+* If variable has substantial skewness and kurtosis, consider variable transformation
+* Multivariate normality tests are sensitive
+* Note that some SEMS permit PCA/FA with non-normal variables
+
+### Non-Linearity
+* Correlations measures linear relationships therefore analysis is degraded by non-linear relationship (as not captured)
+* Assessed visually using scatterplots
+
+### Small samples; sample size required will depend on population correlations and the number of factors
+    
+Characteristics | Recommended Sample Size
+----------------|-------------------------
+Communalities > 0.6 | < 100
+Communalities ~ 0.5, loadings > 0.8 | 100-200
+Low communality; small # factors,3-4 indicators for each factor  | > 300
+Low communality, large # weakly determined factors | > 500
+  
+### Multicollinearity  and Singularity (FA only)
+
+Although in FA/PCA interest is in finding correlated variables, if correlation is too high, matrix inversion becomes unstable (multicollinearity) or impossible (singularity).  If determinant of correlation matrix (**R*$$**) is close to zero, then multicollinearity or singularity may be present
+
+To detect, look at Squared Multiple Correlation (**SMC**), if SMC is high (> 0.9 multicollinearity, 1=singularity) then delete that variable
+
+### Lack of Factorability within Correlation Matrix (R)
+FA assumes relationships between variables; ; a factorable matrix should have several sizeable correlations. Note however that high bivariate correlations are not a guarantee of factors; they may merely be two similar variables and not reflect an underlying process simultaneously affecting them.
+
+If factors are present, then 
+
+* Look at correlation matrix (**R**): Should expect many sizeable correlations.  if no correlation within the correlation matrix (**R**) with exceeds 0.3 then there is probably nothing to factor analyse.  
+* the anti-image correlations matrix (pairwise correlations adjusted for the effects of all other variables) will have mostly small values among the off-diagonal elements. 
+* Kaiser's measure of sampling adequacy, $\sum(\text{squared correlations})/(\sum(\text{squared correlations}) + \sum(\text{squared partial correlations}))$ > 0.6
+
+## Fundamental Equations for Factor Analysis
+
+### Eigenvalues, Eigenvector, diagonalisation Recap (Elementary Linear Algebra, Anton)
+
+If $A$ is an $n \text{x} n$ matrix, then vector $\mathbf{x}$ in $R^n$ is an eigenvector of $A$ if $A\mathbf{x}$ is a scalar multiple of $\mathbf{x}$, i.e., if \[A\mathbf{x} = \lambda \mathbf{x}\] $\lambda$ is called the eigenvalue of $A$ and $\textbf{x}$ is the eigenvector corresponding to $\lambda$.
+
+Example: 
+$\mathbf{x} = \begin{bmatrix}1\\2\end{bmatrix}$ is an eigenvector of $A = \begin{pmatrix}3 & 0 \\ 8 & -1\end{pmatrix}$ corresponding to the eigenvalue $\lambda = 3$ since 
+\[\begin{pmatrix}3 & 0 \\ 8 & -1\end{pmatrix}\begin{bmatrix}1\\2\end{bmatrix} = \begin{bmatrix}3\\6\end{bmatrix} = 3 \mathbf{x}\]
+
+**To find eigenvalues**:
+\[\begin{align}
+  A\mathbf{x} & = \lambda \mathbf{x} \\
+  A\mathbf{x} & = \lambda I \mathbf{x} \\
+ (\lambda I - A ) \mathbf{x} & =  0
+ \end{align}\]
+ 
+ This will have a non-zero solution iff $\det(\lambda I - A ) = 0$ (characteristic equation).  The scalars satisfying this equation are the eigenvalues of $A$.  The eigenvectors are then found by solving $(\lambda I - A ) \mathbf{x} =  0$
+ 
+**Example**: Find the eigenvalues of $A = \begin{pmatrix}1 & 0 \\ 6 & -1\end{pmatrix}$
+ 
+\[\begin{align}
+ \lambda I - A  & =  \lambda \begin{pmatrix}1 & 0 \\ 0 & 1\end{pmatrix} - \begin{pmatrix}1 & 0 \\ 6 & -1\end{pmatrix} \\
+                & = \begin{pmatrix}\lambda - 1 & 0 \\ -6 & \lambda + 1\end{pmatrix} \\
+\det(\lambda I - A) & = (\lambda - 1) (\lambda + 1) - (0)(-6)\\
+                  & = \lambda ^2 -1 \text{  (a.k.a. characteristic polynomial)}
+  \end{align}\]
+The solutions to $\det(\lambda I - A)$ are $\lambda=1$ and   $\lambda=-1$
+  
+_To find eigenvectors_:
+\[\begin{align}
+ (\lambda I - A ) \mathbf{x} & =  0 \\
+ \begin{pmatrix}\lambda - 1 & 0 \\ -6 & \lambda + 1\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} & = \begin{bmatrix}0\\0\end{bmatrix}\\
+ \text{with $\lambda = 1$, } \begin{pmatrix}0 & 0 \\ -6 & 2\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} & = \begin{bmatrix}0\\0\end{bmatrix}\\
+  \text{with $\lambda = -1$, } \begin{pmatrix}-2 & 0 \\ -6 & 0\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} & = \begin{bmatrix}0\\0\end{bmatrix}
+  \end{align}\]
+
+For $\lambda=1$, 
+\[\begin{align}
+  -6x_1 + 2x_2 &= 0 \\
+  3x_1 & = x_2 \\
+  x_1 &= x_2/3
+  \end{align}\]
+If $x_2=t$ then $\begin{bmatrix} 1/3 \\ 1\end{bmatrix}$ is an eigenvector
+  
+For $\lambda=-1$, 
+\[\begin{align}
+  -2x_1  &= 0 \\
+  -6x_1 & = 0 
+  \end{align}\]
+  If $x_2=t$ then $\begin{bmatrix} 0 \\ 1\end{bmatrix}$ is an eigenvector 
+  
+**Diagonalisation**  
+
+* An $n \text{x} n$ matrix $A$ is diagonisable $\leftrightarrow$ $A$ has n linear independent eigenvectors.  
+* Solution to diagonalise $A$:
+
+  + Find $n$ linear independent eigenvectors of $A$, $\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n$
+  + Form the matrix $P$ having $\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n$ as its column vectors
+  + $P^{-1}AP$ will be diagonal with $\lambda_1, \lambda_2, \ldots, \lambda_n$ as successive diagonal entries, where $\lambda_i$ is the eigenvalue corresponding to  $\mathbf{p}_i$
+  
+Example:
+\[\begin{align}
+P & = \begin{pmatrix}1/3 & 0 \\ 1 & 1\end{pmatrix} \\
+P^{-1} &= 3 \begin{pmatrix}1 & 0 \\ -1 & 1/3\end{pmatrix} \\
+  & = \begin{pmatrix}3 & 0 \\ -3 & 1\end{pmatrix} \\
+P^{-1}AP &=  \begin{pmatrix}3 & 0 \\ -3 & 1\end{pmatrix}\begin{pmatrix}1 & 0 \\ 6 & -1\end{pmatrix}\begin{pmatrix}1/3 & 0 \\ 1 & 1\end{pmatrix}\\
+ &= \begin{pmatrix}3 & 0 \\ 3 & 11\end{pmatrix}\begin{pmatrix}1/3 & 0 \\ 1 & 1\end{pmatrix}\\
+ &= \begin{pmatrix}1 & 0 \\ 0 & -1\end{pmatrix} \\
+ &=\begin{pmatrix}\lambda_1  & 0 \\ 0 & \lambda_2\end{pmatrix}
+\end{align}\]
+
+**Orthogonal Diagonalisation**
