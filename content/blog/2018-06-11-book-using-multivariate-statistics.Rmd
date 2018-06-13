@@ -10,6 +10,17 @@ tags:
   - Study-Notes
 ---
 
+```{r load_packages, message=FALSE, warning=FALSE, include=FALSE}
+if (!requireNamespace("tidyverse")) install.packages("tidyverse")
+require("tidyverse")
+
+if (!requireNamespace("knitr")) install.packages("knitr")
+require("knitr")
+
+if (!requireNamespace("psych")) install.packages("psych")
+require("psych")
+```
+
 # Principal Components and Factor Analysis
 
 ## General Purpose 
@@ -53,15 +64,7 @@ Factor Analysis / PCA | Usually via Structural Equation Modelling (SEM)
 
  
  
-## Definitions
- TODO: Move
- 
-* **Observed Correlation Matrix**: Variable correlation
-* **Reproduced Correlation Matrix**: Factor correlation
-* **Residual Correlation Matrix**: Observed - Reproduced (small for good factor analysis)
-* **Orthogonal Rotation**: When factors are uncorrelated; produces a loading matrix (correlations between factors and variables)
-* **Oblique Rotation**: When factors are correlated; the loading matrix is decomposed into a structure matrix (correlations between factors and variables) and a pattern matrix (correlations between factors and variables without overlap amount factors).  Also produces a factor correlation matrix
-* **Factor Score Coefficients Matrix**: Coefficients from linear combinations of variables
+
 
 ## Comparison of PCA to FA
 
@@ -85,7 +88,6 @@ Principal Component Analysis
 * Had factors been measured directly, what scored would subjects have received?
 
 ## Limitations
-TODO: move after definition of loadings...
 
   * No ready criteria for verification
   * Infinite rotations; final choice is based on subjective assessment of interpretability
@@ -94,13 +96,13 @@ TODO: move after definition of loadings...
   * Subjective
   * Sensitive to outliers, missing data, poorly distributed samples, small samples
 
-### Outliers
-**Outliers among cases**
+### Outliers (among cases)
+
 
 * Univariate and multivariate (combination of variables) outliers will have greater influence on factor solution 
 * TODO chapter 4 and 13.7.4.14 to detect and reduce influence
 
-**Outliers among variables (FA only)**
+## Outliers among variables (FA only)
 If there is a factor with $\leq$ 2 variables and significant variable accounted for:
 
 * Ignore, or treat with caution
@@ -138,7 +140,7 @@ Low communality, large # weakly determined factors | > 500
   
 ### Multicollinearity  and Singularity (FA only)
 
-Although in FA/PCA interest is in finding correlated variables, if correlation is too high, matrix inversion becomes unstable (multicollinearity) or impossible (singularity).  If determinant of correlation matrix (**R*$$**) is close to zero, then multicollinearity or singularity may be present
+Although in FA/PCA interest is in finding correlated variables, if correlation is too high, matrix inversion becomes unstable (multicollinearity) or impossible (singularity).  If determinant of correlation matrix ($R$) is close to zero, then multicollinearity or singularity may be present
 
 To detect, look at Squared Multiple Correlation (**SMC**), if SMC is high (> 0.9 multicollinearity, 1=singularity) then delete that variable
 
@@ -152,6 +154,34 @@ If factors are present, then
 * Kaiser's measure of sampling adequacy, $\sum(\text{squared correlations})/(\sum(\text{squared correlations}) + \sum(\text{squared partial correlations}))$ > 0.6
 
 ## Fundamental Equations for Factor Analysis
+
+
+Matrices 
+
+Label | Matrix Name | Description | Orthagonal | Oblique
+------|---------------|-----------------------------------------|---------|-------
+$R$ | Correlation               |Between-variable correlation | <i class="fa fa-check-square-o"></i> |<i class="fa fa-check-square-o"></i>
+$Z$ | Variable                  |Standardized observed variable values(scores) | <i class="fa fa-check-square-o"></i> |<i class="fa fa-check-square-o"></i>
+$F$ | Factor-score              |Standardized factor scores | <i class="fa fa-check-square-o"></i> |<i class="fa fa-check-square-o"></i>
+$A$ | Factor loading            |Correlations between factor & variable | <i class="fa fa-check-square-o"></i> |<i class="fa fa-square-o"></i>
+$A$ | Pattern                   |Contribution of factor to variance | <i class="fa fa-square-o"></i> |<i class="fa fa-check-square-o"></i>
+$C$ | Structure                 | Correlations between variables and correlated factors | <i class="fa fa-square-o"></i> |<i class="fa fa-check-square-o"></i>
+$B$ | Factor-Score Coefficients | Coefficients to generate factor scores from variables | <i class="fa fa-check-square-o"></i> |<i class="fa fa-check-square-o"></i>
+$\phi$                          | Factor correlation|Correlations among factors | <i class="fa fa-square-o"></i> |<i class="fa fa-check-square-o"></i>
+$L$ | Eigenvalue                |Diagonal matrix of eigenvalues, one per factor | <i class="fa fa-check-square-o"></i> |<i class="fa fa-check-square-o"></i>
+$V$ | Eigenvector               |Eigenvectors, one per eigenvalue | <i class="fa fa-check-square-o"></i> |<i class="fa fa-check-square-o"></i>
+
+
+<br><br>
+
+* **Observed Correlation Matrix**: Variable correlation
+* **Reproduced Correlation Matrix**: Factor correlation
+* **Residual Correlation Matrix**: Observed - Reproduced (small for good factor analysis)
+* **Orthogonal Rotation**: When factors are uncorrelated; produces a loading matrix (correlations between factors and variables)
+* **Oblique Rotation**: When factors are correlated; the loading matrix is decomposed into a structure matrix (correlations between factors and variables) and a pattern matrix (correlations between factors and variables without overlap amount factors).  Also produces a factor correlation matrix
+* **Factor Score Coefficients Matrix**: Coefficients from linear combinations of variables
+
+Eigenvalues colidate the variance within a matrix, while providing the linear combatination of variables (eigenvector) to do it.
 
 ### Eigenvalues, Eigenvector, diagonalisation Recap (Elementary Linear Algebra, Anton)
 
@@ -179,8 +209,11 @@ $\mathbf{x} = \begin{bmatrix}1\\2\end{bmatrix}$ is an eigenvector of $A = \begin
                   & = \lambda ^2 -1 \text{  (a.k.a. characteristic polynomial)}
   \end{align}\]
 The solutions to $\det(\lambda I - A)$ are $\lambda=1$ and   $\lambda=-1$
+
+However, recall pythagorean solution to quadratic equation $ax^2 + bx + c$ is 
+\[x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}\]  
   
-_To find eigenvectors_:
+**To find eigenvectors**:
 \[\begin{align}
  (\lambda I - A ) \mathbf{x} & =  0 \\
  \begin{pmatrix}\lambda - 1 & 0 \\ -6 & \lambda + 1\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} & = \begin{bmatrix}0\\0\end{bmatrix}\\
@@ -207,10 +240,9 @@ For $\lambda=-1$,
 
 * An $n \text{x} n$ matrix $A$ is diagonisable $\leftrightarrow$ $A$ has n linear independent eigenvectors.  
 * Solution to diagonalise $A$:
-
-  + Find $n$ linear independent eigenvectors of $A$, $\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n$
-  + Form the matrix $P$ having $\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n$ as its column vectors
-  + $P^{-1}AP$ will be diagonal with $\lambda_1, \lambda_2, \ldots, \lambda_n$ as successive diagonal entries, where $\lambda_i$ is the eigenvalue corresponding to  $\mathbf{p}_i$
+    + Find $n$ linear independent eigenvectors of $A$, $\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n$
+    + Form the matrix $P$ having $\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n$ as its column vectors
+    + $P^{-1}AP$ will be diagonal with $\lambda_1, \lambda_2, \ldots, \lambda_n$ as successive diagonal entries, where $\lambda_i$ is the eigenvalue corresponding to  $\mathbf{p}_i$
   
 Example:
 \[\begin{align}
@@ -224,3 +256,296 @@ P^{-1}AP &=  \begin{pmatrix}3 & 0 \\ -3 & 1\end{pmatrix}\begin{pmatrix}1 & 0 \\ 
 \end{align}\]
 
 **Orthogonal Diagonalisation**
+If $A$ is a symmetric matrix, then eigenvectors from different eigenspaces are orthogonal; to orthogonally diagonslize a symmetrix matrix:
+
+1. Find a basis for each eigenspace of A
+2. Apply the Gram-Schmidt process (pp192-194, Anton) to each of these bases to obtain an orthonormal basis for each eigenspace
+3. Form the matrix $P$, whose columns are the basis vectors contructed in hte previous step; this matrix orthogonally diagonalises $A$.
+    
+### Fundamental Equations for Factor Analysis: Extraction
+The correlation matrix ($R$), which by nature is symmetric, can be diagonalised by the matrix $V$ (whose columns are the eigenvectors), such that 
+\[L = V'RV\]
+where $L$ is a diagonal matrix with values eigenvalues in the diagonal
+
+**Example**
+```{r load_data_ski, echo=FALSE, message=FALSE, warning=FALSE}
+dat.ski <- data.frame(skiers = paste0("S", c(1:5), sep=""), cost = c(32, 61, 59, 36, 62), lift=c(64, 37, 40, 62, 46) , depth = c(65, 62, 45, 34, 43), powder = c(67, 65, 43, 35, 40)) 
+dat.ski %>% kable()
+```
+
+Correlation Matrix
+```{r ski_corr}
+cor.ski <- cor(dplyr::select(dat.ski, -skiers)) 
+cor.ski
+```
+
+Strong correlations between:
+
+* importance placed on _cost_ of ski ticket and speed of ski _lift_
+* importance placed on snow _depth_ and mositure (_powder_)
+
+
+Eigenvalues and Eigenvectors:
+```{r ski_eigenvalues}
+eig.ski <- eigen(cor.ski)
+eig.ski
+```
+
+Note that $L = V'RV'
+```{r ski_diag}
+zapsmall(t(eig.ski$vectors) %*% cor.ski %*% eig.ski$vectors)
+diag(eig.ski$values)
+```
+and that pre-and post-multplying the corelation matrix by eigenvectors does not change it so much as repackage it:
+\[V'V = I\]
+
+```{r ski_identify}
+zapsmall(crossprod(eig.ski$vectors))
+```
+
+Rearranging the equation $L=V'RV$,
+
+\[\begin{align}
+  R &= VLV'\\
+    &= V\sqrt{L}\sqrt{L} V'\\
+    &=(V\sqrt{L})(\sqrt{L}V') \\
+    &= A A'
+    \end{align}\]
+where $A=V\sqrt{L}$ is referred to as the factor loading matrix; the correlation matrix is a product of hte factor laoding matrix $A$ and its transpose.
+
+In this case, the (unrotated) factor loading matrix is:
+```{r ski_loading}
+eig.ski$vectors %*% sqrt(diag(eig.ski$values))
+```
+
+
+  The correlation matrix can herefore be considered a product of two matrices - each a combination of eigenvectors and the square root of eigenvalues  
+  
+* Because there are 4 variables, there are 4 eigenvalues 
+* Each eigenvalue corresponds to a different potential factor; usually only factors with large eigenvalues are retrained
+* In good FA, a few factors will almost duplicate correlation matrix
+* In this example, only first 2 factors, with eigenvalues > 1 are large enough
+
+```{r failed_attempt_at_understanding_FA, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+#Source: https://stats.stackexchange.com/questions/102882/steps-done-in-factor-analysis-compared-to-steps-done-in-pca/102999#102999
+
+####PCA
+X <- filter(iris, Species == 'setosa') %>% select(Sepal.Length, Sepal.Width, Petal.Length, Petal.Width) %>%
+  mutate_all(function(x) x - mean(x))
+X <- as.matrix(X)
+n <- nrow(X)
+# covariance
+S <- cov(X)
+
+L <- eigen(S)$values  #eigenvalues
+L.prop <- L/sum(L)    # proportion of variance explained
+cbind(L, L.prop)
+V <- -eigen(S)$vectors # eigenvectors
+row.names(V) <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")
+colnames(V) <- paste0("PC", 1:4, sep="")
+
+M <- 2
+# Loadings with M=2 components
+A <- sapply(1:M, function(x) V[,x]*sqrt(L[x]))
+
+# Rescaled loadings
+var <- apply(X, 2, var) # variance of variable
+Amod <- sapply(1:M, function(x) A[,x]/sqrt(var[x]))
+
+# Regression Coefficients b
+B <- A %*% diag(1/L[1:M])
+
+#Standardized component scores (having variances 1) = X*B
+X %*% B
+
+#Raw component scores (having variances = eigenvalues) can of course be computed from standardized ones.
+#In PCA, they are also computed directly as X*V
+X %*% V
+
+
+##### Factor Analysis
+X <- filter(iris, Species == 'setosa') %>% select(Sepal.Length, Sepal.Width, Petal.Length, Petal.Width) %>%
+  mutate_all(function(x) x - mean(x))
+X <- as.matrix(X)
+n <- nrow(X)
+# covariance
+S <- cov(X)
+M <- 2
+# Initial communalities
+# Is S is a correlation matrix, images are usuthe squarted multiple correlation coefficient
+Smod <- S-diag(1/diag(solve(S)))
+# LOOP
+for (loopit in 1:25){
+  L <- eigen(Smod)$values
+  V <- -eigen(Smod)$vectors
+  
+  # Loadings
+  M <- 2
+  A <- sapply(1:M, function(x) V[,x]*sqrt(L[x]))
+  
+  # Row sums of squared loadings -> updated communalities
+  diag(Smod) <- apply(A, 1, function(x) sum(x^2))
+}
+
+A # Final Loadings
+apply(A, 1, function(x) sum(x^2)) # Communalities
+# Standardized (rescaled) loadings and communalities
+# If correlations analysed, A is already standardized
+var <- apply(X, 2, var) # variance of variable
+Amod <- sapply(1:M, function(x) A[,x]/sqrt(var[x]))
+
+# Factor Scores
+# Regression Coefficients b
+B <- solve(S) %*% A
+
+#Standardized component scores (having variances 1) = X*B
+X %*% B
+
+# Factors are extracted as orthogonal. And they are.
+# However, regressionally computed factor scores are not fully uncorrelated.
+# Covariance matrix between computed factor scores.
+cov(X %*% B)
+
+# Factor variances are their squared loadings.
+# You can easily recompute the above "standardized" factor scores to "raw" factor scores having those variances:
+# raw score = st. score * sqrt(factor variance / st. scores variance).
+```
+
+
+
+
+Starting with the correlation matrix $R$ and assuming $k$ factors are used, the steps of factor analysis (principal factor solution method) are as follows:
+
+  1. Get eigenvalues $L$ and eigenvectors $V$ of correlation matrix $r$
+  2. Calculate $C = \sum \text{diag}(R)$
+  3. Calculate the loadings, $A = V[,1:k]\sqrt{L[1:k]}$,  (eq 13.6 of text)
+  4. Set $R^* = AA'$  (eq 13.5 of text, R=AA')
+  5. Set $C^* = \sum \text{diag} (R^*)$
+  6. Update $\text{diag}(R) = \text{diag}(R^*)$
+Repeat above steps until max iterations reached, or until $e = |C-C^*)|$ is smaller than some threshold
+
+
+```{r ski_fa_iter}
+# This is taken from the function fac and is replicated using 
+#fit <- fa(cor.ski, nfactors=2, fm="pa")
+#fit # print results
+
+# Initialisation
+nfactors <- 2
+r <- cor(dplyr::select(dat.ski, -skiers)) 
+n <- dim(r)[2]
+r.mat <- r
+colnames(r.mat) <- rownames(r.mat) <- colnames(r)
+max.iter <- 50
+min.err <- 0.001
+
+orig <- diag(r)
+comm <- sum(diag(r.mat))
+err <- comm
+i <- 1
+comm.list <- list()
+
+e.values <- eigen(r)$values
+
+# Loop
+while (err > min.err) {
+  eigens <- eigen(r.mat, symmetric = TRUE)
+  if (nfactors > 1) {
+    loadings <- eigens$vectors[, 1:nfactors] %*% 
+      diag(sqrt(eigens$values[1:nfactors]))
+  }
+  else {
+    loadings <- eigens$vectors[, 1] * sqrt(eigens$values[1]) #A in book
+  }
+  model <- loadings %*% t(loadings) # eqn 13.5: R = AA'
+  new <- diag(model)
+  comm1 <- sum(new)
+  diag(r.mat) <- new                # update diagonals of correlation matrix
+  err <- abs(comm - comm1)
+  if (is.na(err)) {
+    warning("imaginary eigen value condition encountered in fa\n Try again with SMC=FALSE \n exiting fa")
+    break
+  }
+  comm <- comm1
+  comm.list[[i]] <- comm1
+  i <- i + 1
+  if (i > max.iter) {
+    if (warnings) {
+      message("maximum iteration exceeded")
+    }
+    err <- 0
+  }
+}
+
+# Clean-up
+eigenv <- eigens$vectors
+eigens <- eigens$values
+if (nfactors > 1) {
+  sign.tot <- vector(mode = "numeric", length = nfactors)
+  sign.tot <- sign(colSums(loadings))
+  sign.tot[sign.tot == 0] <- 1
+  loadings <- loadings %*% diag(sign.tot)
+} else {
+  if (sum(loadings) < 0) {
+    loadings <- -as.matrix(loadings)
+  }
+  else {
+    loadings <- as.matrix(loadings)
+  }
+  colnames(loadings) <- "MR1"
+}
+colnames(loadings) <- paste("PA", 1:nfactors, sep = "")
+rownames(loadings) <- rownames(r)
+loadings[loadings == 0] <- 10^-15
+model <- loadings %*% t(loadings)
+f.loadings <- loadings
+
+```
+
+
+After iterating through the Factor Analysis `r i` times we get the following eigenvectors:
+```{r ski_fin_eig, echo=FALSE}
+as.data.frame(round(eigenv[, 1:nfactors],3), rownames=FALSE)
+```
+
+and eigenvalues
+```{r ski_fin_eigenvalues, echo=FALSE}
+round(eigens[1:nfactors],3)
+```
+
+
+Note that the property,  $VV' = I$, is maintained.
+```{r demo_VVtEI}
+crossprod(eigenv[, 1:nfactors])
+```
+
+The factor loading matrix, $A = V\sqrt{L}$, is
+```{r ski_loadings, echo=FALSE}
+#round(eigenv[, 1:nfactors]*sqrt(eigens[1:nfactors]),3)
+round(f.loadings,3)
+```
+
+
+The factor loading matrix lists the correlations between factors and variables:
+
+  * Factor 1 reflects snow conditions
+  * Factor 2 reflects resort conditions; people who score high on this factor place a lot of importance on the cost of a ski ticket without concern for the lift speeds whereas those that score low on this factor value lift speeds more than ski ticket costs.
+
+
+## Orthogonal Rotation
+
+## Oblique Rotation
+
+
+
+
+
+
+
+
+
+```{r load_data_factor, message=FALSE, warning=FALSE, include=FALSE}
+dat.factor <- readr::read_tsv("../../static/datasets/Tabachnick/factor.dat") 
+```
+
+

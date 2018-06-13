@@ -80,18 +80,6 @@ tags:
 </tbody>
 </table>
 </div>
-<div id="definitions" class="section level2">
-<h2>Definitions</h2>
-<p>TODO: Move</p>
-<ul>
-<li><strong>Observed Correlation Matrix</strong>: Variable correlation</li>
-<li><strong>Reproduced Correlation Matrix</strong>: Factor correlation</li>
-<li><strong>Residual Correlation Matrix</strong>: Observed - Reproduced (small for good factor analysis)</li>
-<li><strong>Orthogonal Rotation</strong>: When factors are uncorrelated; produces a loading matrix (correlations between factors and variables)</li>
-<li><strong>Oblique Rotation</strong>: When factors are correlated; the loading matrix is decomposed into a structure matrix (correlations between factors and variables) and a pattern matrix (correlations between factors and variables without overlap amount factors). Also produces a factor correlation matrix</li>
-<li><strong>Factor Score Coefficients Matrix</strong>: Coefficients from linear combinations of variables</li>
-</ul>
-</div>
 <div id="comparison-of-pca-to-fa" class="section level2">
 <h2>Comparison of PCA to FA</h2>
 <p>Factor Analysis</p>
@@ -119,7 +107,6 @@ tags:
 </div>
 <div id="limitations" class="section level2">
 <h2>Limitations</h2>
-<p>TODO: move after definition of loadings…</p>
 <ul>
 <li>No ready criteria for verification</li>
 <li>Infinite rotations; final choice is based on subjective assessment of interpretability</li>
@@ -128,20 +115,22 @@ tags:
 <li>Subjective</li>
 <li>Sensitive to outliers, missing data, poorly distributed samples, small samples</li>
 </ul>
-<div id="outliers" class="section level3">
-<h3>Outliers</h3>
-<p><strong>Outliers among cases</strong></p>
+<div id="outliers-among-cases" class="section level3">
+<h3>Outliers (among cases)</h3>
 <ul>
 <li>Univariate and multivariate (combination of variables) outliers will have greater influence on factor solution</li>
 <li>TODO chapter 4 and 13.7.4.14 to detect and reduce influence</li>
 </ul>
-<p><strong>Outliers among variables (FA only)</strong> If there is a factor with <span class="math inline">\(\leq\)</span> 2 variables and significant variable accounted for:</p>
+</div>
+</div>
+<div id="outliers-among-variables-fa-only" class="section level2">
+<h2>Outliers among variables (FA only)</h2>
+<p>If there is a factor with <span class="math inline">\(\leq\)</span> 2 variables and significant variable accounted for:</p>
 <ul>
 <li>Ignore, or treat with caution</li>
 <li>The factor should be researched further with structural equation modelling (SEM)</li>
 </ul>
 <p>Factors with few variables and small variance accounted for are unreliable.</p>
-</div>
 <div id="missing-data" class="section level3">
 <h3>Missing data</h3>
 <p>Estimate if</p>
@@ -199,7 +188,7 @@ tags:
 </div>
 <div id="multicollinearity-and-singularity-fa-only" class="section level3">
 <h3>Multicollinearity and Singularity (FA only)</h3>
-<p>Although in FA/PCA interest is in finding correlated variables, if correlation is too high, matrix inversion becomes unstable (multicollinearity) or impossible (singularity). If determinant of correlation matrix (**R*$$**) is close to zero, then multicollinearity or singularity may be present</p>
+<p>Although in FA/PCA interest is in finding correlated variables, if correlation is too high, matrix inversion becomes unstable (multicollinearity) or impossible (singularity). If determinant of correlation matrix (<span class="math inline">\(R\)</span>) is close to zero, then multicollinearity or singularity may be present</p>
 <p>To detect, look at Squared Multiple Correlation (<strong>SMC</strong>), if SMC is high (&gt; 0.9 multicollinearity, 1=singularity) then delete that variable</p>
 </div>
 <div id="lack-of-factorability-within-correlation-matrix-r" class="section level3">
@@ -216,6 +205,107 @@ tags:
 </div>
 <div id="fundamental-equations-for-factor-analysis" class="section level2">
 <h2>Fundamental Equations for Factor Analysis</h2>
+<p>Matrices</p>
+<table style="width:100%;">
+<colgroup>
+<col width="8%" />
+<col width="19%" />
+<col width="50%" />
+<col width="12%" />
+<col width="9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Label</th>
+<th>Matrix Name</th>
+<th>Description</th>
+<th>Orthagonal</th>
+<th>Oblique</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(R\)</span></td>
+<td>Correlation</td>
+<td>Between-variable correlation</td>
+<td><i class="fa fa-check-square-o"></i></td>
+<td><i class="fa fa-check-square-o"></i></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(Z\)</span></td>
+<td>Variable</td>
+<td>Standardized observed variable values(scores)</td>
+<td><i class="fa fa-check-square-o"></i></td>
+<td><i class="fa fa-check-square-o"></i></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(F\)</span></td>
+<td>Factor-score</td>
+<td>Standardized factor scores</td>
+<td><i class="fa fa-check-square-o"></i></td>
+<td><i class="fa fa-check-square-o"></i></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(A\)</span></td>
+<td>Factor loading</td>
+<td>Correlations between factor &amp; variable</td>
+<td><i class="fa fa-check-square-o"></i></td>
+<td><i class="fa fa-square-o"></i></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(A\)</span></td>
+<td>Pattern</td>
+<td>Contribution of factor to variance</td>
+<td><i class="fa fa-square-o"></i></td>
+<td><i class="fa fa-check-square-o"></i></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(C\)</span></td>
+<td>Structure</td>
+<td>Correlations between variables and correlated factors</td>
+<td><i class="fa fa-square-o"></i></td>
+<td><i class="fa fa-check-square-o"></i></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(B\)</span></td>
+<td>Factor-Score Coefficients</td>
+<td>Coefficients to generate factor scores from variables</td>
+<td><i class="fa fa-check-square-o"></i></td>
+<td><i class="fa fa-check-square-o"></i></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\phi\)</span></td>
+<td>Factor correlation</td>
+<td>Correlations among factors</td>
+<td><i class="fa fa-square-o"></i></td>
+<td><i class="fa fa-check-square-o"></i></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(L\)</span></td>
+<td>Eigenvalue</td>
+<td>Diagonal matrix of eigenvalues, one per factor</td>
+<td><i class="fa fa-check-square-o"></i></td>
+<td><i class="fa fa-check-square-o"></i></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(V\)</span></td>
+<td>Eigenvector</td>
+<td>Eigenvectors, one per eigenvalue</td>
+<td><i class="fa fa-check-square-o"></i></td>
+<td><i class="fa fa-check-square-o"></i></td>
+</tr>
+</tbody>
+</table>
+<p><br><br></p>
+<ul>
+<li><strong>Observed Correlation Matrix</strong>: Variable correlation</li>
+<li><strong>Reproduced Correlation Matrix</strong>: Factor correlation</li>
+<li><strong>Residual Correlation Matrix</strong>: Observed - Reproduced (small for good factor analysis)</li>
+<li><strong>Orthogonal Rotation</strong>: When factors are uncorrelated; produces a loading matrix (correlations between factors and variables)</li>
+<li><strong>Oblique Rotation</strong>: When factors are correlated; the loading matrix is decomposed into a structure matrix (correlations between factors and variables) and a pattern matrix (correlations between factors and variables without overlap amount factors). Also produces a factor correlation matrix</li>
+<li><strong>Factor Score Coefficients Matrix</strong>: Coefficients from linear combinations of variables</li>
+</ul>
+<p>Eigenvalues colidate the variance within a matrix, while providing the linear combatination of variables (eigenvector) to do it.</p>
 <div id="eigenvalues-eigenvector-diagonalisation-recap-elementary-linear-algebra-anton" class="section level3">
 <h3>Eigenvalues, Eigenvector, diagonalisation Recap (Elementary Linear Algebra, Anton)</h3>
 <p>If <span class="math inline">\(A\)</span> is an <span class="math inline">\(n \text{x} n\)</span> matrix, then vector <span class="math inline">\(\mathbf{x}\)</span> in <span class="math inline">\(R^n\)</span> is an eigenvector of <span class="math inline">\(A\)</span> if <span class="math inline">\(A\mathbf{x}\)</span> is a scalar multiple of <span class="math inline">\(\mathbf{x}\)</span>, i.e., if <span class="math display">\[A\mathbf{x} = \lambda \mathbf{x}\]</span> <span class="math inline">\(\lambda\)</span> is called the eigenvalue of <span class="math inline">\(A\)</span> and <span class="math inline">\(\textbf{x}\)</span> is the eigenvector corresponding to <span class="math inline">\(\lambda\)</span>.</p>
@@ -233,7 +323,8 @@ tags:
 \det(\lambda I - A) &amp; = (\lambda - 1) (\lambda + 1) - (0)(-6)\\
                   &amp; = \lambda ^2 -1 \text{  (a.k.a. characteristic polynomial)}
   \end{align}\]</span> The solutions to <span class="math inline">\(\det(\lambda I - A)\)</span> are <span class="math inline">\(\lambda=1\)</span> and <span class="math inline">\(\lambda=-1\)</span></p>
-<p><em>To find eigenvectors</em>: <span class="math display">\[\begin{align}
+<p>However, recall pythagorean solution to quadratic equation <span class="math inline">\(ax^2 + bx + c\)</span> is <span class="math display">\[x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}\]</span></p>
+<p><strong>To find eigenvectors</strong>: <span class="math display">\[\begin{align}
  (\lambda I - A ) \mathbf{x} &amp; =  0 \\
  \begin{pmatrix}\lambda - 1 &amp; 0 \\ -6 &amp; \lambda + 1\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} &amp; = \begin{bmatrix}0\\0\end{bmatrix}\\
  \text{with $\lambda = 1$, } \begin{pmatrix}0 &amp; 0 \\ -6 &amp; 2\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} &amp; = \begin{bmatrix}0\\0\end{bmatrix}\\
@@ -252,10 +343,12 @@ tags:
 <ul>
 <li>An <span class="math inline">\(n \text{x} n\)</span> matrix <span class="math inline">\(A\)</span> is diagonisable <span class="math inline">\(\leftrightarrow\)</span> <span class="math inline">\(A\)</span> has n linear independent eigenvectors.<br />
 </li>
-<li><p>Solution to diagonalise <span class="math inline">\(A\)</span>:</p></li>
+<li>Solution to diagonalise <span class="math inline">\(A\)</span>:
+<ul>
 <li>Find <span class="math inline">\(n\)</span> linear independent eigenvectors of <span class="math inline">\(A\)</span>, <span class="math inline">\(\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n\)</span></li>
 <li>Form the matrix <span class="math inline">\(P\)</span> having <span class="math inline">\(\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n\)</span> as its column vectors</li>
-<li><p><span class="math inline">\(P^{-1}AP\)</span> will be diagonal with <span class="math inline">\(\lambda_1, \lambda_2, \ldots, \lambda_n\)</span> as successive diagonal entries, where <span class="math inline">\(\lambda_i\)</span> is the eigenvalue corresponding to <span class="math inline">\(\mathbf{p}_i\)</span></p></li>
+<li><span class="math inline">\(P^{-1}AP\)</span> will be diagonal with <span class="math inline">\(\lambda_1, \lambda_2, \ldots, \lambda_n\)</span> as successive diagonal entries, where <span class="math inline">\(\lambda_i\)</span> is the eigenvalue corresponding to <span class="math inline">\(\mathbf{p}_i\)</span></li>
+</ul></li>
 </ul>
 <p>Example: <span class="math display">\[\begin{align}
 P &amp; = \begin{pmatrix}1/3 &amp; 0 \\ 1 &amp; 1\end{pmatrix} \\
@@ -266,7 +359,244 @@ P^{-1}AP &amp;=  \begin{pmatrix}3 &amp; 0 \\ -3 &amp; 1\end{pmatrix}\begin{pmatr
  &amp;= \begin{pmatrix}1 &amp; 0 \\ 0 &amp; -1\end{pmatrix} \\
  &amp;=\begin{pmatrix}\lambda_1  &amp; 0 \\ 0 &amp; \lambda_2\end{pmatrix}
 \end{align}\]</span></p>
-<p><strong>Orthogonal Diagonalisation</strong></p>
+<p><strong>Orthogonal Diagonalisation</strong> If <span class="math inline">\(A\)</span> is a symmetric matrix, then eigenvectors from different eigenspaces are orthogonal; to orthogonally diagonslize a symmetrix matrix:</p>
+<ol style="list-style-type: decimal">
+<li>Find a basis for each eigenspace of A</li>
+<li>Apply the Gram-Schmidt process (pp192-194, Anton) to each of these bases to obtain an orthonormal basis for each eigenspace</li>
+<li>Form the matrix <span class="math inline">\(P\)</span>, whose columns are the basis vectors contructed in hte previous step; this matrix orthogonally diagonalises <span class="math inline">\(A\)</span>.</li>
+</ol>
 </div>
+<div id="fundamental-equations-for-factor-analysis-extraction" class="section level3">
+<h3>Fundamental Equations for Factor Analysis: Extraction</h3>
+<p>The correlation matrix (<span class="math inline">\(R\)</span>), which by nature is symmetric, can be diagonalised by the matrix <span class="math inline">\(V\)</span> (whose columns are the eigenvectors), such that <span class="math display">\[L = V&#39;RV\]</span> where <span class="math inline">\(L\)</span> is a diagonal matrix with values eigenvalues in the diagonal</p>
+<p><strong>Example</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skiers</th>
+<th align="right">cost</th>
+<th align="right">lift</th>
+<th align="right">depth</th>
+<th align="right">powder</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">S1</td>
+<td align="right">32</td>
+<td align="right">64</td>
+<td align="right">65</td>
+<td align="right">67</td>
+</tr>
+<tr class="even">
+<td align="left">S2</td>
+<td align="right">61</td>
+<td align="right">37</td>
+<td align="right">62</td>
+<td align="right">65</td>
+</tr>
+<tr class="odd">
+<td align="left">S3</td>
+<td align="right">59</td>
+<td align="right">40</td>
+<td align="right">45</td>
+<td align="right">43</td>
+</tr>
+<tr class="even">
+<td align="left">S4</td>
+<td align="right">36</td>
+<td align="right">62</td>
+<td align="right">34</td>
+<td align="right">35</td>
+</tr>
+<tr class="odd">
+<td align="left">S5</td>
+<td align="right">62</td>
+<td align="right">46</td>
+<td align="right">43</td>
+<td align="right">40</td>
+</tr>
+</tbody>
+</table>
+<p>Correlation Matrix</p>
+<pre class="r"><code>cor.ski &lt;- cor(dplyr::select(dat.ski, -skiers)) 
+cor.ski</code></pre>
+<pre><code>##               cost        lift       depth      powder
+## cost    1.00000000 -0.95299048 -0.05527555 -0.12999882
+## lift   -0.95299048  1.00000000 -0.09110654 -0.03624823
+## depth  -0.05527555 -0.09110654  1.00000000  0.99017435
+## powder -0.12999882 -0.03624823  0.99017435  1.00000000</code></pre>
+<p>Strong correlations between:</p>
+<ul>
+<li>importance placed on <em>cost</em> of ski ticket and speed of ski <em>lift</em></li>
+<li>importance placed on snow <em>depth</em> and mositure (<em>powder</em>)</li>
+</ul>
+<p>Eigenvalues and Eigenvectors:</p>
+<pre class="r"><code>eig.ski &lt;- eigen(cor.ski)
+eig.ski</code></pre>
+<pre><code>## eigen() decomposition
+## $values
+## [1] 2.016305104 1.941513814 0.037812306 0.004368776
+## 
+## $vectors
+##            [,1]       [,2]       [,3]       [,4]
+## [1,]  0.3524130  0.6143298  0.6624913  0.2439451
+## [2,] -0.2511248 -0.6637642  0.6758934  0.1988000
+## [3,] -0.6273987  0.3222291  0.2754625 -0.6531919
+## [4,] -0.6473888  0.2796147 -0.1685044  0.6887014</code></pre>
+<p>Note that $L = V’RV’</p>
+<pre class="r"><code>zapsmall(t(eig.ski$vectors) %*% cor.ski %*% eig.ski$vectors)</code></pre>
+<pre><code>##          [,1]     [,2]      [,3]      [,4]
+## [1,] 2.016305 0.000000 0.0000000 0.0000000
+## [2,] 0.000000 1.941514 0.0000000 0.0000000
+## [3,] 0.000000 0.000000 0.0378123 0.0000000
+## [4,] 0.000000 0.000000 0.0000000 0.0043688</code></pre>
+<pre class="r"><code>diag(eig.ski$values)</code></pre>
+<pre><code>##          [,1]     [,2]       [,3]        [,4]
+## [1,] 2.016305 0.000000 0.00000000 0.000000000
+## [2,] 0.000000 1.941514 0.00000000 0.000000000
+## [3,] 0.000000 0.000000 0.03781231 0.000000000
+## [4,] 0.000000 0.000000 0.00000000 0.004368776</code></pre>
+<p>and that pre-and post-multplying the corelation matrix by eigenvectors does not change it so much as repackage it: <span class="math display">\[V&#39;V = I\]</span></p>
+<pre class="r"><code>zapsmall(crossprod(eig.ski$vectors))</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4]
+## [1,]    1    0    0    0
+## [2,]    0    1    0    0
+## [3,]    0    0    1    0
+## [4,]    0    0    0    1</code></pre>
+<p>Rearranging the equation <span class="math inline">\(L=V&#39;RV\)</span>,</p>
+<p><span class="math display">\[\begin{align}
+  R &amp;= VLV&#39;\\
+    &amp;= V\sqrt{L}\sqrt{L} V&#39;\\
+    &amp;=(V\sqrt{L})(\sqrt{L}V&#39;) \\
+    &amp;= A A&#39;
+    \end{align}\]</span> where <span class="math inline">\(A=V\sqrt{L}\)</span> is referred to as the factor loading matrix; the correlation matrix is a product of hte factor laoding matrix <span class="math inline">\(A\)</span> and its transpose.</p>
+<p>In this case, the (unrotated) factor loading matrix is:</p>
+<pre class="r"><code>eig.ski$vectors %*% sqrt(diag(eig.ski$values))</code></pre>
+<pre><code>##            [,1]       [,2]        [,3]        [,4]
+## [1,]  0.5004147  0.8559962  0.12882400  0.01612397
+## [2,] -0.3565888 -0.9248772  0.13143009  0.01314003
+## [3,] -0.8908852  0.4489882  0.05356475 -0.04317384
+## [4,] -0.9192705  0.3896101 -0.03276633  0.04552090</code></pre>
+<p>The correlation matrix can herefore be considered a product of two matrices - each a combination of eigenvectors and the square root of eigenvalues</p>
+<ul>
+<li>Because there are 4 variables, there are 4 eigenvalues</li>
+<li>Each eigenvalue corresponds to a different potential factor; usually only factors with large eigenvalues are retrained</li>
+<li>In good FA, a few factors will almost duplicate correlation matrix</li>
+<li>In this example, only first 2 factors, with eigenvalues &gt; 1 are large enough</li>
+</ul>
+<p>Starting with the correlation matrix <span class="math inline">\(R\)</span> and assuming <span class="math inline">\(k\)</span> factors are used, the steps of factor analysis (principal factor solution method) are as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Get eigenvalues <span class="math inline">\(L\)</span> and eigenvectors <span class="math inline">\(V\)</span> of correlation matrix <span class="math inline">\(r\)</span></li>
+<li>Calculate <span class="math inline">\(C = \sum \text{diag}(R)\)</span></li>
+<li>Calculate the loadings, <span class="math inline">\(A = V[,1:k]\sqrt{L[1:k]}\)</span>, (eq 13.6 of text)</li>
+<li>Set <span class="math inline">\(R^* = AA&#39;\)</span> (eq 13.5 of text, R=AA’)</li>
+<li>Set <span class="math inline">\(C^* = \sum \text{diag} (R^*)\)</span></li>
+<li>Update <span class="math inline">\(\text{diag}(R) = \text{diag}(R^*)\)</span> Repeat above steps until max iterations reached, or until <span class="math inline">\(e = |C-C^*)|\)</span> is smaller than some threshold</li>
+</ol>
+<pre class="r"><code># This is taken from the function fac and is replicated using 
+#fit &lt;- fa(cor.ski, nfactors=2, fm=&quot;pa&quot;)
+#fit # print results
+
+# Initialisation
+nfactors &lt;- 2
+r &lt;- cor(dplyr::select(dat.ski, -skiers)) 
+n &lt;- dim(r)[2]
+r.mat &lt;- r
+colnames(r.mat) &lt;- rownames(r.mat) &lt;- colnames(r)
+max.iter &lt;- 50
+min.err &lt;- 0.001
+
+orig &lt;- diag(r)
+comm &lt;- sum(diag(r.mat))
+err &lt;- comm
+i &lt;- 1
+comm.list &lt;- list()
+
+e.values &lt;- eigen(r)$values
+
+# Loop
+while (err &gt; min.err) {
+  eigens &lt;- eigen(r.mat, symmetric = TRUE)
+  if (nfactors &gt; 1) {
+    loadings &lt;- eigens$vectors[, 1:nfactors] %*% 
+      diag(sqrt(eigens$values[1:nfactors]))
+  }
+  else {
+    loadings &lt;- eigens$vectors[, 1] * sqrt(eigens$values[1]) #A in book
+  }
+  model &lt;- loadings %*% t(loadings) # eqn 13.5: R = AA&#39;
+  new &lt;- diag(model)
+  comm1 &lt;- sum(new)
+  diag(r.mat) &lt;- new                # update diagonals of correlation matrix
+  err &lt;- abs(comm - comm1)
+  if (is.na(err)) {
+    warning(&quot;imaginary eigen value condition encountered in fa\n Try again with SMC=FALSE \n exiting fa&quot;)
+    break
+  }
+  comm &lt;- comm1
+  comm.list[[i]] &lt;- comm1
+  i &lt;- i + 1
+  if (i &gt; max.iter) {
+    if (warnings) {
+      message(&quot;maximum iteration exceeded&quot;)
+    }
+    err &lt;- 0
+  }
+}
+
+# Clean-up
+eigenv &lt;- eigens$vectors
+eigens &lt;- eigens$values
+if (nfactors &gt; 1) {
+  sign.tot &lt;- vector(mode = &quot;numeric&quot;, length = nfactors)
+  sign.tot &lt;- sign(colSums(loadings))
+  sign.tot[sign.tot == 0] &lt;- 1
+  loadings &lt;- loadings %*% diag(sign.tot)
+} else {
+  if (sum(loadings) &lt; 0) {
+    loadings &lt;- -as.matrix(loadings)
+  }
+  else {
+    loadings &lt;- as.matrix(loadings)
+  }
+  colnames(loadings) &lt;- &quot;MR1&quot;
+}
+colnames(loadings) &lt;- paste(&quot;PA&quot;, 1:nfactors, sep = &quot;&quot;)
+rownames(loadings) &lt;- rownames(r)
+loadings[loadings == 0] &lt;- 10^-15
+model &lt;- loadings %*% t(loadings)
+f.loadings &lt;- loadings</code></pre>
+<p>After iterating through the Factor Analysis 8 times we get the following eigenvectors:</p>
+<pre><code>##       V1     V2
+## 1  0.284  0.649
+## 2 -0.179 -0.686
+## 3 -0.657  0.253
+## 4 -0.675  0.209</code></pre>
+<p>and eigenvalues</p>
+<pre><code>## [1] 2.005 1.911</code></pre>
+<p>Note that the property, <span class="math inline">\(VV&#39; = I\)</span>, is maintained.</p>
+<pre class="r"><code>crossprod(eigenv[, 1:nfactors])</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]    1    0
+## [2,]    0    1</code></pre>
+<p>The factor loading matrix, <span class="math inline">\(A = V\sqrt{L}\)</span>, is</p>
+<pre><code>##           PA1    PA2
+## cost   -0.403  0.898
+## lift    0.254 -0.948
+## depth   0.930  0.350
+## powder  0.956  0.289</code></pre>
+<p>The factor loading matrix lists the correlations between factors and variables:</p>
+<ul>
+<li>Factor 1 reflects snow conditions</li>
+<li>Factor 2 reflects resort conditions; people who score high on this factor place a lot of importance on the cost of a ski ticket without concern for the lift speeds whereas those that score low on this factor value lift speeds more than ski ticket costs.</li>
+</ul>
+</div>
+</div>
+<div id="orthogonal-rotation" class="section level2">
+<h2>Orthogonal Rotation</h2>
+</div>
+<div id="oblique-rotation" class="section level2">
+<h2>Oblique Rotation</h2>
 </div>
 </div>
