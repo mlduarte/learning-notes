@@ -3,6 +3,7 @@ title: 'Book: Using Multivariate Statistics'
 author: Marie
 date: '2018-06-11'
 slug: book-using-multivariate-statistics
+banner: "img/banners/tabachnick.png"
 categories:
   - Study-Notes
 tags:
@@ -499,11 +500,11 @@ eig.ski</code></pre>
 #fit # print results
 
 # Initialisation
-nfactors &lt;- 2
 r &lt;- cor(dplyr::select(dat.ski, -skiers)) 
 n &lt;- dim(r)[2]
 r.mat &lt;- r
 colnames(r.mat) &lt;- rownames(r.mat) &lt;- colnames(r)
+nfactors &lt;- 2
 max.iter &lt;- 50
 min.err &lt;- 0.001
 
@@ -525,7 +526,7 @@ while (err &gt; min.err) {
   else {
     loadings &lt;- eigens$vectors[, 1] * sqrt(eigens$values[1]) #A in book
   }
-  model &lt;- loadings %*% t(loadings) # eqn 13.5: R = AA&#39;
+  model &lt;- loadings %*% t(loadings) # eqn 13.5: R = AA&#39; (if r is n x n this will always be an n x n matrix, because n x k %*% k x n gives n x n matrix)
   new &lt;- diag(model)
   comm1 &lt;- sum(new)
   diag(r.mat) &lt;- new                # update diagonals of correlation matrix
@@ -595,6 +596,91 @@ f.loadings &lt;- loadings</code></pre>
 </div>
 <div id="orthogonal-rotation" class="section level2">
 <h2>Orthogonal Rotation</h2>
+<p>Rotation used to * Maximise high correlations between factors and variables * Minimise low correlations between factors and variables</p>
+<p><span class="math display">\[\begin{align}
+  \text{Rotated Loading Matrix} &amp;= (\text{Unrotated Loading Matrix})(\text{Transformation Matrix})\\
+    A_\text{Rotated} &amp;= A_\text{Unrotated}\Lambda
+    \end{align}\]</span></p>
+<p>The transformation matrix is a matrix of sines and cosines of an angle <span class="math inline">\(\psi\)</span>. In this example an angle of <span class="math inline">\(\psi = 19\degrees\)</span> is used, with <span class="math display">\[\Lambda = \begin{bmatrix}\cos \psi &amp; -\sin \psi\\ \sin \psi &amp; \cos \psi\end{bmatrix}\]</span></p>
+<pre class="r"><code>rotated &lt;- stats::varimax(loadings)
+loadings_rotated &lt;- rotated$loadings
+rot.mat &lt;- rotated$rotmat
+rot.mat  # transformation matrix</code></pre>
+<pre><code>##           [,1]       [,2]
+## [1,] 0.9418515 -0.3360294
+## [2,] 0.3360294  0.9418515</code></pre>
+<p>The communalities, variance and covariance are shown in the following table:</p>
+<pre class="r"><code>fit &lt;- fa(cor.ski, nfactors=2, fm=&quot;pa&quot;, rotate=&quot;varimax&quot;)
+loadings_sol &lt;- unclass(fit$loadings)
+ssls &lt;- apply(loadings_sol, 2, function(x) sum(x^2))
+comms &lt;- apply(loadings_sol, 1, function(x) sum(x^2))
+prop_var &lt;- ssls/nrow(loadings_sol)
+prop_cov &lt;- ssls/sum(comms)
+
+res &lt;- rbind(loadings_sol, ssls, prop_var, prop_cov)
+res &lt;- data.frame(var = rownames(res), res) %&gt;% mutate(communalities = ifelse(var %in% c(&#39;cost&#39;, &#39;lift&#39;, &#39;depth&#39;, &#39;powder&#39;), PA1^2 + PA2^2, PA1 + PA2))
+res</code></pre>
+<pre><code>##        var         PA1         PA2 communalities
+## 1     cost -0.07757836 -0.98203830     0.9704176
+## 2     lift -0.07933109  0.97641250     0.9596748
+## 3    depth  0.99387040 -0.01742487     0.9880820
+## 4   powder  0.99708024  0.04875513     0.9965461
+## 5     ssls  1.99425920  1.92046127     3.9147205
+## 6 prop_var  0.49856480  0.48011532     0.9786801
+## 7 prop_cov  0.50942570  0.49057430     1.0000000</code></pre>
+<p><strong>Communalities</strong>: For a variable, the variance accounted for by the factors; the SSL (sum of squared loadings) across factors <strong>Proportion of variance in the set of variables accounted for by a factor</strong>: SSL for the factor/number of variables <strong>Proportion of variance in the solution accounted for by a factor</strong>: Proportion of covariance; SSL for the factor/sum of the communalities (SSLs)</p>
+<p>The <strong>reproduced correlation matrix</strong> is <span class="math inline">\(\bar{R} = AA&#39;\)</span>:</p>
+<pre class="r"><code>round(loadings_sol %*% t(loadings_sol),3)</code></pre>
+<pre><code>##          cost   lift  depth powder
+## cost    0.970 -0.953 -0.060 -0.125
+## lift   -0.953  0.960 -0.096 -0.031
+## depth  -0.060 -0.096  0.988  0.990
+## powder -0.125 -0.031  0.990  0.997</code></pre>
+<p>The <strong>residual correlation matrix</strong> is <span class="math inline">\(R_\text{res} = R - \bar{R}\)</span></p>
+<pre class="r"><code>rres &lt;- cor.ski - loadings_sol %*% t(loadings_sol)
+diag(rres) &lt;- 0 # could otherwise replace with communalities
+round(rres,3)</code></pre>
+<pre><code>##          cost   lift depth powder
+## cost    0.000  0.000 0.005 -0.005
+## lift    0.000  0.000 0.005 -0.005
+## depth   0.005  0.005 0.000  0.000
+## powder -0.005 -0.005 0.000  0.000</code></pre>
+<p>The FA is good if numbers in residual correlation matrix are small.</p>
+<p>Factor score coefficients (for estimating factor scores) are found by multiplying the inverse correlation matrix and the factor loading matrix, <span class="math inline">\(B = R^{-1}A\)</span></p>
+<pre class="r"><code>B &lt;- solve(r) %*% loadings_sol
+B</code></pre>
+<pre><code>##               PA1         PA2
+## cost   0.13783453 -0.59197611
+## lift   0.09353632  0.41350483
+## depth  0.08326838  0.03113046
+## powder 0.93593888 -0.04403683</code></pre>
+<p>Factor scores are a product of standardized variable scores and factor score coefficients, <span class="math inline">\(F = ZB\)</span>:</p>
+<pre class="r"><code>matF &lt;- as.matrix(select(dat.ski, -skiers) %&gt;% mutate_all(scale)) %*% B
+matF</code></pre>
+<pre><code>##             PA1        PA2
+## [1,]  1.1012894  1.1795542
+## [2,]  1.0263476 -0.8816516
+## [3,] -0.4589879 -0.6769470
+## [4,] -1.0816206  0.9740182
+## [5,] -0.5870286 -0.5949738</code></pre>
+<p>Here, for example, the first subject scores strongly on both snow (strong importance on both depth and powder) and resort factor (strong importance on lift over cost).</p>
+<p>Predicting standardized scores on variables from scores on factors is also possible, using a product of scores on factors wiethged by factor laodings, <span class="math inline">\(Z = FA&#39;\)</span>:</p>
+<pre class="r"><code>Z &lt;- matF %*% t(loadings_sol)
+round(Z, 3)</code></pre>
+<pre><code>##        cost   lift  depth powder
+## [1,] -1.244  1.064  1.074  1.156
+## [2,]  0.786 -0.942  1.035  0.980
+## [3,]  0.700 -0.625 -0.444 -0.491
+## [4,] -0.873  1.037 -1.092 -1.031
+## [5,]  0.630 -0.534 -0.573 -0.614</code></pre>
+<p>In algebraic form, the formula is: <span class="math display">\[\begin{align}
+  z_\text{COST} &amp;= a_{11}F_1 + a_{12}F_2 \\
+  z_\text{LFIT} &amp;= a_{21}F_1 + a_{22}F_2 \\
+  z_\text{DEPTH} &amp;= a_{31}F_1 + a_{312}F_2 \\
+  z_\text{POWDER} &amp;= a_{41}F_1 + a_{42}F_2
+  \end{align}
+  \]</span></p>
+<p>The assumption is that each subject has the same latent structure but different scores on the factors themselves.</p>
 </div>
 <div id="oblique-rotation" class="section level2">
 <h2>Oblique Rotation</h2>

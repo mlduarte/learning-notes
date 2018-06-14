@@ -3,6 +3,7 @@ title: 'Book: Applied Predictive Modeling'
 author: Marie
 date: '2018-05-30'
 slug: book-applied-predictive-modeling
+banner: "img/banners/kuhn.png"
 draft: TRUE
 categories:
   - Study-Notes
@@ -33,7 +34,7 @@ tags:
 <p>When prediction accuracy is the primary goal, should not choose a second-rate model for interpretability. To improve accuracy, generally need a more complex model which is more difficult to interpret.</p>
 <p>Foundation for effective predictive model:</p>
 <ul>
-<li>intuition and deep knowledge (to obtain relevant data, eliminate noise)</li>
+<li>Intuition and deep knowledge (to obtain relevant data, eliminate noise)</li>
 <li>Relevant data</li>
 <li>Versatile computation toolbox (pre-processing, modelling, visualizations) The combined force of predictive modelling and intuition will be better than the parts.</li>
 </ul>
@@ -82,8 +83,8 @@ tags:
 </li>
 <li>Disadvantage of transformations is loss of interpretability</li>
 </ul>
-<p>** Centering and Scaling **</p>
-<p>** Skewness ** Skewed if <span class="math inline">\(\frac{x_\max}{x_\min} &gt; 20\)</span>, or if |skewness statistic| &gt;&gt; 0 <span class="math display">\[
+<p><strong>Centering and Scaling</strong></p>
+<p><strong>Skewness</strong> Skewed if <span class="math inline">\(\frac{x_\max}{x_\min} &gt; 20\)</span>, or if |skewness statistic| &gt;&gt; 0 <span class="math display">\[
     \begin{align}
       \text{skewness} &amp; = \frac{\sum (x_i - \bar{x})^3}{(n-1)v^{2/3}} \\
       v &amp; = \frac{\sum(x_i - \bar{x})^2}{(n-1)}
@@ -238,8 +239,9 @@ grid()</code></pre>
 <p>Data reduction techniques</p>
 <ul>
 <li>Generate smaller set of predictors that capture most of the information within the original variables</li>
-<li><em>Signal (Feature) Extraction</em> techniques: New predictors are functions of original variables (; therefore all original variables required)</li>
-<li><p>PCA</p></li>
+<li><em>Signal (Feature) Extraction</em> techniques: New predictors are functions of original variables (therefore all original variables required)</li>
+<li>PCA
+<ul>
 <li>Finds linear combinations of predictors (principal components) to capture most possible variance</li>
 <li>First PC captures more variability than any other linear combination</li>
 <li>Subsequent PCs are uncorrelated with all previous PCs</li>
@@ -248,12 +250,13 @@ grid()</code></pre>
 <li><p>Disadvantages: Seeks predictor-set variation without regard to predictor measurement scales/distributions or response variable; without guidance can summarize data characteristics that are irrelevant to structure of data and modelling objective</p>
 <ul>
 <li>Seeks linear combinations that maximize variability, and therefore will first summarise predictors with more variation. If original predictors are on measurements scales then first few components will summarise higher magnitude predictors; consequently it will focus on identifying data structure based on measurement scales rather than based on important relationships within the data for the current problem.</li>
-<li>Unsupervised technique; Does not consider consider modelling objective / response variability.</li>
+<li>Unsupervised technique; does not consider consider modelling objective / response variability.</li>
+</ul></li>
 </ul></li>
 <li>Should first transform skewed predictors and then center and scale prior to performing PCA; prevent PCA being influenced by original measurement scales</li>
 <li>Consider Partial Least Squares (PLS) to derive components with response variable in mind.</li>
 <li>Use scree plot to decide number of components to keep; in automated model building process, optimal number can be determined by cross-validation</li>
-<li><p>Should also visually examine the PCs; plot first few PCs against each other and color points by, e.g., class labels. If PCA has captured sufficient amount of information in data, may demonstrate clusters of samples/outliers requiring closer examination. Ensure to use the same scale as later components will often have smaller data ranges and plotting on separate scales may lead to potential to over-interpret patterns.</p></li>
+<li>Should also visually examine the PCs; plot first few PCs against each other and color points by, e.g., class labels. If PCA has captured sufficient amount of information in data, may demonstrate clusters of samples/outliers requiring closer examination. Ensure to use the same scale as later components will often have smaller data ranges and plotting on separate scales may lead to potential to over-interpret patterns.</li>
 </ul>
 <p>Example: PCA applied to two features</p>
 <ul>

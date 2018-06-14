@@ -3,6 +3,7 @@ title: 'Book: Using Multivariate Statistics'
 author: Marie
 date: '2018-06-11'
 slug: book-using-multivariate-statistics
+banner: "img/banners/tabachnick.png"
 categories:
   - Study-Notes
 tags:
@@ -431,11 +432,11 @@ Repeat above steps until max iterations reached, or until $e = |C-C^*)|$ is smal
 #fit # print results
 
 # Initialisation
-nfactors <- 2
 r <- cor(dplyr::select(dat.ski, -skiers)) 
 n <- dim(r)[2]
 r.mat <- r
 colnames(r.mat) <- rownames(r.mat) <- colnames(r)
+nfactors <- 2
 max.iter <- 50
 min.err <- 0.001
 
@@ -457,7 +458,7 @@ while (err > min.err) {
   else {
     loadings <- eigens$vectors[, 1] * sqrt(eigens$values[1]) #A in book
   }
-  model <- loadings %*% t(loadings) # eqn 13.5: R = AA'
+  model <- loadings %*% t(loadings) # eqn 13.5: R = AA' (if r is n x n this will always be an n x n matrix, because n x k %*% k x n gives n x n matrix)
   new <- diag(model)
   comm1 <- sum(new)
   diag(r.mat) <- new                # update diagonals of correlation matrix
@@ -534,6 +535,86 @@ The factor loading matrix lists the correlations between factors and variables:
 
 ## Orthogonal Rotation
 
+Rotation used to 
+  * Maximise high correlations between factors and variables
+  * Minimise low correlations between factors and variables
+  
+\[\begin{align}
+  \text{Rotated Loading Matrix} &= (\text{Unrotated Loading Matrix})(\text{Transformation Matrix})\\
+    A_\text{Rotated} &= A_\text{Unrotated}\Lambda
+    \end{align}\]  
+
+The transformation matrix is a matrix of sines and cosines of an angle $\psi$.  In this example an angle of $\psi = 19\degrees$ is used, with \[\Lambda = \begin{bmatrix}\cos \psi & -\sin \psi\\ \sin \psi & \cos \psi\end{bmatrix}\]
+
+```{r ski_orthog}
+rotated <- stats::varimax(loadings)
+loadings_rotated <- rotated$loadings
+rot.mat <- rotated$rotmat
+rot.mat  # transformation matrix
+```
+
+The communalities, variance and covariance are shown in the following table:
+```{r ski_orthog_res}
+fit <- fa(cor.ski, nfactors=2, fm="pa", rotate="varimax")
+loadings_sol <- unclass(fit$loadings)
+ssls <- apply(loadings_sol, 2, function(x) sum(x^2))
+comms <- apply(loadings_sol, 1, function(x) sum(x^2))
+prop_var <- ssls/nrow(loadings_sol)
+prop_cov <- ssls/sum(comms)
+
+res <- rbind(loadings_sol, ssls, prop_var, prop_cov)
+res <- data.frame(var = rownames(res), res) %>% mutate(communalities = ifelse(var %in% c('cost', 'lift', 'depth', 'powder'), PA1^2 + PA2^2, PA1 + PA2))
+res
+```
+
+**Communalities**: For a variable, the variance accounted for by the factors; the SSL (sum of squared loadings) across factors
+**Proportion of variance in the set of variables accounted for by a factor**: SSL for the factor/number of variables
+**Proportion of variance in the solution accounted for by a factor**: Proportion of covariance; SSL for the factor/sum of the communalities (SSLs)
+
+The **reproduced correlation matrix** is $\bar{R} = AA'$:
+```{r ski_ortho_Rbar}
+round(loadings_sol %*% t(loadings_sol),3)
+```
+
+The **residual correlation matrix** is $R_\text{res} = R - \bar{R}$
+```{r ski_orthog_RRes}
+rres <- cor.ski - loadings_sol %*% t(loadings_sol)
+diag(rres) <- 0 # could otherwise replace with communalities
+round(rres,3)
+
+```
+The FA is good if numbers in residual correlation matrix are small.
+
+Factor score coefficients (for estimating factor scores) are found by multiplying the inverse correlation matrix and the factor loading matrix,  $B = R^{-1}A$
+```{r ski_orthog_factor_score_coefficients}
+B <- solve(r) %*% loadings_sol
+B
+```
+
+Factor scores are a product of standardized variable scores and factor score coefficients, $F = ZB$:
+```{r ski_orthog_factor_scores}
+matF <- as.matrix(select(dat.ski, -skiers) %>% mutate_all(scale)) %*% B
+matF
+
+```
+Here, for example, the first subject scores strongly on both snow (strong importance on both depth and powder) and resort factor (strong importance on lift over cost).
+
+Predicting standardized scores on variables from scores on factors is also possible, using a product of scores on factors wiethged by factor laodings, $Z = FA'$:
+```{r ski_orthog_score_predict}
+Z <- matF %*% t(loadings_sol)
+round(Z, 3)
+```
+In algebraic form, the formula is:
+\[\begin{align}
+  z_\text{COST} &= a_{11}F_1 + a_{12}F_2 \\
+  z_\text{LFIT} &= a_{21}F_1 + a_{22}F_2 \\
+  z_\text{DEPTH} &= a_{31}F_1 + a_{312}F_2 \\
+  z_\text{POWDER} &= a_{41}F_1 + a_{42}F_2
+  \end{align}
+  \]
+  
+  The assumption is that each subject has the same latent structure but different scores on the factors themselves.
+  
 ## Oblique Rotation
 
 

@@ -3,7 +3,7 @@ title: 'Book: Applied Predictive Modeling'
 author: Marie
 date: '2018-05-30'
 slug: book-applied-predictive-modeling
-draft: TRUE
+banner: "img/banners/kuhn.png"
 categories:
   - Study-Notes
 tags:
@@ -31,7 +31,7 @@ To improve accuracy, generally need a more complex model which is more difficult
 
 Foundation for effective predictive model:
 
-* intuition and deep knowledge (to obtain relevant data, eliminate noise)
+* Intuition and deep knowledge (to obtain relevant data, eliminate noise)
 * Relevant data
 * Versatile computation toolbox (pre-processing, modelling, visualizations)
 The combined force of predictive modelling and intuition will be better than the parts.
@@ -145,9 +145,9 @@ Themes
   * Skewness transformations.  
 * Disadvantage of transformations is loss of interpretability  
 
-** Centering and Scaling **
+**Centering and Scaling**
 
-** Skewness **
+**Skewness**
 Skewed if $\frac{x_\max}{x_\min} > 20$, or if |skewness statistic| >> 0 
     $$
     \begin{align}
@@ -318,20 +318,19 @@ grid()
 Data reduction techniques
 
 * Generate smaller set of predictors that capture most of the information within the original variables
-* _Signal (Feature) Extraction_ techniques: New predictors are functions of original variables (; therefore all original variables required)
+* _Signal (Feature) Extraction_ techniques: New predictors are functions of original variables (therefore all original variables required)
 * PCA
-
-  + Finds linear combinations of predictors (principal components) to capture most possible variance
-  + First PC captures more variability than any other linear combination
-  + Subsequent PCs are uncorrelated with all previous PCs
-  + Principal Component can be written as:
+    + Finds linear combinations of predictors (principal components) to capture most possible variance
+    + First PC captures more variability than any other linear combination
+    + Subsequent PCs are uncorrelated with all previous PCs
+    + Principal Component can be written as:
   \[PC_j = (a_{j1} x \text{Predictor} 1) + (a_{j2} x \text{Predictor} 2) + \ldots + (a_{jP} x \text{Predictor} P)\]
   where P = # predictors, coefficients = component weights (or loadings) that show which predictors are important for given PC.
-  + Advantage: creates uncorrelated components, which is required for stability of some models
-  + Disadvantages: Seeks predictor-set variation without regard to predictor measurement scales/distributions or response variable; without guidance can summarize data characteristics that are irrelevant to structure of data and modelling objective
+    + Advantage: creates uncorrelated components, which is required for stability of some models
+    + Disadvantages: Seeks predictor-set variation without regard to predictor measurement scales/distributions or response variable; without guidance can summarize data characteristics that are irrelevant to structure of data and modelling objective
   
-      - Seeks linear combinations that maximize variability, and therefore will first summarise predictors with more variation.  If original predictors are on measurements scales then first few components will summarise higher magnitude predictors; consequently it will focus on identifying data structure based on measurement scales rather than based on important relationships within the data for the current problem.
-      - Unsupervised technique; Does not consider consider modelling objective / response variability.  
+        - Seeks linear combinations that maximize variability, and therefore will first summarise predictors with more variation.  If original predictors are on measurements scales then first few components will summarise higher magnitude predictors; consequently it will focus on identifying data structure based on measurement scales rather than based on important relationships within the data for the current problem.
+        - Unsupervised technique; does not consider consider modelling objective / response variability.  
       
   + Should first transform skewed predictors and then center and scale prior to performing PCA; prevent PCA being influenced by original measurement scales
   + Consider Partial Least Squares (PLS) to derive components with response variable in mind.
