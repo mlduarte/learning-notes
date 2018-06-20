@@ -11,6 +11,10 @@ tags:
   - Study-Notes
 ---
 
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/viz/viz.js"></script>
+<link href="/rmarkdown-libs/DiagrammeR-styles/styles.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/grViz-binding/grViz.js"></script>
 
 
 <div id="principal-components-and-factor-analysis" class="section level1">
@@ -81,21 +85,6 @@ tags:
 </tbody>
 </table>
 </div>
-<div id="comparison-of-pca-to-fa" class="section level2">
-<h2>Comparison of PCA to FA</h2>
-<p>Factor Analysis</p>
-<ul>
-<li>Factors</li>
-<li>Only shared variable is analysed; attempts are made to estimate and eliminate variance due to error and variance unique to each variable</li>
-<li>Factors are thought to cause variables, <em>what are the underlying processes that could have produced correlations among these variables?</em>; <em>are the correlations among variables consistent with a hypothesised factor structure</em>?</li>
-</ul>
-<p>Principal Component Analysis</p>
-<ul>
-<li>Components</li>
-<li>All variance in observed variables is analysed</li>
-<li>Variables cause the component; no underlying theory about which variables should be associated with which factors</li>
-</ul>
-</div>
 <div id="research-questions" class="section level2">
 <h2>Research Questions</h2>
 <ul>
@@ -123,15 +112,15 @@ tags:
 <li>TODO chapter 4 and 13.7.4.14 to detect and reduce influence</li>
 </ul>
 </div>
-</div>
-<div id="outliers-among-variables-fa-only" class="section level2">
-<h2>Outliers among variables (FA only)</h2>
+<div id="outliers-among-variables-fa-only" class="section level3">
+<h3>Outliers among variables (FA only)</h3>
 <p>If there is a factor with <span class="math inline">\(\leq\)</span> 2 variables and significant variable accounted for:</p>
 <ul>
 <li>Ignore, or treat with caution</li>
 <li>The factor should be researched further with structural equation modelling (SEM)</li>
 </ul>
 <p>Factors with few variables and small variance accounted for are unreliable.</p>
+</div>
 <div id="missing-data" class="section level3">
 <h3>Missing data</h3>
 <p>Estimate if</p>
@@ -158,8 +147,9 @@ tags:
 <li>Assessed visually using scatterplots</li>
 </ul>
 </div>
-<div id="small-samples-sample-size-required-will-depend-on-population-correlations-and-the-number-of-factors" class="section level3">
-<h3>Small samples; sample size required will depend on population correlations and the number of factors</h3>
+<div id="small-samples" class="section level3">
+<h3>Small samples</h3>
+<p>Sample size required will depend on population correlations and the number of factors</p>
 <table>
 <thead>
 <tr class="header">
@@ -220,7 +210,7 @@ tags:
 <th>Label</th>
 <th>Matrix Name</th>
 <th>Description</th>
-<th>Orthagonal</th>
+<th>Orthogonal</th>
 <th>Oblique</th>
 </tr>
 </thead>
@@ -228,7 +218,7 @@ tags:
 <tr class="odd">
 <td><span class="math inline">\(R\)</span></td>
 <td>Correlation</td>
-<td>Between-variable correlation</td>
+<td>(Observed) Between-variable correlation</td>
 <td><i class="fa fa-check-square-o"></i></td>
 <td><i class="fa fa-check-square-o"></i></td>
 </tr>
@@ -275,7 +265,7 @@ tags:
 <td><i class="fa fa-check-square-o"></i></td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\phi\)</span></td>
+<td><span class="math inline">\(\Phi\)</span></td>
 <td>Factor correlation</td>
 <td>Correlations among factors</td>
 <td><i class="fa fa-square-o"></i></td>
@@ -297,76 +287,14 @@ tags:
 </tr>
 </tbody>
 </table>
-<p><br><br></p>
+<p><br><br> Equations:</p>
 <ul>
-<li><strong>Observed Correlation Matrix</strong>: Variable correlation</li>
-<li><strong>Reproduced Correlation Matrix</strong>: Factor correlation</li>
-<li><strong>Residual Correlation Matrix</strong>: Observed - Reproduced (small for good factor analysis)</li>
-<li><strong>Orthogonal Rotation</strong>: When factors are uncorrelated; produces a loading matrix (correlations between factors and variables)</li>
-<li><strong>Oblique Rotation</strong>: When factors are correlated; the loading matrix is decomposed into a structure matrix (correlations between factors and variables) and a pattern matrix (correlations between factors and variables without overlap amount factors). Also produces a factor correlation matrix</li>
-<li><strong>Factor Score Coefficients Matrix</strong>: Coefficients from linear combinations of variables</li>
+<li><strong>Reproduced Correlation Matrix (<span class="math inline">\(\bar{R}\)</span>)</strong>: Factor correlation, <span class="math inline">\(\bar{R} = A A&#39;\)</span></li>
+<li><strong>Residual Correlation Matrix (<span class="math inline">\(R_\text{res}\)</span>)</strong>: Observed - Reproduced (small for good factor analysis), <span class="math inline">\(R_\text{res} = R - \bar{R}\)</span></li>
+<li><strong>Factor Score Coefficients Matrix (<span class="math inline">\(B\)</span>)</strong>: Coefficients from linear combinations of variables, <span class="math inline">\(B = R^{-1} A\)</span>.</li>
+<li><strong>Factor Scores</strong>: <span class="math inline">\(F = ZB\)</span></li>
+<li><strong>Predicted Scores</strong>: <span class="math inline">\(Z = FA&#39;\)</span></li>
 </ul>
-<p>Eigenvalues colidate the variance within a matrix, while providing the linear combatination of variables (eigenvector) to do it.</p>
-<div id="eigenvalues-eigenvector-diagonalisation-recap-elementary-linear-algebra-anton" class="section level3">
-<h3>Eigenvalues, Eigenvector, diagonalisation Recap (Elementary Linear Algebra, Anton)</h3>
-<p>If <span class="math inline">\(A\)</span> is an <span class="math inline">\(n \text{x} n\)</span> matrix, then vector <span class="math inline">\(\mathbf{x}\)</span> in <span class="math inline">\(R^n\)</span> is an eigenvector of <span class="math inline">\(A\)</span> if <span class="math inline">\(A\mathbf{x}\)</span> is a scalar multiple of <span class="math inline">\(\mathbf{x}\)</span>, i.e., if <span class="math display">\[A\mathbf{x} = \lambda \mathbf{x}\]</span> <span class="math inline">\(\lambda\)</span> is called the eigenvalue of <span class="math inline">\(A\)</span> and <span class="math inline">\(\textbf{x}\)</span> is the eigenvector corresponding to <span class="math inline">\(\lambda\)</span>.</p>
-<p>Example: <span class="math inline">\(\mathbf{x} = \begin{bmatrix}1\\2\end{bmatrix}\)</span> is an eigenvector of <span class="math inline">\(A = \begin{pmatrix}3 &amp; 0 \\ 8 &amp; -1\end{pmatrix}\)</span> corresponding to the eigenvalue <span class="math inline">\(\lambda = 3\)</span> since <span class="math display">\[\begin{pmatrix}3 &amp; 0 \\ 8 &amp; -1\end{pmatrix}\begin{bmatrix}1\\2\end{bmatrix} = \begin{bmatrix}3\\6\end{bmatrix} = 3 \mathbf{x}\]</span></p>
-<p><strong>To find eigenvalues</strong>: <span class="math display">\[\begin{align}
-  A\mathbf{x} &amp; = \lambda \mathbf{x} \\
-  A\mathbf{x} &amp; = \lambda I \mathbf{x} \\
- (\lambda I - A ) \mathbf{x} &amp; =  0
- \end{align}\]</span></p>
-<p>This will have a non-zero solution iff <span class="math inline">\(\det(\lambda I - A ) = 0\)</span> (characteristic equation). The scalars satisfying this equation are the eigenvalues of <span class="math inline">\(A\)</span>. The eigenvectors are then found by solving <span class="math inline">\((\lambda I - A ) \mathbf{x} = 0\)</span></p>
-<p><strong>Example</strong>: Find the eigenvalues of <span class="math inline">\(A = \begin{pmatrix}1 &amp; 0 \\ 6 &amp; -1\end{pmatrix}\)</span></p>
-<p><span class="math display">\[\begin{align}
- \lambda I - A  &amp; =  \lambda \begin{pmatrix}1 &amp; 0 \\ 0 &amp; 1\end{pmatrix} - \begin{pmatrix}1 &amp; 0 \\ 6 &amp; -1\end{pmatrix} \\
-                &amp; = \begin{pmatrix}\lambda - 1 &amp; 0 \\ -6 &amp; \lambda + 1\end{pmatrix} \\
-\det(\lambda I - A) &amp; = (\lambda - 1) (\lambda + 1) - (0)(-6)\\
-                  &amp; = \lambda ^2 -1 \text{  (a.k.a. characteristic polynomial)}
-  \end{align}\]</span> The solutions to <span class="math inline">\(\det(\lambda I - A)\)</span> are <span class="math inline">\(\lambda=1\)</span> and <span class="math inline">\(\lambda=-1\)</span></p>
-<p>However, recall pythagorean solution to quadratic equation <span class="math inline">\(ax^2 + bx + c\)</span> is <span class="math display">\[x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}\]</span></p>
-<p><strong>To find eigenvectors</strong>: <span class="math display">\[\begin{align}
- (\lambda I - A ) \mathbf{x} &amp; =  0 \\
- \begin{pmatrix}\lambda - 1 &amp; 0 \\ -6 &amp; \lambda + 1\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} &amp; = \begin{bmatrix}0\\0\end{bmatrix}\\
- \text{with $\lambda = 1$, } \begin{pmatrix}0 &amp; 0 \\ -6 &amp; 2\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} &amp; = \begin{bmatrix}0\\0\end{bmatrix}\\
-  \text{with $\lambda = -1$, } \begin{pmatrix}-2 &amp; 0 \\ -6 &amp; 0\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} &amp; = \begin{bmatrix}0\\0\end{bmatrix}
-  \end{align}\]</span></p>
-<p>For <span class="math inline">\(\lambda=1\)</span>, <span class="math display">\[\begin{align}
-  -6x_1 + 2x_2 &amp;= 0 \\
-  3x_1 &amp; = x_2 \\
-  x_1 &amp;= x_2/3
-  \end{align}\]</span> If <span class="math inline">\(x_2=t\)</span> then <span class="math inline">\(\begin{bmatrix} 1/3 \\ 1\end{bmatrix}\)</span> is an eigenvector</p>
-<p>For <span class="math inline">\(\lambda=-1\)</span>, <span class="math display">\[\begin{align}
-  -2x_1  &amp;= 0 \\
-  -6x_1 &amp; = 0 
-  \end{align}\]</span> If <span class="math inline">\(x_2=t\)</span> then <span class="math inline">\(\begin{bmatrix} 0 \\ 1\end{bmatrix}\)</span> is an eigenvector</p>
-<p><strong>Diagonalisation</strong></p>
-<ul>
-<li>An <span class="math inline">\(n \text{x} n\)</span> matrix <span class="math inline">\(A\)</span> is diagonisable <span class="math inline">\(\leftrightarrow\)</span> <span class="math inline">\(A\)</span> has n linear independent eigenvectors.<br />
-</li>
-<li>Solution to diagonalise <span class="math inline">\(A\)</span>:
-<ul>
-<li>Find <span class="math inline">\(n\)</span> linear independent eigenvectors of <span class="math inline">\(A\)</span>, <span class="math inline">\(\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n\)</span></li>
-<li>Form the matrix <span class="math inline">\(P\)</span> having <span class="math inline">\(\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n\)</span> as its column vectors</li>
-<li><span class="math inline">\(P^{-1}AP\)</span> will be diagonal with <span class="math inline">\(\lambda_1, \lambda_2, \ldots, \lambda_n\)</span> as successive diagonal entries, where <span class="math inline">\(\lambda_i\)</span> is the eigenvalue corresponding to <span class="math inline">\(\mathbf{p}_i\)</span></li>
-</ul></li>
-</ul>
-<p>Example: <span class="math display">\[\begin{align}
-P &amp; = \begin{pmatrix}1/3 &amp; 0 \\ 1 &amp; 1\end{pmatrix} \\
-P^{-1} &amp;= 3 \begin{pmatrix}1 &amp; 0 \\ -1 &amp; 1/3\end{pmatrix} \\
-  &amp; = \begin{pmatrix}3 &amp; 0 \\ -3 &amp; 1\end{pmatrix} \\
-P^{-1}AP &amp;=  \begin{pmatrix}3 &amp; 0 \\ -3 &amp; 1\end{pmatrix}\begin{pmatrix}1 &amp; 0 \\ 6 &amp; -1\end{pmatrix}\begin{pmatrix}1/3 &amp; 0 \\ 1 &amp; 1\end{pmatrix}\\
- &amp;= \begin{pmatrix}3 &amp; 0 \\ 3 &amp; 11\end{pmatrix}\begin{pmatrix}1/3 &amp; 0 \\ 1 &amp; 1\end{pmatrix}\\
- &amp;= \begin{pmatrix}1 &amp; 0 \\ 0 &amp; -1\end{pmatrix} \\
- &amp;=\begin{pmatrix}\lambda_1  &amp; 0 \\ 0 &amp; \lambda_2\end{pmatrix}
-\end{align}\]</span></p>
-<p><strong>Orthogonal Diagonalisation</strong> If <span class="math inline">\(A\)</span> is a symmetric matrix, then eigenvectors from different eigenspaces are orthogonal; to orthogonally diagonslize a symmetrix matrix:</p>
-<ol style="list-style-type: decimal">
-<li>Find a basis for each eigenspace of A</li>
-<li>Apply the Gram-Schmidt process (pp192-194, Anton) to each of these bases to obtain an orthonormal basis for each eigenspace</li>
-<li>Form the matrix <span class="math inline">\(P\)</span>, whose columns are the basis vectors contructed in hte previous step; this matrix orthogonally diagonalises <span class="math inline">\(A\)</span>.</li>
-</ol>
-</div>
 <div id="fundamental-equations-for-factor-analysis-extraction" class="section level3">
 <h3>Fundamental Equations for Factor Analysis: Extraction</h3>
 <p>The correlation matrix (<span class="math inline">\(R\)</span>), which by nature is symmetric, can be diagonalised by the matrix <span class="math inline">\(V\)</span> (whose columns are the eigenvectors), such that <span class="math display">\[L = V&#39;RV\]</span> where <span class="math inline">\(L\)</span> is a diagonal matrix with values eigenvalues in the diagonal</p>
@@ -417,6 +345,13 @@ P^{-1}AP &amp;=  \begin{pmatrix}3 &amp; 0 \\ -3 &amp; 1\end{pmatrix}\begin{pmatr
 <td align="right">43</td>
 <td align="right">40</td>
 </tr>
+<tr class="even">
+<td align="left"><br><br></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+</tr>
 </tbody>
 </table>
 <p>Correlation Matrix</p>
@@ -445,7 +380,7 @@ eig.ski</code></pre>
 ## [2,] -0.2511248 -0.6637642  0.6758934  0.1988000
 ## [3,] -0.6273987  0.3222291  0.2754625 -0.6531919
 ## [4,] -0.6473888  0.2796147 -0.1685044  0.6887014</code></pre>
-<p>Note that $L = V’RV’</p>
+<p>Note that <span class="math inline">\(L = V&#39;RV&#39;\)</span></p>
 <pre class="r"><code>zapsmall(t(eig.ski$vectors) %*% cor.ski %*% eig.ski$vectors)</code></pre>
 <pre><code>##          [,1]     [,2]      [,3]      [,4]
 ## [1,] 2.016305 0.000000 0.0000000 0.0000000
@@ -596,12 +531,17 @@ f.loadings &lt;- loadings</code></pre>
 </div>
 <div id="orthogonal-rotation" class="section level2">
 <h2>Orthogonal Rotation</h2>
-<p>Rotation used to * Maximise high correlations between factors and variables * Minimise low correlations between factors and variables</p>
+<p>When factors are uncorrelated; produces a loading matrix (correlations between factors and variables)</p>
+<p>Rotation used to</p>
+<ul>
+<li>Maximise high correlations between factors and variables</li>
+<li>Minimise low correlations between factors and variables</li>
+</ul>
 <p><span class="math display">\[\begin{align}
   \text{Rotated Loading Matrix} &amp;= (\text{Unrotated Loading Matrix})(\text{Transformation Matrix})\\
     A_\text{Rotated} &amp;= A_\text{Unrotated}\Lambda
     \end{align}\]</span></p>
-<p>The transformation matrix is a matrix of sines and cosines of an angle <span class="math inline">\(\psi\)</span>. In this example an angle of <span class="math inline">\(\psi = 19\degrees\)</span> is used, with <span class="math display">\[\Lambda = \begin{bmatrix}\cos \psi &amp; -\sin \psi\\ \sin \psi &amp; \cos \psi\end{bmatrix}\]</span></p>
+<p>The transformation matrix is a matrix of sines and cosines of an angle <span class="math inline">\(\psi\)</span>. In this example an angle of <span class="math inline">\(\psi = 19^\circ\)</span> is used, with <span class="math display">\[\Lambda = \begin{bmatrix}\cos \psi &amp; -\sin \psi\\ \sin \psi &amp; \cos \psi\end{bmatrix}\]</span></p>
 <pre class="r"><code>rotated &lt;- stats::varimax(loadings)
 loadings_rotated &lt;- rotated$loadings
 rot.mat &lt;- rotated$rotmat
@@ -612,8 +552,8 @@ rot.mat  # transformation matrix</code></pre>
 <p>The communalities, variance and covariance are shown in the following table:</p>
 <pre class="r"><code>fit &lt;- fa(cor.ski, nfactors=2, fm=&quot;pa&quot;, rotate=&quot;varimax&quot;)
 loadings_sol &lt;- unclass(fit$loadings)
-ssls &lt;- apply(loadings_sol, 2, function(x) sum(x^2))
-comms &lt;- apply(loadings_sol, 1, function(x) sum(x^2))
+ssls &lt;- apply(loadings_sol, 2, function(x) sum(x^2)) # row-total
+comms &lt;- apply(loadings_sol, 1, function(x) sum(x^2)) # column-total
 prop_var &lt;- ssls/nrow(loadings_sol)
 prop_cov &lt;- ssls/sum(comms)
 
@@ -628,7 +568,6 @@ res</code></pre>
 ## 5     ssls  1.99425920  1.92046127     3.9147205
 ## 6 prop_var  0.49856480  0.48011532     0.9786801
 ## 7 prop_cov  0.50942570  0.49057430     1.0000000</code></pre>
-<p><strong>Communalities</strong>: For a variable, the variance accounted for by the factors; the SSL (sum of squared loadings) across factors <strong>Proportion of variance in the set of variables accounted for by a factor</strong>: SSL for the factor/number of variables <strong>Proportion of variance in the solution accounted for by a factor</strong>: Proportion of covariance; SSL for the factor/sum of the communalities (SSLs)</p>
 <p>The <strong>reproduced correlation matrix</strong> is <span class="math inline">\(\bar{R} = AA&#39;\)</span>:</p>
 <pre class="r"><code>round(loadings_sol %*% t(loadings_sol),3)</code></pre>
 <pre><code>##          cost   lift  depth powder
@@ -655,8 +594,8 @@ B</code></pre>
 ## depth  0.08326838  0.03113046
 ## powder 0.93593888 -0.04403683</code></pre>
 <p>Factor scores are a product of standardized variable scores and factor score coefficients, <span class="math inline">\(F = ZB\)</span>:</p>
-<pre class="r"><code>matF &lt;- as.matrix(select(dat.ski, -skiers) %&gt;% mutate_all(scale)) %*% B
-matF</code></pre>
+<pre class="r"><code>F &lt;- as.matrix(select(dat.ski, -skiers) %&gt;% mutate_all(scale)) %*% B
+F</code></pre>
 <pre><code>##             PA1        PA2
 ## [1,]  1.1012894  1.1795542
 ## [2,]  1.0263476 -0.8816516
@@ -665,7 +604,7 @@ matF</code></pre>
 ## [5,] -0.5870286 -0.5949738</code></pre>
 <p>Here, for example, the first subject scores strongly on both snow (strong importance on both depth and powder) and resort factor (strong importance on lift over cost).</p>
 <p>Predicting standardized scores on variables from scores on factors is also possible, using a product of scores on factors wiethged by factor laodings, <span class="math inline">\(Z = FA&#39;\)</span>:</p>
-<pre class="r"><code>Z &lt;- matF %*% t(loadings_sol)
+<pre class="r"><code>Z &lt;- F %*% t(loadings_sol)
 round(Z, 3)</code></pre>
 <pre><code>##        cost   lift  depth powder
 ## [1,] -1.244  1.064  1.074  1.156
@@ -681,8 +620,209 @@ round(Z, 3)</code></pre>
   \end{align}
   \]</span></p>
 <p>The assumption is that each subject has the same latent structure but different scores on the factors themselves.</p>
+<p>Tying it all together, the folloiwng is the computer output from the <code>psych::fa</code></p>
+<pre class="r"><code>invisible(fit &lt;- fa(cor.ski, nfactors=2, fm=&quot;pa&quot;, rotate=&quot;varimax&quot;))
+fit</code></pre>
+<pre><code>## Factor Analysis using method =  pa
+## Call: fa(r = cor.ski, nfactors = 2, rotate = &quot;varimax&quot;, fm = &quot;pa&quot;)
+## Standardized loadings (pattern matrix) based upon correlation matrix
+##          PA1   PA2   h2     u2 com
+## cost   -0.08 -0.98 0.97 0.0296   1
+## lift   -0.08  0.98 0.96 0.0403   1
+## depth   0.99 -0.02 0.99 0.0119   1
+## powder  1.00  0.05 1.00 0.0035   1
+## 
+##                        PA1  PA2
+## SS loadings           1.99 1.92
+## Proportion Var        0.50 0.48
+## Cumulative Var        0.50 0.98
+## Proportion Explained  0.51 0.49
+## Cumulative Proportion 0.51 1.00
+## 
+## Mean item complexity =  1
+## Test of the hypothesis that 2 factors are sufficient.
+## 
+## The degrees of freedom for the null model are  6  and the objective function was  7.34
+## The degrees of freedom for the model are -1  and the objective function was  0.43 
+## 
+## The root mean square of the residuals (RMSR) is  0 
+## The df corrected root mean square of the residuals is  NA 
+## 
+## Fit based upon off diagonal values = 1
+## Measures of factor score adequacy             
+##                                                   PA1  PA2
+## Correlation of (regression) scores with factors     1 0.99
+## Multiple R square of scores with factors            1 0.98
+## Minimum correlation of possible factor scores       1 0.96</code></pre>
+<ul>
+<li><strong>Factor Loadings (PA1, PA2)</strong>: The correlations between factors and variables.</li>
+<li><strong>Communality (h2)</strong>: The proportion of variance in a variable that is explained for by the factors, equal to the sum of the squared loadings (SSL). E.g., 97% of the variance in COST is accounted for by the two factors.</li>
+<li><strong>Uniqueness (u2)</strong>: Approximately, <span class="math inline">\(R = FF&#39; + U^2\)</span>. Because unique and eror variances are omitted, a linear combination of factors approximates but does not duplicate the observed correlation matrix and scores on observed variables.<br />
+</li>
+<li><strong>Complexity (com)</strong>: Hoffman’s index of complexity, <span class="math inline">\(\frac{(\sum a_I^2)^2}{\sum a_i^4}\)</span></li>
+<li><strong>SS Loadings</strong>: Sum of squared loadings</li>
+<li><strong>Proportion Var</strong>: Proportion of variance accounted for by each factor; 49.9% of the variance in the variables is accounted for by the first factor and 49.9% of the variance in the variables is accounted for by th esecond factor.<br />
+</li>
+<li><strong>Cumulative Var</strong>: Cumulative proprtion of variance explained (across factors). Because rotation is orthogonal, the two factors together account for 97.9% of the variance in the variables</li>
+<li><strong>Proportion Explained</strong>: The proportion of variance in the solution accounted for by a factor; the two factors account for 50.9% and 49.1% of the variance in the solution, respectively.</li>
+</ul>
 </div>
 <div id="oblique-rotation" class="section level2">
 <h2>Oblique Rotation</h2>
+<p>When factors are correlated; the loading matrix (correlations between variables and correlated factors) is decomposed into the following:</p>
+<ul>
+<li>Pattern matrix (<span class="math inline">\(A\)</span>); when squared, contribution of each factor to variance of variable, without segments o variance that come from overlap betweeen correlated factors</li>
+<li>Structure matrix (<span class="math inline">\(C\)</span>); correlations between variables and factors.<br />
+<span class="math display">\[C = A\Phi\]</span></li>
+</ul>
+<p>The factor correlations matrix <span class="math inline">\(\Phi\)</span> is also produced.</p>
+<p>To determine the structure matrix, the following steps are required: 1. Determine factor score coefficients, <span class="math inline">\(B = R^{-1}A\)</span> 2. Determine factor scores, which are a product of the standardized variable scores and factor score coefficients, <span class="math inline">\(F = ZB\)</span> 3. Determine correlations among factors</p>
+<pre class="r"><code>invisible(fit &lt;- fa(dat.ski[,-1], nfactors=2, fm=&quot;pa&quot;, rotate=&quot;oblimin&quot;, scores=&quot;Thurstone&quot;))
+
+# Pattern matrix
+oblimin_A &lt;- unclass(fit$loadings)
+
+# Factor-Score Coefficients
+oblimin_B &lt;- solve(r) %*% oblimin_A %*% fit$Phi
+oblimin_B</code></pre>
+<pre><code>##               PA1         PA2
+## cost   0.12847275  0.59206210
+## lift   0.10005202 -0.41344632
+## depth  0.08374941 -0.03107844
+## powder 0.93512712  0.04462147</code></pre>
+<pre class="r"><code>fit$weights </code></pre>
+<pre><code>##               PA1         PA2
+## cost   0.12847275  0.59206210
+## lift   0.10005202 -0.41344632
+## depth  0.08374941 -0.03107844
+## powder 0.93512712  0.04462147</code></pre>
+<pre class="r"><code># Factor Scores
+Z &lt;- as.matrix(select(dat.ski, -skiers) %&gt;% mutate_all(scale)) 
+oblimin_F &lt;- Z %*% oblimin_B 
+oblimin_F</code></pre>
+<pre><code>##             PA1        PA2
+## [1,]  1.1197720 -1.1788660
+## [2,]  1.0123025  0.8822925
+## [3,] -0.4696166  0.6766602
+## [4,] -1.0661105 -0.9746937
+## [5,] -0.5963473  0.5946070</code></pre>
+<pre class="r"><code># Factor Correlation; cross product of standardized factor scores / (number of cases - 1)
+oblimin_Phi &lt;- (1/(nrow(oblimin_F)-1)) * t(oblimin_F) %*% oblimin_F
+diag(oblimin_Phi) &lt;- 1
+oblimin_Phi</code></pre>
+<pre><code>##             PA1         PA2
+## PA1  1.00000000 -0.01503656
+## PA2 -0.01503656  1.00000000</code></pre>
+<pre class="r"><code>fit$Phi</code></pre>
+<pre><code>##             PA1         PA2
+## PA1  1.00000000 -0.01516085
+## PA2 -0.01516085  1.00000000</code></pre>
+<pre class="r"><code># Structure
+oblimin_C &lt;- oblimin_A %*% fit$Phi
+oblimin_C</code></pre>
+<pre><code>##                PA1         PA2
+## cost   -0.09307059  0.98198964
+## lift   -0.06390811 -0.97646186
+## depth   0.99347151  0.01804570
+## powder  0.99772563 -0.04813229</code></pre>
+<pre class="r"><code>unclass(fit$Structure)</code></pre>
+<pre><code>##                PA1         PA2
+## cost   -0.09307059  0.98198964
+## lift   -0.06390811 -0.97646186
+## depth   0.99347151  0.01804570
+## powder  0.99772563 -0.04813229</code></pre>
+<p>From Phi, see that correlation between first factor and sezond facotr is quite low. In this case, one would use orthogonal rotation.</p>
+</div>
+<div id="major-types-of-factor-analyses" class="section level2">
+<h2>Major Types of Factor Analyses</h2>
+<ul>
+<li>Factor Extraction Techniques:</li>
+<li>Principal components</li>
+<li>Principal factors</li>
+<li>Maximum likelihood factoring</li>
+<li>Image factoring</li>
+<li>Alpha factoring</li>
+<li>Generalized (weighted) least squares factoring</li>
+</ul>
+<div id="comparison-of-pca-to-fa" class="section level3">
+<h3>Comparison of PCA to FA</h3>
+<p>In both, the variance that is analysed is the sum of the values in the positive diagonal.</p>
+<table>
+<tr>
+<th>
+Factor Analysis
+</th>
+<th>
+Principal Components Analysis
+</th>
+</tr>
+<tr>
+<td>
+Only the variance that each observed variable shares with other observed variables is available for analysis (error and unique variance excluded); shared variance is estimated by communalities that are inserted in the positive diagonal of the correlation matrix. The solution concentrates on variables with high communality values. The sum of the communalities (sum of the SSLS) is the variance that is distributed among factors.
+</td>
+<td>
+Ones are in the diagonal; each variables contributes a unit of variance by contributing a 1 to the positive diagonal of the correlation matrix. All the variance is distributed to components, including error and unique variance for each observed variables.
+</td>
+</tr>
+<tr>
+<td>
+Because unique and error variances are omitted, a linear combination of factors approximates but does not duplicate the observed correlation matrix and scores on observed variables.
+</td>
+<td>
+If all components are retained, PCA duplicates exactly the observed correlation matrix.
+</td>
+</tr>
+<tr>
+<td>
+Analyses covariance (communalities)
+</td>
+<td>
+Analyses variance
+</td>
+</tr>
+<tr>
+<td>
+Goal: Reproduce correlation matrix with few orthogonal factors
+</td>
+<td>
+Goal: Reproduce correalation matrix with few orthogonal factors
+</td>
+</tr>
+<tr>
+<td>
+Non-unique solution
+</td>
+<td>
+Unique solution
+</td>
+</tr>
+<tr>
+<td>
+Factors are thought to cause variables, <em>what are the underlying processes that could have produced correlations among these variables?</em>; <em>are the correlations among variables consistent with a hypothesised factor structure</em>?
+</td>
+<td>
+Variables cause the component; no underlying theory about which variables should be associated with which factors
+</td>
+</tr>
+<tr>
+<td>
+Best if
+</td>
+<td>
+Best when after an empirical summary of the data set
+</td>
+</tr>
+<tr>
+<td>
+<div id="htmlwidget-1" style="width:200px;height:200px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"diagram":"#https://stackoverflow.com/questions/29208525/using-diagrammer-for-path-diagrams-sem\n\ndigraph boxes_and_circles {\n\n\n# \"graph\" statement\n\ngraph [overlap = true, fontsize = 10, rankdir=LR]\n\n# several \"node\" statements\n\nsubgraph F {\n    rank = same;\n node[shape = circle,\n    fixedsize = true,\n    width = 0.9, group=\"err\"] //sets as circles\n    F \n}\nsubgraph factors {\n    rank = same;\n  node [shape = box, \n  fontname = Helvetica, group=\"var\"]\n  Y1;Y2;Y3;Y4 \n}\n\n\n    \nsubgraph error {\n    rank = same;\n  node[shape = circle,\n    fixedsize = true,\n    width = 0.9, group=\"err\"] //sets as circles\n    u1;u2;u3;u4\n}    \n \n  \n    \n  \n \n\n\n#{rank=same;Y1;Y2;Y3;Y4}\n#{rank = same;F}\n#{rank=same;u1;u2;u3;u4}\n  \n# several \"edge\" statements\nF->Y1 [label = \"b1\"] \nF->Y2 [label = \"b2\"]\nF->Y3 [label = \"b3\"]\nF->Y4 [label = \"b4\"]\nu1->Y1 u2->Y2 u3->Y3 u4->Y4\n\nedge[style=invis];\nY1[group=left];\nY4[group=left];\nY1 -> Y2 -> Y3 ->Y4;\nF->Y1->u1\n#u1->F->Y1\nnode[group=right];\nu1 -> u2 -> u3 -> u4;\n\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</td>
+<td>
+<div id="htmlwidget-2" style="width:200px;height:200px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"diagram":"#https://stackoverflow.com/questions/29208525/using-diagrammer-for-path-diagrams-sem\n\ndigraph boxes_and_circles {\n\n\n# \"graph\" statement\n\ngraph [overlap = true, fontsize = 10, rankdir=LR]\n\n# several \"node\" statements\n\nsubgraph vars {\n    rank = same;\n  node [\n    shape = box, \n    fontname = Helvetica, \n    group=\"var\"]\n  Y1;Y2;Y3;Y4 \n}\n\nsubgraph C {\n    rank = same;\n node[shape = box, \n    fontname = Helvetica, \n    group=\"C\"] \n    C \n}\n\n\n# several \"edge\" statements\nY1 -> C [label = \"w1\"] \nY2 -> C [label = \"w2\"]\nY3 -> C [label = \"w3\"]\nY4 -> C [label = \"w4\"]\n\n\nedge[style=invis];\nY1[group=left];\nY4[group=left];\nY1 -> Y2 -> Y3 ->Y4;\n\nnode[group=right];\nC;\n\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>

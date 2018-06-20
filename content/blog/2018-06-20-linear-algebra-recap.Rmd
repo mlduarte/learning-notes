@@ -1,0 +1,89 @@
+---
+title: Linear Algebra Recap
+author: ''
+date: '2018-06-20'
+slug: linear-algebra-recap
+categories: []
+tags: []
+---
+
+# Eigenvalues, Eigenvector, diagonalisation Recap (Elementary Linear Algebra, Anton)
+
+Eigenvalues consolidate the variance within a matrix, while providing the linear combatination of variables (eigenvector) to do it.
+
+If $A$ is an $n \text{x} n$ matrix, then vector $\mathbf{x}$ in $R^n$ is an eigenvector of $A$ if $A\mathbf{x}$ is a scalar multiple of $\mathbf{x}$, i.e., if \[A\mathbf{x} = \lambda \mathbf{x}\] $\lambda$ is called the eigenvalue of $A$ and $\textbf{x}$ is the eigenvector corresponding to $\lambda$.
+
+Example: 
+$\mathbf{x} = \begin{bmatrix}1\\2\end{bmatrix}$ is an eigenvector of $A = \begin{pmatrix}3 & 0 \\ 8 & -1\end{pmatrix}$ corresponding to the eigenvalue $\lambda = 3$ since 
+\[\begin{pmatrix}3 & 0 \\ 8 & -1\end{pmatrix}\begin{bmatrix}1\\2\end{bmatrix} = \begin{bmatrix}3\\6\end{bmatrix} = 3 \mathbf{x}\]
+
+**To find eigenvalues**:
+\[\begin{align}
+  A\mathbf{x} & = \lambda \mathbf{x} \\
+  A\mathbf{x} & = \lambda I \mathbf{x} \\
+ (\lambda I - A ) \mathbf{x} & =  0
+ \end{align}\]
+ 
+ This will have a non-zero solution iff $\det(\lambda I - A ) = 0$ (characteristic equation).  The scalars satisfying this equation are the eigenvalues of $A$.  The eigenvectors are then found by solving $(\lambda I - A ) \mathbf{x} =  0$
+ 
+**Example**: Find the eigenvalues of $A = \begin{pmatrix}1 & 0 \\ 6 & -1\end{pmatrix}$
+ 
+\[\begin{align}
+ \lambda I - A  & =  \lambda \begin{pmatrix}1 & 0 \\ 0 & 1\end{pmatrix} - \begin{pmatrix}1 & 0 \\ 6 & -1\end{pmatrix} \\
+                & = \begin{pmatrix}\lambda - 1 & 0 \\ -6 & \lambda + 1\end{pmatrix} \\
+\det(\lambda I - A) & = (\lambda - 1) (\lambda + 1) - (0)(-6)\\
+                  & = \lambda ^2 -1 \text{  (a.k.a. characteristic polynomial)}
+  \end{align}\]
+The solutions to $\det(\lambda I - A)$ are $\lambda=1$ and   $\lambda=-1$
+
+However, recall pythagorean solution to quadratic equation $ax^2 + bx + c$ is 
+\[x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}\]  
+  
+**To find eigenvectors**:
+\[\begin{align}
+ (\lambda I - A ) \mathbf{x} & =  0 \\
+ \begin{pmatrix}\lambda - 1 & 0 \\ -6 & \lambda + 1\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} & = \begin{bmatrix}0\\0\end{bmatrix}\\
+ \text{with $\lambda = 1$, } \begin{pmatrix}0 & 0 \\ -6 & 2\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} & = \begin{bmatrix}0\\0\end{bmatrix}\\
+  \text{with $\lambda = -1$, } \begin{pmatrix}-2 & 0 \\ -6 & 0\end{pmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix} & = \begin{bmatrix}0\\0\end{bmatrix}
+  \end{align}\]
+
+For $\lambda=1$, 
+\[\begin{align}
+  -6x_1 + 2x_2 &= 0 \\
+  3x_1 & = x_2 \\
+  x_1 &= x_2/3
+  \end{align}\]
+If $x_2=t$ then $\begin{bmatrix} 1/3 \\ 1\end{bmatrix}$ is an eigenvector
+  
+For $\lambda=-1$, 
+\[\begin{align}
+  -2x_1  &= 0 \\
+  -6x_1 & = 0 
+  \end{align}\]
+  If $x_2=t$ then $\begin{bmatrix} 0 \\ 1\end{bmatrix}$ is an eigenvector 
+  
+**Diagonalisation**  
+
+* An $n \text{x} n$ matrix $A$ is diagonisable $\leftrightarrow$ $A$ has n linear independent eigenvectors.  
+* Solution to diagonalise $A$:
+    + Find $n$ linear independent eigenvectors of $A$, $\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n$
+    + Form the matrix $P$ having $\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_n$ as its column vectors
+    + $P^{-1}AP$ will be diagonal with $\lambda_1, \lambda_2, \ldots, \lambda_n$ as successive diagonal entries, where $\lambda_i$ is the eigenvalue corresponding to  $\mathbf{p}_i$
+  
+Example:
+\[\begin{align}
+P & = \begin{pmatrix}1/3 & 0 \\ 1 & 1\end{pmatrix} \\
+P^{-1} &= 3 \begin{pmatrix}1 & 0 \\ -1 & 1/3\end{pmatrix} \\
+  & = \begin{pmatrix}3 & 0 \\ -3 & 1\end{pmatrix} \\
+P^{-1}AP &=  \begin{pmatrix}3 & 0 \\ -3 & 1\end{pmatrix}\begin{pmatrix}1 & 0 \\ 6 & -1\end{pmatrix}\begin{pmatrix}1/3 & 0 \\ 1 & 1\end{pmatrix}\\
+ &= \begin{pmatrix}3 & 0 \\ 3 & 11\end{pmatrix}\begin{pmatrix}1/3 & 0 \\ 1 & 1\end{pmatrix}\\
+ &= \begin{pmatrix}1 & 0 \\ 0 & -1\end{pmatrix} \\
+ &=\begin{pmatrix}\lambda_1  & 0 \\ 0 & \lambda_2\end{pmatrix}
+\end{align}\]
+
+**Orthogonal Diagonalisation**
+If $A$ is a symmetric matrix, then eigenvectors from different eigenspaces are orthogonal; to orthogonally diagonslize a symmetrix matrix:
+
+1. Find a basis for each eigenspace of A
+2. Apply the Gram-Schmidt process (pp192-194, Anton) to each of these bases to obtain an orthonormal basis for each eigenspace
+3. Form the matrix $P$, whose columns are the basis vectors contructed in hte previous step; this matrix orthogonally diagonalises $A$.

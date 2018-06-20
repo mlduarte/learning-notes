@@ -1,0 +1,62 @@
+#https://stackoverflow.com/questions/29208525/using-diagrammer-for-path-diagrams-sem
+
+digraph boxes_and_circles {
+
+
+# 'graph' statement
+
+graph [overlap = true, fontsize = 10, rankdir=LR]
+
+# several 'node' statements
+
+subgraph F {
+    rank = same;
+ node[shape = circle,
+    fixedsize = true,
+    width = 0.9, group="err"] //sets as circles
+    F 
+}
+subgraph factors {
+    rank = same;
+  node [shape = box, 
+  fontname = Helvetica, group="var"]
+  Y1;Y2;Y3;Y4 
+}
+
+
+    
+subgraph error {
+    rank = same;
+  node[shape = circle,
+    fixedsize = true,
+    width = 0.9, group="err"] //sets as circles
+    u1;u2;u3;u4
+}    
+ 
+  
+    
+  
+ 
+
+
+#{rank=same;Y1;Y2;Y3;Y4}
+#{rank = same;F}
+#{rank=same;u1;u2;u3;u4}
+  
+# several 'edge' statements
+F->Y1 [label = 'b1'] 
+F->Y2 [label = 'b2']
+F->Y3 [label = 'b3']
+F->Y4 [label = 'b4']
+u1->Y1 u2->Y2 u3->Y3 u4->Y4
+
+edge[style=invis];
+Y1[group=left];
+Y4[group=left];
+Y1 -> Y2 -> Y3 ->Y4;
+F->Y1->u1
+#u1->F->Y1
+node[group=right];
+u1 -> u2 -> u3 -> u4;
+
+}
