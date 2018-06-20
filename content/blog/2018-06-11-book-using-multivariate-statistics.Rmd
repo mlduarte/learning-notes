@@ -520,6 +520,21 @@ From Phi, see that correlation between first factor and sezond facotr is quite l
   
 ### Comparison of PCA to FA
 
+
+```{r store_charts}
+library(DiagrammeR)
+library(DiagrammeRsvg)
+library(magrittr)
+library(rsvg)
+library(png)
+
+export_svg(DiagrammeR::grViz("../../static/graphs/fa.dot", height=200, width=200)) %>%
+  charToRaw %>% rsvg %>% png::writePNG('../../static/graphs/fa.png')
+
+export_svg(DiagrammeR::grViz("../../static/graphs/pca.dot", height=200, width=200)) %>%
+  charToRaw %>% rsvg %>% png::writePNG('../../static/graphs/pca.png')
+```
+
 In both, the variance that is analysed is the sum of the values in the positive diagonal.
 
 <table>
@@ -556,8 +571,8 @@ In both, the variance that is analysed is the sum of the values in the positive 
   <td>Best when after an empirical summary of the data set</td>
 </tr>
 <tr>
-  <td>`r DiagrammeR::grViz("../../static/graphs/fa.dot", height=200, width=200)`</td>
-  <td>`r DiagrammeR::grViz("../../static/graphs/pca.dot", height=200, width=200)`</td>
+  <td>![](/graphs/fa.png)</td>
+  <td>![](/graphs/fa.png)</td>
 </tr>
 </table>
 
