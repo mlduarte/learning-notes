@@ -1,0 +1,45 @@
+#https://stackoverflow.com/questions/29208525/using-diagrammer-for-path-diagrams-sem
+
+digraph boxes_and_circles {
+
+
+# 'graph' statement
+
+graph [overlap = true, fontsize = 10, rankdir=LR]
+
+# several 'node' statements
+
+subgraph vars {
+    rank = same;
+  node [
+    shape = box, 
+    fontname = Helvetica, 
+    group="var"]
+  Y1;Y2;Y3;Y4 
+}
+
+subgraph C {
+    rank = same;
+ node[shape = box, 
+    fontname = Helvetica, 
+    group="C"] 
+    C 
+}
+
+
+# several 'edge' statements
+Y1 -> C [label = 'w1'] 
+Y2 -> C [label = 'w2']
+Y3 -> C [label = 'w3']
+Y4 -> C [label = 'w4']
+
+
+edge[style=invis];
+Y1[group=left];
+Y4[group=left];
+Y1 -> Y2 -> Y3 ->Y4;
+
+node[group=right];
+C;
+
+}
