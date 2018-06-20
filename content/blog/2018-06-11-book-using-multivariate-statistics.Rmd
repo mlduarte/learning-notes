@@ -26,6 +26,13 @@ require("GPArotation")
 
 if (!requireNamespace("DiagrammeR")) install.packages("DiagrammeR")
 
+require(DiagrammeR)
+library(DiagrammeRsvg)
+library(magrittr)
+library(rsvg)
+library(png)
+
+
 ```
 
 # Principal Components and Factor Analysis
@@ -522,11 +529,6 @@ From Phi, see that correlation between first factor and sezond facotr is quite l
 
 
 ```{r store_charts}
-library(DiagrammeR)
-library(DiagrammeRsvg)
-library(magrittr)
-library(rsvg)
-library(png)
 
 export_svg(DiagrammeR::grViz("../../static/graphs/fa.dot", height=200, width=200)) %>%
   charToRaw %>% rsvg %>% png::writePNG('../../static/graphs/fa.png')
@@ -572,7 +574,7 @@ In both, the variance that is analysed is the sum of the values in the positive 
 </tr>
 <tr>
   <td>![](/graphs/fa.png)</td>
-  <td>![](/graphs/fa.png)</td>
+  <td>![](/graphs/pca.png)</td>
 </tr>
 </table>
 

@@ -742,21 +742,7 @@ oblimin_C</code></pre>
 </ul>
 <div id="comparison-of-pca-to-fa" class="section level3">
 <h3>Comparison of PCA to FA</h3>
-<pre class="r"><code>library(DiagrammeR)
-library(DiagrammeRsvg)
-library(magrittr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;magrittr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     set_names</code></pre>
-<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
-## 
-##     extract</code></pre>
-<pre class="r"><code>library(rsvg)
-library(png)
-
-export_svg(DiagrammeR::grViz(&quot;../../static/graphs/fa.dot&quot;, height=200, width=200)) %&gt;%
+<pre class="r"><code>export_svg(DiagrammeR::grViz(&quot;../../static/graphs/fa.dot&quot;, height=200, width=200)) %&gt;%
   charToRaw %&gt;% rsvg %&gt;% png::writePNG(&#39;../../static/graphs/fa.png&#39;)
 
 export_svg(DiagrammeR::grViz(&quot;../../static/graphs/pca.dot&quot;, height=200, width=200)) %&gt;%
@@ -832,7 +818,7 @@ Best when after an empirical summary of the data set
 <img src="/graphs/fa.png" />
 </td>
 <td>
-<img src="/graphs/fa.png" />
+<img src="/graphs/pca.png" />
 </td>
 </tr>
 </table>
