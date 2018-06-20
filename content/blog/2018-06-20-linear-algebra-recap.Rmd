@@ -10,7 +10,6 @@ tags:
   - Study-Notes
 ---
 
-
 # Eigenvalues, Eigenvector, diagonalisation Recap (Elementary Linear Algebra, Anton)
 
 Eigenvalues consolidate the variance within a matrix, while providing the linear combatination of variables (eigenvector) to do it.
