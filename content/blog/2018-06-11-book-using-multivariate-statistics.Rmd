@@ -515,20 +515,22 @@ From Phi, see that correlation between first factor and sezond facotr is quite l
 
 
 
-## Major Types of Factor Analyses
 
-* Factor Extraction Techniques:
-  * Principal components
-  * Principal factors
-  * Maximum likelihood factoring
-  * Image factoring
-  * Alpha factoring
-  * Generalized (weighted) least squares factoring
+
+## Factor Extraction Techniques:
+
+  * Principal components; to determine components with maximum variance.  Firs tPC is the linear combination of observed variables taht maximally separted subjects by maximising the variance of their component scores.  Subsequent components are linear combinations of observed variables taht extractes maximum variability from resdiual correslations that are orthoogonal to previous extracted components.  Choise solution to reduce large number of variables to smaller number of components.
+  * Principal factors: Estimates communicality in the positive diagonal of the observed correlation matrix through an iterative procedure with the squared multiple correlations (SMCs) of each variables with all other variables used as the starting values in the iteration.  
+  * Maximum likelihood factoring: Factor loadings calculated by maximising the probabily of sampling the observed correlation matrix  from a population
+  * Image factoring: distributes among factors the variance ofa n observed variable that is reflected by the other variables; variable image scores are produced by multiple regression with variable as independent variable and other variables as dependent variables.  A covariabnce matrix is calculated from teh image (predicted) scores
+  * Unweighted least squares factoring: Aims to minimizse squared differences between the observed and reproduced correlation matrices.  Only considere=s off-diaogonal differences.
+  * Generalized (weighted) least squares factoring: Also aims to minimize (off-diagonal) squared differences bween observed and reproduced correlation matrices, but applies wieths to variables.  Variables with substantial shared variance with other variables are weighted more heavily (i.e. considered more important).  
+    * Alpha factoring: Used when there is intereste in discovering comon factors with repated samples of variables taken from a population of variables.  
   
 ### Comparison of PCA to FA
 
 
-```{r store_charts}
+```{r store_charts, include=FALSE}
 
 export_svg(DiagrammeR::grViz("../../static/graphs/fa.dot", height=200, width=200)) %>%
   charToRaw %>% rsvg %>% png::writePNG('../../static/graphs/fa.png')
@@ -578,7 +580,20 @@ In both, the variance that is analysed is the sum of the values in the positive 
 </tr>
 </table>
 
+## Rotation Techniques
+ Rotation is used to improve interpretability of solution, not the quality of the mathematical fit between the observed and reproduced corraltion matrices (which is the same before and after rotation).  If underlying processes are correlated, oblique rotation is used, otherwise orthogonal rotation is used (with the advantage of ease in reporting, describign adn interpreting results)
+ 
+Orthogonal Rotation Techniques:
 
+* Varimax: maximised variance of loadings on each factor
+* Quartimax: Maximise variance of loadings on each variable
+* Equimax: Compromise between quartimax and varimax; golsl is to simplify both variables and factors
+
+Oblique Rotation Techniques; allow for range of correlation between factors by altering $\delta$ (-4=orthogonal, 0=fairly highly correlation, 1=highly correlated).  
+
+* Oblimin ($\delta=0$): simplify factors by minimixing cross-products of loadings
+
+* Equamax
   
 
 ```{r load_data_factor, message=FALSE, warning=FALSE, include=FALSE}

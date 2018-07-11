@@ -172,7 +172,7 @@ head(segMetrics)</code></pre>
 <li>the remaining features had a <span class="math inline">\(\lambda\)</span> between -2 and 2</li>
 <li><p>Features with a lambda between 0.98 and 1.02 would not be transformed</p></li>
 </ul>
-<p><strong>Question</strong>: Why not add an offset variable to ensure all variables are positive?</p>
+<p><strong>Question</strong>: Why not add an offset variable to ensure all variables are positive? Note, that instead of using the log transformation, or Box-Cox transformations when predictors have values of zero, can instaed use the Yeo-Johnson family of transformations. This family is similar to the Box-Cos transformations but can handle zero or negative predictor values.</p>
 <p>As an example, the feature <em>VarIntenCh3</em>, which records the standard deviation of pix intensity in actin filaments, had the following properties:</p>
 <ul>
 <li>Metrics</li>
@@ -290,7 +290,10 @@ xyplot(AvgIntenCh1 ~ EntropyIntenCh1,
        ylim = extendrange(pr$x),
        type = c(&quot;p&quot;, &quot;g&quot;),
        aspect = 1)</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segPCS_EGplot-2.png" width="672" /> * Because first PC summarises 96.6% variation and the second 3.42%, in this case could just use the first PC.</p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segPCS_EGplot-2.png" width="672" /></p>
+<ul>
+<li>Because first PC summarises 96.6% variation and the second 3.42%, in this case could just use the first PC.</li>
+</ul>
 <p>Example: PCA applied to all features</p>
 <p>The scree plot shows that four PCs would be retained.</p>
 <pre class="r"><code>## Apply PCA to the entire set of predictors.
@@ -325,7 +328,7 @@ splom(as.data.frame(segPCA$x[, 1:3]),
       prepanel.limits = function(x) panelRange)</code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segPCS_EGscat-1.png" width="672" /></p>
 <ul>
-<li>Can also visualise which predictor is associated with each principal component. A coefficient (loading) close to zero within the PC linear equation indicates that that predictors did not contribute much to that component. In the following figure, each point corresponds to a predictor variable and is coloured by thte opitcal channel used int eh exerpiment. For the first PC, channel 1 (cell body) loadings are greater and therefore have largest effect on PC. However, event though cell body measurements account fo rmore variation in the data, this does not imply that these variables will be associated with predicting segmentation quality.</li>
+<li>Can also visualise which predictor is associated with each principal component. A coefficient (loading) close to zero within the PC linear equation indicates that that predictors did not contribute much to that component. In the following figure, each point corresponds to a predictor variable and is coloured by thte opitcal channel used in the exerpiment. For the first PC, channel 1 (cell body) loadings are greater and therefore have largest effect on PC. However, even though cell body measurements account fo rmore variation in the data, this does not imply that these variables will be associated with predicting segmentation quality.</li>
 </ul>
 <pre class="r"><code>## Format the rotation values for plotting
 segRot &lt;- as.data.frame(segPCA$rotation[, 1:3])
@@ -377,61 +380,266 @@ splom(~segRot[, 1:3],
 </div>
 <div id="missing-values" class="section level3">
 <h3>Missing Values</h3>
-</div>
-</div>
-<div id="removing-predictors" class="section level2">
-<h2>Removing Predictors</h2>
-<pre class="r"><code>## To filter on correlations, we first get the correlation matrix for the 
-## predictor set
+<p>Types of missing data:</p>
+<ul>
+<li>Structurally missing, e.g. number of children man has given birth to</li>
+<li>Informative missingness: if related to outcome, can induce bias, e.g. customer rating are using polarised</li>
+<li>Censored (this is not missing data, as something isknown about it), but for predictive models, it may be treated as missing, or hte censored value may be used as the observed value. E.g., for labatory test which cannot measure below a limit, may use a random value between 0 and the limit as the observed value.</li>
+</ul>
+<p>Options:</p>
+<ul>
+<li>Remove samples (if small subset of large data set)</li>
+<li>Specifically account for the missingness (e.g. tree-based techniques)</li>
+<li>Impute by using information in the training set of predictors (i.e. predictive model within a predictive model).
+<ul>
+<li>Note that imputation for statistical inference is not the same as inference for predictive models (references given for the latter).<br />
+</li>
+<li>Incorporate imputation in resampling if being used to select tuning parmater values.<br />
+</li>
+<li>If number of predictors affected by missing values is small, best to perform exploratory analysis of relationships between predictors, e.g. using PCA or visualisations. If a variable with missing values is highly correlated with another thne can use a focussed model</li>
+<li>KNN popular to impute by finding samples in training set closest to it and averages nearby points to fill it. Advantage: Confined to training set. Disadvantage: KNN requires entire training set and number of neighbours and method of determinig “closeness” are tuning parameters.</li>
+</ul></li>
+</ul>
+<pre class="r"><code>require(AppliedPredictiveModeling)
+data(segmentationOriginal)
 
-segCorr &lt;- cor(segTrainTrans)
+## Retain the original training set
+segTrain &lt;- subset(segmentationOriginal, Case == &quot;Train&quot;)
 
-library(corrplot)
-corrplot(segCorr, order = &quot;hclust&quot;, tl.cex = .35)</code></pre>
-<pre><code>## Warning in plot.window(...): &quot;order&quot; is not a graphical parameter</code></pre>
-<pre><code>## Warning in plot.window(...): &quot;tl.cex&quot; is not a graphical parameter</code></pre>
-<pre><code>## Warning in plot.xy(xy, type, ...): &quot;order&quot; is not a graphical parameter</code></pre>
-<pre><code>## Warning in plot.xy(xy, type, ...): &quot;tl.cex&quot; is not a graphical parameter</code></pre>
-<pre><code>## Warning in axis(side = side, at = at, labels = labels, ...): &quot;order&quot; is not
-## a graphical parameter</code></pre>
-<pre><code>## Warning in axis(side = side, at = at, labels = labels, ...): &quot;tl.cex&quot; is
-## not a graphical parameter</code></pre>
-<pre><code>## Warning in axis(side = side, at = at, labels = labels, ...): &quot;order&quot; is not
-## a graphical parameter</code></pre>
-<pre><code>## Warning in axis(side = side, at = at, labels = labels, ...): &quot;tl.cex&quot; is
-## not a graphical parameter</code></pre>
-<pre><code>## Warning in box(...): &quot;order&quot; is not a graphical parameter</code></pre>
-<pre><code>## Warning in box(...): &quot;tl.cex&quot; is not a graphical parameter</code></pre>
-<pre><code>## Warning in title(...): &quot;order&quot; is not a graphical parameter</code></pre>
-<pre><code>## Warning in title(...): &quot;tl.cex&quot; is not a graphical parameter</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
-<pre class="r"><code>## caret&#39;s findCorrelation function is used to identify columns to remove.
-highCorr &lt;- findCorrelation(segCorr, .75)</code></pre>
+## Remove the first three columns (identifier columns)
+segTrainX &lt;- segTrain[, -(1:3)]
+segTrainX &lt;- segTrainX[, -nearZeroVar(segTrainX)]
+
+# Randomly sample 50 to be missing
+set.seed(15103930)
+ind_miss &lt;- sample(1:nrow(segTrainX), 50, replace = FALSE)
+obs &lt;- segTrainX[ind_miss, ]
+segTrainX$PerimCh1[ind_miss] &lt;- NA
+summary(segTrainX$PerimCh1)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#39;s 
+##   47.74   64.92   79.09   92.20  103.67  459.77      50</code></pre>
+<pre class="r"><code># Predict the missing values
+set.seed(100)
+knnTrans &lt;- preProcess(segTrainX, method = c(&quot;center&quot;, &quot;scale&quot;, &quot;knnImpute&quot;))
+knnPred &lt;- predict(knnTrans, segTrainX)
+pred &lt;- knnPred$PerimCh1[ind_miss]
+obsTrans &lt;- predict(knnTrans, obs)$PerimCh1
+
+ggplot(data.frame(obs = obsTrans, pred), aes(x=obs, y=pred)) + 
+  geom_point() + 
+  geom_smooth(method=&#39;lm&#39;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/imputationViaKNN-1.png" width="672" /></p>
+<pre class="r"><code>cor(obsTrans, pred)</code></pre>
+<pre><code>## [1] 0.8817321</code></pre>
+<pre class="r"><code>#if(&quot;PerimCh1&quot; %in% preProcValues$method$scale) pred &lt;- pred * preProcValues$std[&quot;PerimCh1&quot;]
+#if(&quot;PerimCh1&quot; %in% preProcValues$method$center) pred &lt;- pred + preProcValues$mean[&quot;PerimCh1&quot;]</code></pre>
+<p>TODO: Simple regression method ..need to first find correlated variables</p>
+<pre class="r"><code># use cell fiber lengtha nd cell size. to predict.  
+segCorr &lt;- cor(segTrainX, use = &quot;pairwise.complete.obs&quot;)[,&quot;PerimCh1&quot;]
+sort(segCorr, decreasing = TRUE)[2:3]</code></pre>
+<pre><code>## FiberLengthCh1      LengthCh1 
+##      0.9855599      0.9223834</code></pre>
+<pre class="r"><code>mod &lt;- lm(PerimCh1 ~ FiberLengthCh1 + LengthCh1, data = segTrainX[-ind_miss, ])
+pred &lt;- predict(mod, segTrainX[ind_miss, ])
+ggplot(data.frame(obs = obsTrans, pred), aes(x=obs, y=pred)) + 
+  geom_point() + 
+  geom_smooth(method=&#39;lm&#39;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/imputationViaRegression-1.png" width="672" /></p>
+<pre class="r"><code>cor(pred, obsTrans)</code></pre>
+<pre><code>## [1] 0.9752604</code></pre>
 </div>
-<div id="adding-predictors" class="section level2">
-<h2>Adding Predictors</h2>
-</div>
-<div id="binning-predictors" class="section level2">
-<h2>Binning Predictors</h2>
-<div id="removing-predictors-1" class="section level3">
+<div id="removing-predictors" class="section level3">
 <h3>Removing Predictors</h3>
+<p>Advantage of less predictors:</p>
+<ul>
+<li>Decreased computation time</li>
+<li>Decreased complexity / More pasimonious / More interpretable</li>
+<li>Highly correlated predictors are measring the same thing and so have no extra information</li>
+<li>Better model performance / stability without problematic and correlated variabels</li>
+</ul>
+<p>Predictors to remove:</p>
+</div>
+<div id="zero-variance-and-near-zero-variance-predictors" class="section level3">
+<h3>Zero Variance and Near-Zero Variance Predictors</h3>
+<ul>
+<li><strong>Zero variance predictors</strong> : Those with a single unique value</li>
+<li><strong>Near-zero variance predictors</strong> : Thos with a single value for most samples</li>
+</ul>
+<p>To determine: 1. Calculate number of unique variables / number of samples 2. Calculate frequency of unique values (or ratio of most common frequent to second most frequent)</p>
+<p>If (1) faction of unique values over sample size is loq, e.g. <span class="math inline">\(\leq\)</span> 10% and (2) ratio of frequency of most prevalent value to the second most prevalent value is large, e.g. <span class="math inline">\(\geq\)</span> 20</p>
+</div>
+<div id="correlated-variables" class="section level3">
+<h3>Correlated Variables</h3>
+<ul>
+<li><strong>Collinearity</strong>: Correlated pair of predictor variables</li>
+<li><strong>Multicollinearity</strong>: Relationships between multiple predictors at once</li>
+</ul>
+<p>To detect: 1. Visually. TODO: Review Everitt</p>
+<pre class="r"><code>segData &lt;- subset(segmentationOriginal, Case == &quot;Train&quot;)[, -(1:3)]
+isZV &lt;- apply(segData, 2, function(x) length(unique(x)) == 1)
+segData &lt;- segData[, !isZV]
+correlations &lt;- cor(segData)
+corrplot::corrplot(correlations, order = &quot;hclust&quot;, tl.cex = 0.2)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/plotCorrelationMatrix-1.png" width="672" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li>PCA: If first PCA accounts for large percentage of variance, then there is at least one group of predictors that represent the same information. Use PCA loadings to understand which predictos are associated with each component. Note though that as unsupervised, no guarnatee that resulting predictors will have relationship with the outcome.</li>
+</ol>
+<p>TODO: Need to understand PCA better</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Variance Inflation Factor (VIF) statistic available as part of classical regression anallysis, however only useful for linear regression. Whilst it determine collinear predictors it does not determine which should be removed to resolve the problem</li>
+<li>Remove the minimum number of predictors to determien that all pairwise correlations are below a certain threshold. This only identifies collineariites in two dimensions, but can improve model performance. Algorithm is as follows:</li>
+<li>Calculate correlation matrix</li>
+<li>Determine pair of predictors with largest absolute correlation</li>
+<li>Determine average correlation between A and other variables. Repeat for B.</li>
+<li>Remove the predictor (A or B) with the largest average corelation</li>
+<li>Repeat steps 2-3 until no absolute correlations above the threshold</li>
+</ol>
+<p>This algorithm is implemented using <code>caret::findCorrelation</code></p>
+<pre class="r"><code>segTrain &lt;- subset(segmentationOriginal, Case == &quot;Train&quot;)
+## Remove the first three columns (identifier columns)
+segTrainX &lt;- segTrain[, -(1:3)]
+isZV &lt;- apply(segTrainX, 2, function(x) length(unique(x)) == 1)
+segTrainX &lt;- segTrainX[, !isZV]
+
+segTrainClass &lt;- segTrain$Class
+
+
+
+segPP &lt;- preProcess(segTrainX, c(&quot;BoxCox&quot;, &quot;center&quot;, &quot;scale&quot;))
+segTrainTrans &lt;- predict(segPP, segTrainX)
+
+
+## Use caret&#39;s preProcess function to transform for skewness
+segPP &lt;- preProcess(segTrainX, method = &quot;BoxCox&quot;)
+## Apply the transformations
+segTrainTrans &lt;- predict(segPP, segTrainX)
+segCorr &lt;- cor(segTrainTrans)
+#corrplot(segCorr, order = &quot;hclust&quot;, tl.cex = .35)
+
+## caret&#39;s findCorrelation function is used to identify columns to remove.
+highCorr &lt;- findCorrelation(segCorr, .75)
+length(highCorr)</code></pre>
+<pre><code>## [1] 43</code></pre>
+</div>
+<div id="adding-predictors" class="section level3">
+<h3>Adding Predictors</h3>
+<ul>
+<li><p>It is common to decompose categorical predictors usng dummy variables (indicator with zero/one). With 5 categories, only 4 dummy variables needed. If 5 were included in regression then would have numerical isseus (intercept replaces the other); for other models, including all 5 may aid interpretation</p></li>
+<li>Non-linear transformations, e.g. <span class="math inline">\(B^2\)</span>, where <span class="math inline">\(B\)</span> is a predictor</li>
+<li><p>Combinations of data (e.g. class centroids, center of predictor data to each class)</p></li>
+</ul>
+</div>
+<div id="binning-predictors" class="section level3">
+<h3>Binning Predictors</h3>
+<p>Disadvantages of manual binning:</p>
+<ul>
+<li>Loss of performance in the model</li>
+<li>Loss in predicion in the predictions</li>
+<li>Can lead to high rate of false positives (noisy predictors determined to be informative)</li>
+</ul>
+<p>Advantage: More interpretable. However the perceived improvement in interpretability by manual binning is usually offest by siginficant loss in perofrmance (the goal of this book is prediction not interpretation and so manual binning not recommended).</p>
+<p>Automatic Binning * E.G Classification / Regression Trees * Multivariate adaptive regression splies * Evaluate many variables simulatabiuosly, based on staticscally sound methodogloges</p>
+</div>
+<div id="computing" class="section level3">
+<h3>Computing</h3>
+</div>
+<div id="transformations" class="section level3">
+<h3>Transformations</h3>
+<ul>
+<li><code>e1071::sknewness</code>: calculates sample skewness statistics for each predictor. Those that are highly skewed can be priorritsed for distribution visualations using <code>hist</code>, <code>lattice:histogram</code></li>
+<li><code>MASS::boxcox</code>: to determine type of tranformation to use; estimates <span class="math inline">\(\lambda\)</span> but will not create the transformed variable(s)</li>
+<li><code>caret::BoxCoxTrans</code>: Find most appropriate transformation and apply to new data</li>
+</ul>
+<p>Example:</p>
+<pre class="r"><code>segData &lt;- subset(segmentationOriginal, Case == &quot;Train&quot;)[, -(1:3)]
+Ch1AreaTrans &lt;- BoxCoxTrans(segData$AreaCh1)
+Ch1AreaTrans</code></pre>
+<pre><code>## Box-Cox Transformation
+## 
+## 1009 data points used to estimate Lambda
+## 
+## Input data summary:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   150.0   194.0   256.0   325.1   376.0  2186.0 
+## 
+## Largest/Smallest: 14.6 
+## Sample Skewness: 3.53 
+## 
+## Estimated Lambda: -0.9</code></pre>
+<pre class="r"><code>data.frame(orig = head(segData$AreaCh1), auto.trans = predict(Ch1AreaTrans, head(segData$AreaCh1)), man.trans = ( head(segData$AreaCh1) ^ Ch1AreaTrans$lambda - 1 )/Ch1AreaTrans$lambda   )</code></pre>
+<pre><code>##   orig auto.trans man.trans
+## 1  819   1.108458  1.108458
+## 2  431   1.106383  1.106383
+## 3  298   1.104520  1.104520
+## 4  256   1.103554  1.103554
+## 5  258   1.103607  1.103607
+## 6  358   1.105523  1.105523</code></pre>
+<ul>
+<li><code>prcomp</code>: For PCA</li>
+</ul>
+<p>Example:</p>
+<pre class="r"><code>segData &lt;- subset(segmentationOriginal, Case == &quot;Train&quot;)[, -(1:3)]
+isZV &lt;- apply(segData, 2, function(x) length(unique(x)) == 1)
+segData &lt;- segData[, !isZV]
+
+pcaObject &lt;- prcomp(segData, center = TRUE, scale. = TRUE)
+# Calculate the cumulative percentage of variance which each component accounts for.
+percentVariance &lt;- pcaObject$sd^2/sum(pcaObject$sd^2)*100
+percentVariance[1:3]</code></pre>
+<pre><code>## [1] 14.677086 11.734794  8.813733</code></pre>
+<pre class="r"><code># Transformed variables stored in a `pcaObject` as a sub-object called x
+head(pcaObject$x[ , 1:5])</code></pre>
+<pre><code>##            PC1        PC2         PC3       PC4          PC5
+## 2  -10.5813682  4.7022663  0.05567686 -1.792190  2.547714227
+## 3    0.4154024  0.6974872 -1.38763482 -3.265656  1.672695719
+## 4   -0.9779724 -1.8203879 -2.21605066  0.397754 -0.008029369
+## 12   1.9842183 -0.3322714 -0.05032939 -2.517085  1.033381188
+## 15   1.1217009 -0.1825613 -1.99234368 -3.021610  0.478149323
+## 16   1.0824587  0.2026488 -1.16865264 -3.380599  1.200990054</code></pre>
+<pre class="r"><code># Loadings
+head(pcaObject$rotation[ , 1:3])</code></pre>
+<pre><code>##                         PC1         PC2           PC3
+## AngleCh1        0.001058888 -0.01186622  0.0008836706
+## AngleStatusCh1  0.011793294  0.02083728 -0.0035682644
+## AreaCh1        -0.211068512  0.09577310  0.0672000815
+## AreaStatusCh1  -0.182337308  0.07292658  0.0546691134
+## AvgIntenCh1     0.061268408  0.17388938  0.0413066884
+## AvgIntenCh2     0.101313516  0.16201999  0.0349230837</code></pre>
+<ul>
+<li><code>caret::spatialSign</code>: Spatial sign transfomration</li>
+<li><code>impute::impute.knn</code> to estimate missing data; also possible using <code>caret::PreProcess</code> which applies imputation methods based on KNN or bagged trees</li>
+<li><code>caret::PreProcess</code>: Has the ability to</li>
+<li>Transform</li>
+<li>Center</li>
+<li>Scale</li>
+<li>Impute values</li>
+<li>Feature extraction</li>
+<li>Apply spatial sign transformation</li>
+</ul>
+<p>(in this order) After calling the <code>preProcess</code> function, the <code>predict</code> method applies the tranformationr esults to a set of data.</p>
+</div>
+<div id="filtering" class="section level3">
+<h3>Filtering</h3>
+<ul>
+<li><code>caret::nearZeroVar</code>: To determine predictors with unique variables</li>
+<li><code>cor</code>: To determine correlations</li>
+<li><code>corrplot:corrplot</code>: Includes option to reorder variables in a way that reveals clusters of highly correlated predictors</li>
+<li><code>caret::findCorrelation</code>: Recommends columns for deleteion based on a given threshold of pairwise correlations</li>
+<li><code>subselect</code> package also has methods for selecting predictors</li>
+</ul>
+</div>
+<div id="creating-dummy-variables" class="section level3">
+<h3>Creating Dummy Variables</h3>
+<ul>
+<li><code>caret::dummyVars</code>: To determine encodings for clategorical predictors</li>
+<li>All dummy variables recommended when using tree-based model</li>
+</ul>
 <pre class="r"><code>data(cars)
+carSubset &lt;- select(cars, Price, Mileage)
 type &lt;- c(&quot;convertible&quot;, &quot;coupe&quot;, &quot;hatchback&quot;, &quot;sedan&quot;, &quot;wagon&quot;)
-cars$Type &lt;- factor(apply(cars[, 14:18], 1, function(x) type[which(x == 1)]))
+carSubset$Type &lt;- factor(apply(cars[, 14:18], 1, function(x) type[which(x == 1)]))
 
-carSubset &lt;- cars[sample(1:nrow(cars), 20), c(1, 2, 19)]
-
-head(carSubset)</code></pre>
-<pre><code>##        Price Mileage  Type
-## 477 16646.77   20154 sedan
-## 444 48310.33     788 sedan
-## 479 17089.92    8732 sedan
-## 315 13594.09   20682 coupe
-## 209 21908.37   17353 sedan
-## 592 16033.93   18391 wagon</code></pre>
-<pre class="r"><code>levels(carSubset$Type)</code></pre>
-<pre><code>## [1] &quot;convertible&quot; &quot;coupe&quot;       &quot;hatchback&quot;   &quot;sedan&quot;       &quot;wagon&quot;</code></pre>
-<pre class="r"><code>simpleMod &lt;- dummyVars(~Mileage + Type,
+simpleMod &lt;- dummyVars(~Mileage + Type,
                        data = carSubset,
                        ## Remove the variable name from the
                        ## column name
@@ -443,6 +651,15 @@ simpleMod</code></pre>
 ## 2 variables, 1 factors
 ## Factor variable names will be removed
 ## A less than full rank encoding is used</code></pre>
+<pre class="r"><code># To generate the dummy variables fo rhte training set or any new samples, use the predict method with teh dummyVars objects
+predict(simpleMod, head(carSubset))</code></pre>
+<pre><code>##   Mileage convertible coupe hatchback sedan wagon
+## 1   20105           0     0         0     1     0
+## 2   13457           0     1         0     0     0
+## 3   31655           1     0         0     0     0
+## 4   22479           1     0         0     0     0
+## 5   17590           1     0         0     0     0
+## 6   23635           1     0         0     0     0</code></pre>
 <pre class="r"><code>withInteraction &lt;- dummyVars(~Mileage + Type + Mileage:Type,
                              data = carSubset,
                              levelsOnly = TRUE)
@@ -454,20 +671,87 @@ withInteraction</code></pre>
 ## Factor variable names will be removed
 ## A less than full rank encoding is used</code></pre>
 <pre class="r"><code>predict(withInteraction, head(carSubset))</code></pre>
-<pre><code>##     Mileage convertible coupe hatchback sedan wagon Mileage:convertible
-## 477   20154           0     0         0     1     0                   0
-## 444     788           0     0         0     1     0                   0
-## 479    8732           0     0         0     1     0                   0
-## 315   20682           0     1         0     0     0                   0
-## 209   17353           0     0         0     1     0                   0
-## 592   18391           0     0         0     0     1                   0
-##     Mileage:coupe Mileage:hatchback Mileage:sedan Mileage:wagon
-## 477             0                 0         20154             0
-## 444             0                 0           788             0
-## 479             0                 0          8732             0
-## 315         20682                 0             0             0
-## 209             0                 0         17353             0
-## 592             0                 0             0         18391</code></pre>
+<pre><code>##   Mileage convertible coupe hatchback sedan wagon Mileage:convertible
+## 1   20105           0     0         0     1     0                   0
+## 2   13457           0     1         0     0     0                   0
+## 3   31655           1     0         0     0     0               31655
+## 4   22479           1     0         0     0     0               22479
+## 5   17590           1     0         0     0     0               17590
+## 6   23635           1     0         0     0     0               23635
+##   Mileage:coupe Mileage:hatchback Mileage:sedan Mileage:wagon
+## 1             0                 0         20105             0
+## 2         13457                 0             0             0
+## 3             0                 0             0             0
+## 4             0                 0             0             0
+## 5             0                 0             0             0
+## 6             0                 0             0             0</code></pre>
+</div>
+<div id="chapter-3-exercises" class="section level3">
+<h3>Chapter 3 Exercises</h3>
+<div id="exercise-3.1" class="section level4">
+<h4>Exercise 3.1</h4>
+<p>The UC Irvine Machine Learning Repository contains a data set related to glass identification. The data consist of 214 glass samples labeled as one of seven class categories. There are nine predictors, including the refractive index and percentages of eight elements: Na, Mg, Al, Si, K, Ca, Ba, and Fe.</p>
+<pre class="r"><code>require(mlbench)</code></pre>
+<pre><code>## Loading required package: mlbench</code></pre>
+<pre class="r"><code>data(Glass)
+str(Glass)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    214 obs. of  10 variables:
+##  $ RI  : num  1.52 1.52 1.52 1.52 1.52 ...
+##  $ Na  : num  13.6 13.9 13.5 13.2 13.3 ...
+##  $ Mg  : num  4.49 3.6 3.55 3.69 3.62 3.61 3.6 3.61 3.58 3.6 ...
+##  $ Al  : num  1.1 1.36 1.54 1.29 1.24 1.62 1.14 1.05 1.37 1.36 ...
+##  $ Si  : num  71.8 72.7 73 72.6 73.1 ...
+##  $ K   : num  0.06 0.48 0.39 0.57 0.55 0.64 0.58 0.57 0.56 0.57 ...
+##  $ Ca  : num  8.75 7.83 7.78 8.22 8.07 8.07 8.17 8.24 8.3 8.4 ...
+##  $ Ba  : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ Fe  : num  0 0 0 0 0 0.26 0 0 0 0.11 ...
+##  $ Type: Factor w/ 6 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;5&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<pre class="r"><code>GlassPredictors &lt;- select(Glass, -Type) %&gt;%
+  gather(Variable, Value)</code></pre>
+<ol style="list-style-type: lower-alpha">
+<li>Using visualizations, explore the predictor variables to understand their distributions as well as the relationships between predictors.</li>
+</ol>
+<pre class="r"><code>ggplot(GlassPredictors, aes(x = Value)) +  
+  geom_histogram() + 
+  facet_wrap(~Variable, scales = &quot;free&quot;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/ex31_hist-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(GlassPredictors, aes(x = Value)) +  
+  geom_density() + 
+  facet_wrap(~Variable, scales = &quot;free&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/ex31_dens-1.png" width="672" /></p>
+<pre class="r"><code>require(GGally)
+ggpairs(select(Glass, -Type))</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/ex31_scatter-1.png" width="672" /></p>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Does there appear to be any outliers in the data? Are predictors skewed?</li>
+</ol>
+<ul>
+<li>Several variables show signs of skewness (BA, Ca, FE, RI)</li>
+<li>Variable K could be skewed or have outliers</li>
+<li>Variables K and MG have possible second modes around zero, whereas Fe and Ba also have a high distribution of values around zero</li>
+<li>Variables Ca, NA, RI and SI have concentrations of samples in the middle of the scale and a small number of data points at the edges</li>
+<li>Variables Ca and Ri are positively correlated, and Ca and NA</li>
+<li>Visually, Ca and Na appear to be negatively correlated, however the correlation score is -0.275</li>
+</ul>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Are there any relevant transformations of one or more predictors that might improve the classification model?</li>
+</ol>
+<p>Due to variables containing zero, use the Yeo-Johnson family of transformations</p>
+<pre class="r"><code>glassTrans &lt;- preProcess(select(Glass, -Type), method = &quot;YeoJohnson&quot;)
+glassTransData &lt;- predict(glassTrans, select(Glass, -Type))
+glassTransData %&gt;%
+  gather(Variable, Value) %&gt;%
+  mutate(Transformation = &quot;Yeo-Johnson&quot;) %&gt;%
+  bind_rows(data.frame(GlassPredictors, Transformation = &quot;NA&quot;)) %&gt;%
+ggplot(aes(x = Value, color = Transformation)) +  
+  geom_density() + 
+  facet_wrap(~Variable, scales = &quot;free&quot;)</code></pre>
+<pre><code>## Warning in bind_rows_(x, .id): binding character and factor vector,
+## coercing into character vector</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/ex31_yeo-1.png" width="672" /> However, they don’t really help in terms of skewness …</p>
+<p>To mitigate outliers, use the spatial sign transformation</p>
+</div>
 </div>
 </div>
 </div>

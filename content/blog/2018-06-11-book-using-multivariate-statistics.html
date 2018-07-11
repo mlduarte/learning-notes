@@ -729,24 +729,22 @@ oblimin_C</code></pre>
 ## powder  0.99772563 -0.04813229</code></pre>
 <p>From Phi, see that correlation between first factor and sezond facotr is quite low. In this case, one would use orthogonal rotation.</p>
 </div>
-<div id="major-types-of-factor-analyses" class="section level2">
-<h2>Major Types of Factor Analyses</h2>
+<div id="factor-extraction-techniques" class="section level2">
+<h2>Factor Extraction Techniques:</h2>
 <ul>
-<li>Factor Extraction Techniques:</li>
-<li>Principal components</li>
-<li>Principal factors</li>
-<li>Maximum likelihood factoring</li>
-<li>Image factoring</li>
-<li>Alpha factoring</li>
-<li>Generalized (weighted) least squares factoring</li>
+<li>Principal components; to determine components with maximum variance. Firs tPC is the linear combination of observed variables taht maximally separted subjects by maximising the variance of their component scores. Subsequent components are linear combinations of observed variables taht extractes maximum variability from resdiual correslations that are orthoogonal to previous extracted components. Choise solution to reduce large number of variables to smaller number of components.</li>
+<li>Principal factors: Estimates communicality in the positive diagonal of the observed correlation matrix through an iterative procedure with the squared multiple correlations (SMCs) of each variables with all other variables used as the starting values in the iteration.<br />
+</li>
+<li>Maximum likelihood factoring: Factor loadings calculated by maximising the probabily of sampling the observed correlation matrix from a population</li>
+<li>Image factoring: distributes among factors the variance ofa n observed variable that is reflected by the other variables; variable image scores are produced by multiple regression with variable as independent variable and other variables as dependent variables. A covariabnce matrix is calculated from teh image (predicted) scores</li>
+<li>Unweighted least squares factoring: Aims to minimizse squared differences between the observed and reproduced correlation matrices. Only considere=s off-diaogonal differences.</li>
+<li>Generalized (weighted) least squares factoring: Also aims to minimize (off-diagonal) squared differences bween observed and reproduced correlation matrices, but applies wieths to variables. Variables with substantial shared variance with other variables are weighted more heavily (i.e. considered more important).
+<ul>
+<li>Alpha factoring: Used when there is intereste in discovering comon factors with repated samples of variables taken from a population of variables.</li>
+</ul></li>
 </ul>
 <div id="comparison-of-pca-to-fa" class="section level3">
 <h3>Comparison of PCA to FA</h3>
-<pre class="r"><code>export_svg(DiagrammeR::grViz(&quot;../../static/graphs/fa.dot&quot;, height=200, width=200)) %&gt;%
-  charToRaw %&gt;% rsvg %&gt;% png::writePNG(&#39;../../static/graphs/fa.png&#39;)
-
-export_svg(DiagrammeR::grViz(&quot;../../static/graphs/pca.dot&quot;, height=200, width=200)) %&gt;%
-  charToRaw %&gt;% rsvg %&gt;% png::writePNG(&#39;../../static/graphs/pca.png&#39;)</code></pre>
 <p>In both, the variance that is analysed is the sum of the values in the positive diagonal.</p>
 <table>
 <tr>
@@ -823,5 +821,20 @@ Best when after an empirical summary of the data set
 </tr>
 </table>
 </div>
+</div>
+<div id="rotation-techniques" class="section level2">
+<h2>Rotation Techniques</h2>
+<p>Rotation is used to improve interpretability of solution, not the quality of the mathematical fit between the observed and reproduced corraltion matrices (which is the same before and after rotation). If underlying processes are correlated, oblique rotation is used, otherwise orthogonal rotation is used (with the advantage of ease in reporting, describign adn interpreting results)</p>
+<p>Orthogonal Rotation Techniques:</p>
+<ul>
+<li>Varimax: maximised variance of loadings on each factor</li>
+<li>Quartimax: Maximise variance of loadings on each variable</li>
+<li>Equimax: Compromise between quartimax and varimax; golsl is to simplify both variables and factors</li>
+</ul>
+<p>Oblique Rotation Techniques; allow for range of correlation between factors by altering <span class="math inline">\(\delta\)</span> (-4=orthogonal, 0=fairly highly correlation, 1=highly correlated).</p>
+<ul>
+<li><p>Oblimin (<span class="math inline">\(\delta=0\)</span>): simplify factors by minimixing cross-products of loadings</p></li>
+<li><p>Equamax</p></li>
+</ul>
 </div>
 </div>
