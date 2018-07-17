@@ -1,23 +1,21 @@
 ---
-title: 'Book: Applied Predictive Modeling'
-author: Marie
+title: 'Book: Applied Predictive Modeling (Part I)'
+author: "Marie"
 date: '2018-05-30'
+categories: Study-Notes
 slug: book-applied-predictive-modeling
-banner: "img/banners/kuhn.png"
-categories:
-  - Study-Notes
 tags:
-  - R
-  - Study-Notes
-  - Book
+- R
+- Study-Notes
+- Book
+banner: img/banners/kuhn.png
 ---
 
 # Overview
-This post includes my notes and reproduction of examples in the book [Applied Predictive Modeling](http://appliedpredictivemodeling.com) (2013), by Max Kuhn and Kjell Johnson.
+This post includes my notes and reproduction of examples of **Part I: General Strategies** of the book [Applied Predictive Modeling](http://appliedpredictivemodeling.com) (2013), by Max Kuhn and Kjell Johnson
 
-# Notes
 
-## Introduction
+# Introduction
 Common reasons for predictive model failure:
 
 * Inadequate pre-processing of data
@@ -65,43 +63,43 @@ loadPackages <- function(pkgs) {
 }
 
 
-# alternative use: AppliedPredictiveModeling:getPackages()
 # use scriptLocation() for chapter analysis in text
+#AppliedPredictiveModeling::getPackages(1:4)
 loadPackages(c(
                "caret"
-              , "CORElearn"
-              , "corrplot"
-              , "Cubist"
-              , "C50"
-              , "DMwR"
-              #, "DWD" # Disstance Weighted Discrimination; not current on CRAN
-              , "earth"
-              , "elasticnet"
-              , "ellipse"
-              , "e1071"
-              , "gbm"
-              , "glmnet"
-              , "Hmisc"
-              , "ipred"
-              , "kernlab"
-              , "klaR"
-              , "latticeExtra"
-              , "MASS"
-              , "mda"
-              , "minerva"
-              , "nnet"
-              , "pamr"
-              , "party"
-              , "partykit"
-              , "pls"
-              , "pROC"
-              , "randomForest"
-              , "RANN"
-              , "RColorBrewer"
-              , "rpart"
-             # , "RWeka" # requires Java; http://www.oracle.com/technetwork/java/javase/downloads/jdk10-downloads-4416644.html
-              , "sparseLDA"
-              , "tabplot"
+              , "CORElearn" # Classification, Regression and Feature Evaluation
+              , "corrplot"  # Correlation plots
+            #  , "Cubist"    # Rule and distance based regression modelling
+            #  , "C50"       # Decision trees
+              , "DMwR"      # Data mining with R book
+              #, "DWD" # Distance Weighted Discrimination; not current on CRAN
+              , "earth" # MARS model
+            #  , "elasticnet" # elastic net
+              , "ellipse"   # for drawing ellipse like confidence intervals
+              , "e1071"     # Misc functions incl. skewness
+            #  , "gbm"       # gradient boosting
+            #  , "glmnet"    # lassoo and elastic-net
+              , "Hmisc"     # miscelaneous
+            #  , "ipred"     # Improved predictive models by indirect classification and bagging for classification, regression and survival
+            #  , "kernlab"  # SVM, spectral clustering, kernal pca, ...
+            #  , "klaR"     # classification and visualisation
+              , "latticeExtra"  # lattice
+            #  , "MASS"     # Modern applied statistics with S book
+            #  , "mda"      # Mixture and flexible discriminant analysis
+            #  , "minerva"  # Maximal Information-Based Nonparametric Exploration for Variable Analysis
+            #  , "nnet"     # Neural net
+            #  , "pamr"     # prediction analysis for microarray
+            #  , "party"    # A Laboratory for Recursive Partytioning
+            #  , "partykit" # A Toolkit for Recursive Partytioning
+            #  , "pls"      # Partial Least Squares and Principal Component Regression
+            #  , "pROC"     # Title Display and Analyze ROC Curves
+            #  , "randomForest"  # random forest
+              , "RANN"     # Fast Nearest Neighbour Search
+              , "RColorBrewer" # colours
+            #  , "rpart"    # ecursive Partitioning and Regression Tree
+             # , "RWeka"    # requires Java; http://www.oracle.com/technetwork/java/javase/downloads/jdk10-downloads-4416644.html
+            #  , "sparseLDA" #Sparse Discriminant Analysis
+             # , "tabplot"  # Tableplot, a Visualization of Large Datasets
               , "tidyverse"
                ))
 # R.home()
@@ -128,7 +126,7 @@ Themes
 * Evaluating several models: There is no single model that will always do better than another.
 * Model selection: Involves choosing between models and selecting tuning parameters (within model)
 
-## Data Pre-Processing
+# Data Pre-Processing
 
 * Addition, deletion or transformation of **training set** data
 * Can make or break model's predictive ability
@@ -140,7 +138,7 @@ Themes
   * Removal of outliers
 
 
-### Data Tranformations (Individual Predictors)
+## Data Tranformations (Individual Predictors)
 * Pre-processing techniques include:
   * Centering: Subtract average $\rightarrow \bar{x} = 1$
   * Scaling: Divide by standard deviation  $\rightarrow  s = 1$
@@ -180,7 +178,7 @@ The `caret::BoxCoxTrans` function will find the appropriate transformation and a
 
 **Example**: Segmentation data
 
-```{r segmentation_preprocess}
+```{r preprocess_segmentation_data}
 # load case study training data
 data("segmentationOriginal")
 segTrain <- subset(segmentationOriginal, Case == "Train")
@@ -189,7 +187,7 @@ segTrain <- subset(segmentationOriginal, Case == "Train")
 segTrainId <- segTrain$Cell
 segTrainClass <- segTrain$Class
 segTrainCase <- segTrain$Case
-segTrainX <- select(segTrain, -c(Cell, Class, Case)) 
+segTrainX <- dplyr::select(segTrain, -c(Cell, Class, Case)) 
 #%>% select(-contains("Status"))
 
 # https://topepo.github.io/caret/pre-processing.html#the-preprocess-function
@@ -200,7 +198,7 @@ segMetrics <- segTrainX %>%
   summarise_all(funs(skewness, n_distinct, max, min)) %>%
   gather(key="key", value="value") %>%
   extract(key, c("variable", "metric"), "(.*)_(skewness|n_distinct|max|min)") %>%
-  tidyr::spread(metric, value) %>%
+  spread(metric, value) %>%
   mutate(max_min_ratio = ifelse(min==0, (max+1)/(min+1), max/min)) %>%
   select(variable, n_distinct, skewness, max_min_ratio, min, max)
 
@@ -237,7 +235,7 @@ In this data set there were a total of `r nrow(segMetrics)` features, for which:
 
 * `r nrow(filter(segMetrics, min <= 0 ))` were not transformed because they had a minimum value of $\leq 0$
 
-```{r segmentation_boxcox_neg, eval=FALSE, include=FALSE}
+```{r nontrans_segmentation_metrics, eval=FALSE, include=FALSE}
 segMetrics %>%
   filter(min <= 0)
 ```
@@ -246,24 +244,26 @@ segMetrics %>%
 * Features with a lambda between 0.98 and 1.02 would not be transformed 
 
 
-**Question**: Why not add an offset variable to ensure all variables are positive?  Note, that instead of using the log transformation, or Box-Cox transformations when predictors have values of zero, can instaed use the Yeo-Johnson family of transformations.  This family is similar to the Box-Cos transformations but can handle zero or negative predictor values.
+**Question**: Why not add an offset variable to ensure all variables are positive?  Note, that instead of using the log transformation, or Box-Cox transformations when predictors have values of zero, can instead use the Yeo-Johnson family of transformations.  This family is similar to the Box-Cos transformations but can handle zero or negative predictor values.
 
+
+It should be noted that transformations to reduce skewness might not always be successful.  Under such circumstances, one should use models that are not unduly affected by skewed distributions (e.g. tree-based methods)
 
 As an example, the feature _VarIntenCh3_, which records the standard deviation of pix intensity in actin filaments, had the following properties:
 
 * Metrics
-```{r segmentation_featureEG}
+```{r segmentation_varIntenCh3}
 filter(segMetrics, variable == "VarIntenCh3")
 ```
 * Strong right skewness
 * Original data distribution
-```{r segmentation_featureEG_orig}
+```{r original_segmentation_features}
 histogram(~segTrainX$VarIntenCh3,
           xlab = "Natural Units",
           type = "count")
 ```
 * Transformed data distribution
-```{r segmentation_featureEG_trans}
+```{r trans_segmentation_features}
 histogram(~log(segTrainX$VarIntenCh3),
           xlab = "Log Units",
           ylab = " ",
@@ -274,7 +274,7 @@ histogram(~log(segTrainX$VarIntenCh3),
 
 
 
-### Data Transformations (Multiple Predictors)
+## Data Transformations (Multiple Predictors)
 
 **Outliers**
 
@@ -299,12 +299,12 @@ Example:
 * Spatial sign transformation applied; outliers reside in northwest section of distribution but contracted inwards
 * Mitigates effect on model training
 
-```{r spatialsign_egIris}
+```{r iris_spatial_trans}
 trellis.par.set(caretTheme())
 featurePlot(x=iris[,-5], y=iris[,5], "pairs")
 featurePlot(spatialSign(scale(iris[,-5])), iris[,5], "pairs")
 ```
-```{r spatialsign_eg_rand}
+```{r rand_spatial_trans}
 set.seed(1)
 n <- 10000
 tmp <- data.frame(x=c(rnorm(n, 0, 0.02), -1, 1, 0.5),
@@ -346,7 +346,7 @@ Example: PCA applied to two features
   * For channel 1, Intensity Entropy is highly correlated with Fiber Width (`r round(with(segTrainTrans, cor(AvgIntenCh1, EntropyIntenCh1)),2)`)
   * Could use just one predictor, or could use PCA to instead use a linear combination of these two predictors
   
-```{r segPCS_EGplot}
+```{r segmentation_PCA}
 ## R's prcomp is used to conduct PCA
 pr <- prcomp(~ AvgIntenCh1 + EntropyIntenCh1, 
              data = segTrainTrans, #already pre-preprocessed for skewness
@@ -379,7 +379,7 @@ xyplot(PC2 ~ PC1,
   
   * Because first PC summarises `r scales::percent(summary(pr)$importance[2,1])` variation and the second `r scales::percent(summary(pr)$importance[2,2])`, in this case could just use the first PC.
   
-```{r pca_importance, eval=FALSE, include=FALSE}
+```{r segmentation_pca_importance, eval=FALSE, include=FALSE}
 summary(pr)
 # importance also available:
 eigs <- pr$sdev^2
@@ -390,7 +390,7 @@ Example: PCA applied to all features
 
 The scree plot shows that four PCs would be retained.
  
-```{r segPCS_EGscree}
+```{r segmentation_pca_scree}
 
 ## Apply PCA to the entire set of predictors.
 
@@ -413,7 +413,7 @@ ggplot(tab, aes(x = PC, y=Var))+
 Scatterplot matrix of first 3 PCs (with points coloured by class): 
 
 * Appears to be some separation between classes when plotting first and second component (but remember that these two components only explain `r scales::percent(sum(tab$Var[1:2]))` of variance and so don't over-interpret!).  However distribution of well-segmented cells roughly contained within poorly identified cells; cell types don't appear to be easily separated.  Don't despair!; it does not mean other models, e.g. that can accommodate non-linear relationships, will reach the same conclusions.
-```{r segPCS_EGscat}
+```{r segmentation_pca_scatter}
 ## Plot a scatterplot matrix of the first three components
 transparentTheme(pchSize = .8, trans = .3)
 panelRange <- extendrange(segPCA$x[, 1:3])
@@ -425,9 +425,9 @@ splom(as.data.frame(segPCA$x[, 1:3]),
       prepanel.limits = function(x) panelRange)
 ```
 
-* Can also visualise which predictor is associated with each principal component.  A coefficient (loading) close to zero within the PC linear equation indicates that that predictors did not contribute much to that component.  In the following figure, each point corresponds to a predictor variable and is coloured by thte opitcal channel used in the exerpiment.  For the first PC, channel 1 (cell body) loadings are greater and therefore have largest effect on PC.  However, even though cell body measurements account fo rmore variation in the data, this does not imply that these variables will be associated with predicting segmentation quality. 
+* Can also visualise which predictor is associated with each principal component.  A coefficient (loading) close to zero within the PC linear equation indicates that that predictors did not contribute much to that component.  In the following figure, each point corresponds to a predictor variable and is coloured by the optical channel used in the experiment.  For the first PC, channel 1 (cell body) loadings are greater and therefore have largest effect on PC.  However, even though cell body measurements account for more variation in the data, this does not imply that these variables will be associated with predicting segmentation quality. 
 
-```{r segPCS_EGrot}
+```{r segmentation_pca_splom}
 ## Format the rotation values for plotting
 segRot <- as.data.frame(segPCA$rotation[, 1:3])
 
@@ -468,8 +468,9 @@ upperp <- function(...)
                  col = trellis.par.get("reference.line")$col,
                  lwd = trellis.par.get("reference.line")$lwd)
     panel.xyplot(args$x, args$y, groups = args$groups, subscripts = args$subscripts)
-  }
-splom(~segRot[, 1:3],
+}
+# note this requires ellipse
+lattice::splom(~segRot[, 1:3],
       groups = segRot$Channel,
       lower.panel = function(...){}, upper.panel = upperp,
       prepanel.limits = function(x) panelRange,
@@ -477,13 +478,13 @@ splom(~segRot[, 1:3],
 ```
 
 
-### Missing Values
+## Missing Values
 
 Types of missing data:
 
 * Structurally missing, e.g. number of children man has given birth to
 * Informative missingness: if related to outcome, can induce bias, e.g. customer rating are using polarised
-* Censored (this is not missing data, as something isknown about it), but for predictive models, it may be treated as missing, or hte censored value may be used as the observed value.  E.g., for labatory test which cannot measure below a limit, may use a random value between 0 and the limit as the observed value.  
+* Censored (this is not missing data, as something is known about it), but for predictive models, it may be treated as missing, or the censored value may be used as the observed value.  E.g., for laboratory test which cannot measure below a limit, may use a random value between 0 and the limit as the observed value.  
 
 Options:
 
@@ -491,11 +492,11 @@ Options:
 * Specifically account for the missingness (e.g. tree-based techniques)
 * Impute by using information in the training set of predictors (i.e. predictive model within a predictive model).  
     * Note that imputation for statistical inference is not the same as inference for predictive models (references given for the latter).  
-    * Incorporate imputation in resampling if being used to select tuning parmater values.   
-    * If number of predictors affected by missing values is small, best to perform exploratory analysis of relationships between predictors, e.g. using PCA or visualisations.  If a variable with missing values is highly correlated with another thne can use a focussed model
-    * KNN popular to impute by finding samples in training set closest to it and averages nearby points to fill it.  Advantage: Confined to training set. Disadvantage: KNN requires entire training set and number of neighbours and method of determinig "closeness" are tuning parameters.
+    * Incorporate imputation in resampling if being used to select tuning parameter values.   
+    * If number of predictors affected by missing values is small, best to perform exploratory analysis of relationships between predictors, e.g. using PCA or visualisations.  If a variable with missing values is highly correlated with another then can use a focused model
+    * KNN popular to impute by finding samples in training set closest to it and averages nearby points to fill it.  Advantage: Confined to training set. Disadvantage: KNN requires entire training set and number of neighbours and method of determining "closeness" are tuning parameters.
     
-```{r imputationViaKNN}
+```{r segmentation_imputation_knn}
 require(AppliedPredictiveModeling)
 data(segmentationOriginal)
 
@@ -531,8 +532,8 @@ cor(obsTrans, pred)
 ```
     
 
-TODO: Simple regression method ..need to first find correlated variables
-```{r imputationViaRegression}
+
+```{r segmentation_imputation_regression}
 # use cell fiber lengtha nd cell size. to predict.  
 segCorr <- cor(segTrainX, use = "pairwise.complete.obs")[,"PerimCh1"]
 sort(segCorr, decreasing = TRUE)[2:3]
@@ -546,36 +547,37 @@ cor(pred, obsTrans)
 ```
 
 
-### Removing Predictors
+## Removing Predictors
 
 Advantage of less predictors:
 
 * Decreased computation time
-* Decreased complexity / More pasimonious / More interpretable
-* Highly correlated predictors are measring the same thing and so have no extra information
-* Better model performance / stability without problematic and correlated variabels
+* Decreased complexity / More parsimonious / More interpretable
+* Highly correlated predictors are measuring the same thing and so have no extra information
+* Better model performance / stability without problematic and correlated variables
 
 Predictors to remove:
 
-### Zero Variance and Near-Zero Variance Predictors
+## Zero Variance and Near-Zero Variance Predictors
 
 * **Zero variance predictors** : Those with a single unique value
-* **Near-zero variance predictors** : Thos with a single value for most samples
+* **Near-zero variance predictors** : Those with a single value for most samples
 
 To determine:
-1.  Calculate number of unique variables / number of samples
+
+1.Calculate number of unique variables / number of samples
 2. Calculate frequency of unique values (or ratio of most common frequent to second most frequent)
 
-If  (1) faction of unique values over sample size is loq, e.g. $\leq$ 10% and (2) ratio of frequency of most prevalent value to the second most prevalent value is large, e.g. $\geq$ 20
+If  (1) fraction of unique values over sample size is low, e.g. $\leq$ 10% and (2) ratio of frequency of most prevalent value to the second most prevalent value is large, e.g. $\geq$ 20
 
-### Correlated Variables
+## Correlated Variables
 
 * **Collinearity**: Correlated pair of predictor variables
 * **Multicollinearity**: Relationships between multiple predictors at once
 
 To detect:
-1. Visually.  TODO: Review Everitt 
-```{r plotCorrelationMatrix}
+1. Visually.   
+```{r segmentation_correlation_matrix}
 segData <- subset(segmentationOriginal, Case == "Train")[, -(1:3)]
 isZV <- apply(segData, 2, function(x) length(unique(x)) == 1)
 segData <- segData[, !isZV]
@@ -584,21 +586,21 @@ corrplot::corrplot(correlations, order = "hclust", tl.cex = 0.2)
 ```
 
 
-2. PCA: If first PCA accounts for large percentage of variance, then there is at least one group of predictors that represent the same information.  Use PCA loadings to understand which predictos are associated with each component.  Note though that as unsupervised, no guarnatee that resulting predictors will have relationship with the outcome.
+2. PCA: If first PCA accounts for large percentage of variance, then there is at least one group of predictors that represent the same information.  Use PCA loadings to understand which predictors are associated with each component.  Note though that as unsupervised, no guarantee that resulting predictors will have relationship with the outcome.
 
-TODO: Need to understand PCA better
 
-3. Variance Inflation Factor (VIF) statistic available as part of classical regression anallysis, however only useful for linear regression. Whilst it determine collinear predictors it does not determine which should be removed to resolve the problem
-4. Remove the minimum number of predictors to determien that all pairwise correlations are below a certain threshold.  This only identifies collineariites in two dimensions, but can improve model performance. Algorithm is as follows:
+
+3. Variance Inflation Factor (VIF) statistic available as part of classical regression analysis, however only useful for linear regression. Whilst it determine collinear predictors it does not determine which should be removed to resolve the problem
+4. Remove the minimum number of predictors to determine that all pairwise correlations are below a certain threshold.  This only identifies colinearities in two dimensions, but can improve model performance. Algorithm is as follows:
   1. Calculate correlation matrix
   2. Determine pair of predictors with largest absolute correlation
   3. Determine average correlation between A and other variables.  Repeat for B.
-  4. Remove the predictor (A or B) with the largest average corelation
+  4. Remove the predictor (A or B) with the largest average correlation
   5. Repeat steps 2-3 until no absolute correlations above the threshold
   
 This algorithm is implemented using `caret::findCorrelation`
   
-```{r removeCorrelatedVars}
+```{r segmentatino_correlated_variables}
 segTrain <- subset(segmentationOriginal, Case == "Train")
 ## Remove the first three columns (identifier columns)
 segTrainX <- segTrain[, -(1:3)]
@@ -627,40 +629,40 @@ length(highCorr)
 
 
 
-### Adding Predictors
+## Adding Predictors
 
-* It is common to decompose categorical predictors usng dummy variables (indicator with zero/one).  With 5 categories, only 4 dummy variables needed.  If 5 were included in regression then would have numerical isseus (intercept replaces the other); for other models, including all 5 may aid interpretation
+* It is common to decompose categorical predictors using dummy variables (indicator with zero/one).  With 5 categories, only 4 dummy variables needed.  If 5 were included in regression then would have numerical issues (intercept replaces the other); for other models, including all 5 may aid interpretation
 
 * Non-linear transformations, e.g. $B^2$, where $B$ is a predictor
 * Combinations of data (e.g. class centroids, center of predictor data to each class)
 
-### Binning Predictors
+## Binning Predictors
 
 Disadvantages of manual binning:
 
 * Loss of performance in the model
-* Loss in predicion in the predictions
+* Loss in prediction in the predictions
 * Can lead to high rate of false positives (noisy predictors determined to be informative)
 
-Advantage: More interpretable.  However the perceived improvement in interpretability by manual binning is usually offest by  siginficant loss in perofrmance (the goal of this book is prediction not interpretation and so manual binning not recommended).
+Advantage: More interpretable.  However the perceived improvement in interpretability by manual binning is usually offset by  significant loss in performance (the goal of this book is prediction not interpretation and so manual binning not recommended).
 
 Automatic Binning 
 * E.G Classification / Regression Trees
-* Multivariate adaptive regression splies
-* Evaluate many variables simulatabiuosly, based on staticscally sound methodogloges
+* Multivariate adaptive regression splines
+* Evaluate many variables simultaneously, based on statistically sound methodologies
 
-### Computing
+## Computing
 
 
 
 ### Transformations
 
-* `e1071::sknewness`: calculates sample skewness statistics for each predictor.  Those that are highly skewed can be priorritsed for distribution visualations using `hist`, `lattice:histogram`
-* `MASS::boxcox`: to determine type of tranformation to use; estimates $\lambda$ but will not create the transformed variable(s)
+* `e1071::sknewness`: calculates sample skewness statistics for each predictor.  Those that are highly skewed can be prioritised for distribution visualisations using `hist`, `lattice:histogram`
+* `MASS::boxcox`: to determine type of transformation to use; estimates $\lambda$ but will not create the transformed variable(s)
 * `caret::BoxCoxTrans`: Find most appropriate transformation and apply to new data
 
 Example:
-```{r egBoxCoxTrans}
+```{r segmentation_boxcox_trans}
 segData <- subset(segmentationOriginal, Case == "Train")[, -(1:3)]
 Ch1AreaTrans <- BoxCoxTrans(segData$AreaCh1)
 Ch1AreaTrans
@@ -672,7 +674,7 @@ data.frame(orig = head(segData$AreaCh1), auto.trans = predict(Ch1AreaTrans, head
 * `prcomp`: For PCA
 
 Example:
-```{r egPCA}
+```{r segmentation_pca_trans}
 segData <- subset(segmentationOriginal, Case == "Train")[, -(1:3)]
 isZV <- apply(segData, 2, function(x) length(unique(x)) == 1)
 segData <- segData[, !isZV]
@@ -687,9 +689,10 @@ head(pcaObject$x[ , 1:5])
 head(pcaObject$rotation[ , 1:3])
 ```
 
-* `caret::spatialSign`: Spatial sign transfomration
+* `caret::spatialSign`: Spatial sign transformation
 * `impute::impute.knn` to estimate missing data; also possible using `caret::PreProcess` which applies imputation methods based on KNN or bagged trees
 * `caret::PreProcess`: Has the ability to
+
   * Transform
   * Center
   * Scale
@@ -697,22 +700,22 @@ head(pcaObject$rotation[ , 1:3])
   * Feature extraction
   * Apply spatial sign transformation
 
-  (in this order) After calling the `preProcess` function, the `predict` method applies the tranformationr esults to a set of data.
+  (in this order) After calling the `preProcess` function, the `predict` method applies the transformation results to a set of data.
   
 ### Filtering
 
 * `caret::nearZeroVar`: To determine predictors with unique variables
 * `cor`: To determine correlations
 * `corrplot:corrplot`: Includes option to reorder variables in a way that reveals clusters of highly correlated predictors
-* `caret::findCorrelation`: Recommends columns for deleteion based on a given threshold of pairwise correlations
+* `caret::findCorrelation`: Recommends columns for deletion based on a given threshold of pairwise correlations
 * `subselect` package also has methods for selecting predictors
 
 ### Creating Dummy Variables
 
-* `caret::dummyVars`: To determine encodings for clategorical predictors
+* `caret::dummyVars`: To determine encoding for categorical predictors
 * All dummy variables recommended when using tree-based model
 
-```{r egDummyVariableCreation}
+```{r cars_dummy_vars}
 data(cars)
 carSubset <- select(cars, Price, Mileage)
 type <- c("convertible", "coupe", "hatchback", "sedan", "wagon")
@@ -736,53 +739,44 @@ predict(withInteraction, head(carSubset))
 ```
 
 
-### Chapter 3 Exercises
+## Chapter 3 Exercises
 
-#### Exercise 3.1
+### Exercise 3.1
 The UC Irvine Machine Learning Repository contains a data set related
 to glass identification. The data consist of 214 glass samples labeled as one
 of seven class categories. There are nine predictors, including the refractive
 index and percentages of eight elements: Na, Mg, Al, Si, K, Ca, Ba, and Fe.
 
-```{r ex31_loaddata}
+```{r load_glass_data, message=FALSE, warning=FALSE}
 require(mlbench)
 data(Glass)
 str(Glass)
 
 GlassPredictors <- select(Glass, -Type) %>%
-  gather(Variable, Value)
+  gather(Predictor, Value)
 ```
 
 (a) Using visualizations, explore the predictor variables to understand their
 distributions as well as the relationships between predictors.
-```{r ex31_hist}
+```{r glass_hist, message=FALSE, warning=FALSE}
 ggplot(GlassPredictors, aes(x = Value)) +  
   geom_histogram() + 
-  facet_wrap(~Variable, scales = "free")
+  facet_wrap(~Predictor, scales = "free")
 ```
 
 
-```{r ex31_dens}
+```{r glass_dens}
 ggplot(GlassPredictors, aes(x = Value)) +  
   geom_density() + 
-  facet_wrap(~Variable, scales = "free")
+  facet_wrap(~Predictor, scales = "free")
 ```
 
-```{r ex31_scatter, message=FALSE, warning=FALSE}
+```{r glass_predictor_scatter, message=FALSE, warning=FALSE}
 require(GGally)
 ggpairs(select(Glass, -Type))
 ```
 
 
-
-
-```{r ex31_corplot, eval=FALSE, include=FALSE}
-x <- select(Glass, -Type) %>%
-  select_if(function(x) length(nearZeroVar(x)) == 0) 
-correlations <- cor(x)
-corrplot::corrplot(correlations, order = "hclust", tl.cex = 1)
-
-```
 (b) Does there appear to be any outliers in the data?  Are predictors skewed?
 
 * Several variables show signs of skewness (BA, Ca, FE, RI)
@@ -796,21 +790,484 @@ corrplot::corrplot(correlations, order = "hclust", tl.cex = 1)
 might improve the classification model?
 
 Due to variables containing zero, use the Yeo-Johnson family of transformations
-```{r ex31_yeo}
+```{r glass_yeo_trans, message=FALSE, warning=FALSE}
 glassTrans <- preProcess(select(Glass, -Type), method = "YeoJohnson")
 glassTransData <- predict(glassTrans, select(Glass, -Type))
-glassTransData %>%
-  gather(Variable, Value) %>%
+dat <- glassTransData %>%
+  gather(Predictor, Value) %>%
   mutate(Transformation = "Yeo-Johnson") %>%
-  bind_rows(data.frame(GlassPredictors, Transformation = "NA")) %>%
-ggplot(aes(x = Value, color = Transformation)) +  
-  geom_density() + 
-  facet_wrap(~Variable, scales = "free")
+  bind_rows(data.frame(GlassPredictors, Transformation = "NA"))
+
+
+# Final result
+res <- list()
+# How many points we want 
+nPoints <- 1e3
+
+# Using simple loop to scale and calculate density
+combinations <- expand.grid(unique(dat$Predictor), unique(dat$Transformation))
+for(i in 1:nrow(combinations)) {
+    # Subset data
+    foo <- subset(dat, Predictor == combinations$Var1[i] & Transformation == combinations$Var2[i])
+    # Perform density on scaled signal
+    densRes <- density(x = scale(foo$Value), n = nPoints)
+    # Position signal from 1 to wanted number of points
+    res[[i]] <- data.frame(x = 1:nPoints, y = densRes$y, 
+                           pred = combinations$Var1[i], trans = combinations$Var2[i])
+}
+res <- do.call(rbind, res)
+ggplot(res, aes(x / nPoints, y, color = trans, linetype = trans)) +
+    geom_line(alpha = 0.5, size = 1) +
+    facet_wrap(~ pred, scales = "free")  +
+  labs(x = "Value / Points", y = "Scaled Density", colour = "Transformation", linetype = "Transformation")
 ```
+
 However, they don't really help in terms of skewness ... 
 
 To mitigate outliers, use the spatial sign transformation
+```{r glass_spatial_trans, message=FALSE, warning=FALSE}
+glassCSSSTrans <- preProcess(select(Glass, -Type), method = c("center", "scale", "spatialSign"))
+glassCSSSData <- predict(glassCSSSTrans, select(Glass, -Type))
+ggpairs(glassCSSSData)
+```
 
+Spatial sign transformation was effective in removing outliers.
+
+### Exercise 2
+The soybean data can also be found at the UC Irvine Machine Learning
+Repository. Data were collected to predict disease in 683 soybeans. The 35
+predictors are mostly categorical and include information on the environmental
+conditions (e.g., temperature, precipitation) and plant conditions (e.g., left
+spots, mold growth). The outcome labels consist of 19 distinct classes.
+
+```{r ex3_2_load_data, message=FALSE, warning=FALSE, include=FALSE}
+require(mlbench)
+data(Soybean)
+#?Soybean
+```
+
+
+(a) Investigate the frequency distributions for the categorical predictors. Are
+any of the distributions degenerate in the ways discussed earlier in this
+chapter?
+```{r soybean_hist, message=FALSE, warning=FALSE}
+select(Soybean, -Class) %>%
+  select_if(negate(is.numeric)) %>%
+  gather(Variable, Value) %>%
+  ggplot(aes(x = Value)) + 
+  geom_bar() + 
+  facet_wrap(~ Variable, scales = "free")
+```
+
+From these plots we see:
+
+* Few observations in April (0)
+* Precipitation usually greater than normal (2)
+* Temperature usually normal
+* Temperature, precipitation and hail are missing values.
+
+
+
+A mosaic plot, fluctuation diagram, or faceted bar chart may be used to display two categorical variable, as detailed in [The Generalized Pairs Plot](https://vita.had.co.nz/papers/gpp.pdf)
+
+```{r soybean_pairs, message=FALSE, warning=FALSE}
+ggpairs(select(Soybean, date, precip, temp), diag = 'blankDiag', upper = list(discrete = "ratio"))
+```
+
+```{r soybean_mosaic, message=FALSE, warning=FALSE}
+require(vcd)
+#require(ggmosaic)
+#detach("package:kernlab", unload=TRUE)
+Soybean2 <- Soybean %>%
+  mutate(date = fct_recode(date, Apr = "0", May = "1", Jun = "2", Jul = "3", Aug = "4", Sep = "5", Oct = "6"), 
+         temp = fct_recode(temp, "lt-norm" = "0", "norm" = "1", "gt-norm" = "2"))
+vcd::mosaic(~date + temp, data = Soybean2)
+
+ggplot(Soybean2, aes(x = date, fill = temp)) + geom_bar()
+
+Soybean2 %>%
+  group_by(date, temp) %>%
+  summarise(n = n()) %>%
+  group_by(date) %>%
+  mutate(pct = n/sum(n)) %>%
+  ggplot(aes(x = date, fill = temp, y = pct)) + geom_bar(stat = "identity")
+
+Soybean2 %>%
+  group_by(date, temp) %>%
+  summarise(n = n()) %>%
+  group_by(temp) %>%
+  mutate(pct = n/sum(n)) %>%
+  ggplot(aes(x = temp, fill = date, y = pct)) + geom_bar(stat = "identity")
+
+```
+
+(b) Roughly 18% of the data are missing. Are there particular predictors that
+are more likely to be missing? Is the pattern of missing data related to
+the classes?
+
+* Higher proportion of missing temperatures in April, although most missing temperatures are in July.
+* The pattern of missing data by class is shown below
+
+```{r soybean_missing_predictors}
+n_nulls <- function(x) sum(is.na(x))
+select(Soybean, -Class) %>%
+    select_if(negate(is.numeric)) %>%
+    summarise_all(funs(n_distinct, n_nulls))  %>%
+    gather(key="key", value="value") %>%
+    extract(key, c("variable", "metric"), "(.*)_(n_distinct$|n_nulls$)") %>%
+    tidyr::spread(metric, value) %>%
+    #filter(variable %in% c("date", "precip", "temp", "hail")) %>%
+  mutate(n = nrow(Soybean), 
+         prop_nulls = n_nulls/n) %>%
+  arrange(desc(prop_nulls))
+
+# Can also use YaleToolkit::whatis function
+#YaleToolkit::whatis(select(Soybean, -Class))
+
+
+```
+
+```{r soybean_missing_cases}
+table(Soybean$Class, complete.cases(Soybean))
+```
+Some classes have no complete cases, in particular: 2-4-d-injury, cyst-namatode,  diaporthe-pod-&-stem-blight, herbicide-injury  and phytophthora-rot.  Can check if there are just a few predictors causing this issue.
+
+```{r soybean_missing_predictors_by_case}
+n_nulls <- function(x) sum(is.na(x))
+Soybean %>%
+  filter(Class %in% c('2-4-d-injury', 'cyst-namatode',  'diaporthe-pod-&-stem-blight', 'herbicide-injury', 'phytophthora-rot')) %>%
+  group_by(Class) %>%
+    select_if(negate(is.numeric)) %>%
+    summarise_all(funs(n_nulls, n=n()))  %>%
+    gather(key="key", value="value", -Class) %>%
+    extract(key, c("variable", "metric"), "(.*)_(n$|n_nulls$)") %>%
+    spread(metric, value) %>%
+  mutate(prop_nulls = n_nulls/n) %>%
+  select(Class, variable, prop_nulls) %>%
+  spread(Class, prop_nulls)
+
+
+```
+
+This shows that many predictors are completely missing for some cases, e.g. the class 2-4-d-injury has no observations of the predictor canker.lesion, crop.hist, ext.decay, fruit.pots, etc.
+
+(c) Develop a strategy for handling missing data, either by eliminating
+predictors or imputation.
+
+In some cases, 100% of predictor values are missing and so imputation is unlikely to help. Options:
+* Remove cases with high proportion of missing values
+* Encode missing as another level
+
+```{r soybean_sparsity}
+dat <- Soybean %>%
+  # consider only those that are complete cases
+  filter_all(all_vars(!is.na(.))) %>%
+  # convert ordered variable to factor  
+  mutate_if(is.ordered, function(x) factor(as.character(x)))
+
+# generate binary predictors
+dummyInfo <- dummyVars(Class ~ ., data=dat)
+dummies <- predict(dummyInfo, dat)
+
+# Determine which variables are sparse
+sparsity <- nearZeroVar(dummies, saveMetrics = TRUE)
+head(sparsity)
+
+# Number and percentage of predictors to remove
+sparsity %>%
+  summarise(n = n(), n_nzv = sum(nzv), pct_nzv = mean(nzv))
+```
+
+To bypass the need to remove 19% of predictors, could use models insensitive to sparsity, such as tree- or rule- based models, or naive Bayes.
+
+### Exercise 3
+Chapter 5 introduces Quantitative Structure-Activity Relationship
+(QSAR) modeling where the characteristics of a chemical compound are used
+to predict other chemical properties. The caret package contains a QSAR
+data set from Mente and Lombardo (2005). Here, the ability of a chemical
+to permeate the blood-brain barrier was experimentally determined for 208
+compounds. 134 descriptors were measured for each compound.
+
+(a) Start R and use these commands to load the data:
+```{r bloodbrain_data}
+#require(caret); require(tidyverse); require(e1071)
+data(BloodBrain)
+# use ?BloodBrain to see more details
+```
+
+The numeric outcome is contained in the vector logBBB while the predictors
+are in the data frame bbbDescr.
+
+(b) Do any of the individual predictors have degenerate distributions?
+
+There are `ncol(bbbDescr)` descriptors and so will not plot all.
+
+* Skewness is present if |skewness| is large or if the ratio of the maximum to minimum value is greater than 20.  
+* (Near-)Zero Variance is present if percentage of unique values is $\leq$ 10 and frequency ratio (or most common over second-most common value) is $\geq$ 20.
+
+```{r bloodbrain_dist}
+zeroVar <- function(x) nearZeroVar(x, saveMetrics = TRUE)$zeroVar
+nzv <- function(x) nearZeroVar(x, saveMetrics = TRUE)$nzv
+freqRatio <- function(x) nearZeroVar(x, saveMetrics = TRUE)$freqRatio
+percentUnique <- function(x) nearZeroVar(x, saveMetrics = TRUE)$percentUnique
+
+  
+bbbSumm <- bbbDescr %>% 
+  summarise_all(funs(skewness, n_distinct, max, min, zeroVar, nzv, freqRatio, percentUnique)) %>%
+  gather(key="key", value="value") %>%
+  extract(key, c("variable", "metric"), "(.*)_(skewness|n_distinct|max|min|zeroVar|nzv|freqRatio|percentUnique)") %>%
+  spread(metric, value) %>%
+  mutate(max_min_ratio = ifelse(min==0, (max+1)/(min+1), max/min)) %>%
+  select(variable, n_distinct, skewness, max_min_ratio, zeroVar, nzv, freqRatio, percentUnique, min, max) %>%
+  arrange(desc(abs(skewness)))
+
+head(bbbSumm, n = 15)
+```
+
+There are a number of variables with near-zero variance: 
+`r cat(paste('-', filter(bbbSumm, nzv == 1)$variable), sep = '\n') `
+
+These variables would be removed for models that are impacted detrimentally by near-zero variance predictors.
+
+```{r bloodBrain_nsv_hist}
+select(bbbDescr, filter(bbbSumm, nzv == 1)$variable) %>%
+  gather(Measure, Value) %>%
+  
+  ggplot() + 
+  geom_histogram(aes(x=Value)) +
+  facet_wrap(~ Measure)
+```
+
+There are also a number of skewed variables.  Data pre- and post-transformation (Yeo-Johnson) are shown below.  May be best to determine manually which to transform.  
+  
+```{r bloodBrain_dens_glimpse}
+bbb_top_vars <- filter(bbbSumm, ! variable %in% filter(bbbSumm, nzv == 1)$variable) %>% 
+  top_n(n = 16, wt = abs(skewness)) %>%
+  select(variable) %>%
+  pull()
+
+
+bbbTrans <- preProcess(select(bbbDescr, -c(filter(bbbSumm, nzv == 1)$variable)), method = "YeoJohnson")
+bbbTransData <- predict(bbbTrans, select(bbbDescr, -c(filter(bbbSumm, nzv == 1)$variable))) 
+dat <- bbbTransData %>%
+  select(bbb_top_vars) %>%
+  gather(Predictor, Value) %>%
+  mutate(Transformation = "Yeo-Johnson") %>%
+  bind_rows(data.frame(gather(select(bbbDescr, bbb_top_vars), Predictor, Value), Transformation = "NA", stringsAsFactors = FALSE)) 
+  
+# Final result
+res <- list()
+# How many points we want 
+nPoints <- 1e3
+
+# Using simple loop to scale and calculate density
+combinations <- expand.grid(unique(dat$Predictor), unique(dat$Transformation))
+for(i in 1:nrow(combinations)) {
+    # Subset data
+    foo <- subset(dat, Predictor == combinations$Var1[i] & Transformation == combinations$Var2[i])
+    # Perform density on scaled signal
+    densRes <- density(x = scale(foo$Value), n = nPoints)
+    # Position signal from 1 to wanted number of points
+    res[[i]] <- data.frame(x = 1:nPoints, y = densRes$y, 
+                           pred = combinations$Var1[i], trans = combinations$Var2[i])
+}
+res <- do.call(rbind, res)
+ggplot(res, aes(x / nPoints, y, color = trans, linetype = trans)) +
+    geom_line(alpha = 0.5, size = 1) +
+    facet_wrap(~ pred, scales = "free")  +
+  labs(x = "Value / Points", y = "Scaled Density", colour = "Transformation", linetype = "Transformation")
+
+```
+
+
+(c) Generally speaking, are there strong relationships between the predictor
+data? If so, how could correlations in the predictor set be reduced?
+Does this have a dramatic effect on the number of predictors available for
+modeling?
+
+Samples in tails of skewed predictors may have significant effect on correlation structure and so best to review after transformation.  
+
+```{r bloodBrain_correlation_plots}
+# Correlation plot with no transformation
+bbb_cor_raw <- cor(select(bbbDescr, -c(filter(bbbSumm, nzv == 1)$variable)))
+corrplot(bbb_cor_raw, order = "hclust", addgrid.col = NA, tl.pos = "n")
+
+# Correlation plot of Yeo-Johnson transformed data
+bbb_cor_yeo <- cor(bbbTransData)
+corrplot(bbb_cor_yeo, order = "hclust", addgrid.col = NA, tl.pos = "n")
+
+# Correlation plot of spatial sign transformed data
+bbb_cor_sps <- cor(spatialSign(scale(select(bbbDescr, -c(filter(bbbSumm, nzv == 1)$variable)))))
+corrplot(bbb_cor_sps, order = "hclust", addgrid.col = NA, tl.pos = "n")
+
+```
+
+
+This shows that correlations lessen with increasing levels of transformations
+
+```{r bloodBrain_corr_summ}
+corrInfo <- function(x) summary(x[upper.tri(x)])
+corrInfo(bbb_cor_raw)
+corrInfo(bbb_cor_yeo)
+corrInfo(bbb_cor_sps)
+```
+
+However, rather than transform data, it may be better to remove correlated predictors, using `findCorrelation` function.
+
+# Chapter 4: Over-Fiting and Model Tuning
+
+Aim: Strategies to avoid overfitting so that model can predict new samples with similar degree of accuracy as for training data.  Will use model tuning (of model parameters) to maximise model performance.  Traditionally, training set to build and tune model and test set to estimate performance.  Modern approach is to split data into multiple training and test data sets.
+
+## The Problem of Over-Fitting
+Over-fit model:
+
+  * Has learnt noise of data
+  * Poor accuracy when applied to new data set
+  
+**Apparent Performance**: Error rate of model when applied to the training set
+
+## Model Tuning
+
+**Tuning parameter**: Has no analytical formula to calculate an appropriate value, e.g. k in knn.  Often control complexity and so poor choices can lead to over-fitting.
+
+Methods for determining tuning parameters:
+
+* Parameter Tuning Process:
+  1. Define set of candidate values for tuning parameter(s)
+  2. For each candidate set:
+    a. Resample data
+    b. Fit model
+    c. Predictor hold-outs
+  3. Aggregate resampling into performance profile
+  4. determine final tuning parameters
+  6. Refit model with entire training set and final tuning parameters
+* Genetic Algorithms
+* Simplex search methods
+
+## Data Splitting (Single Test Set)
+Not generally recommended.
+
+Methods:
+
+* Nonrandom; appropriate for example, if need to test on a different sample population, point in time or new phenomenon
+* Simple random sample
+* Stratified random sampling; apply to disproportionate classes to obtain similar distribution between training and test sets
+* Maximum dissimilarity sampling; distance between predictor values for two samples
+  * Initialise with single sample
+  * The second sample is chosen as the most dissimilar to the first
+  * The third and subsequent samples are most dissimilar to the __group__ of prior samples (e.g. average or minimum of the dissimilarity)
+
+Variants:
+
+* Use stratified random sampling to select $k$ partitions so that the folds are balanced with respect to the outcome.
+* Leave-one-out cross-validation (LOOCV), $k$ = # samples
+* Repeated $k$-fold cross-validation; can increase precision while maintaining small bias
+
+Choice of $k$ has a bias-variance trade-off;
+
+**bias**: difference between estimated and true values of performance
+
+**variance**: Repeating the resampling procedure produces a very different value
+
+Small $k$, e.g. 2-3: Decreased variance, increased bias.  (Bias is similar to bootstrap but with larger variance) </br>
+Large $k$: Increased variance, decreased bias.  More computationally taxing.
+
+Typically use $k$ = 5 or 10.  
+
+## Resampling Techniques
+
+### k-Fold Cross-Validation
+
+Method:
+
+* Partition sample into $k$ sets (folds) of roughly equal size.
+* Repeat for each fold:
+  * Fit model to all samples except the fold $i$
+  * Predict held-out samples to estimate performance measures
+* Summarise $k$ resampled estimates of performance, e.g. mean, std. error to understand relationship between tuning parameters and model utility
+
+
+### Generalised Cross-Validation
+For linear regression, can use generalised cross-validation (GCV) statistic to approximate the leave-one-out error rate, 
+\[\text{GCV} = \frac{1}{n}\sum^n_{i=1}\left(\frac{y_i - \hat{y}_i}{1-\text{df}/n}\right)^2\]
+Models with similar precision but higher complexity will have a larger GCV value.
+
+### Repeated Training/Test Splits (a.k.a Leave-Group-Out CV or Monte Carlo CV)
+Practitioner determine percent split between training (75-80%) and test, in addition to the number of repetitions (50-200).
+Can increase proportion of data in training set with increased repetitions in order to decrease bias.Increasing repetitions will decrease uncertainty of performance estimates.  
+Unlike in k-fold cross validation, a sample can be in multiple hold-out sets.
+
+### The Bootstrap
+**Bootstrap Sample**: Random sample of data taken with replacement.  Bootstrap sample is same size as original data set.  Prediction is made on the **out-of-bag samples**, i.e. those samples not selected.
+
+In comparison to cross-validation, bootstrap technique has:
+
+* less uncertainty than k-fold cv
+* more bias (similar to 2-fold CV); bias will decease as training set sample size becomes large (on average 63.2% of data points represented at least once)
+
+Modifications:
+
+* 632 method: combined bootstrap estimate and estimate from re-predicting the training set (the apparent error rate),  error rate = .632 x simple bootstrap estimate + 0.368 x apparent error rate
+
+
+## Case Study: Credit Scoring
+Aim: predict probability that applicants have good credit
+Dataset: German credit dat set
+Samples: 1000 
+Class distribution: Good(70%), Bad(30%)
+Baseline accuracy: Predict all to be good, such that accuracy is 70%
+Predictors: credit history, employment, account status, loan amount.  Majority categorical and so converted to dummy variables.  After conversion, there were 41 predictors.  
+
+## Choosing Final Tuning Parameters
+
+Approach to choose final settings:
+
+* Numerically optimal: Pick those with numerically best performance estimates.  Disadvantage: May lead to choice of an overly complicated model.
+* One-standard error method: Find the numerically optical model then the simplest model whose performance is within a single standard error.
+* Tolerance method: Choose simpler model that has performance ($X$) within tolerance of best ($O$), i.e. such that 
+\[(X-O)/O > \text{Tolerance}\]
+e.g. if best accuracy is 75% then with 4% loss in accuracy acceptable, then can choose accuracy at $O(1 +  \text{Tolerance} = .75*(1 - .04) = 0.72$.
+
+## Data Splitting Recommendations
+
+Strong case to use resampling
+
+* Single test set has limited ability to characterise uncertainty
+* Proportionally large test sets increase bias
+* With small sample sizes, test set uncertainty can be considerably large
+
+No resampling method is uniformly better.
+
+* Small sample size; recommend 10-fold cross-validation
+* Large sample size; difference becomes less pronounced and computational efficiency increases.  Again 10-fold cross-validation recommended
+* To choose between models as opposed to getting best indicator of performance, consider bootstrap procedures as have low variance
+
+There may be some (often negligible) bias for final model chosen based on tuning parameter with smallest error rate.  
+
+## Choosing Between Models
+
+Once tuning parameters chosen for each model, how do we determine between multiple models?
+
+Approaches:
+
+* Determine performance ceiling, then simplify
+  * Start with least interpretable and most flexible model, e.g. boosted trees or support vector machines, to determine performance ceiling
+  * Investigate simpler models that are less opaque, e.g. MARS, partial least squares, gams or naive Bayes
+  * Choose the simplest model that reasonable approximates the performance ceiling
+* Use resampling results to compare models
+  * Use identically resampled data sets
+  * Use statistical methods for pair comparisons, e.g. use paired t-test to evaluate that models have equivalent accuracy or determine mean difference in accuracy and associated confidence interval
+
+## Computing
+### Data Splitting
+```{r}
+# Data
+data(twoClassData)
+str(predictors) # predictors
+str(classes) # response values
+
+
+```
 
 
 # New R commands

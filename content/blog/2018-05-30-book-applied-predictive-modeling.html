@@ -1,27 +1,24 @@
 ---
-title: 'Book: Applied Predictive Modeling'
-author: Marie
+title: 'Book: Applied Predictive Modeling (Part I)'
+author: "Marie"
 date: '2018-05-30'
+categories: Study-Notes
 slug: book-applied-predictive-modeling
-banner: "img/banners/kuhn.png"
-categories:
-  - Study-Notes
 tags:
-  - R
-  - Study-Notes
-  - Book
+- R
+- Study-Notes
+- Book
+banner: img/banners/kuhn.png
 ---
 
 
 
 <div id="overview" class="section level1">
 <h1>Overview</h1>
-<p>This post includes my notes and reproduction of examples in the book <a href="http://appliedpredictivemodeling.com">Applied Predictive Modeling</a> (2013), by Max Kuhn and Kjell Johnson.</p>
+<p>This post includes my notes and reproduction of examples of <strong>Part I: General Strategies</strong> of the book <a href="http://appliedpredictivemodeling.com">Applied Predictive Modeling</a> (2013), by Max Kuhn and Kjell Johnson</p>
 </div>
-<div id="notes" class="section level1">
-<h1>Notes</h1>
-<div id="introduction" class="section level2">
-<h2>Introduction</h2>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
 <p>Common reasons for predictive model failure:</p>
 <ul>
 <li>Inadequate pre-processing of data</li>
@@ -37,7 +34,6 @@ tags:
 <li>Relevant data</li>
 <li>Versatile computation toolbox (pre-processing, modelling, visualizations) The combined force of predictive modelling and intuition will be better than the parts.</li>
 </ul>
-</div>
 <div id="predictive-modeling-process" class="section level2">
 <h2>Predictive Modeling Process</h2>
 <p>Steps:</p>
@@ -60,8 +56,9 @@ tags:
 <li>Model selection: Involves choosing between models and selecting tuning parameters (within model)</li>
 </ul>
 </div>
-<div id="data-pre-processing" class="section level2">
-<h2>Data Pre-Processing</h2>
+</div>
+<div id="data-pre-processing" class="section level1">
+<h1>Data Pre-Processing</h1>
 <ul>
 <li>Addition, deletion or transformation of <strong>training set</strong> data</li>
 <li>Can make or break model’s predictive ability</li>
@@ -72,8 +69,8 @@ tags:
 <li>Predictors have common scale (e.g PLS)</li>
 <li>Removal of outliers</li>
 </ul>
-<div id="data-tranformations-individual-predictors" class="section level3">
-<h3>Data Tranformations (Individual Predictors)</h3>
+<div id="data-tranformations-individual-predictors" class="section level2">
+<h2>Data Tranformations (Individual Predictors)</h2>
 <ul>
 <li>Pre-processing techniques include:</li>
 <li>Centering: Subtract average <span class="math inline">\(\rightarrow \bar{x} = 1\)</span></li>
@@ -112,7 +109,7 @@ segTrain &lt;- subset(segmentationOriginal, Case == &quot;Train&quot;)
 segTrainId &lt;- segTrain$Cell
 segTrainClass &lt;- segTrain$Class
 segTrainCase &lt;- segTrain$Case
-segTrainX &lt;- select(segTrain, -c(Cell, Class, Case)) 
+segTrainX &lt;- dplyr::select(segTrain, -c(Cell, Class, Case)) 
 #%&gt;% select(-contains(&quot;Status&quot;))
 
 # https://topepo.github.io/caret/pre-processing.html#the-preprocess-function
@@ -123,7 +120,7 @@ segMetrics &lt;- segTrainX %&gt;%
   summarise_all(funs(skewness, n_distinct, max, min)) %&gt;%
   gather(key=&quot;key&quot;, value=&quot;value&quot;) %&gt;%
   extract(key, c(&quot;variable&quot;, &quot;metric&quot;), &quot;(.*)_(skewness|n_distinct|max|min)&quot;) %&gt;%
-  tidyr::spread(metric, value) %&gt;%
+  spread(metric, value) %&gt;%
   mutate(max_min_ratio = ifelse(min==0, (max+1)/(min+1), max/min)) %&gt;%
   select(variable, n_distinct, skewness, max_min_ratio, min, max)
 
@@ -172,7 +169,8 @@ head(segMetrics)</code></pre>
 <li>the remaining features had a <span class="math inline">\(\lambda\)</span> between -2 and 2</li>
 <li><p>Features with a lambda between 0.98 and 1.02 would not be transformed</p></li>
 </ul>
-<p><strong>Question</strong>: Why not add an offset variable to ensure all variables are positive? Note, that instead of using the log transformation, or Box-Cox transformations when predictors have values of zero, can instaed use the Yeo-Johnson family of transformations. This family is similar to the Box-Cos transformations but can handle zero or negative predictor values.</p>
+<p><strong>Question</strong>: Why not add an offset variable to ensure all variables are positive? Note, that instead of using the log transformation, or Box-Cox transformations when predictors have values of zero, can instead use the Yeo-Johnson family of transformations. This family is similar to the Box-Cos transformations but can handle zero or negative predictor values.</p>
+<p>It should be noted that transformations to reduce skewness might not always be successful. Under such circumstances, one should use models that are not unduly affected by skewed distributions (e.g. tree-based methods)</p>
 <p>As an example, the feature <em>VarIntenCh3</em>, which records the standard deviation of pix intensity in actin filaments, had the following properties:</p>
 <ul>
 <li>Metrics</li>
@@ -187,15 +185,15 @@ head(segMetrics)</code></pre>
 <pre class="r"><code>histogram(~segTrainX$VarIntenCh3,
           xlab = &quot;Natural Units&quot;,
           type = &quot;count&quot;)</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_featureEG_orig-1.png" width="672" /> * Transformed data distribution</p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/original_segmentation_features-1.png" width="672" /> * Transformed data distribution</p>
 <pre class="r"><code>histogram(~log(segTrainX$VarIntenCh3),
           xlab = &quot;Log Units&quot;,
           ylab = &quot; &quot;,
           type = &quot;count&quot;)</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_featureEG_trans-1.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/trans_segmentation_features-1.png" width="672" /></p>
 </div>
-<div id="data-transformations-multiple-predictors" class="section level3">
-<h3>Data Transformations (Multiple Predictors)</h3>
+<div id="data-transformations-multiple-predictors" class="section level2">
+<h2>Data Transformations (Multiple Predictors)</h2>
 <p><strong>Outliers</strong></p>
 <ul>
 <li>Is value valid or has recording error occurred?</li>
@@ -220,9 +218,9 @@ head(segMetrics)</code></pre>
 </ul>
 <pre class="r"><code>trellis.par.set(caretTheme())
 featurePlot(x=iris[,-5], y=iris[,5], &quot;pairs&quot;)</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/spatialsign_egIris-1.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/iris_spatial_trans-1.png" width="672" /></p>
 <pre class="r"><code>featurePlot(spatialSign(scale(iris[,-5])), iris[,5], &quot;pairs&quot;)</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/spatialsign_egIris-2.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/iris_spatial_trans-2.png" width="672" /></p>
 <pre class="r"><code>set.seed(1)
 n &lt;- 10000
 tmp &lt;- data.frame(x=c(rnorm(n, 0, 0.02), -1, 1, 0.5),
@@ -230,10 +228,10 @@ tmp &lt;- data.frame(x=c(rnorm(n, 0, 0.02), -1, 1, 0.5),
 
 plot(tmp, asp=1, col=c(rep(1,n), 2, 3, 4), pch=19)
 grid()</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/spatialsign_eg_rand-1.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/rand_spatial_trans-1.png" width="672" /></p>
 <pre class="r"><code>plot(spatialSign(tmp), asp=1, col=c(rep(1,n), 2, 3, 4), pch=19)
 grid()</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/spatialsign_eg_rand-2.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/rand_spatial_trans-2.png" width="672" /></p>
 <p><strong>Data Reduction and Feature Extraction</strong></p>
 <p>Data reduction techniques</p>
 <ul>
@@ -279,7 +277,7 @@ xyplot(AvgIntenCh1 ~ EntropyIntenCh1,
        type = c(&quot;p&quot;, &quot;g&quot;),
        main = &quot;Original Data&quot;,
        aspect = 1)</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segPCS_EGplot-1.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_PCA-1.png" width="672" /></p>
 <pre class="r"><code>xyplot(PC2 ~ PC1,
        data = as.data.frame(pr$x),
        groups = segTrain$Class,
@@ -290,7 +288,7 @@ xyplot(AvgIntenCh1 ~ EntropyIntenCh1,
        ylim = extendrange(pr$x),
        type = c(&quot;p&quot;, &quot;g&quot;),
        aspect = 1)</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segPCS_EGplot-2.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_PCA-2.png" width="672" /></p>
 <ul>
 <li>Because first PC summarises 96.6% variation and the second 3.42%, in this case could just use the first PC.</li>
 </ul>
@@ -312,7 +310,7 @@ tab &lt;- data.frame(PC = names(tab), Var = tab, row.names=NULL, stringsAsFactor
 ggplot(tab, aes(x = PC, y=Var))+ 
          geom_line() + 
   geom_point()</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segPCS_EGscree-1.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_pca_scree-1.png" width="672" /></p>
 <p>Scatterplot matrix of first 3 PCs (with points coloured by class):</p>
 <ul>
 <li>Appears to be some separation between classes when plotting first and second component (but remember that these two components only explain 26.6% of variance and so don’t over-interpret!). However distribution of well-segmented cells roughly contained within poorly identified cells; cell types don’t appear to be easily separated. Don’t despair!; it does not mean other models, e.g. that can accommodate non-linear relationships, will reach the same conclusions.</li>
@@ -326,9 +324,9 @@ splom(as.data.frame(segPCA$x[, 1:3]),
       as.table = TRUE,
       auto.key = list(columns = 2),
       prepanel.limits = function(x) panelRange)</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segPCS_EGscat-1.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_pca_scatter-1.png" width="672" /></p>
 <ul>
-<li>Can also visualise which predictor is associated with each principal component. A coefficient (loading) close to zero within the PC linear equation indicates that that predictors did not contribute much to that component. In the following figure, each point corresponds to a predictor variable and is coloured by thte opitcal channel used in the exerpiment. For the first PC, channel 1 (cell body) loadings are greater and therefore have largest effect on PC. However, even though cell body measurements account fo rmore variation in the data, this does not imply that these variables will be associated with predicting segmentation quality.</li>
+<li>Can also visualise which predictor is associated with each principal component. A coefficient (loading) close to zero within the PC linear equation indicates that that predictors did not contribute much to that component. In the following figure, each point corresponds to a predictor variable and is coloured by the optical channel used in the experiment. For the first PC, channel 1 (cell body) loadings are greater and therefore have largest effect on PC. However, even though cell body measurements account for more variation in the data, this does not imply that these variables will be associated with predicting segmentation quality.</li>
 </ul>
 <pre class="r"><code>## Format the rotation values for plotting
 segRot &lt;- as.data.frame(segPCA$rotation[, 1:3])
@@ -370,21 +368,22 @@ upperp &lt;- function(...)
                  col = trellis.par.get(&quot;reference.line&quot;)$col,
                  lwd = trellis.par.get(&quot;reference.line&quot;)$lwd)
     panel.xyplot(args$x, args$y, groups = args$groups, subscripts = args$subscripts)
-  }
-splom(~segRot[, 1:3],
+}
+# note this requires ellipse
+lattice::splom(~segRot[, 1:3],
       groups = segRot$Channel,
       lower.panel = function(...){}, upper.panel = upperp,
       prepanel.limits = function(x) panelRange,
       auto.key = list(columns = 2))</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segPCS_EGrot-1.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_pca_splom-1.png" width="672" /></p>
 </div>
-<div id="missing-values" class="section level3">
-<h3>Missing Values</h3>
+<div id="missing-values" class="section level2">
+<h2>Missing Values</h2>
 <p>Types of missing data:</p>
 <ul>
 <li>Structurally missing, e.g. number of children man has given birth to</li>
 <li>Informative missingness: if related to outcome, can induce bias, e.g. customer rating are using polarised</li>
-<li>Censored (this is not missing data, as something isknown about it), but for predictive models, it may be treated as missing, or hte censored value may be used as the observed value. E.g., for labatory test which cannot measure below a limit, may use a random value between 0 and the limit as the observed value.</li>
+<li>Censored (this is not missing data, as something is known about it), but for predictive models, it may be treated as missing, or the censored value may be used as the observed value. E.g., for laboratory test which cannot measure below a limit, may use a random value between 0 and the limit as the observed value.</li>
 </ul>
 <p>Options:</p>
 <ul>
@@ -394,10 +393,10 @@ splom(~segRot[, 1:3],
 <ul>
 <li>Note that imputation for statistical inference is not the same as inference for predictive models (references given for the latter).<br />
 </li>
-<li>Incorporate imputation in resampling if being used to select tuning parmater values.<br />
+<li>Incorporate imputation in resampling if being used to select tuning parameter values.<br />
 </li>
-<li>If number of predictors affected by missing values is small, best to perform exploratory analysis of relationships between predictors, e.g. using PCA or visualisations. If a variable with missing values is highly correlated with another thne can use a focussed model</li>
-<li>KNN popular to impute by finding samples in training set closest to it and averages nearby points to fill it. Advantage: Confined to training set. Disadvantage: KNN requires entire training set and number of neighbours and method of determinig “closeness” are tuning parameters.</li>
+<li>If number of predictors affected by missing values is small, best to perform exploratory analysis of relationships between predictors, e.g. using PCA or visualisations. If a variable with missing values is highly correlated with another then can use a focused model</li>
+<li>KNN popular to impute by finding samples in training set closest to it and averages nearby points to fill it. Advantage: Confined to training set. Disadvantage: KNN requires entire training set and number of neighbours and method of determining “closeness” are tuning parameters.</li>
 </ul></li>
 </ul>
 <pre class="r"><code>require(AppliedPredictiveModeling)
@@ -428,12 +427,11 @@ obsTrans &lt;- predict(knnTrans, obs)$PerimCh1
 ggplot(data.frame(obs = obsTrans, pred), aes(x=obs, y=pred)) + 
   geom_point() + 
   geom_smooth(method=&#39;lm&#39;)</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/imputationViaKNN-1.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_imputation_knn-1.png" width="672" /></p>
 <pre class="r"><code>cor(obsTrans, pred)</code></pre>
 <pre><code>## [1] 0.8817321</code></pre>
 <pre class="r"><code>#if(&quot;PerimCh1&quot; %in% preProcValues$method$scale) pred &lt;- pred * preProcValues$std[&quot;PerimCh1&quot;]
 #if(&quot;PerimCh1&quot; %in% preProcValues$method$center) pred &lt;- pred + preProcValues$mean[&quot;PerimCh1&quot;]</code></pre>
-<p>TODO: Simple regression method ..need to first find correlated variables</p>
 <pre class="r"><code># use cell fiber lengtha nd cell size. to predict.  
 segCorr &lt;- cor(segTrainX, use = &quot;pairwise.complete.obs&quot;)[,&quot;PerimCh1&quot;]
 sort(segCorr, decreasing = TRUE)[2:3]</code></pre>
@@ -444,55 +442,53 @@ pred &lt;- predict(mod, segTrainX[ind_miss, ])
 ggplot(data.frame(obs = obsTrans, pred), aes(x=obs, y=pred)) + 
   geom_point() + 
   geom_smooth(method=&#39;lm&#39;)</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/imputationViaRegression-1.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_imputation_regression-1.png" width="672" /></p>
 <pre class="r"><code>cor(pred, obsTrans)</code></pre>
 <pre><code>## [1] 0.9752604</code></pre>
 </div>
-<div id="removing-predictors" class="section level3">
-<h3>Removing Predictors</h3>
+<div id="removing-predictors" class="section level2">
+<h2>Removing Predictors</h2>
 <p>Advantage of less predictors:</p>
 <ul>
 <li>Decreased computation time</li>
-<li>Decreased complexity / More pasimonious / More interpretable</li>
-<li>Highly correlated predictors are measring the same thing and so have no extra information</li>
-<li>Better model performance / stability without problematic and correlated variabels</li>
+<li>Decreased complexity / More parsimonious / More interpretable</li>
+<li>Highly correlated predictors are measuring the same thing and so have no extra information</li>
+<li>Better model performance / stability without problematic and correlated variables</li>
 </ul>
 <p>Predictors to remove:</p>
 </div>
-<div id="zero-variance-and-near-zero-variance-predictors" class="section level3">
-<h3>Zero Variance and Near-Zero Variance Predictors</h3>
+<div id="zero-variance-and-near-zero-variance-predictors" class="section level2">
+<h2>Zero Variance and Near-Zero Variance Predictors</h2>
 <ul>
 <li><strong>Zero variance predictors</strong> : Those with a single unique value</li>
-<li><strong>Near-zero variance predictors</strong> : Thos with a single value for most samples</li>
+<li><strong>Near-zero variance predictors</strong> : Those with a single value for most samples</li>
 </ul>
-<p>To determine: 1. Calculate number of unique variables / number of samples 2. Calculate frequency of unique values (or ratio of most common frequent to second most frequent)</p>
-<p>If (1) faction of unique values over sample size is loq, e.g. <span class="math inline">\(\leq\)</span> 10% and (2) ratio of frequency of most prevalent value to the second most prevalent value is large, e.g. <span class="math inline">\(\geq\)</span> 20</p>
+<p>To determine:</p>
+<p>1.Calculate number of unique variables / number of samples 2. Calculate frequency of unique values (or ratio of most common frequent to second most frequent)</p>
+<p>If (1) fraction of unique values over sample size is low, e.g. <span class="math inline">\(\leq\)</span> 10% and (2) ratio of frequency of most prevalent value to the second most prevalent value is large, e.g. <span class="math inline">\(\geq\)</span> 20</p>
 </div>
-<div id="correlated-variables" class="section level3">
-<h3>Correlated Variables</h3>
+<div id="correlated-variables" class="section level2">
+<h2>Correlated Variables</h2>
 <ul>
 <li><strong>Collinearity</strong>: Correlated pair of predictor variables</li>
 <li><strong>Multicollinearity</strong>: Relationships between multiple predictors at once</li>
 </ul>
-<p>To detect: 1. Visually. TODO: Review Everitt</p>
+<p>To detect: 1. Visually.</p>
 <pre class="r"><code>segData &lt;- subset(segmentationOriginal, Case == &quot;Train&quot;)[, -(1:3)]
 isZV &lt;- apply(segData, 2, function(x) length(unique(x)) == 1)
 segData &lt;- segData[, !isZV]
 correlations &lt;- cor(segData)
 corrplot::corrplot(correlations, order = &quot;hclust&quot;, tl.cex = 0.2)</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/plotCorrelationMatrix-1.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_correlation_matrix-1.png" width="672" /></p>
 <ol start="2" style="list-style-type: decimal">
-<li>PCA: If first PCA accounts for large percentage of variance, then there is at least one group of predictors that represent the same information. Use PCA loadings to understand which predictos are associated with each component. Note though that as unsupervised, no guarnatee that resulting predictors will have relationship with the outcome.</li>
-</ol>
-<p>TODO: Need to understand PCA better</p>
-<ol start="3" style="list-style-type: decimal">
-<li>Variance Inflation Factor (VIF) statistic available as part of classical regression anallysis, however only useful for linear regression. Whilst it determine collinear predictors it does not determine which should be removed to resolve the problem</li>
-<li>Remove the minimum number of predictors to determien that all pairwise correlations are below a certain threshold. This only identifies collineariites in two dimensions, but can improve model performance. Algorithm is as follows:</li>
+<li><p>PCA: If first PCA accounts for large percentage of variance, then there is at least one group of predictors that represent the same information. Use PCA loadings to understand which predictors are associated with each component. Note though that as unsupervised, no guarantee that resulting predictors will have relationship with the outcome.</p></li>
+<li>Variance Inflation Factor (VIF) statistic available as part of classical regression analysis, however only useful for linear regression. Whilst it determine collinear predictors it does not determine which should be removed to resolve the problem</li>
+<li>Remove the minimum number of predictors to determine that all pairwise correlations are below a certain threshold. This only identifies colinearities in two dimensions, but can improve model performance. Algorithm is as follows:</li>
 <li>Calculate correlation matrix</li>
 <li>Determine pair of predictors with largest absolute correlation</li>
 <li>Determine average correlation between A and other variables. Repeat for B.</li>
-<li>Remove the predictor (A or B) with the largest average corelation</li>
-<li>Repeat steps 2-3 until no absolute correlations above the threshold</li>
+<li>Remove the predictor (A or B) with the largest average correlation</li>
+<li><p>Repeat steps 2-3 until no absolute correlations above the threshold</p></li>
 </ol>
 <p>This algorithm is implemented using <code>caret::findCorrelation</code></p>
 <pre class="r"><code>segTrain &lt;- subset(segmentationOriginal, Case == &quot;Train&quot;)
@@ -521,33 +517,32 @@ highCorr &lt;- findCorrelation(segCorr, .75)
 length(highCorr)</code></pre>
 <pre><code>## [1] 43</code></pre>
 </div>
-<div id="adding-predictors" class="section level3">
-<h3>Adding Predictors</h3>
+<div id="adding-predictors" class="section level2">
+<h2>Adding Predictors</h2>
 <ul>
-<li><p>It is common to decompose categorical predictors usng dummy variables (indicator with zero/one). With 5 categories, only 4 dummy variables needed. If 5 were included in regression then would have numerical isseus (intercept replaces the other); for other models, including all 5 may aid interpretation</p></li>
+<li><p>It is common to decompose categorical predictors using dummy variables (indicator with zero/one). With 5 categories, only 4 dummy variables needed. If 5 were included in regression then would have numerical issues (intercept replaces the other); for other models, including all 5 may aid interpretation</p></li>
 <li>Non-linear transformations, e.g. <span class="math inline">\(B^2\)</span>, where <span class="math inline">\(B\)</span> is a predictor</li>
 <li><p>Combinations of data (e.g. class centroids, center of predictor data to each class)</p></li>
 </ul>
 </div>
-<div id="binning-predictors" class="section level3">
-<h3>Binning Predictors</h3>
+<div id="binning-predictors" class="section level2">
+<h2>Binning Predictors</h2>
 <p>Disadvantages of manual binning:</p>
 <ul>
 <li>Loss of performance in the model</li>
-<li>Loss in predicion in the predictions</li>
+<li>Loss in prediction in the predictions</li>
 <li>Can lead to high rate of false positives (noisy predictors determined to be informative)</li>
 </ul>
-<p>Advantage: More interpretable. However the perceived improvement in interpretability by manual binning is usually offest by siginficant loss in perofrmance (the goal of this book is prediction not interpretation and so manual binning not recommended).</p>
-<p>Automatic Binning * E.G Classification / Regression Trees * Multivariate adaptive regression splies * Evaluate many variables simulatabiuosly, based on staticscally sound methodogloges</p>
+<p>Advantage: More interpretable. However the perceived improvement in interpretability by manual binning is usually offset by significant loss in performance (the goal of this book is prediction not interpretation and so manual binning not recommended).</p>
+<p>Automatic Binning * E.G Classification / Regression Trees * Multivariate adaptive regression splines * Evaluate many variables simultaneously, based on statistically sound methodologies</p>
 </div>
-<div id="computing" class="section level3">
-<h3>Computing</h3>
-</div>
+<div id="computing" class="section level2">
+<h2>Computing</h2>
 <div id="transformations" class="section level3">
 <h3>Transformations</h3>
 <ul>
-<li><code>e1071::sknewness</code>: calculates sample skewness statistics for each predictor. Those that are highly skewed can be priorritsed for distribution visualations using <code>hist</code>, <code>lattice:histogram</code></li>
-<li><code>MASS::boxcox</code>: to determine type of tranformation to use; estimates <span class="math inline">\(\lambda\)</span> but will not create the transformed variable(s)</li>
+<li><code>e1071::sknewness</code>: calculates sample skewness statistics for each predictor. Those that are highly skewed can be prioritised for distribution visualisations using <code>hist</code>, <code>lattice:histogram</code></li>
+<li><code>MASS::boxcox</code>: to determine type of transformation to use; estimates <span class="math inline">\(\lambda\)</span> but will not create the transformed variable(s)</li>
 <li><code>caret::BoxCoxTrans</code>: Find most appropriate transformation and apply to new data</li>
 </ul>
 <p>Example:</p>
@@ -606,17 +601,17 @@ head(pcaObject$rotation[ , 1:3])</code></pre>
 ## AvgIntenCh1     0.061268408  0.17388938  0.0413066884
 ## AvgIntenCh2     0.101313516  0.16201999  0.0349230837</code></pre>
 <ul>
-<li><code>caret::spatialSign</code>: Spatial sign transfomration</li>
+<li><code>caret::spatialSign</code>: Spatial sign transformation</li>
 <li><code>impute::impute.knn</code> to estimate missing data; also possible using <code>caret::PreProcess</code> which applies imputation methods based on KNN or bagged trees</li>
-<li><code>caret::PreProcess</code>: Has the ability to</li>
+<li><p><code>caret::PreProcess</code>: Has the ability to</p></li>
 <li>Transform</li>
 <li>Center</li>
 <li>Scale</li>
 <li>Impute values</li>
 <li>Feature extraction</li>
-<li>Apply spatial sign transformation</li>
+<li><p>Apply spatial sign transformation</p></li>
 </ul>
-<p>(in this order) After calling the <code>preProcess</code> function, the <code>predict</code> method applies the tranformationr esults to a set of data.</p>
+<p>(in this order) After calling the <code>preProcess</code> function, the <code>predict</code> method applies the transformation results to a set of data.</p>
 </div>
 <div id="filtering" class="section level3">
 <h3>Filtering</h3>
@@ -624,14 +619,14 @@ head(pcaObject$rotation[ , 1:3])</code></pre>
 <li><code>caret::nearZeroVar</code>: To determine predictors with unique variables</li>
 <li><code>cor</code>: To determine correlations</li>
 <li><code>corrplot:corrplot</code>: Includes option to reorder variables in a way that reveals clusters of highly correlated predictors</li>
-<li><code>caret::findCorrelation</code>: Recommends columns for deleteion based on a given threshold of pairwise correlations</li>
+<li><code>caret::findCorrelation</code>: Recommends columns for deletion based on a given threshold of pairwise correlations</li>
 <li><code>subselect</code> package also has methods for selecting predictors</li>
 </ul>
 </div>
 <div id="creating-dummy-variables" class="section level3">
 <h3>Creating Dummy Variables</h3>
 <ul>
-<li><code>caret::dummyVars</code>: To determine encodings for clategorical predictors</li>
+<li><code>caret::dummyVars</code>: To determine encoding for categorical predictors</li>
 <li>All dummy variables recommended when using tree-based model</li>
 </ul>
 <pre class="r"><code>data(cars)
@@ -686,14 +681,14 @@ withInteraction</code></pre>
 ## 5             0                 0             0             0
 ## 6             0                 0             0             0</code></pre>
 </div>
-<div id="chapter-3-exercises" class="section level3">
-<h3>Chapter 3 Exercises</h3>
-<div id="exercise-3.1" class="section level4">
-<h4>Exercise 3.1</h4>
+</div>
+<div id="chapter-3-exercises" class="section level2">
+<h2>Chapter 3 Exercises</h2>
+<div id="exercise-3.1" class="section level3">
+<h3>Exercise 3.1</h3>
 <p>The UC Irvine Machine Learning Repository contains a data set related to glass identification. The data consist of 214 glass samples labeled as one of seven class categories. There are nine predictors, including the refractive index and percentages of eight elements: Na, Mg, Al, Si, K, Ca, Ba, and Fe.</p>
-<pre class="r"><code>require(mlbench)</code></pre>
-<pre><code>## Loading required package: mlbench</code></pre>
-<pre class="r"><code>data(Glass)
+<pre class="r"><code>require(mlbench)
+data(Glass)
 str(Glass)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    214 obs. of  10 variables:
 ##  $ RI  : num  1.52 1.52 1.52 1.52 1.52 ...
@@ -707,22 +702,21 @@ str(Glass)</code></pre>
 ##  $ Fe  : num  0 0 0 0 0 0.26 0 0 0 0.11 ...
 ##  $ Type: Factor w/ 6 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;5&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
 <pre class="r"><code>GlassPredictors &lt;- select(Glass, -Type) %&gt;%
-  gather(Variable, Value)</code></pre>
+  gather(Predictor, Value)</code></pre>
 <ol style="list-style-type: lower-alpha">
 <li>Using visualizations, explore the predictor variables to understand their distributions as well as the relationships between predictors.</li>
 </ol>
 <pre class="r"><code>ggplot(GlassPredictors, aes(x = Value)) +  
   geom_histogram() + 
-  facet_wrap(~Variable, scales = &quot;free&quot;)</code></pre>
-<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/ex31_hist-1.png" width="672" /></p>
+  facet_wrap(~Predictor, scales = &quot;free&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/glass_hist-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(GlassPredictors, aes(x = Value)) +  
   geom_density() + 
-  facet_wrap(~Variable, scales = &quot;free&quot;)</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/ex31_dens-1.png" width="672" /></p>
+  facet_wrap(~Predictor, scales = &quot;free&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/glass_dens-1.png" width="672" /></p>
 <pre class="r"><code>require(GGally)
 ggpairs(select(Glass, -Type))</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/ex31_scatter-1.png" width="672" /></p>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/glass_predictor_scatter-1.png" width="672" /></p>
 <ol start="2" style="list-style-type: lower-alpha">
 <li>Does there appear to be any outliers in the data? Are predictors skewed?</li>
 </ol>
@@ -740,18 +734,524 @@ ggpairs(select(Glass, -Type))</code></pre>
 <p>Due to variables containing zero, use the Yeo-Johnson family of transformations</p>
 <pre class="r"><code>glassTrans &lt;- preProcess(select(Glass, -Type), method = &quot;YeoJohnson&quot;)
 glassTransData &lt;- predict(glassTrans, select(Glass, -Type))
-glassTransData %&gt;%
-  gather(Variable, Value) %&gt;%
+dat &lt;- glassTransData %&gt;%
+  gather(Predictor, Value) %&gt;%
   mutate(Transformation = &quot;Yeo-Johnson&quot;) %&gt;%
-  bind_rows(data.frame(GlassPredictors, Transformation = &quot;NA&quot;)) %&gt;%
-ggplot(aes(x = Value, color = Transformation)) +  
-  geom_density() + 
-  facet_wrap(~Variable, scales = &quot;free&quot;)</code></pre>
-<pre><code>## Warning in bind_rows_(x, .id): binding character and factor vector,
-## coercing into character vector</code></pre>
-<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/ex31_yeo-1.png" width="672" /> However, they don’t really help in terms of skewness …</p>
+  bind_rows(data.frame(GlassPredictors, Transformation = &quot;NA&quot;))
+
+
+# Final result
+res &lt;- list()
+# How many points we want 
+nPoints &lt;- 1e3
+
+# Using simple loop to scale and calculate density
+combinations &lt;- expand.grid(unique(dat$Predictor), unique(dat$Transformation))
+for(i in 1:nrow(combinations)) {
+    # Subset data
+    foo &lt;- subset(dat, Predictor == combinations$Var1[i] &amp; Transformation == combinations$Var2[i])
+    # Perform density on scaled signal
+    densRes &lt;- density(x = scale(foo$Value), n = nPoints)
+    # Position signal from 1 to wanted number of points
+    res[[i]] &lt;- data.frame(x = 1:nPoints, y = densRes$y, 
+                           pred = combinations$Var1[i], trans = combinations$Var2[i])
+}
+res &lt;- do.call(rbind, res)
+ggplot(res, aes(x / nPoints, y, color = trans, linetype = trans)) +
+    geom_line(alpha = 0.5, size = 1) +
+    facet_wrap(~ pred, scales = &quot;free&quot;)  +
+  labs(x = &quot;Value / Points&quot;, y = &quot;Scaled Density&quot;, colour = &quot;Transformation&quot;, linetype = &quot;Transformation&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/glass_yeo_trans-1.png" width="672" /></p>
+<p>However, they don’t really help in terms of skewness …</p>
 <p>To mitigate outliers, use the spatial sign transformation</p>
+<pre class="r"><code>glassCSSSTrans &lt;- preProcess(select(Glass, -Type), method = c(&quot;center&quot;, &quot;scale&quot;, &quot;spatialSign&quot;))
+glassCSSSData &lt;- predict(glassCSSSTrans, select(Glass, -Type))
+ggpairs(glassCSSSData)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/glass_spatial_trans-1.png" width="672" /></p>
+<p>Spatial sign transformation was effective in removing outliers.</p>
 </div>
+<div id="exercise-2" class="section level3">
+<h3>Exercise 2</h3>
+<p>The soybean data can also be found at the UC Irvine Machine Learning Repository. Data were collected to predict disease in 683 soybeans. The 35 predictors are mostly categorical and include information on the environmental conditions (e.g., temperature, precipitation) and plant conditions (e.g., left spots, mold growth). The outcome labels consist of 19 distinct classes.</p>
+<ol style="list-style-type: lower-alpha">
+<li>Investigate the frequency distributions for the categorical predictors. Are any of the distributions degenerate in the ways discussed earlier in this chapter?</li>
+</ol>
+<pre class="r"><code>select(Soybean, -Class) %&gt;%
+  select_if(negate(is.numeric)) %&gt;%
+  gather(Variable, Value) %&gt;%
+  ggplot(aes(x = Value)) + 
+  geom_bar() + 
+  facet_wrap(~ Variable, scales = &quot;free&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/soybean_hist-1.png" width="672" /></p>
+<p>From these plots we see:</p>
+<ul>
+<li>Few observations in April (0)</li>
+<li>Precipitation usually greater than normal (2)</li>
+<li>Temperature usually normal</li>
+<li>Temperature, precipitation and hail are missing values.</li>
+</ul>
+<p>A mosaic plot, fluctuation diagram, or faceted bar chart may be used to display two categorical variable, as detailed in <a href="https://vita.had.co.nz/papers/gpp.pdf">The Generalized Pairs Plot</a></p>
+<pre class="r"><code>ggpairs(select(Soybean, date, precip, temp), diag = &#39;blankDiag&#39;, upper = list(discrete = &quot;ratio&quot;))</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/soybean_pairs-1.png" width="672" /></p>
+<pre class="r"><code>require(vcd)
+#require(ggmosaic)
+#detach(&quot;package:kernlab&quot;, unload=TRUE)
+Soybean2 &lt;- Soybean %&gt;%
+  mutate(date = fct_recode(date, Apr = &quot;0&quot;, May = &quot;1&quot;, Jun = &quot;2&quot;, Jul = &quot;3&quot;, Aug = &quot;4&quot;, Sep = &quot;5&quot;, Oct = &quot;6&quot;), 
+         temp = fct_recode(temp, &quot;lt-norm&quot; = &quot;0&quot;, &quot;norm&quot; = &quot;1&quot;, &quot;gt-norm&quot; = &quot;2&quot;))
+vcd::mosaic(~date + temp, data = Soybean2)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/soybean_mosaic-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(Soybean2, aes(x = date, fill = temp)) + geom_bar()</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/soybean_mosaic-2.png" width="672" /></p>
+<pre class="r"><code>Soybean2 %&gt;%
+  group_by(date, temp) %&gt;%
+  summarise(n = n()) %&gt;%
+  group_by(date) %&gt;%
+  mutate(pct = n/sum(n)) %&gt;%
+  ggplot(aes(x = date, fill = temp, y = pct)) + geom_bar(stat = &quot;identity&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/soybean_mosaic-3.png" width="672" /></p>
+<pre class="r"><code>Soybean2 %&gt;%
+  group_by(date, temp) %&gt;%
+  summarise(n = n()) %&gt;%
+  group_by(temp) %&gt;%
+  mutate(pct = n/sum(n)) %&gt;%
+  ggplot(aes(x = temp, fill = date, y = pct)) + geom_bar(stat = &quot;identity&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/soybean_mosaic-4.png" width="672" /></p>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Roughly 18% of the data are missing. Are there particular predictors that are more likely to be missing? Is the pattern of missing data related to the classes?</li>
+</ol>
+<ul>
+<li>Higher proportion of missing temperatures in April, although most missing temperatures are in July.</li>
+<li>The pattern of missing data by class is shown below</li>
+</ul>
+<pre class="r"><code>n_nulls &lt;- function(x) sum(is.na(x))
+select(Soybean, -Class) %&gt;%
+    select_if(negate(is.numeric)) %&gt;%
+    summarise_all(funs(n_distinct, n_nulls))  %&gt;%
+    gather(key=&quot;key&quot;, value=&quot;value&quot;) %&gt;%
+    extract(key, c(&quot;variable&quot;, &quot;metric&quot;), &quot;(.*)_(n_distinct$|n_nulls$)&quot;) %&gt;%
+    tidyr::spread(metric, value) %&gt;%
+    #filter(variable %in% c(&quot;date&quot;, &quot;precip&quot;, &quot;temp&quot;, &quot;hail&quot;)) %&gt;%
+  mutate(n = nrow(Soybean), 
+         prop_nulls = n_nulls/n) %&gt;%
+  arrange(desc(prop_nulls))</code></pre>
+<pre><code>##           variable n_distinct n_nulls   n  prop_nulls
+## 1             hail          3     121 683 0.177159590
+## 2          lodging          3     121 683 0.177159590
+## 3         seed.tmt          4     121 683 0.177159590
+## 4            sever          4     121 683 0.177159590
+## 5             germ          4     112 683 0.163982430
+## 6        leaf.mild          4     108 683 0.158125915
+## 7      fruit.spots          5     106 683 0.155197657
+## 8  fruiting.bodies          3     106 683 0.155197657
+## 9    seed.discolor          3     106 683 0.155197657
+## 10      shriveling          3     106 683 0.155197657
+## 11     leaf.shread          3     100 683 0.146412884
+## 12     mold.growth          3      92 683 0.134699854
+## 13            seed          3      92 683 0.134699854
+## 14       seed.size          3      92 683 0.134699854
+## 15      fruit.pods          5      84 683 0.122986823
+## 16       leaf.halo          4      84 683 0.122986823
+## 17       leaf.malf          3      84 683 0.122986823
+## 18       leaf.marg          4      84 683 0.122986823
+## 19       leaf.size          4      84 683 0.122986823
+## 20   canker.lesion          5      38 683 0.055636896
+## 21       ext.decay          4      38 683 0.055636896
+## 22    int.discolor          4      38 683 0.055636896
+## 23        mycelium          3      38 683 0.055636896
+## 24          precip          4      38 683 0.055636896
+## 25       sclerotia          3      38 683 0.055636896
+## 26    stem.cankers          5      38 683 0.055636896
+## 27     plant.stand          3      36 683 0.052708638
+## 28           roots          4      31 683 0.045387994
+## 29            temp          4      30 683 0.043923865
+## 30       crop.hist          5      16 683 0.023426061
+## 31    plant.growth          3      16 683 0.023426061
+## 32            stem          3      16 683 0.023426061
+## 33        area.dam          5       1 683 0.001464129
+## 34            date          8       1 683 0.001464129
+## 35          leaves          2       0 683 0.000000000</code></pre>
+<pre class="r"><code># Can also use YaleToolkit::whatis function
+#YaleToolkit::whatis(select(Soybean, -Class))</code></pre>
+<pre class="r"><code>table(Soybean$Class, complete.cases(Soybean))</code></pre>
+<pre><code>##                              
+##                               FALSE TRUE
+##   2-4-d-injury                   16    0
+##   alternarialeaf-spot             0   91
+##   anthracnose                     0   44
+##   bacterial-blight                0   20
+##   bacterial-pustule               0   20
+##   brown-spot                      0   92
+##   brown-stem-rot                  0   44
+##   charcoal-rot                    0   20
+##   cyst-nematode                  14    0
+##   diaporthe-pod-&amp;-stem-blight    15    0
+##   diaporthe-stem-canker           0   20
+##   downy-mildew                    0   20
+##   frog-eye-leaf-spot              0   91
+##   herbicide-injury                8    0
+##   phyllosticta-leaf-spot          0   20
+##   phytophthora-rot               68   20
+##   powdery-mildew                  0   20
+##   purple-seed-stain               0   20
+##   rhizoctonia-root-rot            0   20</code></pre>
+<p>Some classes have no complete cases, in particular: 2-4-d-injury, cyst-namatode, diaporthe-pod-&amp;-stem-blight, herbicide-injury and phytophthora-rot. Can check if there are just a few predictors causing this issue.</p>
+<pre class="r"><code>n_nulls &lt;- function(x) sum(is.na(x))
+Soybean %&gt;%
+  filter(Class %in% c(&#39;2-4-d-injury&#39;, &#39;cyst-namatode&#39;,  &#39;diaporthe-pod-&amp;-stem-blight&#39;, &#39;herbicide-injury&#39;, &#39;phytophthora-rot&#39;)) %&gt;%
+  group_by(Class) %&gt;%
+    select_if(negate(is.numeric)) %&gt;%
+    summarise_all(funs(n_nulls, n=n()))  %&gt;%
+    gather(key=&quot;key&quot;, value=&quot;value&quot;, -Class) %&gt;%
+    extract(key, c(&quot;variable&quot;, &quot;metric&quot;), &quot;(.*)_(n$|n_nulls$)&quot;) %&gt;%
+    spread(metric, value) %&gt;%
+  mutate(prop_nulls = n_nulls/n) %&gt;%
+  select(Class, variable, prop_nulls) %&gt;%
+  spread(Class, prop_nulls)</code></pre>
+<pre><code>## # A tibble: 35 x 5
+##    variable      `2-4-d-injury` `diaporthe-pod-&amp;-stem-b… `herbicide-injur…
+##    &lt;chr&gt;                  &lt;dbl&gt;                    &lt;dbl&gt;             &lt;dbl&gt;
+##  1 area.dam              0.0625                      0                   0
+##  2 canker.lesion         1                           0                   1
+##  3 crop.hist             1                           0                   0
+##  4 date                  0.0625                      0                   0
+##  5 ext.decay             1                           0                   1
+##  6 fruit.pods            1                           0                   0
+##  7 fruit.spots           1                           0                   1
+##  8 fruiting.bod…         1                           0                   1
+##  9 germ                  1                           0.4                 1
+## 10 hail                  1                           1                   1
+## # ... with 25 more rows, and 1 more variable: `phytophthora-rot` &lt;dbl&gt;</code></pre>
+<p>This shows that many predictors are completely missing for some cases, e.g. the class 2-4-d-injury has no observations of the predictor canker.lesion, crop.hist, ext.decay, fruit.pots, etc.</p>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Develop a strategy for handling missing data, either by eliminating predictors or imputation.</li>
+</ol>
+<p>In some cases, 100% of predictor values are missing and so imputation is unlikely to help. Options: * Remove cases with high proportion of missing values * Encode missing as another level</p>
+<pre class="r"><code>dat &lt;- Soybean %&gt;%
+  # consider only those that are complete cases
+  filter_all(all_vars(!is.na(.))) %&gt;%
+  # convert ordered variable to factor  
+  mutate_if(is.ordered, function(x) factor(as.character(x)))
+
+# generate binary predictors
+dummyInfo &lt;- dummyVars(Class ~ ., data=dat)
+dummies &lt;- predict(dummyInfo, dat)</code></pre>
+<pre><code>## Warning in model.frame.default(Terms, newdata, na.action = na.action, xlev
+## = object$lvls): variable &#39;Class&#39; is not a factor</code></pre>
+<pre class="r"><code># Determine which variables are sparse
+sparsity &lt;- nearZeroVar(dummies, saveMetrics = TRUE)
+head(sparsity)</code></pre>
+<pre><code>##        freqRatio percentUnique zeroVar   nzv
+## date.0 28.578947     0.3558719   FALSE  TRUE
+## date.1 10.019608     0.3558719   FALSE FALSE
+## date.2  7.515152     0.3558719   FALSE FALSE
+## date.3  5.534884     0.3558719   FALSE FALSE
+## date.4  3.762712     0.3558719   FALSE FALSE
+## date.5  3.014286     0.3558719   FALSE FALSE</code></pre>
+<pre class="r"><code># Number and percentage of predictors to remove
+sparsity %&gt;%
+  summarise(n = n(), n_nzv = sum(nzv), pct_nzv = mean(nzv))</code></pre>
+<pre><code>##    n n_nzv   pct_nzv
+## 1 99    19 0.1919192</code></pre>
+<p>To bypass the need to remove 19% of predictors, could use models insensitive to sparsity, such as tree- or rule- based models, or naive Bayes.</p>
+</div>
+<div id="exercise-3" class="section level3">
+<h3>Exercise 3</h3>
+<p>Chapter 5 introduces Quantitative Structure-Activity Relationship (QSAR) modeling where the characteristics of a chemical compound are used to predict other chemical properties. The caret package contains a QSAR data set from Mente and Lombardo (2005). Here, the ability of a chemical to permeate the blood-brain barrier was experimentally determined for 208 compounds. 134 descriptors were measured for each compound.</p>
+<ol style="list-style-type: lower-alpha">
+<li>Start R and use these commands to load the data:</li>
+</ol>
+<pre class="r"><code>#require(caret); require(tidyverse); require(e1071)
+data(BloodBrain)
+# use ?BloodBrain to see more details</code></pre>
+<p>The numeric outcome is contained in the vector logBBB while the predictors are in the data frame bbbDescr.</p>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Do any of the individual predictors have degenerate distributions?</li>
+</ol>
+<p>There are <code>ncol(bbbDescr)</code> descriptors and so will not plot all.</p>
+<ul>
+<li>Skewness is present if |skewness| is large or if the ratio of the maximum to minimum value is greater than 20.<br />
+</li>
+<li>(Near-)Zero Variance is present if percentage of unique values is <span class="math inline">\(\leq\)</span> 10 and frequency ratio (or most common over second-most common value) is <span class="math inline">\(\geq\)</span> 20.</li>
+</ul>
+<pre class="r"><code>zeroVar &lt;- function(x) nearZeroVar(x, saveMetrics = TRUE)$zeroVar
+nzv &lt;- function(x) nearZeroVar(x, saveMetrics = TRUE)$nzv
+freqRatio &lt;- function(x) nearZeroVar(x, saveMetrics = TRUE)$freqRatio
+percentUnique &lt;- function(x) nearZeroVar(x, saveMetrics = TRUE)$percentUnique
+
+  
+bbbSumm &lt;- bbbDescr %&gt;% 
+  summarise_all(funs(skewness, n_distinct, max, min, zeroVar, nzv, freqRatio, percentUnique)) %&gt;%
+  gather(key=&quot;key&quot;, value=&quot;value&quot;) %&gt;%
+  extract(key, c(&quot;variable&quot;, &quot;metric&quot;), &quot;(.*)_(skewness|n_distinct|max|min|zeroVar|nzv|freqRatio|percentUnique)&quot;) %&gt;%
+  spread(metric, value) %&gt;%
+  mutate(max_min_ratio = ifelse(min==0, (max+1)/(min+1), max/min)) %&gt;%
+  select(variable, n_distinct, skewness, max_min_ratio, zeroVar, nzv, freqRatio, percentUnique, min, max) %&gt;%
+  arrange(desc(abs(skewness)))
+
+head(bbbSumm, n = 15)</code></pre>
+<pre><code>##        variable n_distinct  skewness max_min_ratio zeroVar nzv  freqRatio
+## 1      negative          2 14.214859    2.00000000       0   1 207.000000
+## 2         alert          2  9.977967    2.00000000       0   1 103.000000
+## 3        a_acid          3  5.400675    4.00000000       0   1  33.500000
+## 4      vsa_acid          3  5.400675   41.70076000       0   1  33.500000
+## 5          tcpa        189  5.331288   65.76978417       0   0   1.500000
+## 6  frac.anion7.         12  4.293466    1.99900000       0   1  47.750000
+## 7         wpsa2        206  4.042276   81.88304879       0   0   1.000000
+## 8         inthb          2  3.966834    2.00000000       0   0  17.909091
+## 9         wnsa2        206 -3.120316    0.01242556       0   0   1.000000
+## 10 peoe_vsa.2.1         12  2.950651   45.60254000       0   1  25.571429
+## 11     vsa_base          7  2.865661   59.21528000       0   0   4.032258
+## 12        ppsa2        206  2.818707   25.94027225       0   0   1.000000
+## 13        dpsa2        206  2.705874   20.91858303       0   0   1.000000
+## 14 peoe_vsa.3.1         15  2.662580   36.86280000       0   1  21.000000
+## 15      vsa_don         11  2.442425   59.91005000       0   0   1.431373
+##    percentUnique        min         max
+## 1      0.9615385     0.0000     1.00000
+## 2      0.9615385     0.0000     1.00000
+## 3      1.4423077     0.0000     3.00000
+## 4      1.4423077     0.0000    40.70076
+## 5     90.8653846     0.0278     1.82840
+## 6      5.7692308     0.0000     0.99900
+## 7     99.0384615    95.3229  7805.32959
+## 8      0.9615385     0.0000     1.00000
+## 9     99.0384615 -3199.7271   -39.75840
+## 10     5.7692308     0.0000    44.60254
+## 11     3.3653846     0.0000    58.21528
+## 12    99.0384615   288.9730  7496.03809
+## 13    99.0384615   505.2433 10568.97363
+## 14     7.2115385     0.0000    35.86280
+## 15     5.2884615     0.0000    58.91005</code></pre>
+<p>There are a number of variables with near-zero variance:</p>
+<p>These variables would be removed for models that are impacted detrimentally by near-zero variance predictors.</p>
+<pre class="r"><code>select(bbbDescr, filter(bbbSumm, nzv == 1)$variable) %&gt;%
+  gather(Measure, Value) %&gt;%
+  
+  ggplot() + 
+  geom_histogram(aes(x=Value)) +
+  facet_wrap(~ Measure)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/bloodBrain_nsv_hist-1.png" width="672" /></p>
+<p>There are also a number of skewed variables. Data pre- and post-transformation (Yeo-Johnson) are shown below. May be best to determine manually which to transform.</p>
+<pre class="r"><code>bbb_top_vars &lt;- filter(bbbSumm, ! variable %in% filter(bbbSumm, nzv == 1)$variable) %&gt;% 
+  top_n(n = 16, wt = abs(skewness)) %&gt;%
+  select(variable) %&gt;%
+  pull()
+
+
+bbbTrans &lt;- preProcess(select(bbbDescr, -c(filter(bbbSumm, nzv == 1)$variable)), method = &quot;YeoJohnson&quot;)
+bbbTransData &lt;- predict(bbbTrans, select(bbbDescr, -c(filter(bbbSumm, nzv == 1)$variable))) 
+dat &lt;- bbbTransData %&gt;%
+  select(bbb_top_vars) %&gt;%
+  gather(Predictor, Value) %&gt;%
+  mutate(Transformation = &quot;Yeo-Johnson&quot;) %&gt;%
+  bind_rows(data.frame(gather(select(bbbDescr, bbb_top_vars), Predictor, Value), Transformation = &quot;NA&quot;, stringsAsFactors = FALSE)) 
+  
+# Final result
+res &lt;- list()
+# How many points we want 
+nPoints &lt;- 1e3
+
+# Using simple loop to scale and calculate density
+combinations &lt;- expand.grid(unique(dat$Predictor), unique(dat$Transformation))
+for(i in 1:nrow(combinations)) {
+    # Subset data
+    foo &lt;- subset(dat, Predictor == combinations$Var1[i] &amp; Transformation == combinations$Var2[i])
+    # Perform density on scaled signal
+    densRes &lt;- density(x = scale(foo$Value), n = nPoints)
+    # Position signal from 1 to wanted number of points
+    res[[i]] &lt;- data.frame(x = 1:nPoints, y = densRes$y, 
+                           pred = combinations$Var1[i], trans = combinations$Var2[i])
+}
+res &lt;- do.call(rbind, res)
+ggplot(res, aes(x / nPoints, y, color = trans, linetype = trans)) +
+    geom_line(alpha = 0.5, size = 1) +
+    facet_wrap(~ pred, scales = &quot;free&quot;)  +
+  labs(x = &quot;Value / Points&quot;, y = &quot;Scaled Density&quot;, colour = &quot;Transformation&quot;, linetype = &quot;Transformation&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/bloodBrain_dens_glimpse-1.png" width="672" /></p>
+<ol start="3" style="list-style-type: lower-alpha">
+<li>Generally speaking, are there strong relationships between the predictor data? If so, how could correlations in the predictor set be reduced? Does this have a dramatic effect on the number of predictors available for modeling?</li>
+</ol>
+<p>Samples in tails of skewed predictors may have significant effect on correlation structure and so best to review after transformation.</p>
+<pre class="r"><code># Correlation plot with no transformation
+bbb_cor_raw &lt;- cor(select(bbbDescr, -c(filter(bbbSumm, nzv == 1)$variable)))
+corrplot(bbb_cor_raw, order = &quot;hclust&quot;, addgrid.col = NA, tl.pos = &quot;n&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/bloodBrain_correlation_plots-1.png" width="672" /></p>
+<pre class="r"><code># Correlation plot of Yeo-Johnson transformed data
+bbb_cor_yeo &lt;- cor(bbbTransData)
+corrplot(bbb_cor_yeo, order = &quot;hclust&quot;, addgrid.col = NA, tl.pos = &quot;n&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/bloodBrain_correlation_plots-2.png" width="672" /></p>
+<pre class="r"><code># Correlation plot of spatial sign transformed data
+bbb_cor_sps &lt;- cor(spatialSign(scale(select(bbbDescr, -c(filter(bbbSumm, nzv == 1)$variable)))))
+corrplot(bbb_cor_sps, order = &quot;hclust&quot;, addgrid.col = NA, tl.pos = &quot;n&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/bloodBrain_correlation_plots-3.png" width="672" /></p>
+<p>This shows that correlations lessen with increasing levels of transformations</p>
+<pre class="r"><code>corrInfo &lt;- function(x) summary(x[upper.tri(x)])
+corrInfo(bbb_cor_raw)</code></pre>
+<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -1.00000 -0.16173  0.06434  0.07068  0.28643  1.00000</code></pre>
+<pre class="r"><code>corrInfo(bbb_cor_yeo)</code></pre>
+<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -0.98924 -0.16609  0.05929  0.06798  0.28774  1.00000</code></pre>
+<pre class="r"><code>corrInfo(bbb_cor_sps)</code></pre>
+<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -1.00000 -0.16062  0.03862  0.05561  0.25545  1.00000</code></pre>
+<p>However, rather than transform data, it may be better to remove correlated predictors, using <code>findCorrelation</code> function.</p>
+</div>
+</div>
+</div>
+<div id="chapter-4-over-fiting-and-model-tuning" class="section level1">
+<h1>Chapter 4: Over-Fiting and Model Tuning</h1>
+<p>Aim: Strategies to avoid overfitting so that model can predict new samples with similar degree of accuracy as for training data. Will use model tuning (of model parameters) to maximise model performance. Traditionally, training set to build and tune model and test set to estimate performance. Modern approach is to split data into multiple training and test data sets.</p>
+<div id="the-problem-of-over-fitting" class="section level2">
+<h2>The Problem of Over-Fitting</h2>
+<p>Over-fit model:</p>
+<ul>
+<li>Has learnt noise of data</li>
+<li>Poor accuracy when applied to new data set</li>
+</ul>
+<p><strong>Apparent Performance</strong>: Error rate of model when applied to the training set</p>
+</div>
+<div id="model-tuning" class="section level2">
+<h2>Model Tuning</h2>
+<p><strong>Tuning parameter</strong>: Has no analytical formula to calculate an appropriate value, e.g. k in knn. Often control complexity and so poor choices can lead to over-fitting.</p>
+<p>Methods for determining tuning parameters:</p>
+<ul>
+<li>Parameter Tuning Process:</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li>Define set of candidate values for tuning parameter(s)</li>
+<li>For each candidate set:
+<ol style="list-style-type: lower-alpha">
+<li>Resample data</li>
+<li>Fit model</li>
+<li>Predictor hold-outs</li>
+</ol></li>
+<li>Aggregate resampling into performance profile</li>
+<li>determine final tuning parameters</li>
+<li>Refit model with entire training set and final tuning parameters</li>
+</ol>
+<ul>
+<li>Genetic Algorithms</li>
+<li>Simplex search methods</li>
+</ul>
+</div>
+<div id="data-splitting-single-test-set" class="section level2">
+<h2>Data Splitting (Single Test Set)</h2>
+<p>Not generally recommended.</p>
+<p>Methods:</p>
+<ul>
+<li>Nonrandom; appropriate for example, if need to test on a different sample population, point in time or new phenomenon</li>
+<li>Simple random sample</li>
+<li>Stratified random sampling; apply to disproportionate classes to obtain similar distribution between training and test sets</li>
+<li>Maximum dissimilarity sampling; distance between predictor values for two samples</li>
+<li>Initialise with single sample</li>
+<li>The second sample is chosen as the most dissimilar to the first</li>
+<li>The third and subsequent samples are most dissimilar to the <strong>group</strong> of prior samples (e.g. average or minimum of the dissimilarity)</li>
+</ul>
+<p>Variants:</p>
+<ul>
+<li>Use stratified random sampling to select <span class="math inline">\(k\)</span> partitions so that the folds are balanced with respect to the outcome.</li>
+<li>Leave-one-out cross-validation (LOOCV), <span class="math inline">\(k\)</span> = # samples</li>
+<li>Repeated <span class="math inline">\(k\)</span>-fold cross-validation; can increase precision while maintaining small bias</li>
+</ul>
+<p>Choice of <span class="math inline">\(k\)</span> has a bias-variance trade-off;</p>
+<p><strong>bias</strong>: difference between estimated and true values of performance</p>
+<p><strong>variance</strong>: Repeating the resampling procedure produces a very different value</p>
+<p>Small <span class="math inline">\(k\)</span>, e.g. 2-3: Decreased variance, increased bias. (Bias is similar to bootstrap but with larger variance) </br> Large <span class="math inline">\(k\)</span>: Increased variance, decreased bias. More computationally taxing.</p>
+<p>Typically use <span class="math inline">\(k\)</span> = 5 or 10.</p>
+</div>
+<div id="resampling-techniques" class="section level2">
+<h2>Resampling Techniques</h2>
+<div id="k-fold-cross-validation" class="section level3">
+<h3>k-Fold Cross-Validation</h3>
+<p>Method:</p>
+<ul>
+<li>Partition sample into <span class="math inline">\(k\)</span> sets (folds) of roughly equal size.</li>
+<li>Repeat for each fold:</li>
+<li>Fit model to all samples except the fold <span class="math inline">\(i\)</span></li>
+<li>Predict held-out samples to estimate performance measures</li>
+<li>Summarise <span class="math inline">\(k\)</span> resampled estimates of performance, e.g. mean, std. error to understand relationship between tuning parameters and model utility</li>
+</ul>
+</div>
+<div id="generalised-cross-validation" class="section level3">
+<h3>Generalised Cross-Validation</h3>
+<p>For linear regression, can use generalised cross-validation (GCV) statistic to approximate the leave-one-out error rate, <span class="math display">\[\text{GCV} = \frac{1}{n}\sum^n_{i=1}\left(\frac{y_i - \hat{y}_i}{1-\text{df}/n}\right)^2\]</span> Models with similar precision but higher complexity will have a larger GCV value.</p>
+</div>
+<div id="repeated-trainingtest-splits-a.k.a-leave-group-out-cv-or-monte-carlo-cv" class="section level3">
+<h3>Repeated Training/Test Splits (a.k.a Leave-Group-Out CV or Monte Carlo CV)</h3>
+<p>Practitioner determine percent split between training (75-80%) and test, in addition to the number of repetitions (50-200). Can increase proportion of data in training set with increased repetitions in order to decrease bias.Increasing repetitions will decrease uncertainty of performance estimates.<br />
+Unlike in k-fold cross validation, a sample can be in multiple hold-out sets.</p>
+</div>
+<div id="the-bootstrap" class="section level3">
+<h3>The Bootstrap</h3>
+<p><strong>Bootstrap Sample</strong>: Random sample of data taken with replacement. Bootstrap sample is same size as original data set. Prediction is made on the <strong>out-of-bag samples</strong>, i.e. those samples not selected.</p>
+<p>In comparison to cross-validation, bootstrap technique has:</p>
+<ul>
+<li>less uncertainty than k-fold cv</li>
+<li>more bias (similar to 2-fold CV); bias will decease as training set sample size becomes large (on average 63.2% of data points represented at least once)</li>
+</ul>
+<p>Modifications:</p>
+<ul>
+<li>632 method: combined bootstrap estimate and estimate from re-predicting the training set (the apparent error rate), error rate = .632 x simple bootstrap estimate + 0.368 x apparent error rate</li>
+</ul>
+</div>
+</div>
+<div id="case-study-credit-scoring" class="section level2">
+<h2>Case Study: Credit Scoring</h2>
+<p>Aim: predict probability that applicants have good credit Dataset: German credit dat set Samples: 1000 Class distribution: Good(70%), Bad(30%) Baseline accuracy: Predict all to be good, such that accuracy is 70% Predictors: credit history, employment, account status, loan amount. Majority categorical and so converted to dummy variables. After conversion, there were 41 predictors.</p>
+</div>
+<div id="choosing-final-tuning-parameters" class="section level2">
+<h2>Choosing Final Tuning Parameters</h2>
+<p>Approach to choose final settings:</p>
+<ul>
+<li>Numerically optimal: Pick those with numerically best performance estimates. Disadvantage: May lead to choice of an overly complicated model.</li>
+<li>One-standard error method: Find the numerically optical model then the simplest model whose performance is within a single standard error.</li>
+<li>Tolerance method: Choose simpler model that has performance (<span class="math inline">\(X\)</span>) within tolerance of best (<span class="math inline">\(O\)</span>), i.e. such that <span class="math display">\[(X-O)/O &gt; \text{Tolerance}\]</span> e.g. if best accuracy is 75% then with 4% loss in accuracy acceptable, then can choose accuracy at <span class="math inline">\(O(1 + \text{Tolerance} = .75*(1 - .04) = 0.72\)</span>.</li>
+</ul>
+</div>
+<div id="data-splitting-recommendations" class="section level2">
+<h2>Data Splitting Recommendations</h2>
+<p>Strong case to use resampling</p>
+<ul>
+<li>Single test set has limited ability to characterise uncertainty</li>
+<li>Proportionally large test sets increase bias</li>
+<li>With small sample sizes, test set uncertainty can be considerably large</li>
+</ul>
+<p>No resampling method is uniformly better.</p>
+<ul>
+<li>Small sample size; recommend 10-fold cross-validation</li>
+<li>Large sample size; difference becomes less pronounced and computational efficiency increases. Again 10-fold cross-validation recommended</li>
+<li>To choose between models as opposed to getting best indicator of performance, consider bootstrap procedures as have low variance</li>
+</ul>
+<p>There may be some (often negligible) bias for final model chosen based on tuning parameter with smallest error rate.</p>
+</div>
+<div id="choosing-between-models" class="section level2">
+<h2>Choosing Between Models</h2>
+<p>Once tuning parameters chosen for each model, how do we determine between multiple models?</p>
+<p>Approaches:</p>
+<ul>
+<li>Determine performance ceiling, then simplify</li>
+<li>Start with least interpretable and most flexible model, e.g. boosted trees or support vector machines, to determine performance ceiling</li>
+<li>Investigate simpler models that are less opaque, e.g. MARS, partial least squares, gams or naive Bayes</li>
+<li>Choose the simplest model that reasonable approximates the performance ceiling</li>
+<li>Use resampling results to compare models</li>
+<li>Use identically resampled data sets</li>
+<li>Use statistical methods for pair comparisons, e.g. use paired t-test to evaluate that models have equivalent accuracy or determine mean difference in accuracy and associated confidence interval</li>
+</ul>
+</div>
+<div id="computing-1" class="section level2">
+<h2>Computing</h2>
+<div id="data-splitting" class="section level3">
+<h3>Data Splitting</h3>
+<pre class="r"><code># Data
+data(twoClassData)
+str(predictors) # predictors</code></pre>
+<pre><code>## &#39;data.frame&#39;:    208 obs. of  2 variables:
+##  $ PredictorA: num  0.158 0.655 0.706 0.199 0.395 ...
+##  $ PredictorB: num  0.1609 0.4918 0.6333 0.0881 0.4152 ...</code></pre>
+<pre class="r"><code>str(classes) # response values</code></pre>
+<pre><code>##  Factor w/ 2 levels &quot;Class1&quot;,&quot;Class2&quot;: 2 2 2 2 2 2 2 2 2 2 ...</code></pre>
 </div>
 </div>
 </div>
