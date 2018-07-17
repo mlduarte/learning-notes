@@ -10,10 +10,14 @@ banner: "img/banners/learning_forwards.jpg"
 
 # Topics
 
-- [ ] Python
-- [ ] Survival Analysis
-- [ ] Time Series
 - [ ] R caret package (via book Applied Predictive Modelling)
+- [ ] Time Series
+- [ ] Cluster Analysis
+- [ ] Survival Analysis
+- [ ] Python
+
+
+
 
 # Online Courses
 
