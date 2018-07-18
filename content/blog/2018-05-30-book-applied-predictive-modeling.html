@@ -455,7 +455,7 @@ ggplot(data.frame(obs = obsTrans, pred), aes(x=obs, y=pred)) +
 <li>Highly correlated predictors are measuring the same thing and so have no extra information</li>
 <li>Better model performance / stability without problematic and correlated variables</li>
 </ul>
-<p>Predictors to remove:</p>
+<p>Predictors to remove: * Zero Variance and near-zero * Correlated</p>
 </div>
 <div id="zero-variance-and-near-zero-variance-predictors" class="section level2">
 <h2>Zero Variance and Near-Zero Variance Predictors</h2>
@@ -481,14 +481,17 @@ correlations &lt;- cor(segData)
 corrplot::corrplot(correlations, order = &quot;hclust&quot;, tl.cex = 0.2)</code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_correlation_matrix-1.png" width="672" /></p>
 <ol start="2" style="list-style-type: decimal">
-<li><p>PCA: If first PCA accounts for large percentage of variance, then there is at least one group of predictors that represent the same information. Use PCA loadings to understand which predictors are associated with each component. Note though that as unsupervised, no guarantee that resulting predictors will have relationship with the outcome.</p></li>
-<li>Variance Inflation Factor (VIF) statistic available as part of classical regression analysis, however only useful for linear regression. Whilst it determine collinear predictors it does not determine which should be removed to resolve the problem</li>
-<li>Remove the minimum number of predictors to determine that all pairwise correlations are below a certain threshold. This only identifies colinearities in two dimensions, but can improve model performance. Algorithm is as follows:</li>
+<li><p>PCA: If first PCA accounts for large percentage of variance, then there is at least one group of predictors that represent the same information. Use PCA loadings to understand which predictors are associated with each component.</p></li>
+<li><p>Variance Inflation Factor (VIF) statistic available as part of classical regression analysis, however only useful for linear regression. Whilst it determine collinear predictors it does not determine which should be removed to resolve the problem.</p></li>
+</ol>
+<p>To remove correlated predictors:</p>
+<ol style="list-style-type: decimal">
+<li>Use a heuristic algorithm to remove the minimum number of predictors such that all pairwise correlations are below a certain threshold. This only identifies colinearities in two dimensions, but can improve model performance. Algorithm is as follows:</li>
 <li>Calculate correlation matrix</li>
 <li>Determine pair of predictors with largest absolute correlation</li>
 <li>Determine average correlation between A and other variables. Repeat for B.</li>
 <li>Remove the predictor (A or B) with the largest average correlation</li>
-<li><p>Repeat steps 2-3 until no absolute correlations above the threshold</p></li>
+<li>Repeat steps 2-3 until no absolute correlations above the threshold</li>
 </ol>
 <p>This algorithm is implemented using <code>caret::findCorrelation</code></p>
 <pre class="r"><code>segTrain &lt;- subset(segmentationOriginal, Case == &quot;Train&quot;)
@@ -516,6 +519,11 @@ segCorr &lt;- cor(segTrainTrans)
 highCorr &lt;- findCorrelation(segCorr, .75)
 length(highCorr)</code></pre>
 <pre><code>## [1] 43</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Feature exraction algorithms (e.g. PCA) can also be used to mitigate effect of correlations; the disadvantage is that they make connection between predictors more complex and as unsupervised no gurantee that resulting components will have relationship with outcome.</li>
+<li>Simulated Annealing (e.g., <code>subselect</code> package)</li>
+<li>Genetic Algorithms</li>
+</ol>
 </div>
 <div id="adding-predictors" class="section level2">
 <h2>Adding Predictors</h2>
@@ -776,6 +784,13 @@ ggpairs(glassCSSSData)</code></pre>
 <ol style="list-style-type: lower-alpha">
 <li>Investigate the frequency distributions for the categorical predictors. Are any of the distributions degenerate in the ways discussed earlier in this chapter?</li>
 </ol>
+<p>Note: By degenerate, I believe it is meant whether the following exist:</p>
+<ul>
+<li>Skewness</li>
+<li>Outliers</li>
+<li>Missing values</li>
+<li>Zero- and near-zero- variance</li>
+</ul>
 <pre class="r"><code>select(Soybean, -Class) %&gt;%
   select_if(negate(is.numeric)) %&gt;%
   gather(Variable, Value) %&gt;%
@@ -966,7 +981,7 @@ data(BloodBrain)
 # use ?BloodBrain to see more details</code></pre>
 <p>The numeric outcome is contained in the vector logBBB while the predictors are in the data frame bbbDescr.</p>
 <ol start="2" style="list-style-type: lower-alpha">
-<li>Do any of the individual predictors have degenerate distributions?</li>
+<li>Do any of the individual predictors have degenerate distributions? i.e., Need to look for: Skewness, outliers, missing values and zero- and near-zero- variance</li>
 </ol>
 <p>There are <code>ncol(bbbDescr)</code> descriptors and so will not plot all.</p>
 <ul>
@@ -1096,7 +1111,71 @@ corrInfo(bbb_cor_raw)</code></pre>
 <pre class="r"><code>corrInfo(bbb_cor_sps)</code></pre>
 <pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 ## -1.00000 -0.16062  0.03862  0.05561  0.25545  1.00000</code></pre>
-<p>However, rather than transform data, it may be better to remove correlated predictors, using <code>findCorrelation</code> function.</p>
+<p>However, rather than transform data (e.g., using PCA), it may be better to remove correlated predictors, using <code>findCorrelation</code> function.</p>
+<p>The following chart shows the number of variables that would be removed based on varying correlation thresholds</p>
+<pre class="r"><code>thresholds &lt;- seq(.25, .95, by = 0.05)
+size &lt;- meanCorr &lt;- rep(NA, length(thresholds))
+removals &lt;- vector(mode = &quot;list&quot;, length = length(thresholds))
+
+for(i in seq_along(thresholds)){
+  removals[[i]] &lt;- findCorrelation(bbb_cor_raw, thresholds[i]) # removed predictors
+  subMat &lt;- bbb_cor_raw[-removals[[i]], -removals[[i]]]       # remaining predictors
+  size[i] &lt;- ncol(bbb_cor_raw) -length(removals[[i]])         # number of remaining predictors
+  meanCorr[i] &lt;- mean(abs(subMat[upper.tri(subMat)]))         # mean correlation of remaining predictors
+}
+
+corrData &lt;- data.frame(value = c(size, meanCorr),
+                       threshold = c(thresholds, thresholds),
+                       what = rep(c(&quot;Predictors&quot;, 
+                                    &quot;Average Absolute Correlation&quot;),
+                                  each = length(thresholds))) 
+
+# xyplot(value~ threshold|what, data = corrData, 
+#        scales = list(y = list(relation = &quot;free&quot;)),
+#        type = c(&quot;p&quot;, &quot;g&quot;, &quot;smooth&quot;),
+#        degree = 2,
+#        ylab = &quot;&quot;)
+
+ggplot(corrData, aes(x = threshold, y = value)) +
+  geom_point() + 
+  geom_smooth(method = &quot;loess&quot;, se = FALSE) + 
+  facet_wrap(~ what, scales = &quot;free&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/bloodBrain_corr_heuristic-1.png" width="672" /></p>
+<p>Other methods to remove correlated variables and search for quality subsets include simulated annealing and genetic algorithms, e.g. via the <code>subselect</code> package. These require that the correlation matrix is well-conditioned, which is possible using the <code>subselect::trim.matrix</code> function. This function is a less greedy method to remove perfect pair-wise correlations and relationships between three or more predictors.</p>
+<pre class="r"><code>require(subselect)</code></pre>
+<pre><code>## Loading required package: subselect</code></pre>
+<pre class="r"><code>ncol(bbb_cor_raw)</code></pre>
+<pre><code>## [1] 127</code></pre>
+<pre class="r"><code>trimmed &lt;- trim.matrix(bbb_cor_raw, tolval=1000*.Machine$double.eps)$trimmedmat
+ncol(trimmed)</code></pre>
+<pre><code>## [1] 119</code></pre>
+<p>The Simulated Annealing algorithm seeks a k-variable subset and requires that the following variables are specified:</p>
+<ul>
+<li>kmin: Smallest subset that is wanted. Here kmin is set to the number of parameters (18) determined using the <code>caret::findCorrelation</code> solution at a threshold of 40%.</li>
+<li>kmax: Largest subset that is wanted (=kmin by default).</li>
+</ul>
+<pre class="r"><code>set.seed(702)
+sa &lt;- anneal(trimmed, kmin = 18, niter = 1000)
+saMat &lt;- bbb_cor_raw[sa$bestsets[1,], sa$bestsets[1,]]</code></pre>
+<p>The required parameters for the Genetic Algorithm algorithm are the same as for Simulated Annealing.</p>
+<pre class="r"><code>set.seed(702)
+ga &lt;- genetic(trimmed, kmin = 18, nger = 1000)
+gaMat &lt;- bbb_cor_raw[ga$bestsets[1,], ga$bestsets[1,]]</code></pre>
+<pre class="r"><code># caret::findCorrelation
+fcMat &lt;- bbb_cor_raw[-removals[size == 18][[1]], 
+                 -removals[size == 18][[1]]]
+corrInfo(fcMat) </code></pre>
+<pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+## -0.254356 -0.097568  0.005174  0.012444  0.088337  0.380312</code></pre>
+<pre class="r"><code># Simulated Annealing
+corrInfo(saMat) </code></pre>
+<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -0.95412 -0.11963  0.03580  0.05833  0.22176  0.95622</code></pre>
+<pre class="r"><code># Genetic Algorithm
+corrInfo(gaMat) </code></pre>
+<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -0.88931 -0.16774  0.03500  0.03328  0.24175  0.92184</code></pre>
+<p>The main difference between these results is that the greedy approach of  is much more conservative than the techniques found in the  package.</p>
 </div>
 </div>
 </div>
@@ -1244,14 +1323,129 @@ Unlike in k-fold cross validation, a sample can be in multiple hold-out sets.</p
 <h2>Computing</h2>
 <div id="data-splitting" class="section level3">
 <h3>Data Splitting</h3>
-<pre class="r"><code># Data
-data(twoClassData)
-str(predictors) # predictors</code></pre>
-<pre><code>## &#39;data.frame&#39;:    208 obs. of  2 variables:
+<p>The following functions can be used to partition the data:</p>
+<ul>
+<li><code>caret::sample</code>: simple random split</li>
+<li><code>caret::createDataPartition</code>: stratified random split (based on the classes)</li>
+<li><code>caret::maxdissim</code>: maximum dissimilarity sampling</li>
+</ul>
+<p>The following code performs stratified random splitting:</p>
+<pre class="r"><code>set.seed(1)
+trainingRows &lt;- createDataPartition(classes, p = 0.80, list = FALSE)
+# training data
+trainPredictors &lt;- predictors[trainingRows, ]
+trainClasses &lt;- classes[trainingRows]
+# test data
+testPredictors &lt;- predictors[-trainingRows, ]
+testClasses &lt;- classes[-trainingRows]
+str(trainPredictors); str(testPredictors)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    167 obs. of  2 variables:
 ##  $ PredictorA: num  0.158 0.655 0.706 0.199 0.395 ...
 ##  $ PredictorB: num  0.1609 0.4918 0.6333 0.0881 0.4152 ...</code></pre>
-<pre class="r"><code>str(classes) # response values</code></pre>
-<pre><code>##  Factor w/ 2 levels &quot;Class1&quot;,&quot;Class2&quot;: 2 2 2 2 2 2 2 2 2 2 ...</code></pre>
+<pre><code>## &#39;data.frame&#39;:    41 obs. of  2 variables:
+##  $ PredictorA: num  0.0658 0.1056 0.2909 0.4129 0.0472 ...
+##  $ PredictorB: num  0.1786 0.0801 0.3021 0.2869 0.0414 ...</code></pre>
+</div>
+<div id="resampling" class="section level3">
+<h3>Resampling</h3>
+<p>The following functions can be used to resample the data:</p>
+<ul>
+<li><code>caret::createDataPartition</code>: Repeated training/test splits, utilises the <code>times</code> argument</li>
+<li><code>caret::createResamples</code>: Bootstrap samples</li>
+<li><code>caret::createFolds</code>: k-Fold cross-validation</li>
+<li><code>caret::createMultiFolds</code>: Repeated cross-validation</li>
+</ul>
+<p>The following code generates three resampled versions of the training set</p>
+<pre class="r"><code>set.seed(1)
+repeatedSplits &lt;- createDataPartition(trainClasses, p = 0.8, times = 3)
+str(repeatedSplits)</code></pre>
+<pre><code>## List of 3
+##  $ Resample1: int [1:135] 1 2 4 5 6 8 9 10 11 12 ...
+##  $ Resample2: int [1:135] 2 3 4 6 7 8 9 11 14 15 ...
+##  $ Resample3: int [1:135] 4 5 6 7 8 9 11 13 14 15 ...</code></pre>
+<p>The following code creates indicators for 10-fold cross-validation, where each fold is <span class="math inline">\((k-1)/k%\)</span> of the data.</p>
+<pre class="r"><code>set.seed(1)
+cvSplits &lt;- createFolds(trainClasses, k = 10, returnTrain = TRUE)
+str(cvSplits)</code></pre>
+<pre><code>## List of 10
+##  $ Fold01: int [1:151] 2 3 4 5 6 7 11 12 13 14 ...
+##  $ Fold02: int [1:150] 1 2 3 4 5 6 7 8 9 10 ...
+##  $ Fold03: int [1:150] 1 2 3 4 5 6 7 8 9 10 ...
+##  $ Fold04: int [1:151] 1 2 3 4 5 7 8 9 10 11 ...
+##  $ Fold05: int [1:150] 1 2 3 5 6 7 8 9 10 11 ...
+##  $ Fold06: int [1:150] 1 2 3 4 5 6 8 9 10 11 ...
+##  $ Fold07: int [1:150] 1 3 4 5 6 7 8 9 10 11 ...
+##  $ Fold08: int [1:151] 1 2 3 4 5 6 7 8 9 10 ...
+##  $ Fold09: int [1:150] 1 2 4 5 6 7 8 9 10 12 ...
+##  $ Fold10: int [1:150] 1 2 3 4 6 7 8 9 10 11 ...</code></pre>
+<pre class="r"><code>fold1 &lt;- cvSplits[[1]]
+cvPredictors1 &lt;- trainPredictors[fold1, ]
+cvClasses1 &lt;- trainClasses[fold1]
+scales::percent(nrow(cvPredictors1)/nrow(trainPredictors))</code></pre>
+<pre><code>## [1] &quot;90.4%&quot;</code></pre>
+</div>
+<div id="basic-model-building-in-r" class="section level3">
+<h3>Basic Model Building in R</h3>
+<p>To fit a 5-nearest neighbour classification model to the training data can use:</p>
+<ul>
+<li><code>MASS:knn</code></li>
+<li><code>ipre:ipredknn</code></li>
+<li><code>caret::knn3</code></li>
+</ul>
+<p>Conventions for specifying models:</p>
+<ol style="list-style-type: decimal">
+<li>Formula interface. e.g. <code>modelFunction(response_var ~ predictors, data = data)</code> &lt;&gt;Advantages: Convenient; can specify transformations choose subset(s) of predictors in-line &lt;&gt;Disadvantage: Formula information not efficiently stored and can slow down computations with a large number of predictors</li>
+<li>Matrix (non-formula) interface, e.g.<code>modelFunction(x = predictors_matrix, y = response_var_vector)</code>. The predictors are typically a matrix or a dataframe.</li>
+</ol>
+<p>Not all R functions have both interfaces.</p>
+<p>The following code estimated 5-nn using <code>caret:knn3</code>.</p>
+<pre class="r"><code># Fit model
+trainPredictros &lt;- as.matrix(trainPredictors)
+knnFit &lt;- knn3(x = trainPredictors, y = as.factor(trainClasses), k = 5)
+knnFit</code></pre>
+<pre><code>## 5-nearest neighbor model
+## Training set outcome distribution:
+## 
+## Class1 Class2 
+##     89     78</code></pre>
+<pre class="r"><code>testPredictions &lt;- predict(knnFit, newdata = testPredictors, type  = &quot;class&quot;)
+head(testPredictions)</code></pre>
+<pre><code>## [1] Class2 Class2 Class1 Class1 Class2 Class2
+## Levels: Class1 Class2</code></pre>
+</div>
+<div id="determination-of-tuning-parameters" class="section level3">
+<h3>Determination of Tuning Parameters</h3>
+</div>
+<div id="between-model-comparisons" class="section level3">
+<h3>Between-Model Comparisons</h3>
+</div>
+</div>
+<div id="chapter-4-exercises" class="section level2">
+<h2>Chapter 4 Exercises</h2>
+<div id="exercise-4.1" class="section level3">
+<h3>Exercise 4.1</h3>
+<p>Consider the music genre data set described in Sect. 1.4. The objective for these data is to use the predictors to classify music samples into the appropriate music genre. (a) What data splitting method(s) would you use for these data? Explain. (b) Using tools described in this chapter, provide code for implementing your approach(es).</p>
+</div>
+<div id="exercise-4.2" class="section level3">
+<h3>Exercise 4.2</h3>
+<p>Consider the permeability data set described in Sect. 1.4. The objective for these data is to use the predictors to model compounds’ permeability. (a) What data splitting method(s) would you use for these data? Explain. (b) Using tools described in this chapter, provide code for implementing your approach(es).</p>
+</div>
+<div id="exercise-4.3" class="section level3">
+<h3>Exercise 4.3</h3>
+<p>Partial least squares (Sect. 6.3) was used to model the yield of a chemical manufacturing process (Sect. 1.4).</p>
+<p>The objective of this analysis is to find the number of PLS components that yields the optimal R2 value (Sect. 5.1). PLS models with 1 through 10 components were each evaluated using five repeats of 10-fold cross-validation and the results are presented in the following table: (a) Using the “one-standard error” method, what number of PLS components provides the most parsimonious model? (b) Compute the tolerance values for this example. If a 10% loss in R2 is acceptable, then what is the optimal number of PLS components? (c) Several other models (discussed in Part II) with varying degrees of complexity were trained and tuned and the results are presented in Fig. 4.13. If the goal is to select the model that optimizes R2, then which model(s) would you choose, and why? (d) Prediction time, as well as model complexity (Sect. 4.8) are other factors to consider when selecting the optimal model(s). Given each model’s prediction time, model complexity, and R2 estimates, which model(s) would you choose, and why?</p>
+<pre class="r"><code>library(AppliedPredictiveModeling)
+data(ChemicalManufacturingProcess)</code></pre>
+</div>
+<div id="exercise-4.4" class="section level3">
+<h3>Exercise 4.4</h3>
+<p>Brodnjak-Vonina et al. (2005) develop a methodology for food laboratories to determine the type of oil from a sample. In their procedure, they used a gas chromatograph (an instrument that separate chemicals in a sample) to measure seven different fatty acids in an oil. These measurements would then be used to predict the type of oil in a food samples. To create their model, they used 96 samples2 of seven types of oils. These data can be found in the caret package using data(oil). The oil types are contained in a factor variable called oilType. The types are pumpkin (coded as A), sunflower (B), peanut (C), olive (D), soybean (E), rapeseed (F) and corn (G).</p>
+<ol style="list-style-type: lower-alpha">
+<li>Use the sample function in base R to create a completely random sample of 60 oils. How closely do the frequencies of the random sample match the original samples? Repeat this procedure several times of understand the variation in the sampling process.</li>
+<li><p>Use the caret package function createDataPartition to create a stratified random sample. How does this compare to the completely random samples?</p></li>
+<li>With such a small samples size, what are the options for determining performance of the model? Should a test set be used?</li>
+<li><p>One method for understanding the uncertainty of a test set is to use a confidence interval. To obtain a confidence interval for the overall accuracy, the based R function binom.test can be used. It requires the user to input the number of samples and the number correctly classified to calculate the interval. For example, suppose a test set sample of 20 oil samples was set aside and 76 were used for model training. The width of the 95% confidence interval is 37.9%. Try different samples sizes and accuracy rates to understand the trade-off between the uncertainty in the results, the model performance, and the test set size.</p></li>
+</ol>
 </div>
 </div>
 </div>
