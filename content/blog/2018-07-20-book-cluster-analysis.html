@@ -1,0 +1,81 @@
+---
+title: 'Book: Cluster Analysis'
+author: Marie
+date: '2018-07-20'
+slug: book-cluster-analysis
+categories: Study-Notes
+tags:
+- R
+- Study-Notes
+- Book
+---
+
+
+
+<pre class="r"><code>require(cluster.datasets)</code></pre>
+<pre><code>## Loading required package: cluster.datasets</code></pre>
+<div id="miscellaneous-clustering-methods" class="section level1">
+<h1>Miscellaneous clustering methods</h1>
+<div id="density-search-clustering-techniques" class="section level2">
+<h2>Density search clustering techniques</h2>
+</div>
+<div id="density-based-spatial-clustering-of-applications-with-noise" class="section level2">
+<h2>Density-based spatial clustering of applications with noise</h2>
+</div>
+<div id="techniques-which-allow-overlapping-clusters" class="section level2">
+<h2>Techniques which allow overlapping clusters</h2>
+</div>
+<div id="simultaneous-clustering-of-objects-and-variables" class="section level2">
+<h2>Simultaneous clustering of objects and variables</h2>
+</div>
+<div id="clustering-with-constraints" class="section level2">
+<h2>Clustering with constraints</h2>
+</div>
+<div id="fuzzy-clustering" class="section level2">
+<h2>Fuzzy clustering</h2>
+</div>
+<div id="clustering-and-artificial-neural-networks" class="section level2">
+<h2>Clustering and artificial neural networks</h2>
+<div id="components-of-a-neural-network" class="section level3">
+<h3>Components of a neural network</h3>
+<p>Features of a neural network:</p>
+<ol style="list-style-type: decimal">
+<li>Neurons</li>
+<li>Connections between units</li>
+<li>Training algorithms</li>
+</ol>
+<ul>
+<li>From a set of predictors (input) <span class="math inline">\(x_1, x_2, \ldots, x_p\)</span> and weights <span class="math inline">\(w_1, w_2, \ldots, w_p\)</span>, the neuron provides a response (output) <span class="math inline">\(y\)</span> <span class="math display">\[ y = \text{sign} \left(w_0 + \sum^p_{i = 1} w_i x_i     \right) \]</span></li>
+<li>The neuron will only fire if the summation is positive (sign = 1)</li>
+</ul>
+<p>In the following chart, X is the input layer, Z the hidden layer and Y the output layer. <img src="/graphs/nn.png" alt="Neural Network" /></p>
+<p>The model is typically trainined by minimising the RSS (residual sum of squares).</p>
+</div>
+<div id="the-kohonen-self-organising-map" class="section level3">
+<h3>The Kohonen self-organising map</h3>
+<ul>
+<li>NN usually applied for supervised problems</li>
+<li>Kohonen self-organising map is unsupervised</li>
+<li><p>Network contains two layers</p></li>
+<li>Input layer consisting of <span class="math inline">\(p\)</span>-dimensional observations <span class="math inline">\(\mathbf{x}\)</span>;</li>
+<li><p>Output layer (grid) consisting of <span class="math inline">\(k\)</span> nodes for the <span class="math inline">\(k\)</span> clusters, each of which is associated with a <span class="math inline">\(p\)</span>-dimensional weight <span class="math inline">\(\mathbf{w}\)</span>.</p></li>
+</ul>
+<div class="figure">
+<img src="/img/everitt_som.png" alt="Figure 8.17, Everitt" />
+<p class="caption">Figure 8.17, Everitt</p>
+</div>
+<p>Algorithm:</p>
+<ul>
+<li>Unlike in <span class="math inline">\(k\)</span>-means, the <span class="math inline">\(p\)</span>-dimensional weight vectors associated with the <span class="math inline">\(k\)</span> output nodes are initially assigned a random value between (0, 1)</li>
+<li>Each of the <span class="math inline">\(p\)</span>-dimensional observations (<span class="math inline">\(\mathbf{x}\)</span>) are also scaled in (0, 1)</li>
+<li>The Euclidean distance (or other distance) is calculated between the observation and each of the <span class="math inline">\(k\)</span> <span class="math inline">\(p\)</span>-dimensional weight vectors (neurons).<br />
+</li>
+<li>The neuron with the smallest distance (the winner) is updated, as are a small neighbourhood of neurons around the winner; its weight vector <span class="math inline">\(\mathbf{w}_\text{old}\)</span> is brought closer to the input patterns <span class="math inline">\(\mathbf{x}\)</span> as follwos: <span class="math display">\[\mathbf{w}_\text{new} = \mathbf{w}_\text{old} + \alpha(\mathbf{x} - \mathbf{w}_\text{old})\]</span> The value of <span class="math inline">\(\alpha\)</span> is a small fraction, which decreases as learning takes place, as does the size of the neighbourhood. The excited neurons in the neighbourhood ofthe winner are udpated in a similar manner but with a smaller <span class="math inline">\(\alpha\)</span>.</li>
+<li>As the network learns, the weights are modified and the input observations are provisionally assigned to clusters.</li>
+</ul>
+</div>
+<div id="application-of-neural-nets-to-brainstorming-sessions" class="section level3">
+<h3>Application of neural nets to brainstorming sessions</h3>
+</div>
+</div>
+</div>

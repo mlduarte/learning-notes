@@ -1,0 +1,82 @@
+---
+title: 'Book: Cluster Analysis'
+author: Marie
+date: '2018-07-20'
+slug: book-cluster-analysis
+categories: Study-Notes
+tags:
+- R
+- Study-Notes
+- Book
+---
+
+```{r load_data_pckg}
+require(cluster.datasets)
+```
+
+# Miscellaneous clustering methods
+
+## Density search clustering techniques
+## Density-based spatial clustering of applications with noise
+## Techniques which allow overlapping clusters
+## Simultaneous clustering of objects and variables
+## Clustering with constraints
+## Fuzzy clustering
+
+## Clustering and artificial neural networks
+
+### Components of a neural network
+
+Features of a neural network:
+
+1. Neurons 
+2. Connections between units
+3. Training algorithms 
+
+* From a set of predictors (input) $x_1, x_2, \ldots, x_p$ and weights $w_1, w_2, \ldots, w_p$, the neuron provides a response (output) $y$ 
+\[ y = \text{sign} \left(w_0 + \sum^p_{i = 1} w_i x_i     \right) \]
+* The neuron will only fire if the summation is positive (sign = 1)
+
+
+
+```{r store_charts, include=FALSE}
+# http://rich-iannone.github.io/DiagrammeR/graphviz_and_mermaid.html
+require(png); require(rsvg); require(tidyverse)
+DiagrammeRsvg::export_svg(DiagrammeR::grViz("../../static/graphs/nn.dot", height=200, width=200)) %>%
+  charToRaw %>% rsvg %>% png::writePNG('../../static/graphs/nn.png')
+
+```
+
+In the following chart, X is the input layer, Z the hidden layer and Y the output layer.
+![Neural Network](/graphs/nn.png)
+
+
+The model is typically trainined by minimising the RSS (residual sum of squares).
+
+
+
+
+### The Kohonen self-organising map
+
+* NN usually applied for supervised problems
+* Kohonen self-organising map is unsupervised
+* Network contains two layers
+
+* Input layer consisting of $p$-dimensional observations $\mathbf{x}$;
+* Output layer (grid) consisting of $k$ nodes for the $k$ clusters, each of which is associated with a $p$-dimensional weight $\mathbf{w}$.
+  
+![Figure 8.17, Everitt](/img/everitt_som.png)
+
+Algorithm: 
+ 
+ * Unlike in $k$-means, the $p$-dimensional weight vectors associated with the $k$ output nodes are initially assigned a random value between (0, 1)
+ * Each of the $p$-dimensional observations ($\mathbf{x}$) are also scaled in (0, 1)
+ * The Euclidean distance (or other distance) is calculated between the observation and each of the $k$ $p$-dimensional weight vectors (neurons).  
+ * The neuron with the smallest distance (the winner) is updated, as are a small neighbourhood of neurons around the winner; its weight vector $\mathbf{w}_\text{old}$ is brought closer to the input patterns $\mathbf{x}$ as follwos:
+ \[\mathbf{w}_\text{new} = \mathbf{w}_\text{old} + \alpha(\mathbf{x} - \mathbf{w}_\text{old})\]
+ The value of $\alpha$ is a small fraction, which decreases as learning takes place, as does the size of the neighbourhood.  The excited neurons in the neighbourhood ofthe winner are udpated in a similar manner but with a smaller $\alpha$.
+ * As the network learns, the weights are modified and the input observations are provisionally assigned to clusters.
+ 
+
+  
+### Application of neural nets to brainstorming sessions

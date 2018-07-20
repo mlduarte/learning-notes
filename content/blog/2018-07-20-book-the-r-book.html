@@ -1,0 +1,152 @@
+---
+title: 'Book: The R Book'
+author: Marie
+date: '2018-07-20'
+slug: book-the-r-book
+categories: []
+tags: []
+---
+
+
+
+<div id="multivariate-statistics" class="section level1">
+<h1>23: Multivariate Statistics</h1>
+<div id="principal-components-analysis" class="section level2">
+<h2>Principal components analysis</h2>
+</div>
+<div id="factor-analysis" class="section level2">
+<h2>Factor analysis</h2>
+</div>
+<div id="cluster-analysis" class="section level2">
+<h2>Cluster analysis</h2>
+<p>Aim: Look for groups in the data Allocation methods:</p>
+<ul>
+<li><strong>Partitioning</strong>. Partition into the number of clusters specified by the user; <code>kmeans</code></li>
+<li><strong>Hierarchical</strong>, start with each individual as a separate entity and aggregate; <code>hclust</code></li>
+<li><strong>Divisive</strong>, start with single aggregate and split into clusters</li>
+</ul>
+<div id="partitioning" class="section level3">
+<h3>Partitioning</h3>
+<ul>
+<li>User specifies the number of clusters</li>
+<li>Calculate centroid (multidimensional equivalent of the mean) of each group</li>
+<li>Assign individual to the group with nearest centroid</li>
+<li>Final clusters will minimise within-cluster sum of squares based on Euclidean distance</li>
+</ul>
+<p>Example:</p>
+<pre class="r"><code>require(ggplot2)</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre class="r"><code>require(tidyverse)</code></pre>
+<pre><code>## Loading required package: tidyverse</code></pre>
+<pre><code>## ── Attaching packages ───────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ tibble  1.4.2     ✔ purrr   0.2.5
+## ✔ tidyr   0.8.1     ✔ dplyr   0.7.5
+## ✔ readr   1.1.1     ✔ stringr 1.3.1
+## ✔ tibble  1.4.2     ✔ forcats 0.3.0</code></pre>
+<pre><code>## ── Conflicts ──────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>require(gridExtra)</code></pre>
+<pre><code>## Loading required package: gridExtra</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gridExtra&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     combine</code></pre>
+<pre class="r"><code>kmd &lt;- read.table(&quot;../../static/datasets/therbook/kmeansdata.txt&quot;, header = TRUE) 
+attach(kmd)
+names(kmd)</code></pre>
+<pre><code>## [1] &quot;x&quot;     &quot;y&quot;     &quot;group&quot;</code></pre>
+<pre class="r"><code>set.seed(2)
+kmd$km4 &lt;- kmeans(select(kmd, x, y), 4)[[1]]
+kmd$km6 &lt;- kmeans(select(kmd, x, y), 6)[[1]]
+p1 &lt;- ggplot(kmd) + geom_point(aes(x, y))
+p2 &lt;- ggplot(kmd) + geom_point(aes(x, y, color = as.factor(group)))
+p3 &lt;- ggplot(kmd) + geom_point(aes(x, y, color = as.factor(km4)))
+p4 &lt;- ggplot(kmd) + geom_point(aes(x, y, color = as.factor(km6)))
+grid.arrange(p1, p2, p3, p4, nrow = 2)</code></pre>
+<p><img src="/blog/2018-07-20-book-the-r-book_files/figure-html/kmeans_data-1.png" width="672" /></p>
+<pre class="r"><code>kmd &lt;- kmd %&gt;%
+  mutate(km6 = as.factor(km6), 
+         km6 = fct_relevel(km6, &quot;5&quot;, &quot;6&quot;, &quot;3&quot;, &quot;1&quot;, &quot;2&quot;, &quot;4&quot;))
+
+with(kmd, table(group, km6))</code></pre>
+<pre><code>##      km6
+## group  5  6  3  1  2  4
+##     1 20  0  0  0  0  0
+##     2  0 24  0  0  1  0
+##     3  0  0 25  0  0  0
+##     4  1  0  0 18  1  0
+##     5  0  3  0  0 27  0
+##     6  0  0  0  0  0 25</code></pre>
+<div id="taxonomic-use-of-kmeans" class="section level4">
+<h4>Taxonomic use of <code>kmeans</code></h4>
+<p>Example: For 120 plants, which of the 7 variables (fruit size, bract length, internode length, petal width, sepal length, petiole length, leave width) are the most useful for taxonomic purposes?</p>
+<pre class="r"><code>taxa &lt;- read.table(&quot;../../static/datasets/therbook/taxa.txt&quot;, header = T)
+GGally::ggpairs(taxa) + theme(strip.text = element_text(size = 8))</code></pre>
+<p><img src="/blog/2018-07-20-book-the-r-book_files/figure-html/kmeans_taxa_data-1.png" width="672" /></p>
+<p>The scatterplot matrix shows:</p>
+<ul>
+<li>Excellent data separation on Sepal</li>
+<li>Reasonable separaterion on Leaf</li>
+</ul>
+<p>Generally the number of groups is unknown, but here it is known that there are four taxa (which appear in order, rows of 30 each in the data)</p>
+<pre class="r"><code>set.seed(282)
+taxa$km4 &lt;- kmeans(taxa, 4)[[1]]
+taxa$act &lt;- rep(1:4, each = 30)
+with(taxa, table(act, km4))</code></pre>
+<pre><code>##    km4
+## act  1  2  3  4
+##   1 22  0  1  7
+##   2  1  0 20  9
+##   3  4  0 13 13
+##   4  1 19  0 10</code></pre>
+<pre class="r"><code>taxa &lt;- taxa %&gt;%
+  mutate(km4 = as.factor(km4), 
+         km4 = fct_relevel(km4, &quot;3&quot;, &quot;1&quot;, &quot;4&quot;, &quot;2&quot;))
+with(taxa, table(act, km4))</code></pre>
+<pre><code>##    km4
+## act  3  1  4  2
+##   1  1 22  7  0
+##   2 20  1  9  0
+##   3 13  4 13  0
+##   4  0  1 10 19</code></pre>
+<p>As in this case, the group is known, can use a supervised method, e.g. classivication tree model, to determine the key that ascribes taxa to islands better.</p>
+</div>
+</div>
+<div id="hierarchical-cluster-analysis" class="section level3">
+<h3>Hierarchical cluster analysis</h3>
+<ul>
+<li>Groups samples most similar to each in same limb of tree</li>
+<li>Similarity based on distance, e.g. Euclidean distance</li>
+<li>Distance between all samples placed in a matrix produced by the <code>dist</code> function</li>
+<li>Initially each sample is its own cluster, the <code>hclust</code> alogrithm proceeds iteratively, at each stage joining the two most similar clusters, until there is just one cluster.</li>
+</ul>
+<p>Example: 54 plant species over 89 plots receiving different experimental treatments. Aim:</p>
+<ul>
+<li>Which plots are most similar in their botanical composition</li>
+<li>Are there reasonable homogenous groups of plots?</li>
+</ul>
+<pre class="r"><code>pgdata&lt;-read.table(&quot;../../static/datasets/therbook/pgfull.txt&quot;,header=T)
+attach(pgdata)
+labels &lt;- paste(plot, letters[lime], sep = &quot;&quot;)</code></pre>
+<p>Steps:</p>
+<ol style="list-style-type: decimal">
+<li>Create dissimilarity matrix</li>
+<li>Carry out hierarchical cluster analysis</li>
+</ol>
+<pre class="r"><code># Dissimilarity matrix
+dm &lt;- dist(pgdata[, 1:54])
+# Hclust
+hpg &lt;- hclust(dm)
+plot(hpg, labels = labels, main = &quot;&quot;)</code></pre>
+<p><img src="/blog/2018-07-20-book-the-r-book_files/figure-html/hclust_model-1.png" width="672" /></p>
+</div>
+</div>
+<div id="discriminant-analysis" class="section level2">
+<h2>Discriminant analysis</h2>
+</div>
+<div id="neural-networks" class="section level2">
+<h2>Neural networks</h2>
+</div>
+</div>

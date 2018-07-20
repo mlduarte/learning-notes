@@ -1,0 +1,70 @@
+digraph boxes_and_circles {
+
+
+# 'graph' statement
+
+graph [overlap = true, fontsize = 10, rankdir=LR]
+
+# several 'node' statements
+
+subgraph input {
+    rank = same;
+  node [
+    shape = circle, 
+    fontname = Helvetica, 
+    group="in"]
+  X1;X2;X3 
+}
+
+subgraph hidden {
+    rank = same;
+  node [
+    shape = circle, 
+    fontname = Helvetica, 
+    group="hid"]
+  Z1;Z2;Z3;Z4 
+}
+
+subgraph output {
+    rank = same;
+ node[shape = circle, 
+    fontname = Helvetica, 
+    group="out"] 
+    Y1;Y2 
+}
+
+
+# several 'edge' statements
+X1 -> Z1  
+X1 -> Z2  
+X1 -> Z3  
+X1 -> Z4  
+
+X2 -> Z1  
+X2 -> Z2  
+X2 -> Z3  
+X2 -> Z4
+
+X3 -> Z1  
+X3 -> Z2  
+X3 -> Z3  
+X3 -> Z4
+
+Z1 -> Y1
+Z2 -> Y1
+Z3 -> Y1
+Z4 -> Y1
+
+
+Z1 -> Y2
+Z2 -> Y2
+Z3 -> Y2
+Z4 -> Y2
+
+edge[style=invis];
+Z1[group=left];
+Z4[group=right];
+Z1 -> Z2 -> Z3 ->Z4;
+
+
+}

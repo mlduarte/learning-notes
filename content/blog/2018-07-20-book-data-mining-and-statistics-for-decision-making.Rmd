@@ -1,0 +1,9 @@
+---
+title: 'Book: Data Mining And Statistics for Decision Making'
+author: Marie
+date: '2018-07-20'
+slug: book-data-mining-and-statistics-for-decision-making
+categories: []
+tags: []
+---
+

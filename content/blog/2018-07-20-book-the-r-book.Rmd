@@ -1,0 +1,131 @@
+---
+title: 'Book: The R Book'
+author: Marie
+date: '2018-07-20'
+slug: book-the-r-book
+categories: []
+tags: []
+---
+---
+title: Book: The R Book
+author: Marie
+date: '2018-07-20'
+slug: book-the-r-book
+---
+
+
+# 23: Multivariate Statistics
+## Principal components analysis
+## Factor analysis
+## Cluster analysis
+
+Aim: Look for groups in the data
+Allocation methods:
+
+* **Partitioning**.  Partition into the number of clusters specified by the user; `kmeans`
+* **Hierarchical**, start with each individual as a separate entity and aggregate; `hclust`
+* **Divisive**, start with single aggregate and split into clusters 
+
+### Partitioning
+
+* User specifies the number of clusters
+* Calculate centroid (multidimensional equivalent of the mean) of each group
+* Assign individual to the group with nearest centroid
+* Final clusters will minimise within-cluster sum of squares based on Euclidean distance
+
+
+Example:
+
+```{r kmeans_data}
+require(ggplot2)
+require(tidyverse)
+require(gridExtra)
+
+kmd <- read.table("../../static/datasets/therbook/kmeansdata.txt", header = TRUE) 
+attach(kmd)
+names(kmd)
+
+set.seed(2)
+kmd$km4 <- kmeans(select(kmd, x, y), 4)[[1]]
+kmd$km6 <- kmeans(select(kmd, x, y), 6)[[1]]
+p1 <- ggplot(kmd) + geom_point(aes(x, y))
+p2 <- ggplot(kmd) + geom_point(aes(x, y, color = as.factor(group)))
+p3 <- ggplot(kmd) + geom_point(aes(x, y, color = as.factor(km4)))
+p4 <- ggplot(kmd) + geom_point(aes(x, y, color = as.factor(km6)))
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+```{r kmeans_misclassification}
+kmd <- kmd %>%
+  mutate(km6 = as.factor(km6), 
+         km6 = fct_relevel(km6, "5", "6", "3", "1", "2", "4"))
+
+with(kmd, table(group, km6))
+```
+
+#### Taxonomic use of `kmeans`
+
+Example:  For 120 plants, which of the 7 variables (fruit size, bract length, internode length, petal width, sepal length, petiole length, leave width) are the most useful for taxonomic purposes?
+
+```{r kmeans_taxa_data, message=FALSE, warning=TRUE}
+taxa <- read.table("../../static/datasets/therbook/taxa.txt", header = T)
+GGally::ggpairs(taxa) + theme(strip.text = element_text(size = 8))
+```
+
+
+The scatterplot matrix shows:
+
+* Excellent data separation on Sepal
+* Reasonable separaterion on Leaf 
+
+Generally the number of groups is unknown, but here it is known that there are four taxa (which appear in order, rows of 30 each in the data)
+
+```{r kmeans_taxa_model}
+set.seed(282)
+taxa$km4 <- kmeans(taxa, 4)[[1]]
+taxa$act <- rep(1:4, each = 30)
+with(taxa, table(act, km4))
+
+taxa <- taxa %>%
+  mutate(km4 = as.factor(km4), 
+         km4 = fct_relevel(km4, "3", "1", "4", "2"))
+with(taxa, table(act, km4))
+```
+
+As in this case, the group is known, can use a supervised method, e.g. classivication tree model, to determine the key that ascribes taxa to islands better.
+
+### Hierarchical cluster analysis
+
+* Groups samples most similar to each in same limb of tree
+* Similarity based on distance, e.g. Euclidean distance
+* Distance between all samples placed in a matrix produced by the `dist` function
+* Initially each sample is its own cluster, the `hclust` alogrithm proceeds iteratively, at each stage joining the two most similar clusters, until there is just one cluster.
+
+Example: 54 plant species over 89 plots receiving different experimental treatments.  Aim: 
+
+* Which plots are most similar in their botanical composition 
+* Are there reasonable homogenous groups of plots?
+
+```{r hclust_data}
+pgdata<-read.table("../../static/datasets/therbook/pgfull.txt",header=T)
+attach(pgdata)
+labels <- paste(plot, letters[lime], sep = "")
+```
+
+Steps:
+
+1. Create dissimilarity matrix
+2. Carry out hierarchical cluster analysis
+```{r hclust_model}
+
+# Dissimilarity matrix
+dm <- dist(pgdata[, 1:54])
+# Hclust
+hpg <- hclust(dm)
+plot(hpg, labels = labels, main = "")
+```
+
+
+
+## Discriminant analysis
+## Neural networks
