@@ -4,8 +4,12 @@ author: Marie
 date: '2018-07-20'
 slug: book-the-r-book
 banner: "img/banners/crawley.png"
-categories: []
-tags: []
+categories:
+  - Study-Notes
+tags:
+- R
+- Study-Notes
+- Book
 ---
 ---
 title: Book: The R Book
