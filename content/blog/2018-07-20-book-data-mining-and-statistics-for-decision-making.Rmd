@@ -3,7 +3,71 @@ title: 'Book: Data Mining And Statistics for Decision Making'
 author: Marie
 date: '2018-07-20'
 slug: book-data-mining-and-statistics-for-decision-making
-categories: []
-tags: []
+banner: "img/banners/tuffery.png"
+categories: Study-Notes
+tags:
+- Study-Notes
+- Book
+- Clustering
 ---
 
+# Neural networks
+## The main neural networks
+### The Kohonen network
+
+  * Synonyms: Self-adaptive network, self-orgnisation network, Kohonen map, self-organizing map
+  * Similar to other nn, made up of layers (two in this case) of units and connections between units
+  * Disimilar to other nn, it is unsupervised
+  * Aim: Learn data structure to determine clusters
+  * Consists of two layers:
+    * Input layer; one unit for each of the $n$ variables
+    * Output layer; typically arranged into a grid of $l \times m$ units (where $m$ may or may not equal $n$).  
+        * Often a square or rectangle, but may be a hexagon.
+        * Typically called the topological map.  
+        * Shape and size typically chosen by user, but may change in course of learning
+        * Units not connected within output layer, but a distance is defined between them, so that a **neighbourhood** concept exists.
+      
+      
+* Weights:
+    * Each unit of the $n$ units in the input layer are connected to each of the $l \times m$ units in the output layer, with connection weight $p_{ijk}, i\in[1,l], j\in[1,m], k\in[1,n]$.
+  
+Output layer response is typically the Euclidean distance, \[d_{ij} = \sum^{n}_{k = 1}(x_k - p_{ijk})^2\]
+
+Algorithm:
+
+  * Initialise the $p_{ijk} weights randomly.
+  * For each individual $x_k$ in the learning sample:
+  * Calculate the responses of the $l \times m$ output layer units.
+  * Assign the individual $x_k$ to the output layer unit $(i, j)$ for which $d_{ij}(x)$ is minimised.  This unit is said to be **activated**.
+  * Adjust the weights of the activated unit and all neighbouring units to bring them closer to the individual.  Note that the size of the neighbourhood starts of large (sometimes the whole grid), but generally decreases during learning.  The new weights of a neight (I,J) of the activated (winner) unit (i, j) are:
+  \[P_{IJk} + \Theta \cdot f(i,j;I,J) \cdot (x_k - p_{ijk}), \text{ for every $k \in [1,n]$}\]
+  Here:
+
+    * $f(i,j;I,J)$ is a decreasing function of the distance between the units $(i,j)$ and $(I,J)$, such that $f(i,j;i,j) = 1$.  It may also have a Gaussian function, $\exp(-\text{distance}(i,j;I,J)^2/2\sigma^2)$.
+    * The parameter $\Theta \in [0,1]$ is a learning parameter which decreases linearly or exponentially.
+Once all indicivuals have been presented and weights adjusted, the learning is complete.
+
+![Figure 8.11, Tuffery](/img/tuffery_som.png)
+
+Disimilarities to $k$-means:
+
+  * In $k$-means, the introduction of a new individual into cluster only impacts the recalculation of the centroid of the activation unit, not neighbouring units
+  * Takes place by reducing the number of dimensions of the variable space (like factor analysis)
+ 
+ 
+# Cluster analysis
+## Definition
+## Applications
+## Complexity
+## Clustering structures
+## Methodological considerations
+## Comparison of factor analysis and clustering
+## Within-cluster and between-cluster sum of squares
+## Measurement of clustering quality
+## Partitioning methods
+## Agglomerative hierarchical clustering
+## Hubyrid clustering methods
+## Neural clustering
+## Clustering by similarity aggregation
+## Clustering of numeric variables
+## Overview of clustering methods

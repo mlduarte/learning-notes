@@ -3,6 +3,7 @@ title: 'Book: The R Book'
 author: Marie
 date: '2018-07-20'
 slug: book-the-r-book
+banner: "img/banners/crawley.png"
 categories: []
 tags: []
 ---

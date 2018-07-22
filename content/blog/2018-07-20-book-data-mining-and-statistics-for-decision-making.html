@@ -3,10 +3,114 @@ title: 'Book: Data Mining And Statistics for Decision Making'
 author: Marie
 date: '2018-07-20'
 slug: book-data-mining-and-statistics-for-decision-making
-categories: []
-tags: []
+banner: "img/banners/tuffery.png"
+categories: Study-Notes
+tags:
+- Study-Notes
+- Book
+- Clustering
 ---
 
 
 
-
+<div id="neural-networks" class="section level1">
+<h1>Neural networks</h1>
+<div id="the-main-neural-networks" class="section level2">
+<h2>The main neural networks</h2>
+<div id="the-kohonen-network" class="section level3">
+<h3>The Kohonen network</h3>
+<ul>
+<li>Synonyms: Self-adaptive network, self-orgnisation network, Kohonen map, self-organizing map</li>
+<li>Similar to other nn, made up of layers (two in this case) of units and connections between units</li>
+<li>Disimilar to other nn, it is unsupervised</li>
+<li>Aim: Learn data structure to determine clusters</li>
+<li>Consists of two layers:
+<ul>
+<li>Input layer; one unit for each of the <span class="math inline">\(n\)</span> variables</li>
+<li>Output layer; typically arranged into a grid of <span class="math inline">\(l \times m\)</span> units (where <span class="math inline">\(m\)</span> may or may not equal <span class="math inline">\(n\)</span>).
+<ul>
+<li>Often a square or rectangle, but may be a hexagon.</li>
+<li>Typically called the topological map.<br />
+</li>
+<li>Shape and size typically chosen by user, but may change in course of learning</li>
+<li>Units not connected within output layer, but a distance is defined between them, so that a <strong>neighbourhood</strong> concept exists.</li>
+</ul></li>
+</ul></li>
+<li>Weights:
+<ul>
+<li>Each unit of the <span class="math inline">\(n\)</span> units in the input layer are connected to each of the <span class="math inline">\(l \times m\)</span> units in the output layer, with connection weight <span class="math inline">\(p_{ijk}, i\in[1,l], j\in[1,m], k\in[1,n]\)</span>.</li>
+</ul></li>
+</ul>
+<p>Output layer response is typically the Euclidean distance, <span class="math display">\[d_{ij} = \sum^{n}_{k = 1}(x_k - p_{ijk})^2\]</span></p>
+<p>Algorithm:</p>
+<ul>
+<li>Initialise the $p_{ijk} weights randomly.</li>
+<li>For each individual <span class="math inline">\(x_k\)</span> in the learning sample:</li>
+<li>Calculate the responses of the <span class="math inline">\(l \times m\)</span> output layer units.</li>
+<li>Assign the individual <span class="math inline">\(x_k\)</span> to the output layer unit <span class="math inline">\((i, j)\)</span> for which <span class="math inline">\(d_{ij}(x)\)</span> is minimised. This unit is said to be <strong>activated</strong>.</li>
+<li><p>Adjust the weights of the activated unit and all neighbouring units to bring them closer to the individual. Note that the size of the neighbourhood starts of large (sometimes the whole grid), but generally decreases during learning. The new weights of a neight (I,J) of the activated (winner) unit (i, j) are: <span class="math display">\[P_{IJk} + \Theta \cdot f(i,j;I,J) \cdot (x_k - p_{ijk}), \text{ for every $k \in [1,n]$}\]</span> Here:</p>
+<ul>
+<li><span class="math inline">\(f(i,j;I,J)\)</span> is a decreasing function of the distance between the units <span class="math inline">\((i,j)\)</span> and <span class="math inline">\((I,J)\)</span>, such that <span class="math inline">\(f(i,j;i,j) = 1\)</span>. It may also have a Gaussian function, <span class="math inline">\(\exp(-\text{distance}(i,j;I,J)^2/2\sigma^2)\)</span>.</li>
+<li>The parameter <span class="math inline">\(\Theta \in [0,1]\)</span> is a learning parameter which decreases linearly or exponentially. Once all indicivuals have been presented and weights adjusted, the learning is complete.</li>
+</ul></li>
+</ul>
+<div class="figure">
+<img src="/img/tuffery_som.png" alt="Figure 8.11, Tuffery" />
+<p class="caption">Figure 8.11, Tuffery</p>
+</div>
+<p>Disimilarities to <span class="math inline">\(k\)</span>-means:</p>
+<ul>
+<li>In <span class="math inline">\(k\)</span>-means, the introduction of a new individual into cluster only impacts the recalculation of the centroid of the activation unit, not neighbouring units</li>
+<li>Takes place by reducing the number of dimensions of the variable space (like factor analysis)</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="cluster-analysis" class="section level1">
+<h1>Cluster analysis</h1>
+<div id="definition" class="section level2">
+<h2>Definition</h2>
+</div>
+<div id="applications" class="section level2">
+<h2>Applications</h2>
+</div>
+<div id="complexity" class="section level2">
+<h2>Complexity</h2>
+</div>
+<div id="clustering-structures" class="section level2">
+<h2>Clustering structures</h2>
+</div>
+<div id="methodological-considerations" class="section level2">
+<h2>Methodological considerations</h2>
+</div>
+<div id="comparison-of-factor-analysis-and-clustering" class="section level2">
+<h2>Comparison of factor analysis and clustering</h2>
+</div>
+<div id="within-cluster-and-between-cluster-sum-of-squares" class="section level2">
+<h2>Within-cluster and between-cluster sum of squares</h2>
+</div>
+<div id="measurement-of-clustering-quality" class="section level2">
+<h2>Measurement of clustering quality</h2>
+</div>
+<div id="partitioning-methods" class="section level2">
+<h2>Partitioning methods</h2>
+</div>
+<div id="agglomerative-hierarchical-clustering" class="section level2">
+<h2>Agglomerative hierarchical clustering</h2>
+</div>
+<div id="hubyrid-clustering-methods" class="section level2">
+<h2>Hubyrid clustering methods</h2>
+</div>
+<div id="neural-clustering" class="section level2">
+<h2>Neural clustering</h2>
+</div>
+<div id="clustering-by-similarity-aggregation" class="section level2">
+<h2>Clustering by similarity aggregation</h2>
+</div>
+<div id="clustering-of-numeric-variables" class="section level2">
+<h2>Clustering of numeric variables</h2>
+</div>
+<div id="overview-of-clustering-methods" class="section level2">
+<h2>Overview of clustering methods</h2>
+</div>
+</div>
