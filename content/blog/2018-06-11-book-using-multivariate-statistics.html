@@ -361,7 +361,7 @@ cor.ski</code></pre>
 <p>Strong correlations between:</p>
 <ul>
 <li>importance placed on <em>cost</em> of ski ticket and speed of ski <em>lift</em></li>
-<li>importance placed on snow <em>depth</em> and mositure (<em>powder</em>)</li>
+<li>importance placed on snow <em>depth</em> and moisture (<em>powder</em>)</li>
 </ul>
 <p>Eigenvalues and Eigenvectors:</p>
 <pre class="r"><code>eig.ski &lt;- eigen(cor.ski)
@@ -389,7 +389,7 @@ eig.ski</code></pre>
 ## [2,] 0.000000 1.941514 0.00000000 0.000000000
 ## [3,] 0.000000 0.000000 0.03781231 0.000000000
 ## [4,] 0.000000 0.000000 0.00000000 0.004368776</code></pre>
-<p>and that pre-and post-multplying the corelation matrix by eigenvectors does not change it so much as repackage it: <span class="math display">\[V&#39;V = I\]</span></p>
+<p>and that pre-and post-multiplying the correlation matrix by eigenvectors does not change it so much as repackage it: <span class="math display">\[V&#39;V = I\]</span></p>
 <pre class="r"><code>zapsmall(crossprod(eig.ski$vectors))</code></pre>
 <pre><code>##      [,1] [,2] [,3] [,4]
 ## [1,]    1    0    0    0
@@ -402,7 +402,7 @@ eig.ski</code></pre>
     &amp;= V\sqrt{L}\sqrt{L} V&#39;\\
     &amp;=(V\sqrt{L})(\sqrt{L}V&#39;) \\
     &amp;= A A&#39;
-    \end{align}\]</span> where <span class="math inline">\(A=V\sqrt{L}\)</span> is referred to as the factor loading matrix; the correlation matrix is a product of hte factor laoding matrix <span class="math inline">\(A\)</span> and its transpose.</p>
+    \end{align}\]</span> where <span class="math inline">\(A=V\sqrt{L}\)</span> is referred to as the factor loading matrix; the correlation matrix is a product of the factor loading matrix <span class="math inline">\(A\)</span> and its transpose.</p>
 <p>In this case, the (unrotated) factor loading matrix is:</p>
 <pre class="r"><code>eig.ski$vectors %*% sqrt(diag(eig.ski$values))</code></pre>
 <pre><code>##            [,1]       [,2]        [,3]        [,4]
@@ -410,7 +410,7 @@ eig.ski</code></pre>
 ## [2,] -0.3565888 -0.9248772  0.13143009  0.01314003
 ## [3,] -0.8908852  0.4489882  0.05356475 -0.04317384
 ## [4,] -0.9192705  0.3896101 -0.03276633  0.04552090</code></pre>
-<p>The correlation matrix can herefore be considered a product of two matrices - each a combination of eigenvectors and the square root of eigenvalues</p>
+<p>The correlation matrix can therefore be considered a product of two matrices - each a combination of eigenvectors and the square root of eigenvalues</p>
 <ul>
 <li>Because there are 4 variables, there are 4 eigenvalues</li>
 <li>Each eigenvalue corresponds to a different potential factor; usually only factors with large eigenvalues are retrained</li>
@@ -599,7 +599,7 @@ F</code></pre>
 ## [4,] -1.0816206  0.9740182
 ## [5,] -0.5870286 -0.5949738</code></pre>
 <p>Here, for example, the first subject scores strongly on both snow (strong importance on both depth and powder) and resort factor (strong importance on lift over cost).</p>
-<p>Predicting standardized scores on variables from scores on factors is also possible, using a product of scores on factors wiethged by factor laodings, <span class="math inline">\(Z = FA&#39;\)</span>:</p>
+<p>Predicting standardized scores on variables from scores on factors is also possible, using a product of scores on factors weighted by factor loadings, <span class="math inline">\(Z = FA&#39;\)</span>:</p>
 <pre class="r"><code>Z &lt;- F %*% t(loadings_sol)
 round(Z, 3)</code></pre>
 <pre><code>##        cost   lift  depth powder
@@ -616,7 +616,7 @@ round(Z, 3)</code></pre>
   \end{align}
   \]</span></p>
 <p>The assumption is that each subject has the same latent structure but different scores on the factors themselves.</p>
-<p>Tying it all together, the folloiwng is the computer output from the <code>psych::fa</code></p>
+<p>Tying it all together, the following is the computer output from the <code>psych::fa</code></p>
 <pre class="r"><code>invisible(fit &lt;- fa(cor.ski, nfactors=2, fm=&quot;pa&quot;, rotate=&quot;varimax&quot;))
 fit</code></pre>
 <pre><code>## Factor Analysis using method =  pa
@@ -653,13 +653,13 @@ fit</code></pre>
 <ul>
 <li><strong>Factor Loadings (PA1, PA2)</strong>: The correlations between factors and variables.</li>
 <li><strong>Communality (h2)</strong>: The proportion of variance in a variable that is explained for by the factors, equal to the sum of the squared loadings (SSL). E.g., 97% of the variance in COST is accounted for by the two factors.</li>
-<li><strong>Uniqueness (u2)</strong>: Approximately, <span class="math inline">\(R = FF&#39; + U^2\)</span>. Because unique and eror variances are omitted, a linear combination of factors approximates but does not duplicate the observed correlation matrix and scores on observed variables.<br />
+<li><strong>Uniqueness (u2)</strong>: Approximately, <span class="math inline">\(R = FF&#39; + U^2\)</span>. Because unique and error variances are omitted, a linear combination of factors approximates but does not duplicate the observed correlation matrix and scores on observed variables.<br />
 </li>
 <li><strong>Complexity (com)</strong>: Hoffman’s index of complexity, <span class="math inline">\(\frac{(\sum a_I^2)^2}{\sum a_i^4}\)</span></li>
 <li><strong>SS Loadings</strong>: Sum of squared loadings</li>
-<li><strong>Proportion Var</strong>: Proportion of variance accounted for by each factor; 49.9% of the variance in the variables is accounted for by the first factor and 49.9% of the variance in the variables is accounted for by th esecond factor.<br />
+<li><strong>Proportion Var</strong>: Proportion of variance accounted for by each factor; 49.9% of the variance in the variables is accounted for by the first factor and 49.9% of the variance in the variables is accounted for by the second factor.<br />
 </li>
-<li><strong>Cumulative Var</strong>: Cumulative proprtion of variance explained (across factors). Because rotation is orthogonal, the two factors together account for 97.9% of the variance in the variables</li>
+<li><strong>Cumulative Var</strong>: Cumulative proportion of variance explained (across factors). Because rotation is orthogonal, the two factors together account for 97.9% of the variance in the variables</li>
 <li><strong>Proportion Explained</strong>: The proportion of variance in the solution accounted for by a factor; the two factors account for 50.9% and 49.1% of the variance in the solution, respectively.</li>
 </ul>
 </div>
@@ -667,7 +667,7 @@ fit</code></pre>
 <h2>Oblique Rotation</h2>
 <p>When factors are correlated; the loading matrix (correlations between variables and correlated factors) is decomposed into the following:</p>
 <ul>
-<li>Pattern matrix (<span class="math inline">\(A\)</span>); when squared, contribution of each factor to variance of variable, without segments o variance that come from overlap betweeen correlated factors</li>
+<li>Pattern matrix (<span class="math inline">\(A\)</span>); when squared, contribution of each factor to variance of variable, without segments o variance that come from overlap between correlated factors</li>
 <li>Structure matrix (<span class="math inline">\(C\)</span>); correlations between variables and factors.<br />
 <span class="math display">\[C = A\Phi\]</span></li>
 </ul>
@@ -727,20 +727,20 @@ oblimin_C</code></pre>
 ## lift   -0.06390811 -0.97646186
 ## depth   0.99347151  0.01804570
 ## powder  0.99772563 -0.04813229</code></pre>
-<p>From Phi, see that correlation between first factor and sezond facotr is quite low. In this case, one would use orthogonal rotation.</p>
+<p>From Phi, see that correlation between first factor and second factor is quite low. In this case, one would use orthogonal rotation.</p>
 </div>
 <div id="factor-extraction-techniques" class="section level2">
 <h2>Factor Extraction Techniques:</h2>
 <ul>
-<li>Principal components; to determine components with maximum variance. Firs tPC is the linear combination of observed variables taht maximally separted subjects by maximising the variance of their component scores. Subsequent components are linear combinations of observed variables taht extractes maximum variability from resdiual correslations that are orthoogonal to previous extracted components. Choise solution to reduce large number of variables to smaller number of components.</li>
-<li>Principal factors: Estimates communicality in the positive diagonal of the observed correlation matrix through an iterative procedure with the squared multiple correlations (SMCs) of each variables with all other variables used as the starting values in the iteration.<br />
+<li>Principal components; to determine components with maximum variance. Firs PC is the linear combination of observed variables that maximally separated subjects by maximising the variance of their component scores. Subsequent components are linear combinations of observed variables that extracts maximum variability from residual correlations that are orthogonal to previous extracted components. Choose solution to reduce large number of variables to smaller number of components.</li>
+<li>Principal factors: Estimates communality in the positive diagonal of the observed correlation matrix through an iterative procedure with the squared multiple correlations (SMCs) of each variables with all other variables used as the starting values in the iteration.<br />
 </li>
-<li>Maximum likelihood factoring: Factor loadings calculated by maximising the probabily of sampling the observed correlation matrix from a population</li>
-<li>Image factoring: distributes among factors the variance ofa n observed variable that is reflected by the other variables; variable image scores are produced by multiple regression with variable as independent variable and other variables as dependent variables. A covariabnce matrix is calculated from teh image (predicted) scores</li>
-<li>Unweighted least squares factoring: Aims to minimizse squared differences between the observed and reproduced correlation matrices. Only considere=s off-diaogonal differences.</li>
-<li>Generalized (weighted) least squares factoring: Also aims to minimize (off-diagonal) squared differences bween observed and reproduced correlation matrices, but applies wieths to variables. Variables with substantial shared variance with other variables are weighted more heavily (i.e. considered more important).
+<li>Maximum likelihood factoring: Factor loadings calculated by maximising the probability of sampling the observed correlation matrix from a population</li>
+<li>Image factoring: distributes among factors the variance of a n observed variable that is reflected by the other variables; variable image scores are produced by multiple regression with variable as independent variable and other variables as dependent variables. A covariance matrix is calculated from the image (predicted) scores</li>
+<li>Unweighted least squares factoring: Aims to minimises squared differences between the observed and reproduced correlation matrices. Only considers=s off-diagonal differences.</li>
+<li>Generalized (weighted) least squares factoring: Also aims to minimize (off-diagonal) squared differences between observed and reproduced correlation matrices, but applies weights to variables. Variables with substantial shared variance with other variables are weighted more heavily (i.e. considered more important).
 <ul>
-<li>Alpha factoring: Used when there is intereste in discovering comon factors with repated samples of variables taken from a population of variables.</li>
+<li>Alpha factoring: Used when there is interest in discovering common factors with repeated samples of variables taken from a population of variables.</li>
 </ul></li>
 </ul>
 <div id="comparison-of-pca-to-fa" class="section level3">
@@ -784,7 +784,7 @@ Analyses variance
 Goal: Reproduce correlation matrix with few orthogonal factors
 </td>
 <td>
-Goal: Reproduce correalation matrix with few orthogonal factors
+Goal: Reproduce correlation matrix with few orthogonal factors
 </td>
 </tr>
 <tr>
@@ -824,17 +824,149 @@ Best when after an empirical summary of the data set
 </div>
 <div id="rotation-techniques" class="section level2">
 <h2>Rotation Techniques</h2>
-<p>Rotation is used to improve interpretability of solution, not the quality of the mathematical fit between the observed and reproduced corraltion matrices (which is the same before and after rotation). If underlying processes are correlated, oblique rotation is used, otherwise orthogonal rotation is used (with the advantage of ease in reporting, describign adn interpreting results)</p>
+<p>Rotation is used to improve interpretability of solution, not the quality of the mathematical fit between the observed and reproduced correlation matrices (which is the same before and after rotation). If underlying processes are correlated, oblique rotation is used, otherwise orthogonal rotation is used (with the advantage of ease in reporting, describing and interpreting results)</p>
 <p>Orthogonal Rotation Techniques:</p>
 <ul>
 <li>Varimax: maximised variance of loadings on each factor</li>
 <li>Quartimax: Maximise variance of loadings on each variable</li>
-<li>Equimax: Compromise between quartimax and varimax; golsl is to simplify both variables and factors</li>
+<li>Equimax: Compromise between quartimax and varimax; goal is to simplify both variables and factors</li>
 </ul>
 <p>Oblique Rotation Techniques; allow for range of correlation between factors by altering <span class="math inline">\(\delta\)</span> (-4=orthogonal, 0=fairly highly correlation, 1=highly correlated).</p>
 <ul>
-<li><p>Oblimin (<span class="math inline">\(\delta=0\)</span>): simplify factors by minimixing cross-products of loadings</p></li>
+<li><p>Oblimin (<span class="math inline">\(\delta=0\)</span>): simplify factors by minimising cross-products of loadings</p></li>
 <li><p>Equamax</p></li>
 </ul>
+</div>
+</div>
+<div id="time-series-analysis" class="section level1">
+<h1>Time-Series Analysis</h1>
+<div id="general-purpose-and-description" class="section level2">
+<h2>General Purpose and Description</h2>
+</div>
+<div id="kinds-of-research-questions" class="section level2">
+<h2>Kinds of Research Questions</h2>
+<ul>
+<li>Autocorrelation</li>
+<li>Seasonal Cycles and Trends</li>
+<li>Forecasting</li>
+<li>Effect of an Intervention</li>
+<li>Comparing Time Series</li>
+<li>Time Series with Covariates</li>
+<li>Effect Size and Power</li>
+</ul>
+</div>
+<div id="assumptions-of-time-series-analysis" class="section level2">
+<h2>Assumptions of Time-Series Analysis</h2>
+<div id="theoretical-issues" class="section level3">
+<h3>Theoretical Issues</h3>
+</div>
+<div id="practical-issues" class="section level3">
+<h3>Practical Issues</h3>
+<ul>
+<li>Normality of Distributions of Residuals</li>
+<li>Homogeneity of Variance and Zero Mean of Residuals</li>
+<li>Independence of Residuals</li>
+<li>Absence of Outliers</li>
+</ul>
+</div>
+</div>
+<div id="fundamental-equations-for-time-series-arima-models" class="section level2">
+<h2>Fundamental Equations for Time Series: ARIMA models</h2>
+<div id="identification-of-arima-p-d-q-models" class="section level3">
+<h3>Identification of ARIMA (p, d, q) Models</h3>
+<div id="trend-components-d-making-the-process-stationary" class="section level4">
+<h4>Trend Components, <span class="math inline">\(d:\)</span> Making the Process Stationary</h4>
+</div>
+<div id="auto-regressive-components" class="section level4">
+<h4>Auto-Regressive Components</h4>
+</div>
+<div id="moving-average-components" class="section level4">
+<h4>Moving Average Components</h4>
+</div>
+<div id="mixed-models" class="section level4">
+<h4>Mixed Models</h4>
+</div>
+<div id="acfs-and-pacfs" class="section level4">
+<h4>ACFs and PACFs</h4>
+</div>
+</div>
+<div id="estimating-model-parameters" class="section level3">
+<h3>Estimating Model Parameters</h3>
+</div>
+<div id="diagnose-a-model" class="section level3">
+<h3>Diagnose a Model</h3>
+</div>
+<div id="computer-analysis-of-small-sample-time-series-example" class="section level3">
+<h3>Computer Analysis of Small-Sample Time-Series Example</h3>
+</div>
+</div>
+<div id="types-of-time-series-analyses" class="section level2">
+<h2>Types of Time-Series ANAlyses</h2>
+<div id="models-with-seasonal-components" class="section level3">
+<h3>Models With Seasonal Components</h3>
+</div>
+<div id="models-with-interventions" class="section level3">
+<h3>Models With Interventions</h3>
+<div id="abrupt-permanent-effects" class="section level4">
+<h4>Abrupt, Permanent Effects</h4>
+</div>
+<div id="abrupt-temporary-effects" class="section level4">
+<h4>Abrupt, Temporary Effects</h4>
+</div>
+<div id="gradual-permanent-effects" class="section level4">
+<h4>Gradual, Permanent Effects</h4>
+</div>
+<div id="models-with-multiple-interventions" class="section level4">
+<h4>Models With Multiple Interventions</h4>
+</div>
+</div>
+<div id="adding-continuous-variables" class="section level3">
+<h3>Adding Continuous Variables</h3>
+</div>
+</div>
+<div id="some-important-issues" class="section level2">
+<h2>Some Important Issues</h2>
+<div id="patterns-of-acfs-and-pacfs" class="section level3">
+<h3>Patterns of ACFs and PACFs</h3>
+</div>
+<div id="effect-size" class="section level3">
+<h3>Effect Size</h3>
+</div>
+<div id="forecasting" class="section level3">
+<h3>Forecasting</h3>
+</div>
+<div id="statistical-methods-for-comparing-two-models" class="section level3">
+<h3>Statistical Methods for Comparing Two Models</h3>
+</div>
+</div>
+<div id="complete-example-of-a-time-series-analysis" class="section level2">
+<h2>Complete Example of a Time-Series Analysis</h2>
+<div id="evaluation-of-assumptions" class="section level3">
+<h3>Evaluation of Assumptions</h3>
+<div id="normality-of-sampling-distributions" class="section level4">
+<h4>Normality of Sampling Distributions</h4>
+</div>
+<div id="homogeneity-of-variance" class="section level4">
+<h4>Homogeneity of Variance</h4>
+</div>
+<div id="outliers" class="section level4">
+<h4>Outliers</h4>
+</div>
+</div>
+<div id="baseline-model-identification-and-estimation" class="section level3">
+<h3>Baseline Model Identification and Estimation</h3>
+</div>
+<div id="baseline-model-diagnosis" class="section level3">
+<h3>Baseline Model Diagnosis</h3>
+</div>
+<div id="intervention-analysis" class="section level3">
+<h3>Intervention Analysis</h3>
+<div id="model-diagnosis" class="section level4">
+<h4>Model Diagnosis</h4>
+</div>
+<div id="model-interpretation" class="section level4">
+<h4>Model Interpretation</h4>
+</div>
+</div>
 </div>
 </div>

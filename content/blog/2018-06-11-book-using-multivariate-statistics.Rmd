@@ -202,7 +202,7 @@ cor.ski
 Strong correlations between:
 
 * importance placed on _cost_ of ski ticket and speed of ski _lift_
-* importance placed on snow _depth_ and mositure (_powder_)
+* importance placed on snow _depth_ and moisture (_powder_)
 
 
 Eigenvalues and Eigenvectors:
@@ -216,7 +216,7 @@ Note that $L = V'RV'$
 zapsmall(t(eig.ski$vectors) %*% cor.ski %*% eig.ski$vectors)
 diag(eig.ski$values)
 ```
-and that pre-and post-multplying the corelation matrix by eigenvectors does not change it so much as repackage it:
+and that pre-and post-multiplying the correlation matrix by eigenvectors does not change it so much as repackage it:
 \[V'V = I\]
 
 ```{r ski_identity}
@@ -231,7 +231,7 @@ Rearranging the equation $L=V'RV$,
     &=(V\sqrt{L})(\sqrt{L}V') \\
     &= A A'
     \end{align}\]
-where $A=V\sqrt{L}$ is referred to as the factor loading matrix; the correlation matrix is a product of hte factor laoding matrix $A$ and its transpose.
+where $A=V\sqrt{L}$ is referred to as the factor loading matrix; the correlation matrix is a product of the factor loading matrix $A$ and its transpose.
 
 In this case, the (unrotated) factor loading matrix is:
 ```{r ski_loading}
@@ -239,7 +239,7 @@ eig.ski$vectors %*% sqrt(diag(eig.ski$values))
 ```
 
 
-  The correlation matrix can herefore be considered a product of two matrices - each a combination of eigenvectors and the square root of eigenvalues  
+  The correlation matrix can therefore be considered a product of two matrices - each a combination of eigenvectors and the square root of eigenvalues  
   
 * Because there are 4 variables, there are 4 eigenvalues 
 * Each eigenvalue corresponds to a different potential factor; usually only factors with large eigenvalues are retrained
@@ -428,7 +428,7 @@ F
 ```
 Here, for example, the first subject scores strongly on both snow (strong importance on both depth and powder) and resort factor (strong importance on lift over cost).
 
-Predicting standardized scores on variables from scores on factors is also possible, using a product of scores on factors wiethged by factor laodings, $Z = FA'$:
+Predicting standardized scores on variables from scores on factors is also possible, using a product of scores on factors weighted by factor loadings, $Z = FA'$:
 ```{r ski_orthog_score_predict}
 Z <- F %*% t(loadings_sol)
 round(Z, 3)
@@ -446,7 +446,7 @@ In algebraic form, the formula is:
   
 
  
-Tying it all together, the folloiwng is the computer output from the `psych::fa`
+Tying it all together, the following is the computer output from the `psych::fa`
 ```{r ski_orthog_tied}
 invisible(fit <- fa(cor.ski, nfactors=2, fm="pa", rotate="varimax"))
 fit
@@ -455,11 +455,11 @@ fit
 
 * **Factor Loadings (PA1, PA2)**: The correlations between factors and variables.
 * **Communality (h2)**: The proportion of variance in a variable that is explained for by the factors, equal to the sum of the squared loadings (SSL).  E.g., `r scales::percent(fit$communality["cost"])` of the variance in COST is accounted for by the two factors.
-* **Uniqueness (u2)**: Approximately, $R = FF' + U^2$.   Because unique and eror variances are omitted, a linear combination of factors approximates but does not duplicate the observed correlation matrix and scores on observed variables.  
+* **Uniqueness (u2)**: Approximately, $R = FF' + U^2$.   Because unique and error variances are omitted, a linear combination of factors approximates but does not duplicate the observed correlation matrix and scores on observed variables.  
 * **Complexity (com)**: Hoffman's index of complexity, $\frac{(\sum a_I^2)^2}{\sum a_i^4}$
 * **SS Loadings**: Sum of squared loadings
-* **Proportion Var**: Proportion of variance accounted for by each factor;  `r scales::percent(fit$Vaccounted["Proportion Var", "PA1"])` of the variance in the variables is accounted for by the first factor and `r scales::percent(fit$Vaccounted["Proportion Var", "PA1"])` of the variance in the variables is accounted for by th esecond factor.  
-* **Cumulative Var**: Cumulative proprtion of variance explained (across factors). Because rotation is orthogonal, the two factors together account for `r scales::percent(sum(fit$Vaccounted["Proportion Var", ]))` of the variance in the variables
+* **Proportion Var**: Proportion of variance accounted for by each factor;  `r scales::percent(fit$Vaccounted["Proportion Var", "PA1"])` of the variance in the variables is accounted for by the first factor and `r scales::percent(fit$Vaccounted["Proportion Var", "PA1"])` of the variance in the variables is accounted for by the second factor.  
+* **Cumulative Var**: Cumulative proportion of variance explained (across factors). Because rotation is orthogonal, the two factors together account for `r scales::percent(sum(fit$Vaccounted["Proportion Var", ]))` of the variance in the variables
 * **Proportion Explained**: The proportion of variance in the solution accounted for by a factor; the two factors account for `r scales::percent(fit$Vaccounted["Proportion Explained", "PA1"])` and `r scales::percent(fit$Vaccounted["Proportion Explained", "PA2"])` of the variance in the solution, respectively.  
 
 
@@ -468,7 +468,7 @@ fit
 
 When factors are correlated; the loading matrix (correlations between variables and correlated factors) is decomposed into the following:
 
-* Pattern matrix ($A$); when squared, contribution of each factor to variance of variable, without segments o variance that come from overlap betweeen correlated factors
+* Pattern matrix ($A$); when squared, contribution of each factor to variance of variable, without segments o variance that come from overlap between correlated factors
 * Structure matrix ($C$); correlations between variables and factors.  
 \[C = A\Phi\]
 
@@ -510,7 +510,7 @@ unclass(fit$Structure)
 
 ```
 
-From Phi, see that correlation between first factor and sezond facotr is quite low.  In this case, one would use orthogonal rotation.
+From Phi, see that correlation between first factor and second factor is quite low.  In this case, one would use orthogonal rotation.
 
 
 
@@ -519,13 +519,13 @@ From Phi, see that correlation between first factor and sezond facotr is quite l
 
 ## Factor Extraction Techniques:
 
-  * Principal components; to determine components with maximum variance.  Firs tPC is the linear combination of observed variables taht maximally separted subjects by maximising the variance of their component scores.  Subsequent components are linear combinations of observed variables taht extractes maximum variability from resdiual correslations that are orthoogonal to previous extracted components.  Choise solution to reduce large number of variables to smaller number of components.
-  * Principal factors: Estimates communicality in the positive diagonal of the observed correlation matrix through an iterative procedure with the squared multiple correlations (SMCs) of each variables with all other variables used as the starting values in the iteration.  
-  * Maximum likelihood factoring: Factor loadings calculated by maximising the probabily of sampling the observed correlation matrix  from a population
-  * Image factoring: distributes among factors the variance ofa n observed variable that is reflected by the other variables; variable image scores are produced by multiple regression with variable as independent variable and other variables as dependent variables.  A covariabnce matrix is calculated from teh image (predicted) scores
-  * Unweighted least squares factoring: Aims to minimizse squared differences between the observed and reproduced correlation matrices.  Only considere=s off-diaogonal differences.
-  * Generalized (weighted) least squares factoring: Also aims to minimize (off-diagonal) squared differences bween observed and reproduced correlation matrices, but applies wieths to variables.  Variables with substantial shared variance with other variables are weighted more heavily (i.e. considered more important).  
-    * Alpha factoring: Used when there is intereste in discovering comon factors with repated samples of variables taken from a population of variables.  
+  * Principal components; to determine components with maximum variance.  Firs PC is the linear combination of observed variables that maximally separated subjects by maximising the variance of their component scores.  Subsequent components are linear combinations of observed variables that extracts maximum variability from residual correlations that are orthogonal to previous extracted components.  Choose solution to reduce large number of variables to smaller number of components.
+  * Principal factors: Estimates communality in the positive diagonal of the observed correlation matrix through an iterative procedure with the squared multiple correlations (SMCs) of each variables with all other variables used as the starting values in the iteration.  
+  * Maximum likelihood factoring: Factor loadings calculated by maximising the probability of sampling the observed correlation matrix  from a population
+  * Image factoring: distributes among factors the variance of a n observed variable that is reflected by the other variables; variable image scores are produced by multiple regression with variable as independent variable and other variables as dependent variables.  A covariance matrix is calculated from the image (predicted) scores
+  * Unweighted least squares factoring: Aims to minimises squared differences between the observed and reproduced correlation matrices.  Only considers=s off-diagonal differences.
+  * Generalized (weighted) least squares factoring: Also aims to minimize (off-diagonal) squared differences between observed and reproduced correlation matrices, but applies weights to variables.  Variables with substantial shared variance with other variables are weighted more heavily (i.e. considered more important).  
+    * Alpha factoring: Used when there is interest in discovering common factors with repeated samples of variables taken from a population of variables.  
   
 ### Comparison of PCA to FA
 
@@ -560,7 +560,7 @@ In both, the variance that is analysed is the sum of the values in the positive 
 </tr>
 <tr>
   <td>Goal: Reproduce correlation matrix with few orthogonal factors</td>
-  <td>Goal: Reproduce correalation matrix with few orthogonal factors</td>
+  <td>Goal: Reproduce correlation matrix with few orthogonal factors</td>
 </tr>
 <tr>
   <td>Non-unique solution</td>
@@ -581,17 +581,17 @@ In both, the variance that is analysed is the sum of the values in the positive 
 </table>
 
 ## Rotation Techniques
- Rotation is used to improve interpretability of solution, not the quality of the mathematical fit between the observed and reproduced corraltion matrices (which is the same before and after rotation).  If underlying processes are correlated, oblique rotation is used, otherwise orthogonal rotation is used (with the advantage of ease in reporting, describign adn interpreting results)
+ Rotation is used to improve interpretability of solution, not the quality of the mathematical fit between the observed and reproduced correlation matrices (which is the same before and after rotation).  If underlying processes are correlated, oblique rotation is used, otherwise orthogonal rotation is used (with the advantage of ease in reporting, describing and interpreting results)
  
 Orthogonal Rotation Techniques:
 
 * Varimax: maximised variance of loadings on each factor
 * Quartimax: Maximise variance of loadings on each variable
-* Equimax: Compromise between quartimax and varimax; golsl is to simplify both variables and factors
+* Equimax: Compromise between quartimax and varimax; goal is to simplify both variables and factors
 
 Oblique Rotation Techniques; allow for range of correlation between factors by altering $\delta$ (-4=orthogonal, 0=fairly highly correlation, 1=highly correlated).  
 
-* Oblimin ($\delta=0$): simplify factors by minimixing cross-products of loadings
+* Oblimin ($\delta=0$): simplify factors by minimising cross-products of loadings
 
 * Equamax
   
@@ -599,3 +599,100 @@ Oblique Rotation Techniques; allow for range of correlation between factors by a
 ```{r load_data_factor, message=FALSE, warning=FALSE, include=FALSE}
 dat.factor <- readr::read_tsv("../../static/datasets/Tabachnick/factor.dat") 
 ```  
+
+
+# Time-Series Analysis
+## General Purpose and Description
+## Kinds of Research Questions
+* Autocorrelation
+* Seasonal Cycles and Trends
+* Forecasting
+* Effect of an Intervention
+* Comparing Time Series
+* Time Series with Covariates
+* Effect Size and Power
+
+## Assumptions of Time-Series Analysis
+### Theoretical Issues
+### Practical Issues
+* Normality of Distributions of Residuals
+* Homogeneity of Variance and Zero Mean of Residuals
+* Independence of Residuals
+* Absence of Outliers
+
+## Fundamental Equations for Time Series: ARIMA models
+
+### Identification of ARIMA (p, d, q) Models
+
+#### Trend Components, $d:$ Making the Process Stationary
+
+#### Auto-Regressive Components
+
+#### Moving Average Components
+
+#### Mixed Models
+
+#### ACFs and PACFs
+
+### Estimating Model Parameters 
+
+### Diagnose a Model
+
+### Computer Analysis of Small-Sample Time-Series Example
+
+## Types of Time-Series ANAlyses
+
+### Models With Seasonal Components
+
+### Models With Interventions
+
+#### Abrupt, Permanent Effects
+
+#### Abrupt, Temporary Effects
+
+#### Gradual, Permanent Effects
+
+#### Models With Multiple Interventions
+
+### Adding Continuous Variables
+
+## Some Important Issues
+
+### Patterns of ACFs and PACFs
+
+### Effect Size
+
+### Forecasting
+
+### Statistical Methods for Comparing Two Models
+
+## Complete Example of a Time-Series Analysis
+
+### Evaluation of Assumptions
+
+#### Normality of Sampling Distributions
+
+#### Homogeneity of Variance
+
+#### Outliers
+
+
+### Baseline Model Identification and Estimation
+
+### Baseline Model Diagnosis
+
+### Intervention Analysis
+
+#### Model Diagnosis
+
+#### Model Interpretation
+
+
+
+
+
+
+
+
+
+

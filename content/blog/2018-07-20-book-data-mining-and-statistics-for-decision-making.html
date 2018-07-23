@@ -4,7 +4,8 @@ author: Marie
 date: '2018-07-20'
 slug: book-data-mining-and-statistics-for-decision-making
 banner: "img/banners/tuffery.png"
-categories: Study-Notes
+categories:
+  - Study-Notes
 tags:
 - Study-Notes
 - Book
@@ -20,9 +21,9 @@ tags:
 <div id="the-kohonen-network" class="section level3">
 <h3>The Kohonen network</h3>
 <ul>
-<li>Synonyms: Self-adaptive network, self-orgnisation network, Kohonen map, self-organizing map</li>
-<li>Similar to other nn, made up of layers (two in this case) of units and connections between units</li>
-<li>Disimilar to other nn, it is unsupervised</li>
+<li>Synonyms: Self-adaptive network, self-organisation network, Kohonen map, self-organizing map</li>
+<li>Similar to other neural networks, made up of layers (two in this case) of units and connections between units</li>
+<li>Dissimilar to other neural networks, it is unsupervised</li>
 <li>Aim: Learn data structure to determine clusters</li>
 <li>Consists of two layers:
 <ul>
@@ -48,17 +49,17 @@ tags:
 <li>For each individual <span class="math inline">\(x_k\)</span> in the learning sample:</li>
 <li>Calculate the responses of the <span class="math inline">\(l \times m\)</span> output layer units.</li>
 <li>Assign the individual <span class="math inline">\(x_k\)</span> to the output layer unit <span class="math inline">\((i, j)\)</span> for which <span class="math inline">\(d_{ij}(x)\)</span> is minimised. This unit is said to be <strong>activated</strong>.</li>
-<li><p>Adjust the weights of the activated unit and all neighbouring units to bring them closer to the individual. Note that the size of the neighbourhood starts of large (sometimes the whole grid), but generally decreases during learning. The new weights of a neight (I,J) of the activated (winner) unit (i, j) are: <span class="math display">\[P_{IJk} + \Theta \cdot f(i,j;I,J) \cdot (x_k - p_{ijk}), \text{ for every $k \in [1,n]$}\]</span> Here:</p>
+<li><p>Adjust the weights of the activated unit and all neighbouring units to bring them closer to the individual. Note that the size of the neighbourhood starts of large (sometimes the whole grid), but generally decreases during learning. The new weights of a neighbour (I,J) of the activated (winner) unit (i, j) are: <span class="math display">\[P_{IJk} + \Theta \cdot f(i,j;I,J) \cdot (x_k - p_{ijk}), \text{ for every $k \in [1,n]$}\]</span> Here:</p>
 <ul>
 <li><span class="math inline">\(f(i,j;I,J)\)</span> is a decreasing function of the distance between the units <span class="math inline">\((i,j)\)</span> and <span class="math inline">\((I,J)\)</span>, such that <span class="math inline">\(f(i,j;i,j) = 1\)</span>. It may also have a Gaussian function, <span class="math inline">\(\exp(-\text{distance}(i,j;I,J)^2/2\sigma^2)\)</span>.</li>
-<li>The parameter <span class="math inline">\(\Theta \in [0,1]\)</span> is a learning parameter which decreases linearly or exponentially. Once all indicivuals have been presented and weights adjusted, the learning is complete.</li>
+<li>The parameter <span class="math inline">\(\Theta \in [0,1]\)</span> is a learning parameter which decreases linearly or exponentially. Once all individuals have been presented and weights adjusted, the learning is complete.</li>
 </ul></li>
 </ul>
 <div class="figure">
 <img src="/img/tuffery_som.png" alt="Figure 8.11, Tuffery" />
 <p class="caption">Figure 8.11, Tuffery</p>
 </div>
-<p>Disimilarities to <span class="math inline">\(k\)</span>-means:</p>
+<p>Dissimilarities to <span class="math inline">\(k\)</span>-means:</p>
 <ul>
 <li>In <span class="math inline">\(k\)</span>-means, the introduction of a new individual into cluster only impacts the recalculation of the centroid of the activation unit, not neighbouring units</li>
 <li>Takes place by reducing the number of dimensions of the variable space (like factor analysis)</li>
@@ -68,38 +69,237 @@ tags:
 </div>
 <div id="cluster-analysis" class="section level1">
 <h1>Cluster analysis</h1>
+<ul>
+<li>Aim to find homogeneous subgroups</li>
+<li>Unsupervised (c.f. classification); harder to compare two forms of clustering objectively</li>
+</ul>
 <div id="definition" class="section level2">
 <h2>Definition</h2>
+<p><strong>Clustering</strong>: Operation of grouping objects into limited number of groups, such that objects within groups have similar characteristics which are separated from objects having different characteristics</p>
+<p>Results in internal homogeneity and external heterogeneity.</p>
+<p>Synonyms: Segmentation, topological analysis, nosology, taxonomy, unsupervised pattern recognition.</p>
 </div>
 <div id="applications" class="section level2">
 <h2>Applications</h2>
+<p>Customer segmentations -&gt; tailored communication, customer panel (to ensure all segments represented). Patients for treatment plans, etc.</p>
+<p>Usually preliminary to other data mining operations:</p>
+<ul>
+<li>Groups formed by clustering are homogeneous and can be described by a small number of variables which are specific to each group can then be used in predictive modelling (without these groups, data much more correlated and can impact predictions)</li>
+<li>Can be useful to process missing values in a process without replacing them with a priori values. Can wait for individual to be placed in its cluster to replace missing values.</li>
+</ul>
 </div>
 <div id="complexity" class="section level2">
 <h2>Complexity</h2>
+<!-- permutations and combinations, factorial, choose functions. 
+see function numbers::bell
+https://en.wikipedia.org/wiki/Bell_number
+http://mathworld.wolfram.com/BellNumber.html
+
+-->
+<p>Bell number: Number of (non-overlapping) partitions of <span class="math inline">\(n\)</span> objects <span class="math display">\[B_n = \frac{1}{e} \sum^\infty_{k=1} \frac{k^n}{k!}\]</span></p>
+<p>For example, with 4 objects there are 15</p>
+<ul>
+<li>1 partition with 1 cluster <span class="math inline">\((abcd)\)</span></li>
+<li>7 partitions with 2 clusters <span class="math inline">\((ab,cd), (ac,bd), (ad,bc), (a,bcd), (b,acd), (c,bad), (d,abc)\)</span></li>
+<li>6 partitions with 3 clusters <span class="math inline">\((a,b,cd), (a,c,bd), (ad,bc), (a,d,bc), (b,c,ad), (b,d,ac), (c,d,ab)\)</span></li>
+<li>1 partition with 4 clusters <span class="math inline">\((a,b,c,d)\)</span></li>
+</ul>
+<p>With more objects, not computationally feasible to test all possible combinations</p>
+<p>TODO: Don’t get this formula.</p>
 </div>
 <div id="clustering-structures" class="section level2">
 <h2>Clustering structures</h2>
+<div id="input-data" class="section level3">
+<h3>Input data</h3>
+<p>Structure 1: Data row = individual Data column = variable</p>
+<p>Structure 2: Distances between individuals or variables</p>
+<p>Generally use the Euclidean distance <span class="math display">\[L_2 = \sqrt \sum^p_{i=1} (x_i-y_i)^2\]</span></p>
+<p>Sometimes use the Manhattan distance in order to reduce effect of extreme individuals: <span class="math display">\[L_1 = \sum^p_{i=1} |x_i-y_i|\]</span></p>
+</div>
+<div id="resulting-clusters" class="section level3">
+<h3>Resulting clusters</h3>
+<p><strong>Partitioning</strong>: Clusters are separated</p>
+<ul>
+<li>Number of clusters usually defined a priori, but sometimes not necessary (e.g. clustering by similarity aggregation)</li>
+<li>Methods:
+<ul>
+<li>k-means, moving centres, dynamic clouds</li>
+<li>k-metoids, k-modes, k-prototypes</li>
+<li>Kohonen networks</li>
+<li>clustering by similarity aggregation</li>
+</ul></li>
+</ul>
+<p><strong>Hierarchical</strong>:</p>
+<ul>
+<li>Types:
+<ul>
+<li>ascendant (agglomerative)</li>
+<li>descendant (divisive)</li>
+</ul></li>
+</ul>
+<p><strong>Hybrid</strong></p>
+<p>Combines Partitioned and Hierarchical, includes Fuzzy clustering</p>
+</div>
 </div>
 <div id="methodological-considerations" class="section level2">
 <h2>Methodological considerations</h2>
+<div id="optimal-number-of-clusters" class="section level3">
+<h3>Optimal number of clusters</h3>
+<p>Some methods require a priori definition of the numbers of clusters (e.g. k-means), whilst others do not (e.g. clustering by similarity aggregation)</p>
+<ul>
+<li>Can use agglomerative clustering or clustering by similarity aggregation to determine optimum number of clusters, then recompute with number of clusters fixed at <span class="math inline">\(n\)</span>, where each cluster has &gt; 1% of population</li>
+<li>The number of clusters may be determined by the application</li>
+</ul>
+</div>
+</div>
+<div id="the-user-of-certain-types-of-variables" class="section level2">
+<h2>The user of certain types of variables</h2>
+<ul>
+<li>Variables must be standardised if not measured in the same units, or have different means or variances.</li>
+<li>Preferable to isolate outliers</li>
+<li>When using qualitative variables, it is possible to use clustering on continuous variables by MCA (multiple correspondence analysis), by acting on factors associated with each variable category</li>
+</ul>
+<p>TODO: Review MCA</p>
+<div id="the-use-of-illustrative-variables" class="section level3">
+<h3>The use of illustrative variables</h3>
+<p><strong>Illustrative Variable</strong>: A variable that is not used in the clustering operation but retained in the analysis base in order to observe the distributions of its categories in the various clusters.</p>
+</div>
+<div id="evaluating-the-quality-of-clustering" class="section level3">
+<h3>Evaluating the quality of clustering</h3>
+<ul>
+<li>Statistical methods</li>
+<li>Use another statistical method to visualise the clusters, e.g. a factor plane of a PCA carried on the clustering variables can be coloured according to their clusters.</li>
+</ul>
+</div>
+<div id="interpreting-the-resulting-clusters" class="section level3">
+<h3>Interpreting the resulting clusters</h3>
+<p>No measure (not even within-cluster sum of squares) can be used to compare the superiority of one clustering algorithm to another. The most superior clustering algorithm is often the most intuitive (and therefore subjective).</p>
+<p>In some cases the cluster assignment can be replaced by:</p>
+<ul>
+<li>Decision trees; found by fitting a decision tree of the clustered data with the cluster as the response variable. If the error rate is low (e.g. 10-15%), can replace the clustering algorithm with the rules of the decision tree. This may not always work.</li>
+<li>Multinomial logistic regression</li>
+<li>Univariate tests for the strength of the relationship between each independent variable and each cluster indicator (e.g by running <code>caret::dummyVars</code> on the resulting cluster), using
+<ul>
+<li>Test of variance, if independent variable is continuous</li>
+<li>$^2%, if independent variable is qualitative This can make the interpretation of the cluster much easier.</li>
+</ul></li>
+</ul>
+</div>
+<div id="the-criteria-for-correct-clustering" class="section level3">
+<h3>The criteria for correct clustering</h3>
+<p>A good clustering algorithm will</p>
+<ul>
+<li>Detect structures</li>
+<li>Enable optimal number of clusters to be determined</li>
+<li>Yield clearly differentiated clusters</li>
+<li>Yield clusters which remain stable after small changes to data</li>
+<li>Process large data volumes efficiently</li>
+<li>Handle all types of variables (quantitative and qualitative) (although usually require transformation of variables, e.g. using multiple correspondence analysis)</li>
+</ul>
+</div>
 </div>
 <div id="comparison-of-factor-analysis-and-clustering" class="section level2">
 <h2>Comparison of factor analysis and clustering</h2>
+<p>Factor analysis (incl. PCA, CA, MCA) TODO: Review factor analysis to understand this section … .</p>
+<ul>
+<li>Ideal to provide overview of data and continuous spatial visualisation of individuals (and sometimes clusters)</li>
+<li>Factor axes can reveal tendencies</li>
+<li>Limitations:
+<ul>
+<li>lack of readability of the principal plans when volume of data is large</li>
+<li>Individuals may appear closer than reality when projecting on subspace</li>
+<li>Factors other than the first may be difficult to interpret</li>
+</ul></li>
+<li>Useful complement to clustering</li>
+</ul>
+<p>Clustering</p>
+<ul>
+<li>Partitions individual space (instead of representing it (c.f. continuously)</li>
+<li>Operates recursively (c.f. by a calculation)</li>
+<li>Lack benefits of parallel processing of individuals and variables</li>
+<li>Benefits by taking into account all dimensions of a problem without projection on to a subspace of lower dimensions (no information loss)</li>
+<li>Graphical representation may be more readable</li>
+</ul>
 </div>
 <div id="within-cluster-and-between-cluster-sum-of-squares" class="section level2">
 <h2>Within-cluster and between-cluster sum of squares</h2>
+<p>Total sum of squares: <span class="math display">\[I = \sum_{i \in I}p_i (x_i-\bar{x})^2\]</span></p>
+<p>Within cluster sum of squares: <span class="math display">\[I_A = \sum_{j \in \text{clusters}} \left(\sum_{i \in I_j}p_i\right) (x_i-\bar{x})^2\]</span></p>
+<p>Between cluster sum of squares: <span class="math display">\[I_R = \sum_{j \in \text{clusters}} \left( \sum_{i \in I_j p_i}\right)(\bar{x}_j-\bar{x})^2\]</span></p>
+<p><span class="math inline">\(I_A\)</span> should be small and <span class="math inline">\(I_R\)</span> should be large.</p>
 </div>
 <div id="measurement-of-clustering-quality" class="section level2">
 <h2>Measurement of clustering quality</h2>
+<div id="all-types-of-clustering" class="section level3">
+<h3>All types of clustering</h3>
+<ul>
+<li><p><strong><span class="math inline">\(R^2\)</span></strong> (Coefficient of Determination) is the proportion of the sum of squares explained by the clusters (<span class="math inline">\(I_R/I\)</span>)); the nearer to 1, the better the clustering. Maximised at one cluster per individual and so should not aim to maximise. Partition into <span class="math inline">\(k + 1\)</span> clusters if the last significant rise in <span class="math inline">\(R^2\)</span> is from <span class="math inline">\(k\)</span> to <span class="math inline">\(k+1\)</span> clusters. E.g., figure 9.5, Tuffery <img src="/img/Tuffery_9_5_cluster_r2.png" alt="Figure 9.5, Tuffery" /></p></li>
+<li><strong>Cubic Clustering Criterion (CCC)</strong>:
+<ul>
+<li>CCC &gt; 2: Good</li>
+<li>0 <span class="math inline">\(\leq\)</span> CCC <span class="math inline">\(\leq\)</span> 2: Requires examination</li>
+<li>CCC &lt; 0: May be affected by outliers (slightly negative then likely presence of small clusters, at &lt; -30 then high risk of outliers) A good partition into <span class="math inline">\(k + 1\)</span> clustesr will show a dip for <span class="math inline">\(k\)</span> clusters and a peak for <span class="math inline">\(k + 1\)</span> clusters, followed by either a gradual decrease or smaller rise. Do not use with _ single linkage hierarchical model.<br />
+<img src="/img/Tuffery_9_6_cluster_ccc.png" alt="Figure 9.6, Tuffery" /></li>
+</ul></li>
+<li><p><strong>pseudo F</strong>: Measures separation between clusters. Should be large. Analagous to <span class="math inline">\(F\)</span>-ratio but does not follow Fishers distribution. Do not use with single linkage hierarchical method. If <span class="math inline">\(c\)</span> = no. cluseters, <span class="math inline">\(n\)</span> = no. observations, then <span class="math display">\[\text{pseudo} F = \frac{R^2/(c-1)}{(1-R^2)/(n-c)}\]</span></p></li>
+</ul>
+<!--see: https://stats.stackexchange.com/questions/212293/cubic-clustering-criterion-using-r-update -->
+</div>
+<div id="agglomerative-hierarchical-clustering" class="section level3">
+<h3>Agglomerative hierarchical clustering</h3>
+<ul>
+<li><p><strong>Semi-partial <span class="math inline">\(R^2\)</span> (SPRSQ)</strong>: decrease in <span class="math inline">\(R^2\)</span> by grouping 2 clusters together. Look for a lower SPRSQ preceded by a high SPRSQ; a peak for <span class="math inline">\(k\)</span> and a dip for <span class="math inline">\(k+1\)</span> suggests clustering at <span class="math inline">\(k+1\)</span>.</p></li>
+<li><p><strong>Psuedo <span class="math inline">\(t^2\)</span></strong>: Mesaures the separation between the two most recently aggregated clusters; a peak for <span class="math inline">\(k\)</span> and a dip for <span class="math inline">\(k+1\)</span> suggests clustering at <span class="math inline">\(k+1\)</span>.</p></li>
+</ul>
+</div>
 </div>
 <div id="partitioning-methods" class="section level2">
 <h2>Partitioning methods</h2>
+<div id="moving-centres" class="section level3">
+<h3>Moving centres</h3>
+<p>Algorithm:</p>
+<p>1 Choose <span class="math inline">\(k\)</span> individuals at random (or some other method) as initial centres of clusters 2 Calculate distance between each individual and each centre; assign individuals to the nearest centre 3 Replace the centres with the centres of the <span class="math inline">\(k\)</span> clusters</p>
+<p>Repeat steps 2 - 3 until centres remain sufficiently stable or fixed number of iterations have been completed.</p>
 </div>
-<div id="agglomerative-hierarchical-clustering" class="section level2">
+<div id="k-means-and-dynamic-clouds" class="section level3">
+<h3><span class="math inline">\(k\)</span>-means and dynamic clouds</h3>
+<p><span class="math inline">\(k\)</span>-means variant to moving centres: Algorithm:</p>
+<p>1 Choose <span class="math inline">\(k\)</span> individuals at random (or some other method) as initial centres of clusters</p>
+<p>2 For each individual:</p>
+<ul>
+<li>Calculate distance between individual and each centre; assign individual to the nearest centre</li>
+<li>Replace the centre of the assigned cluster</li>
+</ul>
+<p>Repeat step 2 until centres remain sufficiently stable or fixed number of iterations have been completed.</p>
+<p>Dynamic clouds variant to moving centres: cluster is not represented by a centroid buy by a kernel (e.g. the most central individuals)</p>
+<p>Definition: <strong>paragon</strong>: Individual closest to the centre of gravity.</p>
+</div>
+<div id="processing-qualitative-data" class="section level3">
+<h3>Processing qualitative data</h3>
+<ul>
+<li>Use MCA so that binned quantitative varibles and qualitative variables can be processed simulataniously by applying the above methods to the resulting factors.</li>
+<li>Use <span class="math inline">\(k\)</span>-modes for qualitative data</li>
+<li>Use <span class="math inline">\(k\)</span>-prototypes for mixed data</li>
+</ul>
+</div>
+<div id="k-medoids-and-their-variants" class="section level3">
+<h3><span class="math inline">\(k\)</span>-medoids and their variants</h3>
+</div>
+<div id="advantages-of-the-partitioning-methods" class="section level3">
+<h3>Advantages of the partitioning methods</h3>
+</div>
+<div id="disadvantages-of-the-partitioning-methods" class="section level3">
+<h3>Disadvantages of the partitioning methods</h3>
+</div>
+<div id="sensitivity-to-the-choice-of-initial-centres" class="section level3">
+<h3>Sensitivity to the choice of initial centres</h3>
+</div>
+</div>
+<div id="agglomerative-hierarchical-clustering-1" class="section level2">
 <h2>Agglomerative hierarchical clustering</h2>
 </div>
-<div id="hubyrid-clustering-methods" class="section level2">
-<h2>Hubyrid clustering methods</h2>
+<div id="hybrid-clustering-methods" class="section level2">
+<h2>Hybrid clustering methods</h2>
 </div>
 <div id="neural-clustering" class="section level2">
 <h2>Neural clustering</h2>

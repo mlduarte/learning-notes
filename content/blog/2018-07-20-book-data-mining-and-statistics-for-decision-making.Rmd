@@ -4,7 +4,8 @@ author: Marie
 date: '2018-07-20'
 slug: book-data-mining-and-statistics-for-decision-making
 banner: "img/banners/tuffery.png"
-categories: Study-Notes
+categories:
+  - Study-Notes
 tags:
 - Study-Notes
 - Book
@@ -15,9 +16,9 @@ tags:
 ## The main neural networks
 ### The Kohonen network
 
-  * Synonyms: Self-adaptive network, self-orgnisation network, Kohonen map, self-organizing map
-  * Similar to other nn, made up of layers (two in this case) of units and connections between units
-  * Disimilar to other nn, it is unsupervised
+  * Synonyms: Self-adaptive network, self-organisation network, Kohonen map, self-organizing map
+  * Similar to other neural networks, made up of layers (two in this case) of units and connections between units
+  * Dissimilar to other neural networks, it is unsupervised
   * Aim: Learn data structure to determine clusters
   * Consists of two layers:
     * Input layer; one unit for each of the $n$ variables
@@ -39,34 +40,257 @@ Algorithm:
   * For each individual $x_k$ in the learning sample:
   * Calculate the responses of the $l \times m$ output layer units.
   * Assign the individual $x_k$ to the output layer unit $(i, j)$ for which $d_{ij}(x)$ is minimised.  This unit is said to be **activated**.
-  * Adjust the weights of the activated unit and all neighbouring units to bring them closer to the individual.  Note that the size of the neighbourhood starts of large (sometimes the whole grid), but generally decreases during learning.  The new weights of a neight (I,J) of the activated (winner) unit (i, j) are:
+  * Adjust the weights of the activated unit and all neighbouring units to bring them closer to the individual.  Note that the size of the neighbourhood starts of large (sometimes the whole grid), but generally decreases during learning.  The new weights of a neighbour (I,J) of the activated (winner) unit (i, j) are:
   \[P_{IJk} + \Theta \cdot f(i,j;I,J) \cdot (x_k - p_{ijk}), \text{ for every $k \in [1,n]$}\]
   Here:
 
     * $f(i,j;I,J)$ is a decreasing function of the distance between the units $(i,j)$ and $(I,J)$, such that $f(i,j;i,j) = 1$.  It may also have a Gaussian function, $\exp(-\text{distance}(i,j;I,J)^2/2\sigma^2)$.
     * The parameter $\Theta \in [0,1]$ is a learning parameter which decreases linearly or exponentially.
-Once all indicivuals have been presented and weights adjusted, the learning is complete.
+Once all individuals have been presented and weights adjusted, the learning is complete.
 
 ![Figure 8.11, Tuffery](/img/tuffery_som.png)
 
-Disimilarities to $k$-means:
+Dissimilarities to $k$-means:
 
   * In $k$-means, the introduction of a new individual into cluster only impacts the recalculation of the centroid of the activation unit, not neighbouring units
   * Takes place by reducing the number of dimensions of the variable space (like factor analysis)
  
  
 # Cluster analysis
+
+* Aim to find homogeneous subgroups
+* Unsupervised (c.f. classification); harder to compare two forms of clustering objectively
+
 ## Definition
+
+**Clustering**: Operation of grouping objects into limited number of groups, such that objects within groups have similar characteristics which are separated from objects having different characteristics
+
+Results in internal homogeneity and external heterogeneity.
+
+Synonyms: Segmentation, topological analysis, nosology, taxonomy, unsupervised pattern recognition.
+
 ## Applications
+
+Customer segmentations -> tailored communication, customer panel (to ensure all segments represented).  Patients for treatment plans, etc.
+
+Usually preliminary to other data mining operations:
+
+* Groups formed by clustering are homogeneous and can be described by a small number of variables which are specific to each group can then be used in predictive modelling (without these groups, data much more correlated and can impact predictions)
+* Can be useful to process missing values in a  process without replacing them with a priori values.  Can wait for individual to be placed in its cluster to replace missing values.
+
+
 ## Complexity
+<!-- permutations and combinations, factorial, choose functions. 
+see function numbers::bell
+https://en.wikipedia.org/wiki/Bell_number
+http://mathworld.wolfram.com/BellNumber.html
+
+-->
+
+Bell number: Number of (non-overlapping) partitions of $n$ objects \[B_n = \frac{1}{e} \sum^\infty_{k=1} \frac{k^n}{k!}\]
+
+For example, with 4 objects there are `r  sum(unlist(lapply(1:4, function(k) choose(4, k))))`
+
+* 1 partition with 1 cluster $(abcd)$
+* 7 partitions with 2 clusters $(ab,cd), (ac,bd), (ad,bc), (a,bcd), (b,acd), (c,bad), (d,abc)$
+* 6 partitions with 3 clusters $(a,b,cd), (a,c,bd), (ad,bc), (a,d,bc), (b,c,ad), (b,d,ac), (c,d,ab)$
+* 1 partition with 4 clusters $(a,b,c,d)$
+
+With more objects, not computationally feasible to test all possible combinations
+
+TODO: Don't get this formula.
+
 ## Clustering structures
+
+### Input data
+Structure 1: 
+Data row = individual
+Data column = variable
+
+Structure 2:
+Distances between individuals or variables 
+
+Generally use the Euclidean distance \[L_2 = \sqrt \sum^p_{i=1} (x_i-y_i)^2\]
+
+Sometimes use the Manhattan distance in order to reduce effect of extreme individuals: 
+\[L_1 = \sum^p_{i=1} |x_i-y_i|\]
+
+### Resulting clusters
+
+**Partitioning**: Clusters are separated
+
+* Number of clusters usually defined a priori, but sometimes not necessary (e.g. clustering by similarity aggregation)
+* Methods: 
+    * k-means, moving centres, dynamic clouds
+    * k-metoids, k-modes, k-prototypes
+    * Kohonen networks
+    * clustering by similarity aggregation
+    
+
+**Hierarchical**: 
+
+* Types: 
+    * ascendant (agglomerative) 
+    * descendant (divisive)
+  
+**Hybrid**
+
+Combines Partitioned and Hierarchical, includes Fuzzy clustering
+
 ## Methodological considerations
+
+### Optimal number of clusters
+
+Some methods require a priori definition of the numbers of clusters (e.g. k-means), whilst others do not (e.g. clustering by similarity aggregation)
+
+* Can use agglomerative clustering or clustering by similarity aggregation to determine optimum number of clusters, then recompute with number of clusters fixed at $n$, where each cluster has > 1% of population
+* The number of clusters may be determined by the application
+
+
+## The user of certain types of variables
+
+* Variables must be standardised if not measured in the same units, or have different means or variances.
+* Preferable to isolate outliers
+* When using qualitative variables, it is possible to use clustering on continuous variables by MCA (multiple correspondence analysis), by acting on factors associated with each variable category
+
+TODO: Review MCA
+
+### The use of illustrative variables
+
+**Illustrative Variable**: A variable that is not used in the clustering operation but retained in the analysis base in order to observe the distributions of its categories in the various clusters.
+
+### Evaluating the quality of clustering
+
+* Statistical methods
+* Use another statistical method to visualise the clusters, e.g. a factor plane of a PCA carried on the clustering variables can be coloured according to their clusters.
+
+### Interpreting the resulting clusters
+No measure (not even within-cluster sum of squares) can be used to compare the superiority of one clustering algorithm to another. The most superior clustering algorithm is often the most intuitive (and therefore subjective).
+
+In some cases the cluster assignment can be replaced by:
+
+* Decision trees; found by fitting a decision tree of the clustered data with the cluster as the response variable.  If the error rate is low (e.g. 10-15%), can replace the clustering algorithm with the rules of the decision tree.  This may not always work.
+* Multinomial logistic regression
+* Univariate tests for the strength of the relationship between each independent variable and each cluster indicator (e.g by running `caret::dummyVars` on the resulting cluster), using
+    * Test of variance, if independent variable is continuous
+    * $\chi^2%, if independent variable is qualitative
+This can make the interpretation of the cluster much easier.
+
+### The criteria for correct clustering
+
+A good clustering algorithm will
+
+* Detect structures
+* Enable optimal number of clusters to be determined
+* Yield clearly differentiated clusters
+* Yield clusters which remain stable after small changes to data
+* Process large data volumes efficiently
+* Handle all types of variables (quantitative and qualitative) (although usually require transformation of variables, e.g. using multiple correspondence analysis)
+
+
+
 ## Comparison of factor analysis and clustering
+
+Factor analysis (incl. PCA, CA, MCA) 
+TODO: Review factor analysis to understand this section ... .
+
+* Ideal to provide overview of data and continuous spatial visualisation of individuals (and sometimes clusters)
+* Factor axes can reveal tendencies
+* Limitations: 
+    * lack of readability of the principal plans when volume of data is large
+    * Individuals may appear closer than reality when projecting on subspace 
+    * Factors other than the first may be difficult to interpret
+* Useful complement to clustering
+
+Clustering 
+
+* Partitions individual space (instead of representing it (c.f. continuously)
+* Operates recursively (c.f. by a calculation)
+* Lack benefits of parallel processing of individuals and variables
+* Benefits by taking into account all dimensions of a problem without projection on to a subspace of lower dimensions (no information loss)
+* Graphical representation may be more readable
+
 ## Within-cluster and between-cluster sum of squares
+
+Total sum of squares:
+\[I = \sum_{i \in I}p_i (x_i-\bar{x})^2\]
+
+Within cluster sum of squares:
+\[I_A = \sum_{j \in \text{clusters}} \left(\sum_{i \in I_j}p_i\right) (x_i-\bar{x})^2\]
+
+Between cluster sum of squares:
+\[I_R = \sum_{j \in \text{clusters}} \left( \sum_{i \in I_j p_i}\right)(\bar{x}_j-\bar{x})^2\]
+
+$I_A$ should be small and $I_R$ should be large.
+
 ## Measurement of clustering quality
+
+
+### All types of clustering
+* **$R^2$** (Coefficient of Determination) is the proportion of the sum of squares explained by the clusters ($I_R/I$)); the nearer to 1, the better the clustering.  Maximised at one cluster per individual and so should not aim to maximise.  Partition into $k + 1$ clusters if the last significant rise in $R^2$ is from $k$ to $k+1$ clusters.  E.g., figure 9.5, Tuffery
+![Figure 9.5, Tuffery](/img/Tuffery_9_5_cluster_r2.png)
+
+
+* **Cubic Clustering Criterion (CCC)**:
+    * CCC > 2: Good
+    * 0 $\leq$ CCC $\leq$ 2: Requires examination
+    * CCC < 0: May be affected by outliers (slightly negative then likely presence of small clusters, at < -30 then high risk of outliers)
+  A good partition into $k + 1$ clustesr will show a dip for $k$ clusters and a peak for $k + 1$ clusters, followed by either a gradual decrease or smaller rise.  Do not use with _ single linkage hierarchical model.    
+ ![Figure 9.6, Tuffery](/img/Tuffery_9_6_cluster_ccc.png)   
+
+* **pseudo F**: Measures separation between clusters. Should be large.  Analagous to $F$-ratio but does not follow Fishers distribution.  Do not use with single linkage hierarchical method.  If $c$ = no. cluseters, $n$ = no. observations, then \[\text{pseudo} F = \frac{R^2/(c-1)}{(1-R^2)/(n-c)}\]
+
+
+<!--see: https://stats.stackexchange.com/questions/212293/cubic-clustering-criterion-using-r-update -->
+### Agglomerative hierarchical clustering
+
+* **Semi-partial $R^2$ (SPRSQ)**: decrease in $R^2$ by grouping 2 clusters together.  Look for a lower SPRSQ preceded by a high SPRSQ; a peak for $k$ and a dip for $k+1$ suggests clustering at $k+1$.
+
+* **Psuedo $t^2$**: Mesaures the separation between the two most recently aggregated clusters; a peak for $k$ and a dip for $k+1$ suggests clustering at $k+1$.
+
 ## Partitioning methods
+
+### Moving centres
+
+Algorithm:
+
+1 Choose $k$ individuals at random (or some other method) as initial centres of clusters
+2 Calculate distance between each individual and each centre; assign individuals to the nearest centre
+3 Replace the centres with the centres of the $k$ clusters
+
+Repeat steps 2 - 3 until centres remain sufficiently stable or fixed number of iterations have been completed.
+
+### $k$-means and dynamic clouds
+
+$k$-means variant to moving centres:
+Algorithm:
+
+1 Choose $k$ individuals at random (or some other method) as initial centres of clusters
+
+2 For each individual:
+
+* Calculate distance between  individual and each centre; assign individual to the nearest centre
+* Replace the centre of the assigned cluster
+
+Repeat step 2 until centres remain sufficiently stable or fixed number of iterations have been completed.
+
+Dynamic clouds variant to moving centres: cluster is not represented by a centroid buy by a kernel (e.g. the most central individuals)
+
+Definition: **paragon**: Individual closest to the centre of gravity.
+
+
+### Processing qualitative data
+* Use MCA so that binned quantitative varibles and qualitative variables can be processed simulataniously by applying the above methods to the resulting factors.
+* Use $k$-modes for qualitative data
+* Use $k$-prototypes for mixed data
+
+### $k$-medoids and their variants
+### Advantages of the partitioning methods
+### Disadvantages of the partitioning methods
+### Sensitivity to the choice of initial centres
+
 ## Agglomerative hierarchical clustering
-## Hubyrid clustering methods
+## Hybrid clustering methods
 ## Neural clustering
 ## Clustering by similarity aggregation
 ## Clustering of numeric variables

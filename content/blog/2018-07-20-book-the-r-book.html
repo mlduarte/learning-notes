@@ -14,6 +14,40 @@ tags:
 
 
 
+<div id="time-series-analysis" class="section level1">
+<h1>22: Time Series Analysis</h1>
+<p>Concepts:</p>
+<ul>
+<li>Trend: Often need to detrend (e.g. by differencing) prior to analysis</li>
+<li>Serial dependence: Correlations between adjacent time points
+<ul>
+<li>Autocorrelation: Relationship between <span class="math inline">\(t\)</span> and <span class="math inline">\(t-1\)</span></li>
+<li>Partial autocorrelation: Relationship between <span class="math inline">\(t\)</span> and the population at lag <span class="math inline">\(k\)</span>, once controlled for correlations at lesser lags.</li>
+</ul></li>
+<li>Stationary: Time series has the same propoerties regardless of the starting point (i.e white noise has mean zero and constant variance)</li>
+</ul>
+<pre class="r"><code>blowfly &lt;- read.table(&quot;../../static/datasets/therbook/blowfly.txt&quot;, header = TRUE) 
+attach(blowfly)
+names(blowfly)</code></pre>
+<pre><code>## [1] &quot;flies&quot;</code></pre>
+<pre class="r"><code># convert flies to ts object
+flies &lt;- ts(flies)
+
+# plot ts object
+plot(flies)</code></pre>
+<p><img src="/blog/2018-07-20-book-the-r-book_files/figure-html/ts_load_flies-1.png" width="672" /> Time series features:</p>
+<ul>
+<li>First 200 weaks have regular cycles</li>
+<li>After 200 weeks, upward trend and less regular cycles</li>
+</ul>
+<p>Plot of flies at lags 1 - 4:</p>
+<pre class="r"><code>par(mfrow=c(2,2))
+invisible(sapply(1:4, function(x) plot(flies[-c(361: (361-x+1))], flies[-c(1:x)] ) ))</code></pre>
+<p><img src="/blog/2018-07-20-book-the-r-book_files/figure-html/ts_flies_lag-1.png" width="672" /></p>
+<p>Autocorrelation function <span class="math inline">\(\rho(k)\)</span> at lag <span class="math inline">\(k\)</span>: <span class="math display">\[\rho(k) = \frac{\gamma(k)}{\gamma(0)},\]</span> where <span class="math inline">\(\lambda(k)\)</span> is the autocovariance function at lag <span class="math inline">\(k\)</span> of a stationary random function {<span class="math inline">\(Y(t)\)</span>} given by <span class="math display">\[\gamma(k) = \text{cov}{Y(t),Y(t-k)}\]</span></p>
+<p>Autocorrelation coefficient properties: * symmetric, <span class="math inline">\(\rho(k) = -\rho(k)\)</span> * <span class="math inline">\(-1 \leq \rho(k) \leq 1\)</span> * If <span class="math inline">\(Y(t)\)</span> and <span class="math inline">\(Y(t-k)\)</span> are independent then <span class="math inline">\(\rho(k)\)</span> = 0, but the converse if not true.</p>
+<p>See: <a href="https://datascienceplus.com/author/troywalt/" class="uri">https://datascienceplus.com/author/troywalt/</a> <a href="https://stackoverflow.com/questions/20222124/aggregate-time-series-from-weeks-to-month" class="uri">https://stackoverflow.com/questions/20222124/aggregate-time-series-from-weeks-to-month</a></p>
+</div>
 <div id="multivariate-statistics" class="section level1">
 <h1>23: Multivariate Statistics</h1>
 <div id="principal-components-analysis" class="section level2">
@@ -43,12 +77,12 @@ tags:
 <pre><code>## Loading required package: ggplot2</code></pre>
 <pre class="r"><code>require(tidyverse)</code></pre>
 <pre><code>## Loading required package: tidyverse</code></pre>
-<pre><code>## ── Attaching packages ───────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
 <pre><code>## ✔ tibble  1.4.2     ✔ purrr   0.2.5
 ## ✔ tidyr   0.8.1     ✔ dplyr   0.7.5
 ## ✔ readr   1.1.1     ✔ stringr 1.3.1
 ## ✔ tibble  1.4.2     ✔ forcats 0.3.0</code></pre>
-<pre><code>## ── Conflicts ──────────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>require(gridExtra)</code></pre>

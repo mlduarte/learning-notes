@@ -11,13 +11,53 @@ tags:
 - Study-Notes
 - Book
 ---
----
-title: Book: The R Book
-author: Marie
-date: '2018-07-20'
-slug: book-the-r-book
----
 
+
+# 22: Time Series Analysis
+
+Concepts: 
+
+* Trend: Often need to detrend (e.g. by differencing) prior to analysis
+* Serial dependence: Correlations between adjacent time points
+    * Autocorrelation: Relationship between $t$ and $t-1$
+    * Partial autocorrelation: Relationship between $t$ and the population at lag $k$, once controlled for correlations at lesser lags.
+* Stationary: Time series has the same propoerties regardless of the starting point (i.e white noise has mean zero and constant variance)
+
+```{r ts_load_flies}
+blowfly <- read.table("../../static/datasets/therbook/blowfly.txt", header = TRUE) 
+attach(blowfly)
+names(blowfly)
+
+# convert flies to ts object
+flies <- ts(flies)
+
+# plot ts object
+plot(flies)
+```
+Time series features:
+
+* First 200 weaks have regular cycles
+* After 200 weeks, upward trend and less regular cycles
+
+Plot of flies at lags 1 - 4:
+```{r ts_flies_lag}
+par(mfrow=c(2,2))
+invisible(sapply(1:4, function(x) plot(flies[-c(361: (361-x+1))], flies[-c(1:x)] ) ))
+```
+
+Autocorrelation function $\rho(k)$ at lag $k$:
+\[\rho(k) = \frac{\gamma(k)}{\gamma(0)},\] where $\lambda(k)$ is the autocovariance function at lag $k$ of a stationary random function {$Y(t)$} given by \[\gamma(k) = \text{cov}{Y(t),Y(t-k)}\]
+
+Autocorrelation coefficient properties:
+* symmetric, $\rho(k) = -\rho(k)$
+* $-1 \leq \rho(k) \leq 1$
+* If $Y(t)$ and $Y(t-k)$ are independent then $\rho(k)$ = 0, but the converse if not true.
+
+
+
+See:
+https://datascienceplus.com/author/troywalt/
+https://stackoverflow.com/questions/20222124/aggregate-time-series-from-weeks-to-month
 
 # 23: Multivariate Statistics
 ## Principal components analysis
@@ -134,3 +174,4 @@ plot(hpg, labels = labels, main = "")
 
 ## Discriminant analysis
 ## Neural networks
+
