@@ -842,49 +842,339 @@ Best when after an empirical summary of the data set
 <h1>Time-Series Analysis</h1>
 <div id="general-purpose-and-description" class="section level2">
 <h2>General Purpose and Description</h2>
+<ul>
+<li>Observations over <span class="math inline">\(\geq\)</span> 50 time periods</li>
+<li>Observations may be aggregates (e.g. monthly or daily traffic tickets)</li>
+<li>Goals:
+<ul>
+<li>Identify patterns in obsevations correlated with themselves, but offset in time</li>
+<li>Test impact of intervention(s)</li>
+<li>Forecast</li>
+</ul></li>
+<li>Method: Decompose score into:
+<ul>
+<li>shocks (random process)</li>
+<li>Trend
+<ul>
+<li>Linear: increasing or decreasing mean</li>
+<li>Quadratic: Mean increases or decreases</li>
+</ul></li>
+<li>Effect of earlier scores</li>
+<li>Effect of earlier shocks</li>
+<li>Seaonality/periodocity/cyclic</li>
+</ul></li>
+<li>Models:
+<ul>
+<li>ARIMA(<span class="math inline">\(p, d, q\)</span>): Auto-regressive integrated moving average:
+<ul>
+<li><span class="math inline">\(p\)</span>: <strong>Auto-regressive</strong>; effect of earlier scores. A model with two auto-regressive terms (<span class="math inline">\(p = 2\)</span>) depends on two previous observations</li>
+<li><span class="math inline">\(d\)</span>: <strong>Trend</strong>; the terms needed to make a nonstationary time series stationary. With two trend terms ($d = 2), teh model has to be differenced twice to make it stationary. The first difference removes linear trendes and the second quadratic, etc.</li>
+<li><span class="math inline">\(q\)</span>: <strong>Moving average</strong> (of earlier shocks); with two moving average terms, an observation depends on two preceding random shocks</li>
+</ul></li>
+</ul></li>
+<li>Steps in analysis:
+<ol style="list-style-type: decimal">
+<li>Identification; of autocorrelation functions (ACFs) and partial autocorrelation functions (PACFs)
+<ul>
+<li><strong>Autocorrelation</strong>: self-scorrelation at different lags</li>
+<li><strong>Partial Autocorrelation</strong>: self correlation at different lags with intermediate correlations parialled out</li>
+</ul></li>
+<li>Estimation</li>
+<li>Diagnosis</li>
+</ol></li>
+</ul>
+<p>Recommended References:</p>
+<ul>
+<li><p><a href="https://www.wiley.com/en-au/Time+Series+Analysis%3A+Forecasting+and+Control%2C+5th+Edition-p-9781118675021">Time Series Analysis: Forecasting and Control, 5th Edition George E. P. Box, Gwilym M. Jenkins, Gregory C. Reinsel, Greta M. Ljung</a></p></li>
+<li><p>Hershberger,S. L., Molenaar, P.C. M., &amp; Corneal, S.E. (1996). A hierarchy of univariate andmultivariatestructural time series models. In G. A. Marcoulides &amp; R. E. Shumacker (Eds.), Advanced structural equation modeling: Issues and Techniques (pp. 159–194).Mahwah, NJ: Lawrence Erlbaum Associates, Inc</p></li>
+</ul>
 </div>
 <div id="kinds-of-research-questions" class="section level2">
 <h2>Kinds of Research Questions</h2>
+<p>Determine:</p>
+<ol style="list-style-type: decimal">
+<li>Patterns in series
+<ol style="list-style-type: lower-alpha">
+<li>Autocorrelation: Pattern may be of interest to intself or in prepration for forecasing or testing the effects of interventions. Types of questions:
 <ul>
-<li>Autocorrelation</li>
-<li>Seasonal Cycles and Trends</li>
-<li>Forecasting</li>
-<li>Effect of an Intervention</li>
-<li>Comparing Time Series</li>
-<li>Time Series with Covariates</li>
-<li>Effect Size and Power</li>
-</ul>
+<li>Are there linear or quadratic trends in the data?</li>
+<li>How quickly to random shocks linger?</li>
+</ul></li>
+<li>Seasonal cycles and trends<br />
+</li>
+</ol></li>
+<li>Predicted values in future (forecasting)</li>
+<li>Effect of intervention</li>
+<li>Relationships between time series (comparing time series). AKA multivariate time eries, cross-correlation functions, transfer function models, models with input series, dynamic regression.</li>
+<li>Relationship to covariates (dv)</li>
+<li>Variability due to the chosen model (effect size and power)</li>
+</ol>
 </div>
 <div id="assumptions-of-time-series-analysis" class="section level2">
 <h2>Assumptions of Time-Series Analysis</h2>
 <div id="theoretical-issues" class="section level3">
 <h3>Theoretical Issues</h3>
-</div>
-<div id="practical-issues" class="section level3">
-<h3>Practical Issues</h3>
+<p>To determine causality require true experient, i.e.</p>
 <ul>
-<li>Normality of Distributions of Residuals</li>
-<li>Homogeneity of Variance and Zero Mean of Residuals</li>
-<li>Independence of Residuals</li>
-<li>Absence of Outliers</li>
+<li>Random assignment to ttreatment conditions</li>
+<li>Control of extraneious variables</li>
+<li>Manipulation of intervention(s)</li>
+</ul>
+</div>
+<div id="practical-issues-around-assumptions" class="section level3">
+<h3>Practical Issues Around Assumptions</h3>
+<ul>
+<li><p>Normality of Distributions of Residuals, <span class="math inline">\(e ~ N(0, \sigma^2)\)</span>. Examine normalised plot of residuals before evaluating an intervantion. Transform DV if residuals are nonnormal (e.g square root, log, inverse)</p></li>
+<li><p>Homogeneity of Variance and Zero Mean of Residuals: Examine plots of standardized residuals against predicted values. Transform DV if width of plot varies over time (e.g. use log)</p></li>
+<li><p>Independence of Residuals. Obviously inherent within time series due to autocorrelation, but after identification of autocorrelation and differencing there should be no remaining autocreelations or partial autocorellations at various lags in the ACFs and PACFs (if so, examine ACFs and PACFs and adjust model accordingly)</p></li>
+<li><p>Absence of Outliers. Outliers sometimes show up in original plot of DV against time, but often more noticeable after initial modelling. Can greatly affect results and must be dealt with (by deletion and then possibly imputing). Examine time series plot before and after adjusting for autocorelation and seasonality to identify outlier patterns.</p></li>
 </ul>
 </div>
 </div>
 <div id="fundamental-equations-for-time-series-arima-models" class="section level2">
 <h2>Fundamental Equations for Time Series: ARIMA models</h2>
 <div id="identification-of-arima-p-d-q-models" class="section level3">
-<h3>Identification of ARIMA (p, d, q) Models</h3>
+<h3>Identification of ARIMA (<span class="math inline">\(p, d, q\)</span>) Models</h3>
+<ul>
+<li>Requires finding values for <span class="math inline">\(p\)</span>, <span class="math inline">\(d\)</span> and <span class="math inline">\(q\)</span></li>
+<li>If a value is 0, then term is not required</li>
+<li>First step is to identify the trend (<span class="math inline">\(d\)</span>); if it is not stationary, ie. if <span class="math inline">\(d \neq 0\)</span>, then the series needs to be made stationary before identifying <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span>. A stationary process has both constant mean and constant variance of the time period of the study</li>
+</ul>
 <div id="trend-components-d-making-the-process-stationary" class="section level4">
 <h4>Trend Components, <span class="math inline">\(d:\)</span> Making the Process Stationary</h4>
+<ul>
+<li>First step: Plot time series
+<ul>
+<li>Is mean shifting? If so, apply differening one or more times, e.g. calculate <span class="math inline">\(t_2 - t_1\)</span></li>
+<li>Is dispersion increasing or decreasing over time? If so, apply a logarithmic transformation</li>
+</ul></li>
+</ul>
+<pre class="r"><code>df &lt;- data.frame(week = 1:20, quality = c(19, 21, 17, 19, 20, 21, 27, 28, 20, 24, 31, 20, 29, 21, 28, 28, 29, 31, 23, 34)) 
+df$q1 &lt;- c(NA, df$quality[-1] - df$quality[-nrow(df)])
+df$q2 &lt;- c(NA, df$q1[-c(1)] - df$q1[-nrow(df)])
+df$logq &lt;- log(df$quality)
+df$logq_1 = c(NA, df$logq[-1] - df$logq[-nrow(df)])
+
+tab &lt;- df %&gt;%
+    mutate_at(vars(logq, logq_1), round, 2) %&gt;%
+    mutate_all(as.character) %&gt;%
+    bind_rows(c(week = &quot;&quot;, quality = &quot;&quot;, q1 = paste0(&quot;mean=&quot;, round(mean(df$q1, na.rm = TRUE),2)), q2 = &quot;&quot;, logq = &quot;&quot;, logq_1 = &quot;&quot;) )
+kable(tab, digits = 2)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">week</th>
+<th align="left">quality</th>
+<th align="left">q1</th>
+<th align="left">q2</th>
+<th align="left">logq</th>
+<th align="left">logq_1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">19</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">2.94</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">21</td>
+<td align="left">2</td>
+<td align="left">NA</td>
+<td align="left">3.04</td>
+<td align="left">0.1</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">17</td>
+<td align="left">-4</td>
+<td align="left">-6</td>
+<td align="left">2.83</td>
+<td align="left">-0.21</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="left">19</td>
+<td align="left">2</td>
+<td align="left">6</td>
+<td align="left">2.94</td>
+<td align="left">0.11</td>
+</tr>
+<tr class="odd">
+<td align="left">5</td>
+<td align="left">20</td>
+<td align="left">1</td>
+<td align="left">-1</td>
+<td align="left">3</td>
+<td align="left">0.05</td>
+</tr>
+<tr class="even">
+<td align="left">6</td>
+<td align="left">21</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">3.04</td>
+<td align="left">0.05</td>
+</tr>
+<tr class="odd">
+<td align="left">7</td>
+<td align="left">27</td>
+<td align="left">6</td>
+<td align="left">5</td>
+<td align="left">3.3</td>
+<td align="left">0.25</td>
+</tr>
+<tr class="even">
+<td align="left">8</td>
+<td align="left">28</td>
+<td align="left">1</td>
+<td align="left">-5</td>
+<td align="left">3.33</td>
+<td align="left">0.04</td>
+</tr>
+<tr class="odd">
+<td align="left">9</td>
+<td align="left">20</td>
+<td align="left">-8</td>
+<td align="left">-9</td>
+<td align="left">3</td>
+<td align="left">-0.34</td>
+</tr>
+<tr class="even">
+<td align="left">10</td>
+<td align="left">24</td>
+<td align="left">4</td>
+<td align="left">12</td>
+<td align="left">3.18</td>
+<td align="left">0.18</td>
+</tr>
+<tr class="odd">
+<td align="left">11</td>
+<td align="left">31</td>
+<td align="left">7</td>
+<td align="left">3</td>
+<td align="left">3.43</td>
+<td align="left">0.26</td>
+</tr>
+<tr class="even">
+<td align="left">12</td>
+<td align="left">20</td>
+<td align="left">-11</td>
+<td align="left">-18</td>
+<td align="left">3</td>
+<td align="left">-0.44</td>
+</tr>
+<tr class="odd">
+<td align="left">13</td>
+<td align="left">29</td>
+<td align="left">9</td>
+<td align="left">20</td>
+<td align="left">3.37</td>
+<td align="left">0.37</td>
+</tr>
+<tr class="even">
+<td align="left">14</td>
+<td align="left">21</td>
+<td align="left">-8</td>
+<td align="left">-17</td>
+<td align="left">3.04</td>
+<td align="left">-0.32</td>
+</tr>
+<tr class="odd">
+<td align="left">15</td>
+<td align="left">28</td>
+<td align="left">7</td>
+<td align="left">15</td>
+<td align="left">3.33</td>
+<td align="left">0.29</td>
+</tr>
+<tr class="even">
+<td align="left">16</td>
+<td align="left">28</td>
+<td align="left">0</td>
+<td align="left">-7</td>
+<td align="left">3.33</td>
+<td align="left">0</td>
+</tr>
+<tr class="odd">
+<td align="left">17</td>
+<td align="left">29</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">3.37</td>
+<td align="left">0.04</td>
+</tr>
+<tr class="even">
+<td align="left">18</td>
+<td align="left">31</td>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">3.43</td>
+<td align="left">0.07</td>
+</tr>
+<tr class="odd">
+<td align="left">19</td>
+<td align="left">23</td>
+<td align="left">-8</td>
+<td align="left">-10</td>
+<td align="left">3.14</td>
+<td align="left">-0.3</td>
+</tr>
+<tr class="even">
+<td align="left">20</td>
+<td align="left">34</td>
+<td align="left">11</td>
+<td align="left">19</td>
+<td align="left">3.53</td>
+<td align="left">0.39</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">mean=0.79</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>ggplot(df, aes(week, quality)) + 
+    geom_line() + 
+    geom_point() + 
+    geom_smooth(method = &quot;lm&quot;, se = FALSE)</code></pre>
+<p><img src="/blog/2018-06-11-book-using-multivariate-statistics_files/figure-html/ts_plot-1.png" width="672" /></p>
+<p>Models:</p>
+<ol style="list-style-type: decimal">
+<li>Observation = f(random shock) only: <span class="math inline">\(Y_t = a_t\)</span> where <span class="math inline">\(a_t\)</span> is random shock with constant mean and variance. This means that observations also have constant mean and variance.</li>
+<li>Observation = f(previous observation + random shock): <span class="math inline">\(Y_t = \theta_0(Y_{t-1}) + a_t\)</span>. Here, the slope is defined by the mean of the first difference, 0.79. The following plot shows that differerencing has removed the trend.</li>
+</ol>
+<pre class="r"><code>ggplot(df, aes(week, q1)) + 
+    geom_line() + 
+    geom_point() + 
+    geom_smooth(method = &quot;lm&quot;, se = FALSE)</code></pre>
+<p><img src="/blog/2018-06-11-book-using-multivariate-statistics_files/figure-html/ts_plot_diff1-1.png" width="672" /></p>
+<p>However, after taking the log, the variability is the same and so untransformed difference is used in future analyses</p>
+<pre class="r"><code>ggplot(df, aes(week, logq_1)) + 
+    geom_line() + 
+    geom_point() + 
+    geom_smooth(method = &quot;lm&quot;, se = FALSE)</code></pre>
+<p><img src="/blog/2018-06-11-book-using-multivariate-statistics_files/figure-html/ts_plot_diff1log-1.png" width="672" /></p>
 </div>
-<div id="auto-regressive-components" class="section level4">
-<h4>Auto-Regressive Components</h4>
+<div id="auto-regressive-components-p" class="section level4">
+<h4>Auto-Regressive Components (<span class="math inline">\(p\)</span>)</h4>
+<p>Memory of process for preceding observations, equal to 0 if no relationship between adjacent observations. Example of <span class="math inline">\(p = 2\)</span> model is ARIMA (2, 0, 0): <span class="math display">\[Y_t = \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + a_t\]</span> where <span class="math inline">\(\phi_l\)</span> is the correlation coefficient of the observations with those at lag <span class="math inline">\(l\)</span>.</p>
 </div>
-<div id="moving-average-components" class="section level4">
-<h4>Moving Average Components</h4>
+<div id="moving-average-components-q" class="section level4">
+<h4>Moving Average Components (<span class="math inline">\(q\)</span>)</h4>
+<p>Memory of process for preceding random shocks. For example, when <span class="math inline">\(q = 2\)</span> there is a relationship betweent he current score and the random shock at lag 2 and the model is ARIMA (0, 0, 2): <span class="math display">\[Y_t = a_t -\theta_1 a_{t-1} - \theta_2 a_{t-2}\]</span></p>
 </div>
 <div id="mixed-models" class="section level4">
 <h4>Mixed Models</h4>
+<p>When the series has both auto-regressive and moving average components so that both types of correlations are required, e.g. ARIMA(1, 0, 1):<span class="math display">\[Y_t = \phi_1 Y_{t-1} - \theta_1 a_{t-1} + a_t\]</span></p>
 </div>
 <div id="acfs-and-pacfs" class="section level4">
 <h4>ACFs and PACFs</h4>
@@ -943,8 +1233,8 @@ Best when after an empirical summary of the data set
 <h2>Complete Example of a Time-Series Analysis</h2>
 <div id="evaluation-of-assumptions" class="section level3">
 <h3>Evaluation of Assumptions</h3>
-<div id="normality-of-sampling-distributions" class="section level4">
-<h4>Normality of Sampling Distributions</h4>
+<div id="normality-ozf-sampling-distributions" class="section level4">
+<h4>Normality ozf Sampling Distributions</h4>
 </div>
 <div id="homogeneity-of-variance" class="section level4">
 <h4>Homogeneity of Variance</h4>

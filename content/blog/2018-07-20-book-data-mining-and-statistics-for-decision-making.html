@@ -284,12 +284,33 @@ http://mathworld.wolfram.com/BellNumber.html
 </div>
 <div id="k-medoids-and-their-variants" class="section level3">
 <h3><span class="math inline">\(k\)</span>-medoids and their variants</h3>
+<ul>
+<li>More robust to outliers than <span class="math inline">\(k\)</span>-means</li>
+<li>Algorithm involves searching othe the most central object (medoid) within cluster, but makes algorithm complex and sometimes leads to prohibitive computing time</li>
+<li>Algorithms include PAM (Partitioning Around Medoids) and CLARA (Clustering LARge Applications), available in the <code>cluster</code> package.</li>
+</ul>
 </div>
 <div id="advantages-of-the-partitioning-methods" class="section level3">
 <h3>Advantages of the partitioning methods</h3>
+<ul>
+<li>Execution time proportion to number of individuals; number of iterations to minimise within-cluster SS generally small</li>
+<li>Easy to see outliers (using chart of distance to closest cluster)</li>
+<li>Constant reassignment of clusters leads to high quality clusters.</li>
+</ul>
 </div>
 <div id="disadvantages-of-the-partitioning-methods" class="section level3">
 <h3>Disadvantages of the partitioning methods</h3>
+<ul>
+<li>No global optimum; final partition = f(initial centres). To overcome,
+<ul>
+<li>make sevenral random selections of the initial centres, compare clusterings and cross-tabulate clusters to establish strong forms.</li>
+<li>take several different random samples of population and use centres of the best clustering obtained as initial centres of algorithm applied to the whoe population.<br />
+</li>
+<li>Run two clusterings, the first to provide initial centres for second and final clustering.</li>
+</ul></li>
+<li>NUmber of clusters is fixed and is only less than <span class="math inline">\(k\)</span> if clusters are empty or deleted. To mitigate, cluster a number of times with different values of <span class="math inline">\(k\)</span>, or otherwise use PCA to visualise and attempt to identify the clusters.</li>
+<li>Only good at detecting spherical forms 9not even particularly good at detecting ellipses).</li>
+</ul>
 </div>
 <div id="sensitivity-to-the-choice-of-initial-centres" class="section level3">
 <h3>Sensitivity to the choice of initial centres</h3>

@@ -602,35 +602,148 @@ dat.factor <- readr::read_tsv("../../static/datasets/Tabachnick/factor.dat")
 
 
 # Time-Series Analysis
+
+
+    
 ## General Purpose and Description
+* Observations over $\geq$ 50  time periods
+* Observations may be aggregates (e.g. monthly or daily traffic tickets)
+* Goals:
+    * Identify patterns in obsevations correlated with themselves, but offset in time
+    * Test impact of intervention(s)
+    * Forecast 
+* Method: Decompose score into:
+    * shocks (random process)
+    * Trend 
+        * Linear: increasing or decreasing mean
+        * Quadratic: Mean increases or decreases
+    * Effect of earlier scores 
+    * Effect of earlier shocks 
+    * Seaonality/periodocity/cyclic
+* Models:
+    * ARIMA($p, d, q$): Auto-regressive integrated moving average:
+        * $p$: **Auto-regressive**; effect of earlier scores.  A model with two auto-regressive terms ($p = 2$) depends on two previous observations
+        * $d$: **Trend**; the terms needed to make a nonstationary time series stationary.  With two trend terms ($d = 2), teh model has to be differenced twice to make it stationary.  The first difference removes linear trendes and the second quadratic, etc.
+        * $q$: **Moving average** (of earlier shocks); with two moving average terms, an observation depends on two preceding random shocks
+        
+* Steps in analysis:
+    1. Identification; of autocorrelation functions (ACFs) and partial autocorrelation functions (PACFs)
+        * **Autocorrelation**: self-scorrelation at different lags
+        * **Partial Autocorrelation**: self correlation  at different lags with intermediate correlations parialled out
+    2. Estimation
+    3. Diagnosis
+    
+    
+Recommended References:
+
+* [Time Series Analysis: Forecasting and Control, 5th Edition
+George E. P. Box, Gwilym M. Jenkins, Gregory C. Reinsel, Greta M. Ljung](https://www.wiley.com/en-au/Time+Series+Analysis%3A+Forecasting+and+Control%2C+5th+Edition-p-9781118675021)
+
+* Hershberger,S. L., Molenaar, P.C. M., & Corneal, S.E. (1996). A hierarchy of univariate andmultivariatestructural time series models. In G. A. Marcoulides & R. E. Shumacker (Eds.), Advanced structural equation modeling: Issues and Techniques (pp. 159–194).Mahwah, NJ: Lawrence Erlbaum Associates, Inc 
+
+
 ## Kinds of Research Questions
-* Autocorrelation
-* Seasonal Cycles and Trends
-* Forecasting
-* Effect of an Intervention
-* Comparing Time Series
-* Time Series with Covariates
-* Effect Size and Power
+
+Determine:
+
+1. Patterns in series 
+    a. Autocorrelation: Pattern may be of interest to intself or in prepration for forecasing or testing the effects of interventions.    Types of questions:
+        * Are there linear or quadratic trends in the data?
+        * How quickly to random shocks linger?
+    b. Seasonal cycles and trends    
+2. Predicted values in future (forecasting)
+3. Effect of intervention
+4. Relationships between time series (comparing time series).  AKA multivariate time eries, cross-correlation functions, transfer function models, models with input series, dynamic regression.
+5. Relationship to covariates (dv)
+6. Variability due to the chosen model (effect size and power)
+
 
 ## Assumptions of Time-Series Analysis
+
 ### Theoretical Issues
-### Practical Issues
-* Normality of Distributions of Residuals
-* Homogeneity of Variance and Zero Mean of Residuals
-* Independence of Residuals
-* Absence of Outliers
+To determine causality require true experient, i.e.
+
+* Random assignment to ttreatment conditions
+* Control of extraneious variables
+* Manipulation of intervention(s)
+    
+### Practical Issues Around Assumptions
+
+* Normality of Distributions of Residuals, $e ~ N(0, \sigma^2)$.  Examine normalised plot of residuals before evaluating an intervantion.  Transform DV if residuals are nonnormal (e.g square root, log, inverse)
+    
+* Homogeneity of Variance and Zero Mean of Residuals: Examine plots of standardized residuals against predicted values.  Transform DV if width of plot varies over time (e.g. use log)
+    
+* Independence of Residuals.  Obviously inherent within time series due to autocorrelation, but after identification of autocorrelation and differencing there should be no remaining autocreelations or partial autocorellations at various lags in the ACFs and PACFs (if so, examine ACFs and PACFs and adjust model accordingly)
+    
+* Absence of Outliers.  Outliers sometimes show up in original plot of DV against time, but often more noticeable after initial modelling.  Can greatly affect results and must be dealt with (by deletion and then possibly imputing).  Examine time series plot before and after adjusting for autocorelation and seasonality to identify outlier patterns.
 
 ## Fundamental Equations for Time Series: ARIMA models
 
-### Identification of ARIMA (p, d, q) Models
+### Identification of ARIMA ($p, d, q$) Models
+* Requires finding values for $p$, $d$ and $q$
+* If a value is 0, then term is not required
+* First step is to identify the trend ($d$); if it is not stationary, ie. if $d \neq 0$, then the series needs to be made stationary before identifying $p$ and $q$.  A stationary process has both constant mean and constant variance of the time period of the study
 
 #### Trend Components, $d:$ Making the Process Stationary
+* First step: Plot time series
+    * Is mean shifting? If so, apply differening one or more times, e.g. calculate $t_2 - t_1$
+    * Is dispersion increasing or decreasing over time?  If so, apply a logarithmic transformation
+    
+```{r ts_differenging}
+df <- data.frame(week = 1:20, quality = c(19, 21, 17, 19, 20, 21, 27, 28, 20, 24, 31, 20, 29, 21, 28, 28, 29, 31, 23, 34)) 
+df$q1 <- c(NA, df$quality[-1] - df$quality[-nrow(df)])
+df$q2 <- c(NA, df$q1[-c(1)] - df$q1[-nrow(df)])
+df$logq <- log(df$quality)
+df$logq_1 = c(NA, df$logq[-1] - df$logq[-nrow(df)])
 
-#### Auto-Regressive Components
+tab <- df %>%
+    mutate_at(vars(logq, logq_1), round, 2) %>%
+    mutate_all(as.character) %>%
+    bind_rows(c(week = "", quality = "", q1 = paste0("mean=", round(mean(df$q1, na.rm = TRUE),2)), q2 = "", logq = "", logq_1 = "") )
+kable(tab, digits = 2)
+```
 
-#### Moving Average Components
+```{r ts_plot}
+ggplot(df, aes(week, quality)) + 
+    geom_line() + 
+    geom_point() + 
+    geom_smooth(method = "lm", se = FALSE)
+```
+    
+Models: 
+
+1. Observation = f(random shock) only: $Y_t = a_t$ where $a_t$ is random shock with constant mean and variance.  This means that observations also have constant mean and variance.
+2. Observation = f(previous observation + random shock): $Y_t = \theta_0(Y_{t-1}) + a_t$.    Here, the slope is defined by the mean of the first difference, `r round(mean(df$q1, na.rm = TRUE),2)`.  The following plot shows that differerencing has removed the trend.
+```{r ts_plot_diff1, message=FALSE, warning=FALSE}
+ggplot(df, aes(week, q1)) + 
+    geom_line() + 
+    geom_point() + 
+    geom_smooth(method = "lm", se = FALSE)
+```
+
+
+
+However, after taking the log, the variability is the same and so untransformed difference is used in future analyses
+```{r ts_plot_diff1log, message=FALSE, warning=FALSE}
+ggplot(df, aes(week, logq_1)) + 
+    geom_line() + 
+    geom_point() + 
+    geom_smooth(method = "lm", se = FALSE)
+```
+
+
+
+#### Auto-Regressive Components ($p$)
+
+Memory of process for preceding observations, equal to 0 if no relationship between adjacent observations.  Example of $p = 2$ model is ARIMA (2, 0, 0): \[Y_t = \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + a_t\]
+where $\phi_l$ is the correlation coefficient of the observations with those at lag $l$.
+ 
+#### Moving Average Components ($q$)
+
+Memory of process for preceding random shocks.  For example, when $q = 2$ there is a relationship betweent he current score and the random shock at lag 2 and the model is ARIMA (0, 0, 2): \[Y_t = a_t -\theta_1 a_{t-1} - \theta_2 a_{t-2}\]
 
 #### Mixed Models
+When the series has both auto-regressive and moving average components so that both types of correlations are required, e.g. ARIMA(1, 0, 1):\[Y_t = \phi_1 Y_{t-1} - \theta_1 a_{t-1} + a_t\]
 
 #### ACFs and PACFs
 
@@ -670,7 +783,7 @@ dat.factor <- readr::read_tsv("../../static/datasets/Tabachnick/factor.dat")
 
 ### Evaluation of Assumptions
 
-#### Normality of Sampling Distributions
+#### Normality ozf Sampling Distributions
 
 #### Homogeneity of Variance
 

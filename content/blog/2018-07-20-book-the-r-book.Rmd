@@ -4,6 +4,7 @@ author: Marie
 date: '2018-07-20'
 slug: book-the-r-book
 banner: "img/banners/crawley.png"
+draft: true
 categories:
   - Study-Notes
 tags:
@@ -53,7 +54,15 @@ Autocorrelation coefficient properties:
 * $-1 \leq \rho(k) \leq 1$
 * If $Y(t)$ and $Y(t-k)$ are independent then $\rho(k)$ = 0, but the converse if not true.
 
+First order autogressive process:
+\[Y_t = \alpha Y_{t-1} + Z_t\]
+where Z is white noise; serially independent with mean zero and constant variance $\sigma^2$.
 
+In a stationary time series -1 < $\alpha$ < 1, the autocorrelation function of {Y(t)} is $\rho_k = \alpha^k$. 
+
+Partial autocorrelation: Correlation between $Y(t)$ and $Y(t + k)$ after regression of $Y(t)$ on $Y(t+1), Y(t+2), \ldots, Y(t+k-1)$ and is obtained by solving the Yule-Walker equation
+\[\rho_k = \sum^p_1\alpha_i\rho_{k-i},   \quad  k >0\]
+<!--https://tex.stackexchange.com/questions/374094/reduce-space-between-condition-and-statement-in-latex-case-equation-->
 
 See:
 https://datascienceplus.com/author/troywalt/

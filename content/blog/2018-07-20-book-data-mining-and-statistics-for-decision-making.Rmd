@@ -285,8 +285,26 @@ Definition: **paragon**: Individual closest to the centre of gravity.
 * Use $k$-prototypes for mixed data
 
 ### $k$-medoids and their variants
+* More robust to outliers than $k$-means
+* Algorithm involves searching othe the most central object (medoid) within cluster, but makes algorithm complex and sometimes leads to prohibitive computing time
+* Algorithms include PAM (Partitioning Around Medoids) and CLARA (Clustering LARge Applications), available in the `cluster` package.
+
+
 ### Advantages of the partitioning methods
+* Execution time proportion to number of individuals; number of iterations to minimise within-cluster SS generally small
+* Easy to see outliers (using chart of distance to closest cluster)
+* Constant reassignment of clusters leads to high quality clusters.
+
+
 ### Disadvantages of the partitioning methods
+
+* No global optimum; final partition = f(initial centres). To overcome, 
+    * make sevenral random selections of the initial centres, compare clusterings and cross-tabulate clusters to establish strong forms.
+    * take several different random samples of population and use centres of the best clustering obtained as initial centres of algorithm applied to the whoe population.  
+    * Run two clusterings, the first to provide initial centres for second and final clustering.
+* NUmber of clusters is fixed and is only less than $k$ if clusters are empty or deleted.  To mitigate, cluster a number of times with different values of $k$, or otherwise use PCA to visualise and attempt to identify the clusters.
+* Only good at detecting spherical forms 9not even particularly good at detecting ellipses).
+    
 ### Sensitivity to the choice of initial centres
 
 ## Agglomerative hierarchical clustering

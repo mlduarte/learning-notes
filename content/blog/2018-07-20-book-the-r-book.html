@@ -4,6 +4,7 @@ author: Marie
 date: '2018-07-20'
 slug: book-the-r-book
 banner: "img/banners/crawley.png"
+draft: true
 categories:
   - Study-Notes
 tags:
@@ -46,6 +47,9 @@ invisible(sapply(1:4, function(x) plot(flies[-c(361: (361-x+1))], flies[-c(1:x)]
 <p><img src="/blog/2018-07-20-book-the-r-book_files/figure-html/ts_flies_lag-1.png" width="672" /></p>
 <p>Autocorrelation function <span class="math inline">\(\rho(k)\)</span> at lag <span class="math inline">\(k\)</span>: <span class="math display">\[\rho(k) = \frac{\gamma(k)}{\gamma(0)},\]</span> where <span class="math inline">\(\lambda(k)\)</span> is the autocovariance function at lag <span class="math inline">\(k\)</span> of a stationary random function {<span class="math inline">\(Y(t)\)</span>} given by <span class="math display">\[\gamma(k) = \text{cov}{Y(t),Y(t-k)}\]</span></p>
 <p>Autocorrelation coefficient properties: * symmetric, <span class="math inline">\(\rho(k) = -\rho(k)\)</span> * <span class="math inline">\(-1 \leq \rho(k) \leq 1\)</span> * If <span class="math inline">\(Y(t)\)</span> and <span class="math inline">\(Y(t-k)\)</span> are independent then <span class="math inline">\(\rho(k)\)</span> = 0, but the converse if not true.</p>
+<p>First order autogressive process: <span class="math display">\[Y_t = \alpha Y_{t-1} + Z_t\]</span> where Z is white noise; serially independent with mean zero and constant variance <span class="math inline">\(\sigma^2\)</span>.</p>
+<p>In a stationary time series -1 &lt; <span class="math inline">\(\alpha\)</span> &lt; 1, the autocorrelation function of {Y(t)} is <span class="math inline">\(\rho_k = \alpha^k\)</span>.</p>
+<p>Partial autocorrelation: Correlation between <span class="math inline">\(Y(t)\)</span> and <span class="math inline">\(Y(t + k)\)</span> after regression of <span class="math inline">\(Y(t)\)</span> on <span class="math inline">\(Y(t+1), Y(t+2), \ldots, Y(t+k-1)\)</span> and is obtained by solving the Yule-Walker equation <span class="math display">\[\rho_k = \sum^p_1\alpha_i\rho_{k-i},   \quad  k &gt;0\]</span> <!--https://tex.stackexchange.com/questions/374094/reduce-space-between-condition-and-statement-in-latex-case-equation--></p>
 <p>See: <a href="https://datascienceplus.com/author/troywalt/" class="uri">https://datascienceplus.com/author/troywalt/</a> <a href="https://stackoverflow.com/questions/20222124/aggregate-time-series-from-weeks-to-month" class="uri">https://stackoverflow.com/questions/20222124/aggregate-time-series-from-weeks-to-month</a></p>
 </div>
 <div id="multivariate-statistics" class="section level1">
@@ -77,12 +81,12 @@ invisible(sapply(1:4, function(x) plot(flies[-c(361: (361-x+1))], flies[-c(1:x)]
 <pre><code>## Loading required package: ggplot2</code></pre>
 <pre class="r"><code>require(tidyverse)</code></pre>
 <pre><code>## Loading required package: tidyverse</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ── Attaching packages ────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
 <pre><code>## ✔ tibble  1.4.2     ✔ purrr   0.2.5
 ## ✔ tidyr   0.8.1     ✔ dplyr   0.7.5
 ## ✔ readr   1.1.1     ✔ stringr 1.3.1
 ## ✔ tibble  1.4.2     ✔ forcats 0.3.0</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## ── Conflicts ───────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>require(gridExtra)</code></pre>
