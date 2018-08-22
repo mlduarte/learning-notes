@@ -1170,7 +1170,7 @@ kable(tab, digits = 2)</code></pre>
 </div>
 <div id="moving-average-components-q" class="section level4">
 <h4>Moving Average Components (<span class="math inline">\(q\)</span>)</h4>
-<p>Memory of process for preceding random shocks. For example, when <span class="math inline">\(q = 2\)</span> there is a relationship betweent he current score and the random shock at lag 2 and the model is ARIMA (0, 0, 2): <span class="math display">\[Y_t = a_t -\theta_1 a_{t-1} - \theta_2 a_{t-2}\]</span></p>
+<p>Memory of process for preceding random shocks. For example, when <span class="math inline">\(q = 2\)</span> there is a relationship between the current score and the random shock at lag 2 and the model is ARIMA (0, 0, 2): <span class="math display">\[Y_t = a_t -\theta_1 a_{t-1} - \theta_2 a_{t-2}\]</span></p>
 </div>
 <div id="mixed-models" class="section level4">
 <h4>Mixed Models</h4>
@@ -1178,6 +1178,72 @@ kable(tab, digits = 2)</code></pre>
 </div>
 <div id="acfs-and-pacfs" class="section level4">
 <h4>ACFs and PACFs</h4>
+<p>Lag 1: Autocorrelation between <span class="math inline">\(Y_{t-1}\)</span> and <span class="math inline">\(Y_t\)</span> Lag 2: Autocorrelation and partial autocorrelation between <span class="math inline">\(Y_{t-2}\)</span> and <span class="math inline">\(Y_t\)</span></p>
+<p>Autocorelation: <span class="math display">\[r_k = \frac{\frac{1}{N-k}(Y_t - \bar{Y})(Y_{t-k}-\bar{Y})}{\frac{1}{N-1}(Y_t - \bar{Y})^2}\]</span> where <span class="math inline">\(N\)</span> is the number of observations, <span class="math inline">\(k\)</span> is the lag, <span class="math inline">\(\bar{Y}\)</span> is the mean of the series and the denominatior is the variance</p>
+<p>Standard error of an autocorrelation is based on the squared autocorrelation at previous lags; <span class="math display">\[\text{SE}_{r_k} = \begin{cases} 0 &amp; k = 1\\
+                        \sqrt{\frac{1 + 2 \sum^{k - 1}_{l = 0} r_l^2}{N}}  &amp; k &gt; 1
+                    \end{cases}\]</span></p>
+<p>Partial autocorrelation: More complex; based on recurive technique, however the following have been shown: <span class="math display">\[\begin{align} \text{PACF}(1) &amp; = \text{ACF}(1) \\
+                  \text{PACF}(2) &amp; = \frac{\text{ACF}(2) - [\text{ACF}(1)]^2}{1 - [\text{ACF}(1)]^2} \\
+                   \text{PACF}(3) &amp; = \frac{-2\text{ACF}(1)\text{ACF}(2) - [\text{ACF}(1)]^2\text{ACF}(3)}{1 + 2[\text{ACF}(1)]^2 \text{ACF}(2) - [\text{ACF}(2)]^2 - 2 [\text{ACF}(1)]^2} \\
+                   \end{align} \]</span></p>
+<p>Standard error of a partial autocorrelation: <span class="math display">\[\text{SE}_{pr} = \frac{1}{\sqrt{N}}\]</span></p>
+<p>Differenced scores are used when differencing has been used to remove trend.</p>
+<p>The standard errors are used to assess full and partial autocorrelation significance.</p>
+<pre class="r"><code>df %&gt;% 
+    select(week, q1) %&gt;%
+    arrange(desc(week)) %&gt;%
+    mutate(q_tm1 = lead(q1),
+        ybar = mean(q1, na.rm = TRUE),
+           num = (q1 - ybar)*(q_tm1 - ybar),
+            den = (q1 - ybar)^2) %&gt;%
+    summarise(r1 = (1/(n() - 1) * sum(num, na.rm = TRUE)) / ( 1/(n() - 1) * sum(den, na.rm = TRUE)) ,
+              se_r1 = sqrt(1 / n()))</code></pre>
+<pre><code>##          r1     se_r1
+## 1 -0.614752 0.2236068</code></pre>
+<p>The ACF and PACF plots are used to identify whether the process is an autoregressive (<span class="math inline">\(p\)</span>) or moving average (<span class="math inline">\(q\)</span>) process, noting that hybrid processes are quire rare.</p>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Autoregressive (AR) Process (<span class="math inline">\(p\)</span>)</th>
+<th>Moving Average (MA) Process (<span class="math inline">\(q\)</span>)</th>
+<th>Mixed ARMA model</th>
+<th>Nonstationary (<span class="math inline">\(d\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>* Noise / shock has a lasting effect</td>
+<td>* Noise / shock quickly vanishes with time</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>* ACF slowly declines, PACF spikes at lag <span class="math inline">\(p\)</span></td>
+<td>* ACF spikes at <span class="math inline">\(q\)</span> lags, PACF slowly declines</td>
+<td>* slowly declining ACF and PACF</td>
+<td>* Single PACF peak; ACF has spikes or damped sign wave</td>
+</tr>
+<tr class="odd">
+<td>* <span class="math inline">\(p\)</span> = Number of spikes on PACF</td>
+<td>* <span class="math inline">\(q\)</span> = Number of spikes on ACF</td>
+<td>* <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> not evident; start with 1</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>ts &lt;- ts(df$quality)
+ts_diff &lt;- diff(ts)
+acf(ts_diff, lag.max = 16)</code></pre>
+<p><img src="/blog/2018-06-11-book-using-multivariate-statistics_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<pre class="r"><code>pacf(ts_diff)</code></pre>
+<p><img src="/blog/2018-06-11-book-using-multivariate-statistics_files/figure-html/unnamed-chunk-1-2.png" width="672" /> Note that lag 0 is shown; whereas SAS/SPSS start with lag 1. Here is there is spike in the ACF at lag 1 and the PACF trends towards 0, so this is probably an ARIMA(0, 0, 1) model, although because it has been differenced it is ARIMA(0, 1, 1). The series has both trend and memory for the preceding random shock. If this time series is about the quality of computes in a manufacturing process then we would say that teh quality is generally increasing, however the quality is one week is influenced by random events in the manufacturing process.</p>
 </div>
 </div>
 <div id="estimating-model-parameters" class="section level3">
@@ -1233,8 +1299,8 @@ kable(tab, digits = 2)</code></pre>
 <h2>Complete Example of a Time-Series Analysis</h2>
 <div id="evaluation-of-assumptions" class="section level3">
 <h3>Evaluation of Assumptions</h3>
-<div id="normality-ozf-sampling-distributions" class="section level4">
-<h4>Normality ozf Sampling Distributions</h4>
+<div id="normality-of-sampling-distributions" class="section level4">
+<h4>Normality of Sampling Distributions</h4>
 </div>
 <div id="homogeneity-of-variance" class="section level4">
 <h4>Homogeneity of Variance</h4>

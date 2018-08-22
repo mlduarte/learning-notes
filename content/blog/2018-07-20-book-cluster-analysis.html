@@ -17,6 +17,92 @@ tags:
 
 <pre class="r"><code>require(cluster.datasets)</code></pre>
 <pre><code>## Loading required package: cluster.datasets</code></pre>
+<div id="measurement-of-proximity" class="section level1">
+<h1>Measurement of proximity</h1>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Dissimilarity = distance = simalirty = proximity. Small dissimilarity/distance. Large similarity</p>
+<p>Proximity:</p>
+<ul>
+<li>Direct</li>
+<li>Indirect</li>
+</ul>
+</div>
+<div id="similarity-measures-for-cateogrical-data" class="section level2">
+<h2>Similarity measures for cateogrical data</h2>
+<ul>
+<li>Similarity measures most commonly used</li>
+<li>Generally scaled in [0,1]</li>
+<li>Two individuals have similarity coefficient equal to one if they have identical values for all variables.</li>
+</ul>
+<div id="similarity-measures-for-binary-data" class="section level3">
+<h3>Similarity measures for binary data</h3>
+<ul>
+<li>Difficulty arises with zero; attributing a large degree of similarity to a pair of individuals because they lack a number of attributes may not be sensible</li>
+<li>Similarity measures include
+<ul>
+<li>Matching coefficient: Use when co-abscence important</li>
+<li>Jaccard coefficient</li>
+<li>Rogers and Tanimoto: Also treat positive matches and negative matches equally.</li>
+<li>Sneath and Sokal</li>
+<li>Gower and Leendre</li>
+</ul></li>
+</ul>
+</div>
+<div id="similarity-measures-for-categorical-data-with-more-than-two-levels" class="section level3">
+<h3>Similarity measures for categorical data with more than two levels</h3>
+<ul>
+<li>Can consider each level as a single binary vairable, however there will be a large number of negative matches.</li>
+<li>Better to allocate a score of zero or one to each variable, depending on whether the two individuals are the same on that variable. These scores are then averaged over all p variables to give similarity coefficient <span class="math display">\[S_{ij} \frac{1}{p}\sum^p_{k = 1} s_{ijk}\]</span></li>
+<li>Transformed genetic dissimilarity measure discussed</li>
+<li>Linguists have assigned 1 to pairs if the variable value is in the same group (e.g. of words with a similar meaning)</li>
+</ul>
+</div>
+</div>
+<div id="dissimilarity-and-distance-measures-for-continuous-data" class="section level2">
+<h2>Dissimilarity and distance measures for continuous data</h2>
+<p>Distance measure types;</p>
+<ul>
+<li>Distance measures
+<ul>
+<li>Euclidean distance (l2 norm)<span class="math display">\[d_{ij} = \left[\sum^p_{k = 1}w^2_k(x_{ik} - x_{jk})^2\right]\]</span></li>
+<li>City block distance (taxicab, rectilinear, Manhattan) (l1 norm) <span class="math display">\[d_{ij} = \left[\sum^p_{k = 1}w^2_k|x_{ik} - x_{jk}|\right]\]</span></li>
+<li>Minkowski distance (<span class="math inline">\(l_r\)</span> norm)</li>
+<li>Canberra distance; very sensitive to small changes near <span class="math inline">\(x_{ik} = x_{jk} = 0\)</span></li>
+<li>Pearson correlation</li>
+<li>Angular separation (cross product index())</li>
+</ul></li>
+<li>Correlation-type measures</li>
+</ul>
+</div>
+<div id="similarity-measures-for-data-containing-both-continuous-and-categorical-variables" class="section level2">
+<h2>Similarity measures for data containing both continuous and categorical variables</h2>
+</div>
+<div id="proximity-measures-fro-structured-data" class="section level2">
+<h2>Proximity measures fro structured data</h2>
+</div>
+<div id="inter-group-proximity-measures" class="section level2">
+<h2>Inter-group proximity measures</h2>
+<div id="inter-group-proximity-derived-from-teh-proximity-matrix" class="section level3">
+<h3>Inter-group proximity derived from teh proximity matrix</h3>
+</div>
+<div id="inter-group-proximity-based-on-group-summaries-for-contiuous-data" class="section level3">
+<h3>Inter-group proximity based on group summaries for contiuous data</h3>
+</div>
+<div id="inter-group-proximity-based-on-gorup-summaries-for-categorical-data" class="section level3">
+<h3>Inter-group proximity based on gorup summaries for categorical data</h3>
+</div>
+</div>
+<div id="weighting-variables" class="section level2">
+<h2>Weighting variables</h2>
+</div>
+<div id="standardization" class="section level2">
+<h2>Standardization</h2>
+</div>
+<div id="choise-of-proximity-measure" class="section level2">
+<h2>Choise of proximity measure</h2>
+</div>
+</div>
 <div id="miscellaneous-clustering-methods" class="section level1">
 <h1>Miscellaneous clustering methods</h1>
 <div id="density-search-clustering-techniques" class="section level2">

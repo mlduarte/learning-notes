@@ -1,0 +1,2836 @@
+---
+title: 'Book: Forecasting Principles and Practice'
+author: "Marie"
+date: '2018-08-20'
+categories: Study-Notes
+slug: book-forecasting-principles
+tags:
+- Book
+- Study-Notes
+banner: img/banners/hyndman.png
+---
+
+
+
+<p>This post consists of my notes made while reading the book: <a href="https://otexts.org/fpp2/">Forecasting: Principles and Practice</a> by Rob J Hyndman and George Athanasopoulos.</p>
+<div id="getting-started" class="section level1">
+<h1>Getting Started</h1>
+<div id="what-can-be-forecast" class="section level2">
+<h2>What can be forecast?</h2>
+<p>Predictability increases with:</p>
+<ul>
+<li>Understanding of contributing factors</li>
+<li>Data availability</li>
+<li>Immunity of things we are trying to forecast on the forecasts (self-fulfilling forecasts)</li>
+</ul>
+<p>Good forecasts:</p>
+<ul>
+<li>capture genuine patterns but do not replicate past events that will not occur again.</li>
+<li>will capture the way in which things are changing and so will work in a changing environment (assuming that the way in which the environment is changing will continue into the future)</li>
+</ul>
+<p>Forecasting methods complexity:</p>
+<ul>
+<li>Simple, e.g. naive method which uses most recent observation as a forecast</li>
+<li>Complex, e.g. neural nets and econometric systems of simultaneous equations</li>
+</ul>
+</div>
+<div id="forecasting-planning-and-goals" class="section level2">
+<h2>Forecasting, planning and goals</h2>
+<ul>
+<li>Forecast: Predict future based on historical data and knowledge of future events that might impact the forecasts</li>
+<li>Goals: What you would like to happen, should be linked to forecasts and plans</li>
+<li>Planning: Response to forecast and goals; actions required to make forecasts match goals</li>
+</ul>
+<p>Horizon:</p>
+<ul>
+<li>Short-term forecasts: personnel, production and transportation</li>
+<li>Medium-term forecasts: future resource requirements</li>
+<li>Long-term forecasts: Strategic planning</li>
+</ul>
+</div>
+<div id="determining-what-to-forecast" class="section level2">
+<h2>Determining what to forecast</h2>
+<p>Step One:</p>
+<ul>
+<li>What to forecast</li>
+<li>Forecasting horizon</li>
+<li>Frequency required</li>
+<li>How will they be used</li>
+</ul>
+<p>Step Two:</p>
+<ul>
+<li>Find or collect data</li>
+</ul>
+</div>
+<div id="forecasting-data-and-methods" class="section level2">
+<h2>Forecasting data and methods</h2>
+<p>Method Types:</p>
+<ul>
+<li>Qualitative
+<ul>
+<li>not purely guesswork</li>
+<li>There exists well-developed structured approaches</li>
+<li>Use when no relevant data available</li>
+</ul></li>
+<li>Quantitative
+<ul>
+<li>When historical data available and reasonable to assume that some aspects of past pattern will continue into the future</li>
+</ul></li>
+</ul>
+<div id="time-series-forecasting" class="section level3">
+<h3>Time series forecasting</h3>
+<p><strong>Time Series</strong>: anything observed sequentially over time; can be observed at regular or irregular periods of time (this book only considers regularly spaced time series)</p>
+<ul>
+<li><p>May consider only variable to be forecast (and make no attempt to discover factors that affect its behaviour) and extrapolate trend and seasonal patterns</p></li>
+<li><p>Models include decomposition, exponential smoothing and ARIMA</p></li>
+</ul>
+</div>
+<div id="predictor-variables-and-time-series-forecasting" class="section level3">
+<h3>Predictor variables and time series forecasting</h3>
+<p><strong>Explanatory model</strong>: model with predictor variables (but does not consider time) <span class="math display">\[\text{ED} = f(\text{current temperature}, \text{strength of economy}, \text{population}, \text{time of day}, \text{day of week}, \text{error})\]</span></p>
+<p><strong>Time series model</strong>: model based on time series, <span class="math display">\[\text{ED}_{t+1} = f(\text{ED}_{t}, \text{ED}_{t-1}, \text{ED}_{t-3}, \ldots, \text{error})\]</span></p>
+<p>Reasons for use over other two types of models:</p>
+<ul>
+<li>System may not be understood</li>
+<li>Necessary to forecast future values of predictors to forecast variable of interest</li>
+<li>May only need to predict what will happen, not why</li>
+<li>May be more accurate than explanatory or mixed models</li>
+</ul>
+<p><strong>Mixed Models</strong> aka <strong>dynamic regression model</strong>, <strong>panel data model</strong>, <strong>longitudinal model</strong>, <strong>transfer function model</strong>, <strong>linear system model</strong></p>
+<ul>
+<li>Incorporate explanatory variables and time series data <span class="math display">\[\text{ED} = f(\text{ED}_{t}, \text{current temperature}, \text{time of day}, \text{day of week}, \text{error})\]</span></li>
+</ul>
+</div>
+</div>
+<div id="the-basic-steps-in-a-forecasting-task" class="section level2">
+<h2>The basic steps in a forecasting task</h2>
+<div id="problem-definition" class="section level3">
+<h3>1. Problem definition</h3>
+</div>
+<div id="gathering-information" class="section level3">
+<h3>2. Gathering information</h3>
+<ul>
+<li>Statistical data</li>
+<li>Accumulated expertise of people who collect the data and use the forecasts</li>
+</ul>
+</div>
+<div id="preliminary-exploratory-analysis" class="section level3">
+<h3>3. Preliminary (exploratory) analysis</h3>
+<ul>
+<li>Are there consistent patterns</li>
+<li>Is there significant trend?</li>
+<li>Is seasonality important</li>
+<li>Are there business cycles present?</li>
+<li>Are there any outliers?</li>
+<li>How strong are the relationships among the variables available for the analysis</li>
+</ul>
+</div>
+<div id="choosing-and-fitting-models" class="section level3">
+<h3>4. Choosing and fitting models</h3>
+<p>Best model = f(availability of historical data, relationship between forecast variable and explanatory variables, intended use of forecasts)</p>
+</div>
+<div id="using-and-evaluating-a-forecasting-model" class="section level3">
+<h3>5. Using and evaluating a forecasting model</h3>
+<p>When using a forecasting model, may have to deal with missing values, outliers or short time series</p>
+</div>
+</div>
+<div id="the-statistical-forecasting-perspective" class="section level2">
+<h2>The statistical forecasting perspective</h2>
+<ul>
+<li>Forecast variable = random variable</li>
+<li>Uncertainty of its value increases as forecast horizon increases</li>
+<li>Generally publish point forecasts with prediction interval (range of values the RV could take with X% probability)</li>
+</ul>
+<p>Notation:</p>
+<ul>
+<li><span class="math inline">\(t\)</span>: time</li>
+<li><span class="math inline">\(y_t\)</span>: observation at time <span class="math inline">\(t\)</span></li>
+<li><span class="math inline">\(I\)</span>: Observed information</li>
+<li><span class="math inline">\(\hat{y}_t\)</span>: average value of the forecast distribution, could occasionally refer to the median</li>
+<li><span class="math inline">\(\hat{y}_{t|t-1}\)</span>: forecast of <span class="math inline">\(y_t\)</span> taking into account all previous observations(<span class="math inline">\(y_1, \ldots, y_{y-1}\)</span>)</li>
+<li><span class="math inline">\(\hat{y}_{T+h|T}\)</span>: forecast of <span class="math inline">\(y_{T+h}\)</span> taking into account <span class="math inline">\(y_1, \ldots, y_{T}\)</span> (<span class="math inline">\(h\)</span>-step forecast)</li>
+</ul>
+</div>
+</div>
+<div id="time-series-graphics" class="section level1">
+<h1>TIme series graphics</h1>
+<div id="ts-objects" class="section level2">
+<h2><code>ts</code> objects</h2>
+<ul>
+<li>If you have annual data, with one observation per year, you only need to provide the starting or ending year</li>
+</ul>
+<pre class="r"><code>y &lt;- ts(c(123,39,78,52,110), start=2012)
+y</code></pre>
+<pre><code>## Time Series:
+## Start = 2012 
+## End = 2016 
+## Frequency = 1 
+## [1] 123  39  78  52 110</code></pre>
+<p>If you have observations that are more frequent than once a year, you add a <code>frequency</code> argument. For example, with monthly data set <code>frequency = 12</code>.</p>
+<div id="frequency-of-a-time-series" class="section level3">
+<h3>Frequency of a time series</h3>
+<p>When using the <code>ts()</code> function, the following choices should be used:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Data</th>
+<th><code>frequency</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Annual</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Quarterly</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>Monthly</td>
+<td>12</td>
+</tr>
+<tr class="even">
+<td>Weekly</td>
+<td>52</td>
+</tr>
+</tbody>
+</table>
+<p>For data collected more frequently, there are more options:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Data</th>
+<th>Seasonality</th>
+<th><code>frequency</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Daily</td>
+<td>Weekly</td>
+<td>7</td>
+</tr>
+<tr class="even">
+<td>Daily</td>
+<td>Annual</td>
+<td>365.25</td>
+</tr>
+<tr class="odd">
+<td>Minutes</td>
+<td>Hourly</td>
+<td>60</td>
+</tr>
+<tr class="even">
+<td>Minutes</td>
+<td>Daily</td>
+<td>1440</td>
+</tr>
+<tr class="odd">
+<td>Minutes</td>
+<td>Weekly</td>
+<td>10080</td>
+</tr>
+<tr class="even">
+<td>Minutes</td>
+<td>Annual</td>
+<td>525960</td>
+</tr>
+</tbody>
+</table>
+<p>(Chapter 11 will consider multiple seasonality without having to choose just one of the frequencies)</p>
+</div>
+</div>
+<div id="time-plots" class="section level2">
+<h2>Time plots</h2>
+<p><code>autoplot</code>: produced appropriate plot based on data, e.g. if data is a time series it will produce a time plot</p>
+<p>Weekly economy passenger load:</p>
+<pre class="r"><code>autoplot(melsyd[,&quot;Economy.Class&quot;]) +
+  ggtitle(&quot;Economy class passengers: Melbourne-Sydney&quot;) +
+  xlab(&quot;Year&quot;) +
+  ylab(&quot;Thousands&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/autoplot_melsyd-1.png" width="672" /></p>
+<p>Features that will need to be considered:</p>
+<ul>
+<li>Period in 1989 with no passengers (industrial dispute)</li>
+<li>Reduced load in period in 1989 (trial replacing economy seats with business)</li>
+<li>Large increase in second half of 1991</li>
+<li>Dips at start of each year</li>
+<li>Long-term fluctuation (increase - decrease - increase)</li>
+<li>Missing observations</li>
+</ul>
+<p>Monthly anti-diabetic drug sale data:</p>
+<pre class="r"><code>autoplot(a10) +
+  ggtitle(&quot;Antidiabetic drug sales&quot;) +
+  ylab(&quot;$ million&quot;) +
+  xlab(&quot;Year&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/autoplot_a10-1.png" width="672" /></p>
+<p>Features:</p>
+<ul>
+<li>Seasonality</li>
+<li>Trend is changing</li>
+<li>Sudden drop at start of each year (more cost effective for patients to stockpile at the end of the calendar year)</li>
+<li>Seasonal pattern increases in size as level of series increases</li>
+</ul>
+<p>The time series can be aggregated using the <code>aggregate</code> function.</p>
+<pre class="r"><code># Introductory time series
+a10.annual &lt;- aggregate(a10, FUN = sum)
+autoplot(a10.annual)  +
+  ggtitle(&quot;Annual Antidiabetic drug sales&quot;) +
+    geom_point() + 
+  ylab(&quot;$ million&quot;) +
+  xlab(&quot;Year&quot;) </code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/autoplot_a10_annual-1.png" width="672" /></p>
+</div>
+<div id="time-series-patterns" class="section level2">
+<h2>Time series patterns</h2>
+<ul>
+<li><strong>Trend</strong>; refers to a long-term increase or decrease in the data, which can change over time (i.e. trend may be <em>changing direction</em>)</li>
+<li><strong>Seasonal</strong>; a seasonal pattern occurs when a time series is affected by seasonal factors, i.e. time of year. Seasonality is of a fixed and known frequency. If frequency of fluctuations is unchanging and associated with some aspect of the calendar then the pattern is seasonal.</li>
+<li><strong>Cyclic</strong>; when data rises and falls but not of a fixed frequency and may be related to an economic or business cycle. If fluctuations are not of a fixed frequency then they are cyclic.</li>
+</ul>
+</div>
+<div id="seasonal-plots" class="section level2">
+<h2>Seasonal plots</h2>
+<p>Similar to a <code>ts</code> plot but data is plotted against seasons in which data observed.</p>
+<ul>
+<li>Highlights seasonal patterns</li>
+</ul>
+<pre class="r"><code>ggseasonplot(a10, year.labels=TRUE, year.labels.left=TRUE) +
+  ylab(&quot;$ million&quot;) +
+  ggtitle(&quot;Seasonal plot: antidiabetic drug sales&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/a10_seasonplot-1.png" width="672" /></p>
+<p>Polar seasonal plot makes the time series axis circular rather than horizontal</p>
+<pre class="r"><code>ggseasonplot(a10, polar=TRUE) +
+  ylab(&quot;$ million&quot;) +
+  ggtitle(&quot;Polar seasonal plot: antidiabetic drug sales&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/a10_polarseasonalplot-1.png" width="672" /></p>
+</div>
+<div id="seasonal-subseries-plots" class="section level2">
+<h2>Seasonal subseries plots</h2>
+<p>Instead can show each season as a separate mini-time plot</p>
+<ul>
+<li>Horizontal lines used to indicate the mean</li>
+<li>May enable underlying seasonal pattern to be seen more clearly</li>
+</ul>
+<pre class="r"><code>ggsubseriesplot(a10) +
+  ylab(&quot;$ million&quot;) +
+  ggtitle(&quot;Seasonal subseries plot: antidiabetic drug sales&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/a10_subseriesplot-1.png" width="672" /></p>
+</div>
+<div id="scatterplots" class="section level2">
+<h2>Scatterplots</h2>
+<p>Useful for showing relationships between time series</p>
+<pre class="r"><code>autoplot(elecdemand[,c(&quot;Demand&quot;,&quot;Temperature&quot;)], facets=TRUE) +
+  xlab(&quot;Year: 2014&quot;) + ylab(&quot;&quot;) +
+  ggtitle(&quot;Half-hourly electricity demand: Victoria, Australia&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdemand_auto-1.png" width="672" /></p>
+<p>The relationship between temperature and electrical demand is as follows:</p>
+<pre class="r"><code>qplot(Temperature, Demand, data=as.data.frame(elecdemand)) +
+  ylab(&quot;Demand (GW)&quot;) + xlab(&quot;Temperature (Celsius)&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdemand_qplot-1.png" width="672" /></p>
+<div id="correlation" class="section level3">
+<h3>Correlation</h3>
+<p>The correlation coefficient, <span class="math display">\[r = \frac{\sum(x_t - \bar{x})(y_t - \bar{y})}{\sqrt{\sum(x_t - \bar{x})^2}\sqrt{\sum(y_t - \bar{y})^2}},\]</span> which lies between <span class="math inline">\(\pm\)</span> 1 measures the strength of <strong>linear</strong> relationship, and so can sometimes be misleading. See for example Anscombe’s Quartet in which each of the four date sets have a correlation coefficient of 0.82. Anscombe’s Quartet is a good illustration of why not to solely rely on correlation values.</p>
+<pre class="r"><code>dat &lt;- select(anscombe, x1:x4) %&gt;% gather(variable, X) %&gt;% mutate(variable = str_replace(variable, &quot;x&quot;, &quot;&quot;)) %&gt;%
+    cbind(
+select(anscombe, y1:y4) %&gt;% gather(variable, Y) %&gt;% select(-variable))
+
+    ggplot(dat) + 
+    geom_point(aes(X, Y)) + 
+    facet_wrap(~ variable)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/anscombes_quartet-1.png" width="672" /></p>
+</div>
+<div id="scatterplot-matrices" class="section level3">
+<h3>Scatterplot matrices</h3>
+<pre class="r"><code>GGally::ggpairs(as.data.frame(visnights[,1:5]))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/visnights_ggpairs-1.png" width="672" /></p>
+</div>
+</div>
+<div id="lag-plots" class="section level2">
+<h2>Lag plots</h2>
+<p>Scatterplot matrix with:</p>
+<ul>
+<li>X-axis = Lagged values of the time series (<span class="math inline">\(y_{t - k}\)</span>)</li>
+<li>Y-axis = Current value of the time series (<span class="math inline">\(y_{t}\)</span>)</li>
+<li>One chart per value of <span class="math inline">\(k\)</span></li>
+<li>Lines connect points in chronological order</li>
+</ul>
+<p>Quarterly beer data:</p>
+<pre class="r"><code>beer2 &lt;- window(ausbeer, start=1992)
+gglagplot(beer2)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/ausbeer_lagplot-1.png" width="672" /> Here:</p>
+<ul>
+<li>Strong positive relationship at lags 4 and 8 (strong quarterly seasonality)</li>
+<li>Negative relationship for lags 2 and 6 because peaks (Q4) plotted against troughs (Q2)</li>
+</ul>
+<p>Note use of <code>window()</code> function to extract a portion of the time series.</p>
+</div>
+<div id="autocorrelation" class="section level2">
+<h2>Autocorrelation</h2>
+<p>Similar to correlation which measures linear relationship between two variables, autocorrelation measures linear relationship between <strong>lagged values</strong> of a time series. For lag <span class="math inline">\(k\)</span>, the autocorrelation coefficient is <span class="math display">\[r_k = \frac{\sum_{t = k + 1}^T(y_t - \bar{y})(y_{t-k} - \bar{y})}{\sum_{t = 1}^T(y_t - \bar{y})^2},\]</span> where <span class="math inline">\(T\)</span> is the length of the time series.</p>
+<p>Noting that:</p>
+<ul>
+<li><span class="math inline">\(r_1\)</span> measures the relationship between <span class="math inline">\(y_t\)</span> and <span class="math inline">\(y_{t-1}\)</span></li>
+<li><span class="math inline">\(r_2\)</span> measures the relationship between <span class="math inline">\(y_t\)</span> and <span class="math inline">\(y_{t-2}\)</span></li>
+<li>and so on …</li>
+</ul>
+<p>A correllogram plot is used to show the autocorrelation function (ACF) by plotting the autocorrelation coefficients.</p>
+<pre class="r"><code>ggAcf(beer2)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/beer2_acf-1.png" width="672" /> Features:</p>
+<ul>
+<li><span class="math inline">\(r_4\)</span> is higher than for other lags; peaks four quarters apart, troughs 2 quarters apart</li>
+<li><span class="math inline">\(r_2\)</span> more negative than for other lags because troughs tend to be 2 quarters behind beaks</li>
+<li>Blue lines indicate whether correlations are significantly different from zero.</li>
+</ul>
+<div id="trend-and-seasonality-in-acf-plots" class="section level3">
+<h3>Trend and seasonality in ACF plots</h3>
+<p>When data has a trend: Autocorrelations for small lags tend to be large and positive because observations nearby in time are nearby in size. So ACF of trended time series tend to have positive values that slowly decrease as the lags increase.</p>
+<p>When data are seasonal: Autocorrelations are larger for the seasonal lags (at multiples of the seasonal frequency) than for other lags.</p>
+<p>When data are trended and seasonal: Combination of effects is seen, e.g. monthly Australian electricity demand:</p>
+<pre class="r"><code>aelec &lt;- window(elec, start=1980)
+autoplot(aelec) + xlab(&quot;Year&quot;) + ylab(&quot;GWh&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elec_auto-1.png" width="672" /></p>
+<pre class="r"><code>ggAcf(aelec, lag=48)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elect_acf-1.png" width="672" /></p>
+<p>Features:</p>
+<ul>
+<li>Trend - The slow decrease in the ACF as the lags increase</li>
+<li>Seasonality - “Scalloped” shape</li>
+</ul>
+</div>
+</div>
+<div id="white-noise" class="section level2">
+<h2>White noise</h2>
+<p><strong>White noise</strong>: Time series that show no autocorrelation.</p>
+<pre class="r"><code>set.seed(30)
+y &lt;- ts(rnorm(50))
+autoplot(y) + ggtitle(&quot;White noise&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/wn_auto-1.png" width="672" /></p>
+<pre class="r"><code>ggAcf(y)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/wn_acf-1.png" width="672" /> White noise ACF features:</p>
+<ul>
+<li>each autocorrelation ~ 0</li>
+<li>Expect 95% of spikes in ACF to lie within <span class="math inline">\(\pm 2 / \sqrt{T}\)</span>. If <span class="math inline">\(\geq\)</span> one large spikes outside bounds, or if substantially more than 5% of spikes are outside of these bounds then series is probably not white noise.</li>
+</ul>
+<p>In this chart, <span class="math inline">\(T\)</span> = 50 and so the bounds are <span class="math inline">\(\pm 2 / \sqrt{50}\)</span> = <span class="math inline">\(\pm\)</span> 0.28. As all correlation coefficients lie within these limits, ACF confirms that data are white noise.</p>
+</div>
+</div>
+<div id="the-forecasters-toolbox" class="section level1">
+<h1>The forecaster’s toolbox</h1>
+<div id="some-simple-forecasting-methods" class="section level2">
+<h2>Some simple forecasting methods</h2>
+<div id="average-method" class="section level3">
+<h3>Average method</h3>
+<p>Set all forecasts to average of historical data,</p>
+<p><span class="math display">\[\hat{y}_{T+h|T} = \bar{y} = (y_1 + \ldots + y_T)/T,\]</span> where <span class="math inline">\(\hat{y}_{T+h|T}\)</span> is short-hand for the estimate of _{T+h} based on <span class="math inline">\(y_1, \ldots, y_t\)</span>.</p>
+<p>Use function <code>meanf(y, h)</code> for time series <span class="math inline">\(y\)</span> and forecast horizon <span class="math inline">\(h\)</span>.</p>
+</div>
+<div id="naive-method-a.k.a.-random-walk-forecast" class="section level3">
+<h3>Naive method (a.k.a. random walk forecast)</h3>
+<p>Set all forecasts to last observed value, <span class="math display">\[\hat{y}_{T+h|T} = y_T\]</span></p>
+<p>Use function <code>naive(y,h)</code> or <code>rwf(y,h)</code>.</p>
+<p>This method is optimal when data follow a random walk.</p>
+</div>
+<div id="seasonal-naive-method" class="section level3">
+<h3>Seasonal naive method</h3>
+<p>Set forecast to last observed value from the same season of the year. <span class="math display">\[\hat{y}_{T+h|T} = y_{T+h-m(k+1)},\]</span></p>
+<p>where <span class="math inline">\(m\)</span> = seasonal period, <span class="math inline">\(k\)</span> = number of complete periods in the forecast period prior to time <span class="math inline">\(T + h\)</span>.</p>
+<p>Use function <code>snaive(y, h)</code>.</p>
+</div>
+<div id="drift-method" class="section level3">
+<h3>Drift method</h3>
+<p>Set forecast to last observation plus drift (average increase or decrease that has been seen over time). Equivalent to drawing a line between first and last observations and extrapolating it into the future, <span class="math display">\[\hat{y}_{T+h|T} = y_{T} + \frac{h}{T-1}\sum^T_{t=2}(t_t - t_{t-1}) = y_T + h\left(\frac{y_T - y_1}{T - 1}\right)\]</span></p>
+<p>Use function <code>rwf(y, h, drift = TRUE)</code>.</p>
+</div>
+<div id="examples" class="section level3">
+<h3>Examples</h3>
+<pre class="r"><code># Set training data from 1992 to 2007
+beer2 &lt;- window(ausbeer,start=1992,end=c(2007,4))
+
+# Plot some forecasts
+autoplot(beer2) +
+    geom_point() + 
+    scale_x_continuous(minor_breaks = 1992:2007) + 
+    theme(panel.grid.minor = element_line()) + 
+  autolayer(meanf(beer2, h=11),
+    series=&quot;Mean&quot;, PI=FALSE) +
+  autolayer(naive(beer2, h=11),
+    series=&quot;Naïve&quot;, PI=FALSE) +
+  autolayer(snaive(beer2, h=11),
+    series=&quot;Seasonal naïve&quot;, PI=FALSE) +
+  ggtitle(&quot;Forecasts for quarterly beer production&quot;) +
+  xlab(&quot;Year&quot;) + ylab(&quot;Megalitres&quot;) +
+  guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/beer_simple_forecasts-1.png" width="672" /></p>
+<pre class="r"><code>autoplot(goog200) +
+  autolayer(meanf(goog200, h=40),
+    series=&quot;Mean&quot;, PI=FALSE) +
+  autolayer(rwf(goog200, h=40),
+    series=&quot;Naïve&quot;, PI=FALSE) +
+  autolayer(rwf(goog200, drift=TRUE, h=40),
+    series=&quot;Drift&quot;, PI=FALSE) +
+  ggtitle(&quot;Google stock (daily ending 6 Dec 2013)&quot;) +
+  xlab(&quot;Day&quot;) + ylab(&quot;Closing Price (US$)&quot;) +
+  guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/ggog200_simple_forecasts-1.png" width="672" /> Simple methods may:</p>
+<ul>
+<li>Be best forecasting method available</li>
+<li>Serve as a benchmark for other methods</li>
+</ul>
+</div>
+</div>
+<div id="transformations-and-adjustments" class="section level2">
+<h2>Transformations and adjustments</h2>
+<p>Purpose: Simplify historical data patterns by removing known sources of variation or by making pattern more consistent across whole data set. Simpler pattern = more accurate forecast.</p>
+<div id="calendar-adjustments" class="section level3">
+<h3>Calendar adjustments</h3>
+<p>EG: Different numbers of days in months can lead to variation in monthly values. In this case divide TS by <code>monthdays()</code> to get TS of daily average.</p>
+<pre class="r"><code>dframe &lt;- cbind(Monthly = milk,
+                DailyAverage = milk/monthdays(milk))
+  autoplot(dframe, facet=TRUE) +
+    xlab(&quot;Years&quot;) + ylab(&quot;Pounds&quot;) +
+    ggtitle(&quot;Milk production per cow&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/cal_adj-1.png" width="672" /></p>
+</div>
+<div id="population-adjustments" class="section level3">
+<h3>Population adjustments</h3>
+<p>Data affected by population changes can be adjusted to give per-capita data, i.e. consider data per person (or per thousand, or per million people) rather than the total. E.g. user beds per thousand people rather than number of hospital beds in a particular region over time.</p>
+</div>
+<div id="inflation-adjustments" class="section level3">
+<h3>Inflation adjustments</h3>
+<p>Use price index (e.g. CPI) to adjust data affected by the value of money before model to all be in dollar values from a particular year.</p>
+<p>E.g. adjusted price at year 2000 dollar values is <span class="math inline">\(x_t = y_t / z_t * z_{2000}\)</span> where</p>
+<ul>
+<li><span class="math inline">\(z_t\)</span> is price index,</li>
+<li><span class="math inline">\(y_t\)</span> original house price in year <span class="math inline">\(t\)</span></li>
+</ul>
+</div>
+<div id="mathematical-transformation" class="section level3">
+<h3>Mathematical transformation</h3>
+<p>Transform data (e.g. with logarithmic transformation) when data variation increases or decreases with level of series.</p>
+<div id="log-transformation" class="section level4">
+<h4>Log transformation</h4>
+<p>Interpretation of log base 10: An increase of 1 on the log scale corresponds to a multiplication of 10 on the original scale. Another advantage is that they constrain forecasts to positive.</p>
+<p>Redacted extracts from <a href="http://www.jerrydallal.com/lhsp/logs.htm">Gerard E. Dallal</a>: &gt;if you multiply something by 10 in the original scale, you add 1 unit to its value the log scale. If you divide something by 10 in the original scale, you subtract 1 unit from its value in the log scale. As we move from 0.1 to 1 to 10 on the original scale, we move from -1 to 0 to 1 on the logarithmic scale.</p>
+<blockquote>
+<p>Just as length can be measured in feet, inches, meters, kilometers, centimeters, or whatever, logarithms can be defined in may ways according to what happens in the original scale when there is a one unit change in the log scale. Common logs are defined so that a 1 unit increase in the log scale is equivalent to multiplying by 10 in the original scale. One could define logarithms so that a one unit increase in the log scale is equivalent to multiplying by 2 in the original scale (logs to base 2). The value by which a number is multiplied in the original scale when its logarithm is increased by 1 is known as the base of the logarithm. Any positive number different from 1 can be used as a base.</p>
+</blockquote>
+<blockquote>
+<p>Natural logarithms: A 1 unit increase in this log scale is equivalent to multiplying in the original scale by a factor known as Euler’s constant, <span class="math inline">\(e\)</span> (~ 2.71828). … If you apply any logarithmic transformation to a set of data, the average of the logs is approximately equal to the log of the original mean, whatever type of logarithms you use. However, only for natural logs is standard deviation approximately equal to the coefficient of variation (the ratio of the standard deviation to the mean) in the original scale.</p>
+</blockquote>
+<blockquote>
+<p>The different types of logs are like different units for measuring height. For example, a height of 71 inches might be referring to an adult male, but a height of 71 cm would probably be referring to a toddler. Similarly, you can’t report a logarithm of 2. Is it the common log corresponding to a value of 100 in the original scale or a natural log corresponding to a value of 7.39?</p>
+</blockquote>
+<p>Extract from <a href="http://www.ucl.ac.uk/lapt/med/logs.htm">Notes on logarithms - Tony Gardner-Medwin</a> regarding logs to base e: &gt; The way to think about natural logs is that they are the same as logs to any other base, but measured in different units. It is always true that <span class="math display">\[ln(x)   =  2.303  log_{10}(x)\]</span></p>
+<blockquote>
+<p>Logarithms to base e are considered “natural” because: As <span class="math inline">\(x\)</span> becomes very small, <span class="math inline">\(log_e(1+x)\)</span> becomes equal to <span class="math inline">\(x\)</span>. The equivalent statement for <span class="math inline">\(log_{10}(x)\)</span> would be As <span class="math inline">\(x\)</span> becomes very small, <span class="math inline">\(log_{10}(1+x)\)</span> becomes equal to 2.303 <span class="math inline">\(x\)</span>.</p>
+</blockquote>
+</div>
+<div id="power-tranformations" class="section level4">
+<h4>Power tranformations</h4>
+<p>Of form <span class="math inline">\(w_t = y_t^p\)</span>, includes square roots and cube roots. Not as interpretable as log transformation.</p>
+</div>
+<div id="box-cox-transformation" class="section level4">
+<h4>Box-Cox transformation</h4>
+<p>Includes logarithms and power transformation.<span class="math display">\[w_t = \begin{cases} log(y_t) &amp; \text{if } \lambda = 0;\\
+(y_t^\lambda - 1) / \lambda &amp; \text{otherwise} \end{cases}\]</span></p>
+<ul>
+<li>If <span class="math inline">\(\lambda = 0\)</span>, natural (i.e. not base 10!) logarithm is used</li>
+<li>If <span class="math inline">\(\lambda \neq 0\)</span>, power transform used</li>
+<li>If <span class="math inline">\(\lambda = 1\)</span>, then <span class="math inline">\(w_t = y_t - 1\)</span>, so data is shifted downwards, but no change in shape</li>
+<li>If <span class="math inline">\(\lambda \neq 1\)</span>, then shape will change</li>
+</ul>
+<p>As per online book, a slider for <span class="math inline">\(\lambda\)</span> is a great way of determining which value makes the size of seasonal variation constant across the series. Alternative, you can use the <code>BoxCox.lambda()</code> function.</p>
+<pre class="r"><code>p1 &lt;- autoplot(elec)
+p2 &lt;- autoplot(BoxCox(elec, BoxCox.lambda(elec)))
+grid.arrange(p1, p2)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elec_boxcox-1.png" width="672" /></p>
+<pre class="r"><code>rm(p1, p2)</code></pre>
+<p>To back-transform the forecasts on the original scale <span class="math display">\[y_t = \begin{cases} \exp(w_t) &amp; \text{if } \lambda = 0 \\
+            (\lambda w_t + 1)^{1/\lambda} &amp;\text{otherwise}\end{cases}\]</span></p>
+</div>
+<div id="features-of-power-transformations" class="section level4">
+<h4>Features of power transformations</h4>
+<ul>
+<li>If some observations have a value <span class="math inline">\(\leq 0\)</span>, will need to adjust all observations by adding a constant to all values; otherwise no power transformation is possible</li>
+<li>A simple value of <span class="math inline">\(\lambda\)</span> makes explanations easier</li>
+<li>Transformation sometimes make little difference to the forecasts but have a large effect on the prediction intervals</li>
+<li>Often no transformation is needed</li>
+</ul>
+</div>
+<div id="bias-adjustments" class="section level4">
+<h4>Bias adjustments</h4>
+<ul>
+<li>When using mathematical transformation such as the Box-Cox transformation, often the back-transformed forecast will not be the mean, but rather the median, of the forecast distribution. When want to add up sales forecasts to get a total, the means will add up but medians will not. Back-transformed mean of Box-Cox transformed data is:</li>
+</ul>
+<p><span class="math display">\[y_t = \begin{cases} \exp(w_t) \left[1 + \frac{\sigma^2_h}{2}\right]&amp; \text{if } \lambda = 0 \\
+            (\lambda w_t + 1)^{1/\lambda} \left[1 + \frac{\sigma^2_h(1-\lambda)}{2(\lambda w_t + 1)^2}\right] &amp;\text{otherwise}\end{cases}\]</span></p>
+<p>where <span class="math inline">\(\sigma_h^2\)</span> is the <span class="math inline">\(h\)</span>-step variance. The larger the forecast variance, the bigger the bias (difference between the mean and the median). When using the mean, rather then median, the point forecast is said to have been <strong>bias-adjsted</strong>.</p>
+<p>Bias-adjustment is not the default in the <code>forecast</code> package; to implement use the argument <code>biasadj = TRUE</code>.</p>
+<pre class="r"><code># Drift forecast with log transformation
+fc &lt;- rwf(eggs, drift=TRUE, lambda=0, h=50, level=80)
+# ... now with bias adjustd forecasts
+fc2 &lt;- rwf(eggs, drift=TRUE, lambda=0, h=50, level=80,
+  biasadj=TRUE)
+autoplot(eggs) +
+  autolayer(fc, series=&quot;Simple back transformation&quot;) +
+  autolayer(fc2, series=&quot;Bias adjusted&quot;, PI=FALSE) +
+  guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/egg_bias_adj_fo-1.png" width="672" /></p>
+<pre class="r"><code>rm(fc, fc2)</code></pre>
+</div>
+</div>
+</div>
+<div id="residual-diagnostics" class="section level2">
+<h2>Residual diagnostics</h2>
+<div id="fitted-values" class="section level3">
+<h3>Fitted values</h3>
+<p>Fitted value <span class="math inline">\(\hat{y}_{t|t-1}\)</span></p>
+<ul>
+<li>Observation in TS forecast (e.g. at time <span class="math inline">\(t\)</span>) using previous observations <span class="math inline">\(y_1, \ldots, y_{t-1}\)</span></li>
+<li>Always involve one-step forecasts</li>
+<li>Not true forecast because parameters in forecast method are estimated using all observations in TS, including future obs</li>
+</ul>
+<p>Fitted values for simple methods:</p>
+<ul>
+<li>Average method: <span class="math inline">\(\hat{y} = \hat{c}\)</span> where <span class="math inline">\(\hat{c}\)</span> = average over all observations including those after <span class="math inline">\(t\)</span>.</li>
+<li>Drift method: <span class="math inline">\(\hat{y} = y_{t-1} + \hat{c}\)</span> where <span class="math inline">\(\hat{c} = (y_T - y_1)/(T-1)\)</span></li>
+<li>Naive: Fitted value = true forecast as no parameters used</li>
+<li>Naive seasonal: Fitted value = true forecast as no parameters used</li>
+</ul>
+</div>
+<div id="residuals" class="section level3">
+<h3>Residuals</h3>
+<p><span class="math display">\[e_t = y_t - \hat{y}_t\]</span></p>
+<p>Good model will have:</p>
+<ul>
+<li>Uncorrelated residuals; if there are correlations, then there is information left in the residuals which should be used in computing forecasts</li>
+<li>Zero mean residuals; if residuals have a mean other than zero, then forecasts are biased</li>
+</ul>
+<p>Without these properties, method can be improved, noting though, that methods with these properties may still be <strong>improve-able</strong>, i.e. these properties are useful in determining whether all available information is being used but not for selecting a forecasting method.</p>
+<p>To fix bias in residuals with constant mean <span class="math inline">\(m\)</span>, then simply add <span class="math inline">\(m\)</span> to all forecasts. Fixing correlation, will be addressed later…</p>
+<p>It is also useful (but not essential) for calculation of prediction intervals if:</p>
+<ul>
+<li>Residuals have constant variance</li>
+<li>Residuals are normally distributed</li>
+</ul>
+<p>May be possible to apply Box-Cos transformation, but improvement is not always possible; sometimes little that can be done except to use an alternative approach for obtaining the prediction intervals (to be discussed later).</p>
+</div>
+<div id="example" class="section level3">
+<h3>Example</h3>
+<p>TS of residuals; large residual result of unexpected price jump.</p>
+<pre class="r"><code>res &lt;- residuals(naive(goog200))
+autoplot(res) + xlab(&quot;Day&quot;) + ylab(&quot;&quot;) +
+  ggtitle(&quot;Residuals from naïve method&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_res_TS-1.png" width="672" /></p>
+<p>Histogram of residuals; right tail a little long for normal distribution</p>
+<pre class="r"><code>gghistogram(res) +
+  ggtitle(&quot;Histogram of Residuals&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_res_Hist-1.png" width="672" /></p>
+<p>ACF of residuals; lack of correlation suggests forecasts are good</p>
+<pre class="r"><code>ggAcf(res) + ggtitle(&quot;ACF of residuals&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_res_acf-1.png" width="672" /></p>
+<p>Summary: forecasts appear to account for all information. Forecasts will probably be quite good but prediction intervals assuming a normal distribution may be inaccurate.</p>
+<ul>
+<li>Mean of residuals close to zero</li>
+<li>No signification correlation in residuals series</li>
+<li>Variation in residuals appears constant, with exception of one outlier (from time series)</li>
+<li>Residuals may not be normal (tail is long even when outlier is ignored)</li>
+</ul>
+</div>
+<div id="portmanteau-tests-for-autocorrelation" class="section level3">
+<h3>Portmanteau tests for autocorrelation</h3>
+<p>ACF plot involves checking that each spike is within required limits and therefore implicitly carrying out multiple hypothesis tests, each one with a small probability of giving a false positive. With enough tests, likely that at least one will give a false positive, leading to the incorrect conclusion that residuals have some remaining autocorrelation</p>
+<p>Portmanteau tests performs test for a group of autocorrelations by determining whether the first <span class="math inline">\(h\)</span> autocorrelations are significantly different from expected of a white noise process.</p>
+<p>In the following tests, if the autocorrelations come from a white noise series, then the statistic would have a <span class="math inline">\(\chi^2\)</span> distribution with (<span class="math inline">\(h - K\)</span>) degrees of freedom, where <span class="math inline">\(K\)</span> is the number of parameters in the model. If they are calculated from raw data (rather than the residual from a model), then set <span class="math inline">\(K = 0\)</span>.</p>
+<div id="box-pierce-test" class="section level4">
+<h4>Box-Pierce Test</h4>
+<p>Statistic <span class="math display">\[Q = T \sigma_{k=1}^hr_k^2,\]</span></p>
+<p>where</p>
+<ul>
+<li><span class="math inline">\(h\)</span> is maximum lag (suggest <span class="math inline">\(h = 10\)</span> for non-seasonal data and <span class="math inline">\(h = 2m\)</span> for seasonal data, where <span class="math inline">\(m\)</span> is the period of seasonality. But if these values are larger than <span class="math inline">\(T/5\)</span> then use <span class="math inline">\(h = T/5\)</span> as the test is not good for large <span class="math inline">\(h\)</span>.)</li>
+<li><span class="math inline">\(T\)</span> is number of observations</li>
+</ul>
+<p>If each <span class="math inline">\(r_k\)</span> is close to zero, <span class="math inline">\(Q\)</span> will be small.</p>
+</div>
+<div id="ljung-box-test" class="section level4">
+<h4>Ljung-Box Test</h4>
+<p>More accurate than Box-Pierce test, <span class="math display">\[Q^* = T(T + 2) \sigma_{k=1}^h (T - k)^{-1}r_k^2,\]</span></p>
+<p>where large <span class="math inline">\(Q^*\)</span> suggests that autocorrelations did not come from a white noise process.</p>
+</div>
+<div id="example-1" class="section level4">
+<h4>Example</h4>
+<p>In following example, both <span class="math inline">\(Q\)</span> and <span class="math inline">\(Q^*\)</span> are not significant and so conclude that residuals are not distinguishable from a white noise series.</p>
+<pre class="r"><code>res &lt;- residuals(naive(goog200))
+
+# Box-Pierce test
+# lag=h and fitdf=K
+Box.test(res, lag=10, fitdf=0)</code></pre>
+<pre><code>## 
+##  Box-Pierce test
+## 
+## data:  res
+## X-squared = 10.611, df = 10, p-value = 0.3886</code></pre>
+<pre class="r"><code># Box-Ljung test
+Box.test(res,lag=10, fitdf=0, type=&quot;Lj&quot;)</code></pre>
+<pre><code>## 
+##  Box-Ljung test
+## 
+## data:  res
+## X-squared = 11.031, df = 10, p-value = 0.3551</code></pre>
+<p>The function <code>checkresiduals()</code> can be used to complete all components of residual checking (i.e. to create the time plot, ACF, histogram and perform the Ljung-Box test)</p>
+<pre class="r"><code>checkresiduals(naive(goog200))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_checkres-1.png" width="672" /></p>
+<pre><code>## 
+##  Ljung-Box test
+## 
+## data:  Residuals from Naive method
+## Q* = 11.031, df = 10, p-value = 0.3551
+## 
+## Model df: 0.   Total lags used: 10</code></pre>
+</div>
+</div>
+</div>
+<div id="evaluating-forecast-accuracy" class="section level2">
+<h2>Evaluating forecast accuracy</h2>
+<div id="training-and-test-sets" class="section level3">
+<h3>Training and test sets</h3>
+<ul>
+<li>Residuals not reliable indication of how large true forecast errors likely to be.</li>
+<li>Need to test forecast on new data.</li>
+<li>Best to separate data into training (in-sample data) and test data (hold-out set, out-of-sample data). Test data ~20% of sample, but f(sample size, how long ahead you want to forecast)</li>
+</ul>
+<p>Notes: * Model that fits training data well may not forecast well * Over-fitting is as bad as failing to identify a systematic pattern in the data</p>
+</div>
+<div id="functions-to-subset-a-time-series" class="section level3">
+<h3>Functions to subset a time series</h3>
+<p>Can use following functions:</p>
+<ul>
+<li><p><code>window()</code></p></li>
+<li><p><code>subset()</code></p></li>
+</ul>
+</div>
+<div id="forecast-errors" class="section level3">
+<h3>Forecast errors</h3>
+<ul>
+<li>Difference between observed value and forecast</li>
+<li>Not a mistake; unpredictable part of observation</li>
+</ul>
+<p><span class="math display">\[e_{T + h} = y_{T + h} - \hat{y}_{T + h|T},\]</span> where training data given by <span class="math inline">\({y_1, \ldots, y_T}\)</span> and test data given by <span class="math inline">\({y_{T+1}, y_{T+2} \ldots}\)</span></p>
+<p>Different to residuals</p>
+<ul>
+<li>Residuals calculated on training set, forecast errors on test set</li>
+<li>Residuals are one-step forecasts, forecast errors can involve multi-step forecasts</li>
+</ul>
+<p>Forecast accuracy can summarise forecast errors in different ways.</p>
+</div>
+<div id="scale-dependent-errors" class="section level3">
+<h3>Scale-dependent errors</h3>
+<ul>
+<li>Forecast errors are on the same scale as the data</li>
+<li>Accuracy measures that are based only on <span class="math inline">\(e_t\)</span> are therefore scale-dependent and cannot be used to make comparisons between series that involve different units</li>
+<li>Measures include:
+<ul>
+<li>Mean absolute error: <span class="math display">\[\text{MAE} = \text{mean}(|e_t|)\]</span> Forecast that minimizes MAE will lead to forecasts of the median.</li>
+<li>Root mean squared error: <span class="math display">\[\text{RMSE} = \sqrt{\text{mean}(e_t^2)}\]</span> Forecast that minimised RMSE will lead to forecasts of the mean (and therefore more widely used than MAE).</li>
+</ul></li>
+</ul>
+</div>
+<div id="percentage-errors" class="section level3">
+<h3>Percentage errors</h3>
+<p>Unlike MAE and RMSE (and other scale-dependent errors), percentage errors are unit-free and so frequently used to compare forecast performances between data sets.</p>
+<p>Percentage error is <span class="math inline">\(p_t = 100 e_t / y_t\)</span>.</p>
+<div id="mean-absolute-percentage-error-mape" class="section level4">
+<h4>Mean absolute percentage error (MAPE)</h4>
+<p><span class="math display">\[\text{MAPE} = \text{mean}(|p_t|)\]</span></p>
+<p>Disadvantages:</p>
+<ul>
+<li>Infinite or undefined if <span class="math inline">\(y_t = 0\)</span> for any <span class="math inline">\(t\)</span> in period of interest</li>
+<li>Extreme values if <span class="math inline">\(y_t\)</span> is close to zero</li>
+<li>Assume unit of measurement has a meaningful zero, i.e., make no sense when measuring temperature.</li>
+<li>Place heavier penalty on negative errors than on positive errors</li>
+</ul>
+</div>
+<div id="symmetric-mape-smape" class="section level4">
+<h4>Symmetric MAPE (sMAPE)</h4>
+<p>This measure is <strong>not recommended</strong> despite being widely used.</p>
+<p><span class="math display">\[\text{sMAPE} = \text{mean}(200|y_t - \hat{y}_t| / (y_t + \hat{y}_t))\]</span></p>
+<p>Disadvantages:</p>
+<ul>
+<li>Still unstable as if <span class="math inline">\(y_t\)</span> is close to zero, <span class="math inline">\(\hat{y}_t\)</span> also likely to be close to zero and therefore measure still involves division by number close to zero.</li>
+<li>sMAPE can be negative no not really a measure of absolute percentage error</li>
+</ul>
+</div>
+</div>
+<div id="scaled-errors" class="section level3">
+<h3>Scaled errors</h3>
+<p>Alternative to percentage errors to compare forecast accuracy across series with different units, in which the denominator is the average error of the naive forecast (on the training data). As both the numerator and denominator are in the original data scale, the ratio is independent of the scale of the data.<br />
+<span class="math display">\[q_j = \frac{e_j}{\frac{1}{T-1}\sum_{t=2}^T|y_t - y_{t-1}|}\]</span></p>
+<ul>
+<li>A scaled error is less than one if it arises from a better forecast than the average naive forecast computed on the training data</li>
+<li>A scaled error is more than one if the forecast is worse than the average naive forecast computed on the training data</li>
+</ul>
+<p>For seasonal time series, the scaled error can be defined using seasonal naive forecasts: <span class="math display">\[q_j = \frac{e_j}{\frac{1}{T-m}\sum_{t=m + 1}^T|y_t - y_{t-m}|}\]</span></p>
+<p>The mean absolute scaled error is <span class="math display">\[\text{MASE} = \text{mean}(|q_j|)\]</span></p>
+</div>
+<div id="examples-1" class="section level3">
+<h3>Examples</h3>
+<div id="example-1-1" class="section level4">
+<h4>Example 1</h4>
+<pre class="r"><code>beer2 &lt;- window(ausbeer,start=1992,end=c(2007,4))
+beerfit1 &lt;- meanf(beer2,h=10)
+beerfit2 &lt;- rwf(beer2,h=10)
+beerfit3 &lt;- snaive(beer2,h=10)
+autoplot(window(ausbeer, start=1992)) +
+  autolayer(beerfit1, series=&quot;Mean&quot;, PI=FALSE) +
+  autolayer(beerfit2, series=&quot;Naïve&quot;, PI=FALSE) +
+  autolayer(beerfit3, series=&quot;Seasonal naïve&quot;, PI=FALSE) +
+  xlab(&quot;Year&quot;) + ylab(&quot;Megalitres&quot;) +
+  ggtitle(&quot;Forecasts for quarterly beer production&quot;) +
+  guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/beer_forecasts-1.png" width="672" /></p>
+<pre class="r"><code>beer3 &lt;- window(ausbeer, start=2008)
+
+cbind(Method = c(&quot;Mean&quot;, &quot;Naive&quot;, &quot;Seasonal Naive&quot;), as.data.frame(rbind(
+    accuracy(beerfit1, beer3)[2,], 
+    accuracy(beerfit2, beer3)[2,], 
+    accuracy(beerfit3, beer3)[2,]) )) %&gt;%
+    select(Method, RMSE, MAE, MAPE, MASE) %&gt;% kable(digits = 2)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Method</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+<th align="right">MASE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mean</td>
+<td align="right">38.45</td>
+<td align="right">34.83</td>
+<td align="right">8.28</td>
+<td align="right">2.44</td>
+</tr>
+<tr class="even">
+<td align="left">Naive</td>
+<td align="right">62.69</td>
+<td align="right">57.40</td>
+<td align="right">14.18</td>
+<td align="right">4.01</td>
+</tr>
+<tr class="odd">
+<td align="left">Seasonal Naive</td>
+<td align="right">14.31</td>
+<td align="right">13.40</td>
+<td align="right">3.17</td>
+<td align="right">0.94</td>
+</tr>
+<tr class="even">
+<td align="left">Regardless of acc</td>
+<td align="right">uracy me</td>
+<td align="right">asure us</td>
+<td align="right">ed, seas</td>
+<td align="right">onal naive method performs best (which is also obvious from the TS plot)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="example-2-non-seasonal-example" class="section level4">
+<h4>Example 2 (non-seasonal example)</h4>
+<pre class="r"><code>googfc1 &lt;- meanf(goog200, h=40)
+googfc2 &lt;- rwf(goog200, h=40)
+googfc3 &lt;- rwf(goog200, drift=TRUE, h=40)
+autoplot(subset(goog, end = 240)) +
+  autolayer(googfc1, PI=FALSE, series=&quot;Mean&quot;) +
+  autolayer(googfc2, PI=FALSE, series=&quot;Naïve&quot;) +
+  autolayer(googfc3, PI=FALSE, series=&quot;Drift&quot;) +
+  xlab(&quot;Day&quot;) + ylab(&quot;Closing Price (US$)&quot;) +
+  ggtitle(&quot;Google stock price (daily ending 6 Dec 13)&quot;) +
+  guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_forecasts-1.png" width="672" /></p>
+<pre class="r"><code>googtest &lt;- window(goog, start=201, end=240)
+cbind(Method = c(&quot;Mean&quot;, &quot;Naive&quot;, &quot;Drift&quot;), as.data.frame(rbind(
+    accuracy(googfc1, googtest)[2,], 
+    accuracy(googfc2, googtest)[2,], 
+    accuracy(googfc3, googtest)[2,]) )) %&gt;%
+    select(Method, RMSE, MAE, MAPE, MASE) %&gt;% kable(digits = 2)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Method</th>
+<th align="right">RMSE</th>
+<th align="right">MAE</th>
+<th align="right">MAPE</th>
+<th align="right">MASE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mean</td>
+<td align="right">114.21</td>
+<td align="right">113.27</td>
+<td align="right">20.32</td>
+<td align="right">30.28</td>
+</tr>
+<tr class="even">
+<td align="left">Naive</td>
+<td align="right">28.43</td>
+<td align="right">24.59</td>
+<td align="right">4.36</td>
+<td align="right">6.57</td>
+</tr>
+<tr class="odd">
+<td align="left">Drift</td>
+<td align="right">14.08</td>
+<td align="right">11.67</td>
+<td align="right">2.07</td>
+<td align="right">3.12</td>
+</tr>
+<tr class="even">
+<td align="left">In this c</td>
+<td align="right">ase, drif</td>
+<td align="right">t method</td>
+<td align="right">performs</td>
+<td align="right">better (regardless of accuracy measure used)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="time-series-cross-validation" class="section level3">
+<h3>Time series cross-validation</h3>
+<ul>
+<li>Series of test sets each with only a single observation. Corresponding training sets consists of all observations prior to the observation that forms the test set.<br />
+</li>
+<li>The earliest observations are not treated as test sets.</li>
+<li>Forecast accuracy computed by averaging over test sets (a.k.a evaluation on a rolling forecasting origin as origin at which forecast is based rolls forward in time)</li>
+<li>Can be used for one-step and multi-step forecasts.</li>
+<li>Implemented using <code>tsCV()</code> function</li>
+</ul>
+<p>Following example computes residual (training data) RSME and RMSE with forecasts (test data) obtained via time series cross-validation:</p>
+<pre class="r"><code># forecast accuarcy (test data)
+e &lt;- tsCV(goog200, rwf, drift=TRUE, h=1)
+sqrt(mean(e^2, na.rm=TRUE))</code></pre>
+<pre><code>## [1] 6.233245</code></pre>
+<pre class="r"><code># residual error (training data)
+sqrt(mean(residuals(rwf(goog200, drift=TRUE))^2, na.rm=TRUE))</code></pre>
+<pre><code>## [1] 6.168928</code></pre>
+</div>
+<div id="pipe-operator" class="section level3">
+<h3>Pipe operator</h3>
+<pre class="r"><code># forecast accuarcy (test data)
+goog200 %&gt;% tsCV(forecastfunction=rwf, drift=TRUE, h=1) -&gt; e
+e^2 %&gt;% mean(na.rm=TRUE) %&gt;% sqrt()</code></pre>
+<pre><code>## [1] 6.233245</code></pre>
+<pre class="r"><code># residual error (training data)
+goog200 %&gt;% rwf(drift=TRUE) %&gt;% residuals() -&gt; res
+res^2 %&gt;% mean(na.rm=TRUE) %&gt;% sqrt()</code></pre>
+<pre><code>## [1] 6.168928</code></pre>
+</div>
+<div id="example-using-tscv" class="section level3">
+<h3>Example: using tsCV()</h3>
+<p>Evaluate forecasting performance of 1- to 8-step-ahead naive forecasts, using MSE as forecast error measure. As expected, forecast error increases as forecast horizon increases.</p>
+<pre class="r"><code># forecast errors for h = 1:8
+e &lt;- tsCV(goog200, forecastfunction=naive, h=8)
+
+# Compute the MSE values and remove missing values
+mse &lt;- colMeans(e^2, na.rm = T)
+
+# Plot the MSE values against the forecast horizon
+data.frame(h = 1:8, MSE = mse) %&gt;%
+  ggplot(aes(x = h, y = MSE)) + geom_point()</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_tscv_multi-1.png" width="672" /></p>
+</div>
+</div>
+<div id="prediction-intervals" class="section level2">
+<h2>Prediction intervals</h2>
+<div id="one-step-prediction-intervals" class="section level3">
+<h3>One-step prediction intervals</h3>
+</div>
+<div id="multi-step-prediction-intervals" class="section level3">
+<h3>Multi-step prediction intervals</h3>
+</div>
+<div id="benchmark-methods" class="section level3">
+<h3>Benchmark methods</h3>
+</div>
+<div id="prediction-intervals-from-bootstrapped-residuals" class="section level3">
+<h3>Prediction intervals from bootstrapped residuals</h3>
+</div>
+<div id="prediction-intervals-with-transformations" class="section level3">
+<h3>Prediction intervals with transformations</h3>
+</div>
+</div>
+<div id="the-forecast-package-in-r" class="section level2">
+<h2>The <code>forecast</code> package in R</h2>
+<div id="functions-that-output-a-forecast-object" class="section level3">
+<h3>Functions that output a forecast object</h3>
+</div>
+<div id="forecast-function" class="section level3">
+<h3><code>forecast()</code> function</h3>
+</div>
+</div>
+</div>
+<div id="judgmental-forecasts" class="section level1">
+<h1>Judgmental forecasts</h1>
+<div id="beware-of-limitations" class="section level2">
+<h2>Beware of limitations</h2>
+</div>
+<div id="key-principles" class="section level2">
+<h2>Key principles</h2>
+</div>
+<div id="the-delphi-method" class="section level2">
+<h2>The Delphi method</h2>
+</div>
+<div id="forecasting-by-analogy" class="section level2">
+<h2>Forecasting by analogy</h2>
+</div>
+<div id="scenario-forecasting" class="section level2">
+<h2>Scenario forecasting</h2>
+</div>
+<div id="new-product-forecasting" class="section level2">
+<h2>New product forecasting</h2>
+</div>
+<div id="judgmental-adjustments" class="section level2">
+<h2>Judgmental adjustments</h2>
+</div>
+</div>
+<div id="time-series-regression-models" class="section level1">
+<h1>Time series regression models</h1>
+<p>Aim: forecast time series of interest <span class="math inline">\(y\)</span> assuming it has a linear relationship with another time series <span class="math inline">\(x\)</span></p>
+<p>Terminology:</p>
+<ul>
+<li><span class="math inline">\(y\)</span> = forecast = regressand = dependent = explained variable</li>
+<li><span class="math inline">\(x\)</span> = predictor = regressor = independent = explanatory variable</li>
+</ul>
+<div id="the-linear-model" class="section level2">
+<h2>The linear model</h2>
+<div id="simple-linear-regression" class="section level3">
+<h3>Simple linear regression</h3>
+</div>
+<div id="multiple-linear-regression" class="section level3">
+<h3>Multiple linear regression</h3>
+</div>
+<div id="assumptions" class="section level3">
+<h3>Assumptions</h3>
+</div>
+</div>
+<div id="least-square-estimation" class="section level2">
+<h2>Least square estimation</h2>
+</div>
+<div id="evaluating-the-regression-model" class="section level2">
+<h2>Evaluating the regression model</h2>
+</div>
+<div id="some-useful-predictions" class="section level2">
+<h2>Some useful predictions</h2>
+</div>
+<div id="selecting-predictors" class="section level2">
+<h2>Selecting predictors</h2>
+</div>
+<div id="forecasting-with-regression" class="section level2">
+<h2>Forecasting with regression</h2>
+</div>
+<div id="matrix-formulation" class="section level2">
+<h2>Matrix formulation</h2>
+</div>
+<div id="nonlionear-regression" class="section level2">
+<h2>Nonlionear regression</h2>
+</div>
+<div id="correlation-causation-and-forecasting" class="section level2">
+<h2>Correlation, causation and forecasting</h2>
+</div>
+</div>
+<div id="time-series-decomposition" class="section level1">
+<h1>Time series decomposition</h1>
+<p>Components:</p>
+<ul>
+<li>Trend-cycle (trend and cycle usually combined and referred to as <strong>trend</strong>)</li>
+<li>Seasonal</li>
+<li>Remainder (anything else in TS)</li>
+<li>Level (<span class="math inline">\(\ell\)</span>) is introduced within the exponential smoothing section and is the average value of the series (or the smoothed value).</li>
+</ul>
+<p>TS decomposition used to improve understanding of TS and to improve forecast accuracy.</p>
+<div id="time-series-components" class="section level2">
+<h2>Time series components</h2>
+<p>Additive decomposition: <span class="math display">\[y_t = S_t + T_t + R_t,\]</span> where</p>
+<ul>
+<li><span class="math inline">\(y_t\)</span> is the data</li>
+<li><span class="math inline">\(S_t\)</span> is the seasonal component</li>
+<li><span class="math inline">\(T_t\)</span> is the rend-cycle component</li>
+<li><span class="math inline">\(R_t\)</span> is the remainder</li>
+</ul>
+<p>Use additive decomposition when:</p>
+<ul>
+<li>Magnitude of seasonal fluctuations does not vary with level of TS, or</li>
+<li>Variation around trend-cycle does not vary with level of TS</li>
+</ul>
+<p>Multiplicative decomposition:</p>
+<p>First transform data until variation in series is stable over time, then use additive decomposition. When a log transformation has been used this is equivalent to using a multiplicative decomposition</p>
+<p><span class="math display">\[
+    \begin{aligned}
+    y_t &amp;= S_t \times T_t \times R_t \\
+    \equiv \log y_t &amp;= \log S_t + \log T_t + \log R_t
+     \end{aligned}       \]</span></p>
+<div id="electrical-equipment-manufacturing" class="section level3">
+<h3>Electrical equipment manufacturing</h3>
+<p>In the components plot, the grey bars to the right of each panel show the relative scales. Each grey bar represents the same length, but because the plots are on different scales, the bars vary in size. Therefore, a panel with a large grey bar has less variation when compared to panels with smaller grey bars.</p>
+</div>
+<div id="seasonally-adjusted-data" class="section level3">
+<h3>Seasonally adjusted data</h3>
+<p>Data is said to be seasonally adjusted if seasonal component is removed, .e. for additive decomposition, seasonally adjusted data is given by <span class="math inline">\(y_t - S_t\)</span> and for multiplicative data, <span class="math inline">\(y_t/S_t\)</span>.</p>
+<p>Useful when variation due to seasonality not of primary interest, e.g. employment data is usually seasonally adjusted.</p>
+<p>Note, however, seasonally adjusted data contains remainder + trend-cycle and therefore not smooth; consequently upturns/downturns can be misleading. If aim is to look for turning points in series, then better to use trend-cycle component.</p>
+</div>
+</div>
+<div id="moving-averages" class="section level2">
+<h2>Moving averages</h2>
+<p>Moving average method is first step in classical method of time series decomposition (1920-1950s, but basis of modern methods).</p>
+<div id="moving-average-smoothing" class="section level3">
+<h3>Moving average smoothing</h3>
+<div id="moving-average-of-order-m-m-ma" class="section level4">
+<h4>Moving average of order <span class="math inline">\(m\)</span> (<span class="math inline">\(m\)</span>-MA)</h4>
+<p>The estimate of trend-cycle at time <span class="math inline">\(t\)</span> is obtained by averaging the values of the time periods within periods <span class="math inline">\(t \pm k\)</span> and the order is said to be <span class="math inline">\(m = 2k + 1\)</span>,<span class="math display">\[\hat{T}_k = \frac{1}{m}\sum^k_{j=-k}y_{t+j}\]</span></p>
+<pre class="r"><code>data.frame(
+    Year = (start(elecsales)[1]: end(elecsales)[1]),
+    Sales = as.numeric(elecsales),
+    MA5 = as.numeric(ma(elecsales, 5))
+) %&gt;% kable(col.names = c(&quot;Year&quot;, &quot;Sales&quot;, &quot;5-MA&quot;))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Year</th>
+<th align="right">Sales</th>
+<th align="right">5-MA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1989</td>
+<td align="right">2354.34</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1990</td>
+<td align="right">2379.71</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1991</td>
+<td align="right">2318.52</td>
+<td align="right">2381.530</td>
+</tr>
+<tr class="even">
+<td align="right">1992</td>
+<td align="right">2468.99</td>
+<td align="right">2424.556</td>
+</tr>
+<tr class="odd">
+<td align="right">1993</td>
+<td align="right">2386.09</td>
+<td align="right">2463.758</td>
+</tr>
+<tr class="even">
+<td align="right">1994</td>
+<td align="right">2569.47</td>
+<td align="right">2552.598</td>
+</tr>
+<tr class="odd">
+<td align="right">1995</td>
+<td align="right">2575.72</td>
+<td align="right">2627.700</td>
+</tr>
+<tr class="even">
+<td align="right">1996</td>
+<td align="right">2762.72</td>
+<td align="right">2750.622</td>
+</tr>
+<tr class="odd">
+<td align="right">1997</td>
+<td align="right">2844.50</td>
+<td align="right">2858.348</td>
+</tr>
+<tr class="even">
+<td align="right">1998</td>
+<td align="right">3000.70</td>
+<td align="right">3014.704</td>
+</tr>
+<tr class="odd">
+<td align="right">1999</td>
+<td align="right">3108.10</td>
+<td align="right">3077.300</td>
+</tr>
+<tr class="even">
+<td align="right">2000</td>
+<td align="right">3357.50</td>
+<td align="right">3144.520</td>
+</tr>
+<tr class="odd">
+<td align="right">2001</td>
+<td align="right">3075.70</td>
+<td align="right">3188.700</td>
+</tr>
+<tr class="even">
+<td align="right">2002</td>
+<td align="right">3180.60</td>
+<td align="right">3202.320</td>
+</tr>
+<tr class="odd">
+<td align="right">2003</td>
+<td align="right">3221.60</td>
+<td align="right">3216.940</td>
+</tr>
+<tr class="even">
+<td align="right">2004</td>
+<td align="right">3176.20</td>
+<td align="right">3307.296</td>
+</tr>
+<tr class="odd">
+<td align="right">2005</td>
+<td align="right">3430.60</td>
+<td align="right">3398.754</td>
+</tr>
+<tr class="even">
+<td align="right">2006</td>
+<td align="right">3527.48</td>
+<td align="right">3485.434</td>
+</tr>
+<tr class="odd">
+<td align="right">2007</td>
+<td align="right">3637.89</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">2008</td>
+<td align="right">3655.00</td>
+<td align="right">NA</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># use series to give a legend entry
+autoplot(elecsales, series=&quot;Data&quot;) +
+  autolayer(ma(elecsales,5), series=&quot;5-MA&quot;) +
+  xlab(&quot;Year&quot;) + ylab(&quot;GWh&quot;) +
+  ggtitle(&quot;Annual electricity sales: South Australia&quot;) +
+  scale_colour_manual(values=c(&quot;Data&quot;=&quot;grey50&quot;,&quot;5-MA&quot;=&quot;red&quot;),
+                      breaks=c(&quot;Data&quot;,&quot;5-MA&quot;))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecsales_5ma_plot-1.png" width="672" /></p>
+<p>The order changes the smoothness of the trend-cycle estimate (larger order = smoother curve). Customer is to use odd order (e.g., 3, 5, 7, …) so that they are symmetric about time <span class="math inline">\(t\)</span>.</p>
+</div>
+</div>
+<div id="moving-averages-of-moving-averages" class="section level3">
+<h3>Moving averages of moving averages</h3>
+<p>This is done to make an even-order moving average symmetric.</p>
+<p>E.g. a <span class="math inline">\(2 \times 4\)</span>-MA is a 2-MA applied on top of an 4-MA</p>
+<p><strong>Centred moving average of order <span class="math inline">\(m\)</span></strong>: When a 2-MA follows a moving average of an even order <span class="math inline">\(m\)</span>.</p>
+<p>Note however, that a <span class="math inline">\(3 \times 3\)</span>-MA is also common. In general, an even order MA should be followed by an even order MA and an odd order MA should be followed by an odd order MA.</p>
+</div>
+<div id="estimating-the-trend-cycle-with-seasonal-data" class="section level3">
+<h3>Estimating the trend-cycle with seasonal data</h3>
+<p>Centred moving averages typically used to estimate trend-cycle from seasonal data.</p>
+<p>Eg. if using <span class="math inline">\(2 \times 4\)</span>-Ma on quarterly data:</p>
+<p><span class="math display">\[\begin{aligned}
+\hat{T}_t &amp; = \frac{1}{2}\left[ \frac{1}{4}(y_{t-2} + y_{t-1} y_{t} + y_{t+1}) + \frac{1}{4}(y_{t-1} + y_{t} y_{t+1} + y_{t+2} )\right] \\
+&amp; = \frac{1}{8}y_{t-2} + \frac{1}{4}y_{t-1} \frac{1}{4}y_{t} +\frac{1}{4} y_{t+1}\frac{1}{8}y_{t-2}
+\end{aligned}\]</span></p>
+<p>So each quarter is given equal weight.</p>
+<p>In general, a <span class="math inline">\(2 \times m\)</span>-MA <span class="math inline">\(\equiv\)</span> (<span class="math inline">\(m + 1\)</span>)-MA where all observations take the weight <span class="math inline">\(1/m\)</span> except the first and last terms with take weights <span class="math inline">\(1/(2m)\)</span>.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Order <span class="math inline">\(m\)</span> of seasonal period</th>
+<th>Estimate trend-cycle using:</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(m\)</span> = Even</td>
+<td><span class="math inline">\(2 \times m\)</span>-MA</td>
+</tr>
+<tr class="even">
+<td>E.g. <span class="math inline">\(m\)</span> = 12 (monthly)</td>
+<td><span class="math inline">\(2 \times 12\)</span>-MA</td>
+</tr>
+<tr class="odd">
+<td>Odd</td>
+<td><span class="math inline">\(m\)</span>-MA</td>
+</tr>
+<tr class="even">
+<td>E.g. <span class="math inline">\(m\)</span> = 7 (weekly)</td>
+<td>7-MA</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="example-electrical-equipment-manufacturing" class="section level3">
+<h3>Example: Electrical equipment manufacturing</h3>
+<p>Monthly data:</p>
+<pre class="r"><code># Note default of ma is centre = TRUE for even orders
+autoplot(elecequip, series = &quot;Data&quot;) + 
+    autolayer(ma(elecequip, 12), series=&quot;2x12-MA&quot;) +
+    xlab(&quot;Year&quot;) + 
+    ylab(&quot;New orders index&quot;) +
+    ggtitle(&quot;Electrical equipment manufacturing (Euro area)&quot;) +
+    scale_colour_manual(values=c(&quot;Data&quot;=&quot;grey&quot;,&quot;2x12-MA&quot;=&quot;red&quot;),
+                      breaks=c(&quot;Data&quot;,&quot;12-MA&quot;))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_12ma-1.png" width="672" /></p>
+</div>
+<div id="weighted-moving-averages" class="section level3">
+<h3>Weighted moving averages</h3>
+<p>Combinations of moving averages <span class="math inline">\(\equiv\)</span> weighted moving average. E.g. <span class="math inline">\(2 \times 4\)</span>-MA <span class="math inline">\(\equiv\)</span> weighted 5-MA with weights <span class="math inline">\([\frac{1}{8}, \frac{1}{4}, \frac{1}{4}, \frac{1}{4}, \frac{1}{8}]\)</span></p>
+<p>Weighted <span class="math inline">\(m\)</span>-MA: <span class="math display">\[\hat{T}_t = \sum_{j = -k}^k a_j y_{t + j},\]</span> where</p>
+<ul>
+<li><span class="math inline">\(k = (m -1 )/2\)</span> and weights</li>
+<li>weights are <span class="math inline">\([a_{-k}, \ldots, a_k]\)</span></li>
+<li>weights sum to one</li>
+<li>weights are symmetric</li>
+</ul>
+<p>Advantage:</p>
+<ul>
+<li>Yield smoother estimate of trend-cycle as can slowly increase and then slowly decrease weighs.</li>
+</ul>
+<p>Note: <span class="math inline">\(m\)</span>-MA is a special case of the weighted moving average with all weights equal to <span class="math inline">\(1/m\)</span>.</p>
+</div>
+</div>
+<div id="classical-decomposition" class="section level2">
+<h2>Classical decomposition</h2>
+<p>Two forms:</p>
+<ol style="list-style-type: decimal">
+<li>Additive</li>
+<li>Multiplicative (in which case, the <span class="math inline">\(m\)</span> values that form the seasonal component are sometimes called <strong>seasonal indices</strong>)</li>
+</ol>
+<p>Described for time series with seasonal period <span class="math inline">\(m\)</span>, e.g.</p>
+<ul>
+<li><span class="math inline">\(m = 4\)</span> for quarterly data</li>
+<li><span class="math inline">\(m = 12\)</span> for monthly data</li>
+<li><span class="math inline">\(m = 7\)</span> for daily data with a weekly pattern</li>
+<li><span class="math inline">\(m = 365.25\)</span> for daily data with an annual pattern</li>
+</ul>
+<p>Assumption:</p>
+<ul>
+<li>Seasonal component is constant from year to year</li>
+</ul>
+<div id="additive-decomposition" class="section level3">
+<h3>Additive decomposition</h3>
+<p>Steps:</p>
+<ol style="list-style-type: decimal">
+<li>Calculate the trend-cycle component (<span class="math inline">\(\hat{T}_t\)</span>)
+<ul>
+<li>If <span class="math inline">\(m\)</span> is event, use <span class="math inline">\(2 \times m\)</span>-MA</li>
+<li>If <span class="math inline">\(m\)</span> is odd, use <span class="math inline">\(m\)</span>-MA</li>
+</ul></li>
+<li>Calculate the detrended series (such that left with seasonal and remainder components)
+<ul>
+<li>Detrended series is <span class="math inline">\(y_t - \hat{T}_t\)</span></li>
+</ul></li>
+<li>Estimate the seasonal component (<span class="math inline">\(\hat{S}_t\)</span>) for each season
+<ul>
+<li>Average detrended values for each season. e.g. with monthly data, for March, average all detrended March values</li>
+<li>Adjust components so that they add to zero</li>
+<li>String components together for each year</li>
+</ul></li>
+<li>Calculate the remainder component
+<ul>
+<li><span class="math inline">\(\hat{R}_t = y_t - \hat{T}_t - \hat{S}_t\)</span></li>
+</ul></li>
+</ol>
+</div>
+<div id="multiplicative-decomposition" class="section level3">
+<h3>Multiplicative decomposition</h3>
+<p>Subtractions are replaced by divisions.</p>
+<p>Steps:</p>
+<ol style="list-style-type: decimal">
+<li>Calculate the trend-cycle component (<span class="math inline">\(\hat{T}_t\)</span>)
+<ul>
+<li>If <span class="math inline">\(m\)</span> is event, use <span class="math inline">\(2 \times m\)</span>-MA</li>
+<li>If <span class="math inline">\(m\)</span> is odd, use <span class="math inline">\(m\)</span>-MA</li>
+</ul></li>
+<li>Calculate the detrended series (such that left with seasonal and remainder components)
+<ul>
+<li>Detrended series is <span class="math inline">\(y_t/ \hat{T}_t\)</span></li>
+</ul></li>
+<li>Estimate the seasonal component (<span class="math inline">\(\hat{S}_t\)</span>) for each season
+<ul>
+<li>Average detrended values for each season. e.g. with monthly data, for March, average all detrended March values</li>
+<li>Adjust components so that they add to zero</li>
+<li>String components together for each year</li>
+</ul></li>
+<li>Calculate the remainder component
+<ul>
+<li><span class="math inline">\(\hat{R}_t = y_t /(\hat{T}_t \hat{S}_t)\)</span></li>
+</ul></li>
+</ol>
+</div>
+<div id="example-2" class="section level3">
+<h3>Example</h3>
+<pre class="r"><code>elecequip %&gt;% decompose(type=&quot;multiplicative&quot;) %&gt;%
+  autoplot() + 
+    xlab(&quot;Year&quot;) +
+  ggtitle(&quot;Classical multiplicative decomposition
+    of electrical equipment index&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_decomp-1.png" width="672" /> Features:</p>
+<ul>
+<li>Evidence of “leakage” of trend-cycle component into remainder component in 2009</li>
+</ul>
+</div>
+<div id="comments-on-classical-decomposition" class="section level3">
+<h3>Comments on classical decomposition</h3>
+<ul>
+<li>Not recommended; exist much better methods</li>
+<li>Estimate unavailable for head and tail obs, e.g. if <span class="math inline">\(m\)</span> = 12, then no estimate for first and last 6 months.</li>
+<li>Trend-cycle estimate tends to over-smooth rapid rises and falls</li>
+<li>Assumes seasonal component repeats year on year. For longer series, this may not be so and classical decomposition does not allow seasonal changes over time to be captured.</li>
+<li>Classical methods not robust to observations made during unusual events (e.g. industrial dispute)</li>
+</ul>
+</div>
+</div>
+<div id="x11-decomposition" class="section level2">
+<h2>X11 decomposition</h2>
+<p>From US Census Bureau and Statistics Canada. Based on classical decomposition but:</p>
+<ul>
+<li>Allows for trend-cycle estimates for endpoints</li>
+<li>Allows seasonal component to vary slowly over time</li>
+<li>Has sophisticated methods for handling trading day variation, holiday effects and effects of known predictors</li>
+<li>Highly robust to outliers and level shifts in the time series</li>
+</ul>
+<p>Allows for both additive and multiplicative decomposition. Available using <code>seasonal::seas()</code> function. Given output has the following functions:</p>
+<ul>
+<li><code>seasonal()</code></li>
+<li><code>trendcycle()}</code></li>
+<li><code>remainder()</code></li>
+<li><code>seasadj()</code></li>
+</ul>
+<p>For details, see Dagum and Bianconcini (2016). <strong>Seasonal adjustment methods and real time trend-cycle estimation</strong>.</p>
+<p>Example:</p>
+<pre class="r"><code>require(seasonal)</code></pre>
+<pre><code>## Loading required package: seasonal</code></pre>
+<pre class="r"><code>elecequip %&gt;% seasonal::seas(x11=&quot;&quot;) -&gt; fit
+autoplot(fit) +
+  ggtitle(&quot;X11 decomposition of electrical equipment index&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_x11-1.png" width="672" /> Features:</p>
+<ul>
+<li>Captured sudden fall in data in early 2009 (better than STL and classical decomposition)</li>
+<li>Unusual observation at end of 2009 more clearly seen in the remainder.</li>
+</ul>
+<p>Illustration of data with trend-cycle component and seasonally-adjusted (i.e. trend + remainder) data:</p>
+<pre class="r"><code>autoplot(elecequip, series=&quot;Data&quot;) +
+  autolayer(trendcycle(fit), series=&quot;Trend&quot;) +
+  autolayer(seasadj(fit), series=&quot;Seasonally Adjusted&quot;) +
+  xlab(&quot;Year&quot;) + ylab(&quot;New orders index&quot;) +
+  ggtitle(&quot;Electrical equipment manufacturing (Euro area)&quot;) +
+  scale_colour_manual(values=c(&quot;gray&quot;,&quot;blue&quot;,&quot;red&quot;),
+             breaks=c(&quot;Data&quot;,&quot;Seasonally Adjusted&quot;,&quot;Trend&quot;))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_x11_components-1.png" width="672" /></p>
+<p>Seasonal sub-series plots to see how seasonal component is changing over time:</p>
+<pre class="r"><code>fit %&gt;% seasonal() %&gt;% ggsubseriesplot() + ylab(&quot;Seasonal&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_x11_seasonal_subplots-1.png" width="672" /></p>
+<p>Features: Only small changes over time.</p>
+</div>
+<div id="seats-decomposition" class="section level2">
+<h2>SEATS decomposition</h2>
+<p>Seasonal Extraction in ARIMA Time Series (SEATS):</p>
+<ul>
+<li>Developed at Bank of Spain</li>
+<li>Only works with quarterly and monthly data; daily, hourly, weekly, etc data require alternative approach</li>
+<li>Details given in Dagum &amp; Bianconcini (2016)</li>
+<li>Available in <code>seasonal</code> package; refer to <a href="%5Bhttp://www.seasonal.website/seasonal.html">package website</a></li>
+</ul>
+<pre class="r"><code>library(seasonal)
+elecequip %&gt;% seas() %&gt;%
+autoplot() +
+  ggtitle(&quot;SEATS decomposition of electrical equipment index&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_seats-1.png" width="672" /></p>
+</div>
+<div id="stl-decomposition" class="section level2">
+<h2>STL decomposition</h2>
+<p>Seasonal and Trend decomposition using Loess (local polynomial regression)</p>
+<ul>
+<li>Developed by Cleveland, Cleveland, McRae &amp; Terpenning (1990)</li>
+<li>Available using <code>stl()</code> function.</li>
+</ul>
+<p>Advantages over classical, SEATS and X11 decomposition methods:</p>
+<ul>
+<li>Handles all seasonality, not just monthly and quarterly (unlike SEATS)</li>
+<li>Seasonal component is allowed to change over time, and rate of change can be controlled by the user</li>
+<li>Smoothness of trend-cycle can be controlled by the user</li>
+<li>Can be robust to outliers (i.e user can specify a robust decomposition) s.t occasional unusual observations affect remainder component and not trend-cycle or seasonal components</li>
+</ul>
+<p>Disadvantages:</p>
+<ul>
+<li>Does not automatically handle trading day or calendar variation</li>
+<li>Only provides for additive decomposition (although multiplicative decomposition can be obtained by first taking logs of the data and then back-transforming the components, or using a Box-Cos transformation with <span class="math inline">\(\lambda\)</span> = 0 )</li>
+</ul>
+<p>Parameters to control how quickly the trend-cycle and seasonal component, respectively change:</p>
+<ul>
+<li><code>t.window</code>: Trend-cycle window (optional parameter)<br />
+</li>
+<li><code>s.window</code>: Seasonal window (required, as no default). Setting it to be infinite is equivalent to forcing the seasonal component to be periodic (i.e. identical across years)</li>
+</ul>
+<p>Smaller values allow for more rapid changes. Equal to number of consecutive years to be used when estimating the trend-cycle and seasonal components, respectively.</p>
+<p>The <code>mstl()</code> function</p>
+<ul>
+<li>sets <code>s.window = 13</code> and chooses <code>t.window</code> automatically</li>
+<li>Usually gives good balance between overfitting the seasonality and allowing it to slowly change over time</li>
+<li>but Default settings will need adjusting for some time series</li>
+</ul>
+<p>Example:</p>
+<pre class="r"><code>elecequip %&gt;%
+  stl(t.window=13, s.window=&quot;periodic&quot;, robust=TRUE) %&gt;%
+  autoplot()</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/autoelec_stl_adj-1.png" width="672" /></p>
+</div>
+<div id="measuring-strength-of-trend-and-seasonality" class="section level2">
+<h2>Measuring strength of trend and seasonality</h2>
+<p>Time series decomposition can be used to measure the strength of the trend and seasonality.<br />
+Recall <span class="math display">\[y_t = T_t + S_t + R_t\]</span></p>
+<div id="strength-of-trend" class="section level3">
+<h3>Strength of Trend</h3>
+<p>For strongly trended data, seasonally adjusted data <span class="math inline">\((T_t + R_t)\)</span> will have much more variation than the remainder component (<span class="math inline">\(R_t\)</span>) and so <span class="math inline">\(\text{Var}(R_t)/\text{Var}(T_t + R_t)\)</span> will be relatively small.</p>
+<p>Strength of trend defined as: <span class="math display">\[F_T = \max\left(0, 1 - \frac{\text{Var}(R_t)}{\text{Var}(T_t + R_t)}\right)\]</span></p>
+<p>Because variance of remainder may occasionally be larger than variance of seasonally adjusted data, the minimal possible value of <span class="math inline">\(F_T\)</span> is set to zero.</p>
+</div>
+<div id="strength-of-seasonality" class="section level3">
+<h3>Strength of Seasonality</h3>
+<p>For data with strong seasonality, detrended <span class="math inline">\((S_t + R_t)\)</span> will have much more variation than the remainder component (<span class="math inline">\(R_t\)</span>) and so <span class="math inline">\(\text{Var}(R_t)/\text{Var}(S_t + R_t)\)</span> will be relatively small.</p>
+<p>Strength of seasonality defined as: <span class="math display">\[F_S = \max\left(0, 1 - \frac{\text{Var}(R_t)}{\text{Var}(S_t + R_t)}\right)\]</span></p>
+<p>Similar to strength of trend, because variance of remainder may occasionally be larger than variance of detrended data, the minimal possible value of <span class="math inline">\(F_T\)</span> is set to zero.</p>
+</div>
+</div>
+<div id="forecasting-with-decomposition" class="section level2">
+<h2>Forecasting with decomposition</h2>
+<p>Decomposition is primarily used for studying TS data and exploring historical changes but can be used for forecasting</p>
+<p><span class="math display">\[\begin{aligned}
+y_t &amp;= \hat{S}_t + \hat{R}_t + \hat{T}_T \\
+    &amp;= \hat{A}_t + \hat{T}_T
+\end{aligned}\]</span> where <span class="math inline">\(\hat{A}_t\)</span> is the seasonally adjusted component</p>
+<p>Forecast as follows:</p>
+<ul>
+<li>Forecast seasonal component, <span class="math inline">\(\hat{S}_t\)</span>
+<ul>
+<li>Assume seasonal component is unchanging, or changing extremely slowly</li>
+<li>Use seasonal naive method (i.e, take last year of estimated component)</li>
+</ul></li>
+<li>Forecast seasonally adjusted component, <span class="math inline">\(\hat{A}_t\)</span>
+<ul>
+<li>Use any non-seasonal forecasting method, e.g. random walk with drift, Holt’s method, non-seasonal ARIMA</li>
+</ul></li>
+<li>Add these two forecasts together</li>
+</ul>
+<p>Prediction intervals are calculated in a similar method</p>
+<p>Can use the following functions (noting that they ignore the uncertainty in forecasts of the seasonal component as these are considered small):</p>
+<ul>
+<li><code>stl()</code> then <code>forecast(method = &quot;naive&quot;)</code> function</li>
+<li><code>stlf(method = &quot;naive&quot;)</code>, this uses <code>mstl</code> and so there are default options for <code>s.window</code> and <code>t.window</code>.</li>
+</ul>
+<p>Can use other methods than “naive”; default is ETS applied to the seasonally adjusted series.</p>
+<pre class="r"><code>fit &lt;- stl(elecequip, t.window=13, s.window=&quot;periodic&quot;, robust=TRUE)
+fit %&gt;% 
+    forecast(method=&quot;naive&quot;) %&gt;%
+    autoplot() + 
+    ylab(&quot;New orders index&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_stl_forecast-1.png" width="672" /></p>
+</div>
+</div>
+<div id="exponential-smoothing" class="section level1">
+<h1>Exponential smoothing</h1>
+<ul>
+<li>Proposed late 1950s</li>
+<li>Weighted averages of past observations, with weights decaying exponentially as observations get older; more weight placed on most recent observations</li>
+<li>Method selection generally based on recognising key components of the time series (trend and seasonal) and the way in which these enter the smoothing method (additive, damped or multiplicative)</li>
+</ul>
+<div id="simple-exponential-smoothing-ses" class="section level2">
+<h2>Simple exponential smoothing (SES)</h2>
+<ul>
+<li>Naive method = weighted average with all weight given to the last observation</li>
+<li>Average method = weighted average in which all observations have equal weights</li>
+<li>SES method
+<ul>
+<li>= more recent observations have larger weights, where weights decrease exponentially as observations come from further in the past</li>
+</ul>
+<p><span class="math display">\[\hat{y}_{T+1|T} = \alpha y_T + \alpha(1-\alpha)y_{T-1} + \alpha(1-\alpha)^2 y_{T-2} + \ldots, \]</span> where <span class="math inline">\(0 \leq \alpha \leq 1\)</span> and controls the rate at which the weights decrease.</p>
+<ul>
+<li>Suitable when no clear trend or seasonal pattern</li>
+</ul></li>
+</ul>
+<div id="weighted-average-form" class="section level3">
+<h3>Weighted average form</h3>
+<p><strong>Forecast</strong> at time <span class="math inline">\(T + 1\)</span> is set to average of most recent observation (<span class="math inline">\(y_T\)</span>) and previous forecast (<span class="math inline">\(\hat{y}_{T|T-1}\)</span>) <span class="math display">\[\hat{y}_{T+1|t} = \alpha y_T + (1 - \alpha) \hat{y}_{T|T-1}\]</span></p>
+<p>where <span class="math inline">\(0 \leq \alpha \leq 1\)</span>.</p>
+<p>Similarly the <strong>fitted values</strong> (1-step forecasts of the training data) can be written as: <span class="math display">\[\hat{y}_{t+1|t} = \alpha y_t + (1 - \alpha) \hat{y}_{t|t-1}\]</span> for <span class="math inline">\(t = 1, \ldots, T\)</span>.</p>
+<p>Initialise process with first fitted value at time 1 set to <span class="math inline">\(\ell_0\)</span>, such that</p>
+<p><span class="math display">\[\begin{aligned}
+\hat{y}_{2|1} &amp;= \alpha y_1 + (1 - \alpha) \ell_0 \\
+\hat{y}_{3|2} &amp;= \alpha y_2 + (1 - \alpha) \hat{y}_{2|1} \\
+\hat{y}_{4|3} &amp;= \alpha y_3 + (1 - \alpha) \hat{y}_{3|2} \\
+\vdots\\
+\hat{y}_{T|T-1} &amp;= \alpha y_{T-1} + (1 - \alpha) \hat{y}_{T-1|T-2} \\
+\hat{y}_{T+1|T} &amp;= \alpha y_{T} + (1 - \alpha) \hat{y}_{T|T-1} 
+\end{aligned}\]</span></p>
+<p>By substitution, <span class="math display">\[\hat{y}_{T+1|T} = \sum_{j=1}^{T-1}\alpha(1-\alpha)^j y_{T-j} + \alpha(1-\alpha)^T \ell_0\]</span></p>
+<p>For large T, the last term becomes tiny and so the weighted average form leads to the same as the forecast ESS.</p>
+</div>
+<div id="component-form" class="section level3">
+<h3>Component form</h3>
+<p>In simple exponential smoothing, the only component included is the level (which is the average value of the series) <span class="math inline">\(\ell_t\)</span>. Other methods may also include a trend <span class="math inline">\(b_t\)</span> and a seasonal component <span class="math inline">\(s_t\)</span>.</p>
+<p>Comprise forecast equation and smoothing equation for each of the components included in the method.</p>
+<p><span class="math display">\[\begin{aligned}
+\text{Forecast equation}\;\;\;  \hat{y}_{t+h|t} &amp;= \ell_t \\
+\text{Smoothing equation}\;\;\;          \ell_t &amp;= \alpha y_t + (1-\alpha)\ell_{t-1}
+\end{aligned}\]</span></p>
+<p>Setting <span class="math inline">\(h\)</span> = 1 gives fitted values, while setting <span class="math inline">\(t = T\)</span> gives the true forecasts beyond the training data.</p>
+<p>To obtain weighted average form:</p>
+<ul>
+<li>Replace <span class="math inline">\(\ell_t\)</span> with <span class="math inline">\(\hat{y}_{t+1|t}\)</span></li>
+<li>Replace <span class="math inline">\(\ell_{t-1}\)</span> with <span class="math inline">\(\hat{y}_{t-1|t}\)</span></li>
+</ul>
+<p>Component form is useful when start adding components (not so much for simple exponential smoothing!)</p>
+</div>
+<div id="flat-forecasts" class="section level3">
+<h3>Flat forecasts</h3>
+<p>All forecasts take the ame value, equal to the last level component (and so considered to have a “flat” forecast function); they are therefore only suitable if time series has no trend nor seasonal component. <span class="math display">\[\hat{y}_{T+h|T} = \hat{y}_{T+1|T} = \ell_T, \;\;\; h = 2, 3, \ldots\]</span></p>
+</div>
+<div id="optimisation" class="section level3">
+<h3>Optimisation</h3>
+<p>Exponential smoothing methods require choice of:</p>
+<ul>
+<li>Smoothing parameter (<span class="math inline">\(\alpha, 0 \leq \alpha \leq 1\)</span>)</li>
+<li>Initial value (<span class="math inline">\(\ell_0\)</span>)</li>
+</ul>
+<p>Can choose:</p>
+<ul>
+<li>Subjectively; previous experience</li>
+<li>Use observed data to minimise the SSE, <span class="math display">\[\text{SSE} = \sum_{t=1}^T(y_t - \hat{y}_{t|t-1})^2 = \sum_{t=1}^T e_t^2\]</span></li>
+</ul>
+<p>Unlike in regression (in which formulae are used to obtain the regression coefficients), this is a non-linear minimisation problem and so requires optimisation tool (or visual inspection?).</p>
+</div>
+<div id="example-oil-production" class="section level3">
+<h3>Example: Oil production</h3>
+<pre class="r"><code>oildata &lt;- window(oil, start=1996)
+
+# Estimate parameters
+fc &lt;- ses(oildata, h=5)
+
+# Accuracy of one-step-ahead training errors
+round(accuracy(fc),2)</code></pre>
+<pre><code>##               ME  RMSE   MAE MPE MAPE MASE  ACF1
+## Training set 6.4 28.12 22.26 1.1 4.61 0.93 -0.03</code></pre>
+<pre class="r"><code>#&gt;               ME  RMSE   MAE MPE MAPE MASE  ACF1
+#&gt; Training set 6.4 28.12 22.26 1.1 4.61 0.93 -0.03</code></pre>
+<p>If <code>alpha</code> not supplied in call to <code>ses</code> function it is estimated. Similarly the default method for selecting the initial state values is <code>optimal</code>. In above case, values used are obtained by calling <code>fc$model$fit</code> which returns values of = 0.83 and <span class="math inline">\(\hat{\ell}_0\)</span> =446.6</p>
+<p>Here quite large and so more weight given to more recent observations. This means that a large adjustment takes place in the estimated level <span class="math inline">\(\ell_t\)</span> at each time. With a smaller value of <span class="math inline">\(\alpha\)</span> the fitted values would be smoother.</p>
+<p>In the following chart, for the period 1996-2013 the black line shows the observed values of oil production and the red line shows the fitted values. For the forecast period 2014 = 2018, the blue line shows the point forecast (flat at 542.68) alongside the 80% and 90% prediction intervals</p>
+<pre class="r"><code>autoplot(fc) + 
+  autolayer(fitted(fc), series=&quot;Fitted&quot;) +
+  ylab(&quot;Oil (millions of tonnes)&quot;) + xlab(&quot;Year&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/ses_oil_plot-1.png" width="672" /></p>
+<p>Given the large prediciton interval, it would be misleading to dispaly only the point forecasts.</p>
+</div>
+</div>
+<div id="trend-methods" class="section level2">
+<h2>Trend methods</h2>
+<div id="holts-linear-trend-method" class="section level3">
+<h3>Holt’s linear trend method</h3>
+<p>Extension of simple exponential smoothing to enable forecasting of data with trends; uses two moothing equations (one for the level and one for the trend);</p>
+<p><span class="math display">\[\begin{aligned}
+\text{Forecast equation}\;\;\;  \hat{y}_{t+h|t} &amp;= \ell_t + hb_t\\
+\text{Level equation}\;\;\;          \ell_t &amp;= \alpha y_t + (1-\alpha)(\ell_{t-1}+b_{t-1})\\
+\text{Trend equation}\;\;\;          b_t &amp;= \beta^* (\ell_t - \ell_{t-1}) + (1-\beta^*)b_{t-1}
+\end{aligned}\]</span></p>
+<p>where</p>
+<ul>
+<li><span class="math inline">\(\ell_t\)</span> is estimate of level at time <span class="math inline">\(t\)</span></li>
+<li><span class="math inline">\(b_t\)</span> is estimated of trend at time <span class="math inline">\(t\)</span></li>
+<li><span class="math inline">\(\alpha\)</span> is the smoothing parameter for the level, <span class="math inline">\(0 \leq \alpha \leq 1\)</span></li>
+<li><span class="math inline">\(\beta^*\)</span> is the smoothing parameter for the trend (slope), <span class="math inline">\(0 \leq \beta^* \leq 1\)</span></li>
+</ul>
+</div>
+<div id="example-air-passengers" class="section level3">
+<h3>Example: Air passengers</h3>
+<pre class="r"><code># see: https://s3.amazonaws.com/assets.datacamp.com/blog_assets/xts_Cheat_Sheet_R.pdf
+
+air &lt;- window(ausair, start=1990)
+fc &lt;- holt(air, h=5)
+
+data.frame(Year = as.numeric(time(fc$x))) %&gt;%
+    mutate(Time = row_number(Year),
+            Observation = as.numeric(fc$x), 
+            Forecast = as.numeric(fc$fitted)) %&gt;%
+            right_join(data.frame(
+            Year = as.numeric(time(fc$model$states)), 
+            Level = as.numeric(fc$model$states[,&quot;l&quot;]),
+            Slope = as.numeric(fc$model$states[,&quot;b&quot;]))) %&gt;%
+            
+            select(Year, Time, Observation, Level, Slope, Forecast) %&gt;%
+            bind_rows(data.frame(
+            Year = as.numeric(time(fc$mean)),
+            Time = 1:5,
+            Forecast = as.numeric(fc$mean)))</code></pre>
+<pre><code>## Joining, by = &quot;Year&quot;</code></pre>
+<pre><code>##    Year Time Observation    Level    Slope Forecast
+## 1  1989   NA          NA 15.57152 2.101717       NA
+## 2  1990    1    17.55340 17.57375 2.101705 17.67324
+## 3  1991    2    21.86010 21.48918 2.101924 19.67545
+## 4  1992    3    23.88660 23.83643 2.101953 23.59111
+## 5  1993    4    26.92930 26.76106 2.102052 25.93838
+## 6  1994    5    26.88850 27.22376 2.101855 28.86311
+## 7  1995    6    28.83140 28.91531 2.101805 29.32561
+## 8  1996    7    30.07510 30.23504 2.101711 31.01711
+## 9  1997    8    30.95350 31.18835 2.101573 32.33675
+## 10 1998    9    30.18570 30.71275 2.101262 33.28993
+## 11 1999   10    31.57970 31.78927 2.101139 32.81401
+## 12 2000   11    32.57757 32.80047 2.101008 33.89040
+## 13 2001   12    33.47740 33.71918 2.100865 34.90147
+## 14 2002   13    39.02158 38.47801 2.101185 35.82005
+## 15 2003   14    41.38643 41.24938 2.101266 40.57920
+## 16 2004   15    41.59655 41.89437 2.101091 43.35064
+## 17 2005   16    44.65732 44.54495 2.101157 43.99546
+## 18 2006   17    46.95177 46.89988 2.101187 46.64611
+## 19 2007   18    48.72884 48.77506 2.101160 49.00107
+## 20 2008   19    51.48843 51.38448 2.101221 50.87622
+## 21 2009   20    50.02697 50.61420 2.100875 53.48571
+## 22 2010   21    60.64091 59.29524 2.101668 52.71508
+## 23 2011   22    63.36031 63.02696 2.101865 61.39691
+## 24 2012   23    66.35527 66.14704 2.101987 65.12882
+## 25 2013   24    68.19795 68.20663 2.101982 68.24903
+## 26 2014   25    68.12324 68.49428 2.101764 70.30861
+## 27 2015   26    69.77935 69.91801 2.101682 70.59604
+## 28 2016   27    72.59770 72.49956 2.101740 72.01969
+## 29 2017    1          NA       NA       NA 74.60130
+## 30 2018    2          NA       NA       NA 76.70304
+## 31 2019    3          NA       NA       NA 78.80478
+## 32 2020    4          NA       NA       NA 80.90652
+## 33 2021    5          NA       NA       NA 83.00826</code></pre>
+</div>
+<div id="damped-trend-methods" class="section level3">
+<h3>Damped trend methods</h3>
+<p>Holt’s linear method forecasts have a constant (increasing or decreasing) trend indefinitely into the future which leads to over-forecasting, especially in longer forecast horizons.</p>
+<p>Damped trend methods dampens trend to flat line at a point in the future by adding a damping parameter <span class="math inline">\(0 &lt; \phi &lt; 1\)</span></p>
+<p><span class="math display">\[\begin{aligned}
+\text{Forecast equation}\;\;\;  \hat{y}_{t+h|t} &amp;= \ell_t + (\phi + \phi^2 + \ldots + \phi^h)b_t\\
+\text{Level equation}\;\;\;          \ell_t &amp;= \alpha y_t + (1-\alpha)(\ell_{t-1}+\phi b_{t-1})\\
+\text{Trend equation}\;\;\;          b_t &amp;= \beta^* (\ell_t - \ell_{t-1}) + (1-\beta^*)\phi b_{t-1}
+\end{aligned}\]</span></p>
+<p>If <span class="math inline">\(\phi=1\)</span>, method identical to Holt’s.<br />
+Short-run forecasts are trended; while long-run forecasts are constant (convergin to <span class="math inline">\(\ell_T + \phi b_t/(1-\phi))\)</span></p>
+<p>In practice, <span class="math inline">\(\phi\)</span> is rarely less than 0.8 as damping has a very strong effect for smaller values; usually <span class="math inline">\(0.8 \leq \phi \leq 0.98\)</span></p>
+</div>
+<div id="example-air-passengers-continued" class="section level3">
+<h3>Example: Air passengers (continued)</h3>
+<p>Foreasts for air passengers using Holt’s linear trend method and damped trend method, noting that example is artificial due to low damping number (which would usually be estimated) and large forecast horizon</p>
+<pre class="r"><code>fc &lt;- holt(air, h=15)
+fc2 &lt;- holt(air, damped=TRUE, phi = 0.9, h=15)
+autoplot(air) +
+  autolayer(fc, series=&quot;Holt&#39;s method&quot;, PI=FALSE) +
+  autolayer(fc2, series=&quot;Damped Holt&#39;s method&quot;, PI=FALSE) +
+  ggtitle(&quot;Forecasts from Holt&#39;s method&quot;) + xlab(&quot;Year&quot;) +
+  ylab(&quot;Air passengers in Australia (millions)&quot;) +
+  guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/damped_air-1.png" width="672" /></p>
+</div>
+<div id="example-sheep-in-asia" class="section level3">
+<h3>Example: Sheep in Asia</h3>
+<pre class="r"><code>autoplot(livestock) +
+  xlab(&quot;Year&quot;) + ylab(&quot;Livestock, sheep in Asia (millions)&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/livestock-1.png" width="672" /></p>
+<p>Time series cross-validation of one-step forecast accuracy using simple exponential smoothing, Holt’s linear trend method and damped trend method shows that damped trend method is best.</p>
+<pre class="r"><code>e1 &lt;- tsCV(livestock, ses, h=1)
+e2 &lt;- tsCV(livestock, holt, h=1)
+e3 &lt;- tsCV(livestock, holt, damped=TRUE, h=1)
+
+data.frame(Method = c(&quot;SES&quot;, &quot;Holt&quot;, &quot;Damped&quot;), 
+           MSE = c(mean(e1^2, na.rm=TRUE), mean(e2^2, na.rm=TRUE), mean(e3^2, na.rm=TRUE)),
+           MAE = c(mean(abs(e1), na.rm=TRUE), mean(abs(e2), na.rm=TRUE), mean(abs(e3), na.rm=TRUE)))</code></pre>
+<pre><code>##   Method      MSE      MAE
+## 1    SES 178.2531 8.532460
+## 2   Holt 173.3650 8.803058
+## 3 Damped 162.6274 8.024192</code></pre>
+<p>Use of damped trend method to get forecasts for future years using whole data set:</p>
+<pre class="r"><code>fc &lt;- holt(livestock, damped=TRUE)
+fc[[&quot;model&quot;]]</code></pre>
+<pre><code>## Damped Holt&#39;s method 
+## 
+## Call:
+##  holt(y = livestock, damped = TRUE) 
+## 
+##   Smoothing parameters:
+##     alpha = 0.9999 
+##     beta  = 3e-04 
+##     phi   = 0.9798 
+## 
+##   Initial states:
+##     l = 223.35 
+##     b = 6.9046 
+## 
+##   sigma:  12.8435
+## 
+##      AIC     AICc      BIC 
+## 427.6370 429.7370 438.7379</code></pre>
+<ul>
+<li>The smoothing parameter for the level (<span class="math inline">\(\alpha\)</span>) is very close to one, showing that the level reacts strongly to each new observation</li>
+<li>The smoothing parameter for the slope (<span class="math inline">\(\beta\)</span>) shows that trend is not changing over time</li>
+<li>The damping parameter (<span class="math inline">\(\phi\)</span>) is claose</li>
+</ul>
+<pre class="r"><code>autoplot(fc) +
+  xlab(&quot;Year&quot;) + ylab(&quot;Livestock, sheep in Asia (millions)&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/livestock_damped_plot-1.png" width="672" /></p>
+</div>
+</div>
+<div id="holt-winters-seasonal-method" class="section level2">
+<h2>Holt-Winter’s seasonal method</h2>
+<p>Two variations;</p>
+<ul>
+<li>additive; when seasonal variations roughly constatn through seeries</li>
+<li>Multiplicative; when seasonal variations are changing proportional to the level of the series</li>
+</ul>
+<div id="holt-winters-additive-model" class="section level3">
+<h3>Holt-Winters’ additive model</h3>
+<p><span class="math display">\[\begin{aligned}
+\text{Forecast equation}\;\;\;  \hat{y}_{t+h|t} &amp;= \ell_t + hb_t + s_{t + h - m(k + 1)}\\
+\text{Level equation}\;\;\;          \ell_t &amp;= \alpha (y_t-s_{t-m}) + (1-\alpha)(\ell_{t-1}+ b_{t-1})\\
+\text{Trend equation}\;\;\;          b_t &amp;= \beta^* (\ell_t - \ell_{t-1}) + (1-\beta^*) b_{t-1}\\
+\text{Seasonal equation}\;\;\;       s_t &amp;= \gamma(y_t - \ell_{t-1}-b_{t-1}) + (1-\gamma) s_{t-m}
+\end{aligned}\]</span></p>
+<p>where: * <span class="math inline">\(k\)</span> is in the integer part of <span class="math inline">\((h-1)/m\)</span> to ensure estimates of the seasonal indices come from the final year of hte sample * The seasonal equation shows a weighted average between current seasonal index (<span class="math inline">\(y_t - \ell_{t-1}-b_{t-1}\)</span>) and seasonal index of hte same eason last year (i.e. <span class="math inline">\(m\)</span> time periods ago)</p>
+<p>Note, can write seasonal component as <span class="math display">\[s_t = \gamma^*(y_t-\ell_t) + (1-\gamma^*)s_{t-m}\]</span> where <span class="math inline">\(\gamma = \gamma^*(1-\alpha)\)</span></p>
+<p>Proof: <span class="math display">\[\begin{aligned}
+s_t &amp;= \gamma^*(y_t-\biggl[\ell_t\biggr]) + (1-\gamma^*)s_{t-m}\\
+    &amp;= \gamma^* (y_t-\biggl[\alpha (y_t-s_{t-m}) + (1-\alpha)(\ell_{t-1}+ b_{t-1})\biggr]) + (1-\gamma^*)s_{t-m}\\
+    &amp;= \gamma^*y_t - \gamma^*\alpha (y_t-s_{t-m}) - \gamma^*(1-\alpha)(\ell_{t-1}+ b_{t-1}) + (1-\gamma^*)s_{t-m}\\
+    &amp;=\gamma^*y_t - \biggl[\gamma^*\alpha y_t\biggr]  - \gamma^*(1-\alpha)(\ell_{t-1}+ b_{t-1}) +   (1-\gamma^*)s_{t-m} + \biggl[\gamma^*\alpha s_{t-m}\biggr]\\
+    &amp;=\gamma^*(1-\alpha) y_t - \gamma^*(1-\alpha)(\ell_{t-1}+ b_{t-1}) +   (1-\gamma^*)s_{t-m} + \gamma^*\alpha s_{t-m}\\
+    &amp;=\gamma^*(1-\alpha)(y_t - \ell_{t-1} - b_{t-1}) +   (1-\gamma^*(1-\alpha))s_{t-m} \\
+      &amp;=\gamma(y_t - \ell_{t-1} - b_{t-1}) +   (1-\gamma)s_{t-m} \\
+\end{aligned}\]</span></p>
+</div>
+<div id="holt-winters-multiplicative-model" class="section level3">
+<h3>Holt-Winters’ multiplicative model</h3>
+<p><span class="math display">\[\begin{aligned}
+\text{Forecast equation}\;\;\;  \hat{y}_{t+h|t} &amp;= (\ell_t + hb_t )s_{t + h - m(k + 1)}\\
+\text{Level equation}\;\;\;          \ell_t &amp;= \alpha \frac{y_t}{s_{t-m}} + (1-\alpha)(\ell_{t-1}+ b_{t-1})\\
+\text{Trend equation}\;\;\;          b_t &amp;= \beta^* (\ell_t - \ell_{t-1}) + (1-\beta^*) b_{t-1}\\
+\text{Seasonal equation}\;\;\;       s_t &amp;= \gamma \frac{y_t}{(\ell_{t-1}+b_{t-1})} + (1-\gamma) s_{t-m}
+\end{aligned}\]</span></p>
+</div>
+<div id="example-international-tourist-visitor-nights-in-australia" class="section level3">
+<h3>Example: International tourist visitor nights in Australia</h3>
+<pre class="r"><code>aust &lt;- window(austourists,start=2005)
+fit1 &lt;- hw(aust,seasonal=&quot;additive&quot;)
+fit2 &lt;- hw(aust,seasonal=&quot;multiplicative&quot;)
+
+autoplot(aust) +
+  autolayer(fit1, series=&quot;HW additive forecasts&quot;, PI=FALSE) +
+  autolayer(fit2, series=&quot;HW multiplicative forecasts&quot;,
+    PI=FALSE) +
+  xlab(&quot;Year&quot;) +
+  ylab(&quot;Visitor nights (millions)&quot;) +
+  ggtitle(&quot;International visitors nights in Australia&quot;) +
+  guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_hw-1.png" width="672" /></p>
+<p>In additive model, note that seasonal components for 4 quarters ~ 1.</p>
+<pre class="r"><code>data.frame(Qtr = as.numeric(time(fit1$x))) %&gt;%
+    mutate(Time = row_number(Qtr),
+            Observation = as.numeric(fit1$x), 
+            Forecast = as.numeric(fit1$fitted)) %&gt;%
+            right_join(data.frame(
+            Qtr = as.numeric(time(fit1$model$states)), 
+            Level = as.numeric(fit1$model$states[,&quot;l&quot;]),
+            Slope = as.numeric(fit1$model$states[,&quot;b&quot;]),
+            Seasonal = as.numeric(fit1$model$states[,&quot;s1&quot;])), by = &quot;Qtr&quot;) %&gt;%
+            select(Qtr, Time, Observation, Level, Slope, Seasonal, Forecast) %&gt;%
+            bind_rows(data.frame(
+            Qtr = as.numeric(time(fit1$mean)),
+            Time = 1:8,
+            Forecast = as.numeric(fit1$mean))) %&gt;%
+    filter(Qtr &lt; 2006|Qtr &gt;= 2015)</code></pre>
+<pre><code>##        Qtr Time Observation    Level     Slope   Seasonal Forecast
+## 1  2004.75   NA          NA 32.25967 0.7013813   1.310602       NA
+## 2  2005.00    1    42.20566 32.82272 0.7013361   9.503679 42.65723
+## 3  2005.25    2    24.64917 33.65834 0.7013800  -9.126374 24.21081
+## 4  2005.50    3    32.66734 34.36008 0.7013801  -1.693049 32.66618
+## 5  2005.75    4    37.25735 35.33266 0.7014686   1.687995 36.37206
+## 6  2015.00   41    73.25703 59.95501 0.7010381  12.178037 69.05311
+## 7  2015.25   42    47.69662 60.68755 0.7010484 -13.018427 47.59377
+## 8  2015.50   43    61.09777 61.95656 0.7012338  -1.354497 59.24376
+## 9  2015.75   44    66.05576 63.21892 0.7014170   2.347113 64.22408
+## 10 2016.00    1          NA       NA        NA         NA 76.09837
+## 11 2016.25    2          NA       NA        NA         NA 51.60333
+## 12 2016.50    3          NA       NA        NA         NA 63.96867
+## 13 2016.75    4          NA       NA        NA         NA 68.37170
+## 14 2017.00    5          NA       NA        NA         NA 78.90404
+## 15 2017.25    6          NA       NA        NA         NA 54.40899
+## 16 2017.50    7          NA       NA        NA         NA 66.77434
+## 17 2017.75    8          NA       NA        NA         NA 71.17737</code></pre>
+<p>In additive model, note that seasonal components for 4 quarters ~ <span class="math inline">\(m = 4\)</span>.</p>
+<pre class="r"><code>data.frame(Qtr = as.numeric(time(fit2$x))) %&gt;%
+    mutate(Time = row_number(Qtr),
+            Observation = as.numeric(fit2$x), 
+            Forecast = as.numeric(fit2$fitted)) %&gt;%
+            right_join(data.frame(
+            Qtr = as.numeric(time(fit2$model$states)), 
+            Level = as.numeric(fit2$model$states[,&quot;l&quot;]),
+            Slope = as.numeric(fit2$model$states[,&quot;b&quot;]),
+            Seasonal = as.numeric(fit2$model$states[,&quot;s1&quot;])), by = &quot;Qtr&quot;) %&gt;%
+            select(Qtr, Time, Observation, Level, Slope, Seasonal, Forecast) %&gt;%
+            bind_rows(data.frame(
+            Qtr = as.numeric(time(fit2$mean)),
+            Time = 1:8,
+            Forecast = as.numeric(fit2$mean))) %&gt;%
+    filter(Qtr &lt; 2006|Qtr &gt;= 2015)</code></pre>
+<pre><code>##        Qtr Time Observation    Level     Slope  Seasonal Forecast
+## 1  2004.75   NA          NA 32.48746 0.6973547 1.0236850       NA
+## 2  2005.00    1    42.20566 33.51020 0.7072352 1.2442128 41.28689
+## 3  2005.25    2    24.64917 33.23870 0.6775151 0.7702665 26.36042
+## 4  2005.50    3    32.66734 33.93785 0.6781720 0.9617883 32.62011
+## 5  2005.75    4    37.25735 35.40000 0.7019784 1.0238043 35.43591
+## 6  2015.00   41    73.25703 58.57479 0.6555540 1.2443165 72.59030
+## 7  2015.25   42    47.69662 60.41756 0.6916049 0.7703137 45.62125
+## 8  2015.50   43    61.09777 62.17431 0.7239490 0.9618530 58.77277
+## 9  2015.75   44    66.05576 63.61799 0.7458045 1.0236766 64.38368
+## 10 2016.00    1          NA       NA        NA        NA 80.08894
+## 11 2016.25    2          NA       NA        NA        NA 50.15482
+## 12 2016.50    3          NA       NA        NA        NA 63.34322
+## 13 2016.75    4          NA       NA        NA        NA 68.17810
+## 14 2017.00    5          NA       NA        NA        NA 83.80112
+## 15 2017.25    6          NA       NA        NA        NA 52.45291
+## 16 2017.50    7          NA       NA        NA        NA 66.21274
+## 17 2017.75    8          NA       NA        NA        NA 71.23205</code></pre>
+<p>Because both methods have the same number of parameters to estimate, can compare training RMSE from both models and see that multiplicative seasonality method fits data best (as expected given that seasonal variation in plotted data increased with level of the series)</p>
+<pre class="r"><code>data.frame(Method = c(&quot;Additive&quot;, &quot;Multiplicative&quot;), 
+           RMSE = c(sqrt(fit1$model$mse), sqrt(fit2$model$mse)))</code></pre>
+<pre><code>##           Method     RMSE
+## 1       Additive 1.763305
+## 2 Multiplicative 1.575631</code></pre>
+<p>Estimated components for the Holt-Winters method with additive and multiplicative seasonal components:</p>
+<pre class="r"><code>p &lt;- data.frame(Model = &quot;Additive&quot;, Qtr = time(fit1$model$states), fit1$model$states) %&gt;%
+    select(Model, Qtr, l, b, s1) %&gt;%
+    rename(level = l, slope=b, season = s1) %&gt;%
+    bind_rows(
+data.frame(Model = &quot;Multiplicative&quot;, Qtr = time(fit2$model$states), fit2$model$states) %&gt;%
+    select(Model, Qtr, l, b, s1) %&gt;%
+    rename(level = l, slope=b, season = s1) 
+    ) %&gt;%
+    gather(&quot;Component&quot;, &quot;Value&quot;, -Model, -Qtr) %&gt;%
+    mutate(Component = factor(Component, levels = c(&quot;level&quot;, &quot;slope&quot;, &quot;season&quot;))) </code></pre>
+<pre><code>## Warning in bind_rows_(x, .id): Vectorizing &#39;ts&#39; elements may not preserve
+## their attributes</code></pre>
+<pre><code>## Warning in bind_rows_(x, .id): Unequal factor levels: coercing to character</code></pre>
+<pre><code>## Warning in bind_rows_(x, .id): binding character and factor vector,
+## coercing into character vector
+
+## Warning in bind_rows_(x, .id): binding character and factor vector,
+## coercing into character vector</code></pre>
+<pre><code>## Warning in bind_rows_(x, .id): Vectorizing &#39;ts&#39; elements may not preserve
+## their attributes</code></pre>
+<pre class="r"><code>p1 &lt;- filter(p, Model == &quot;Additive&quot;) %&gt;%
+    ggplot(aes(x = Qtr, y = Value)) + 
+    geom_line() + 
+    facet_grid(Component~Model, scales = &quot;free&quot;)
+
+p2 &lt;- filter(p, Model == &quot;Multiplicative&quot;) %&gt;%
+    ggplot(aes(x = Qtr, y = Value)) + 
+    geom_line() + 
+    facet_grid(Component~Model, scales = &quot;free&quot;)
+
+grid.arrange(p1, p2, nrow = 1)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_hw_components-1.png" width="672" /></p>
+<p>The small value of the seasonal component (<span class="math inline">\(\gamma\)</span> = 0.002) for the multiplicative model means that the seasonal component hardly changes over time. The small value of the trend component (<span class="math inline">\(\beta^*\)</span> = 10^{-4}) for the additive model means the slope component hardly changes over time. The increasing size of the seasonal component for the additive model suggests that the model is less appropriate than the multiplicative model.</p>
+</div>
+<div id="holt-winters-damped-method" class="section level3">
+<h3>Holt-Winters’ damped method</h3>
+<p>Damping is possible with both additive and muliplicative Holt-Winters’ methods. Holt-Witers method with damped trend and multiplicative seasonability often provides reliable forecasts for season data</p>
+</div>
+<div id="example-holt-winters-method-with-daily-data" class="section level3">
+<h3>Example: Holt-Winters’ method with daily data</h3>
+<p>Generate daily forecasts for last five weeks.</p>
+<pre class="r"><code>fc &lt;- hw(subset(hyndsight,end=length(hyndsight)-35),
+         damped = TRUE, seasonal=&quot;multiplicative&quot;, h=35)
+autoplot(hyndsight) +
+  autolayer(fc, series=&quot;HW multi damped&quot;, PI=FALSE)+
+  guides(colour=guide_legend(title=&quot;Daily forecasts&quot;))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/hyndsight_hw-1.png" width="672" /></p>
+</div>
+</div>
+<div id="a-taxonomy-of-exponential-smoothing-methods" class="section level2">
+<h2>A taxonomy of exponential smoothing methods</h2>
+<p>Combinations of how trend (N=None, A=Additive, <span class="math inline">\(A_d\)</span> = Additive Damped) and seasonal components (N=None, A=Additive, M=Multiplicative) treated leads to 9 possible exponential smoothing models:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Short-Hand (Trend-Seasonal)</th>
+<th>Method</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(N,N)</td>
+<td>Simple exponential smoothing</td>
+<td><code>ses</code></td>
+</tr>
+<tr class="even">
+<td>(N,A)</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>(N,M)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>(A,N) | Holt’s linear method | <code>holt</code> (A,A) |Additive Holt-Winters’ method | <code>hw</code> (A,M) |Multiplicative Holt-Winters’ method | <code>hw</code></p>
+<p>(<span class="math inline">\(A_d\)</span>, N) | Additive damped trend method | <code>holt</code> (<span class="math inline">\(A_d\)</span>, A) | | <code>hw</code> (<span class="math inline">\(A_d\)</span>, M) |Holt-Winters’ damped method | <code>hw</code></p>
+<p>(M,N) | | <code>holt</code> (M,A) | | (M,M) | | <code>hw</code></p>
+<p>(<span class="math inline">\(M_d\)</span>, N) | |<code>holt</code> (<span class="math inline">\(M_d\)</span>, A) | | (<span class="math inline">\(M_d\)</span>, M) | | <code>hw</code></p>
+<table>
+<tr>
+<th>
+Trend Component
+</th>
+<th colspan="3">
+Seasonal Component
+</th>
+</tr>
+<tr>
+<th>
+ 
+</th>
+<th>
+N (None)
+</th>
+<th>
+A (Additive)
+</th>
+<th>
+M (Multiplicative)
+</th>
+</tr>
+<tr>
+<th>
+N (None)
+</th>
+<td>
+(N,N)
+</td>
+<td>
+(N,A)
+</td>
+<td>
+(N,M)
+</td>
+</tr>
+<tr>
+<th>
+A (Additive)
+</th>
+<td>
+(A,N)
+</td>
+<td>
+(A,A)
+</td>
+<td>
+(A,M)
+</td>
+</tr>
+<tr>
+<th>
+A<span class="math inline">\(_d\)</span> (Additive damped)
+</th>
+<td>
+(A<span class="math inline">\(_d\)</span>,N)
+</td>
+<td>
+(A<span class="math inline">\(_d\)</span>,A)
+</td>
+<td>
+(A<span class="math inline">\(_d\)</span>,M)
+</td>
+</tr>
+<tr>
+<th>
+M (Multiplicative)
+</th>
+<td>
+(M,N)
+</td>
+<td>
+(M,A)
+</td>
+<td>
+(M,M)
+</td>
+</tr>
+<tr>
+<th>
+M<span class="math inline">\(_d\)</span> (Multiplicative damped)
+</th>
+<td>
+(M<span class="math inline">\(_d\)</span>,N)
+</td>
+<td>
+(M<span class="math inline">\(_d\)</span>,A)
+</td>
+<td>
+(M<span class="math inline">\(_d\)</span>,M)
+</td>
+</tr>
+</table>
+</div>
+<div id="innovations-state-space-models-for-exponential-smoothing" class="section level2">
+<h2>Innovations state space models for exponential smoothing</h2>
+<p>The statistical methods in this section generate the same point forecast as the exponential smoothing methods but can also generate prediction (or forecast) intervals.</p>
+<p>Each model (referred to as <strong>state space models</strong>) consists of:</p>
+<ul>
+<li>Equation to describe observed data</li>
+<li>State equations to describe how unobserved components (=states) (level, trend, seasonal) change over time</li>
+<li>Error which is either additive or multiplicative</li>
+</ul>
+<p>So, for each of the 9 Trend-Seasonal models, (N=None, A=Additive, <span class="math inline">\(A_d\)</span> = Additive Damped) <span class="math inline">\(\times\)</span> (N=None, A=Additive, M=Multiplicative), there are two models; one with additive errors and one with multiplicative errors. The point forecasts produced by the models are identical, but will generate differnt predeiction intervals.</p>
+<p>To distinguish between a model with additive errors and a model with multiplicative erros, each state-space model is labels as ETS (<span class="math inline">\(\cdot\)</span>, <span class="math inline">\(\cdot\)</span>, <span class="math inline">\(\cdot\)</span>) for (Error, Trend, Seasonal), although it could be argued that ETS stands for ExponenTial Smoothing. The possibility for each component are: Error = {A,M}, Trend = {N, A, <span class="math inline">\(A_d\)</span>} and Seasonal = {N, A, M}</p>
+<div id="etsann-simple-exponential-smoothing-with-additive-errors" class="section level3">
+<h3>ETS(A,N,N): simple exponential smoothing with additive errors</h3>
+<p>Recall: Single exponential smoothing component form: <span class="math display">\[\begin{aligned}
+\text{Forecast equation}\;\;\;  \hat{y}_{t+h|t} &amp;= \ell_t \\
+\text{Smoothing equation}\;\;\;          \ell_t &amp;= \alpha y_t + (1-\alpha)\ell_{t-1}
+\end{aligned}\]</span></p>
+<p>The smoothing equation can be re-arranged to get the error correction form: <span class="math display">\[\begin{aligned}\ell_t &amp;= \ell_{t-1} + \alpha(y_t - \ell_{t-1})\\
+&amp;=\ell_{t-1} + \alpha e_t
+\end{aligned}\]</span> where <span class="math inline">\(e_t = y_t - \ell_{t-1} = y_t - \hat{y}_{t|t-1}\)</span> is the residual at time <span class="math inline">\(t\)</span>.</p>
+<p>Residuals at time <span class="math inline">\(t\)</span> lead to adjustment of level at time <span class="math inline">\(t+1\)</span>, e.g.</p>
+<ul>
+<li>If $e_t &lt; 0 $ then <span class="math inline">\(y_t &lt; \hat{y}_{t|t-1}\)</span> (i.e., level has been over-estimated)</li>
+<li>The next level, <span class="math inline">\(\ell_t\)</span>, will adjust <span class="math inline">\(\ell_{t-1}\)</span> downards.</li>
+<li>The closer <span class="math inline">\(\alpha\)</span> is to one, the greater the adjustment; smaller <span class="math inline">\(\alpha\)</span> leads to smaller adjustemnts and smoother levels.</li>
+</ul>
+<p>The state-space model with additive errors uses the error correction form of the smoothing equation <span class="math display">\[\begin{aligned}
+\text{Measurement (or Observation) Equation} \;\;\;\; y_t &amp;= \ell_{t-1} + \varepsilon_t\\
+\text{State (or Transition) Equation} \;\;\;\; \ell_t &amp;= \ell_{t-1} + \alpha e_t
+\end{aligned}\]</span> and assumes <span class="math inline">\(\varepsilon_t = y_t - \hat{y}_{t|t-1}\)</span> is ~<span class="math inline">\(\text{NID}(0, \sigma^2)\)</span></p>
+<ul>
+<li>Measurement equation: Observation is linear function of the level (predictable) and error (unpredictable)</li>
+<li>State equation: Evolution of thestate through time; if <span class="math inline">\(\alpha = 0\)</span>, level is constant over time. If <span class="math inline">\(alpha = 1\)</span>, model reduces to a random walk model.</li>
+</ul>
+</div>
+<div id="etsmnn-simple-exponential-smoothing-with-multiplicative-errors" class="section level3">
+<h3>ETS(M,N,N): simple exponential smoothing with multiplicative errors</h3>
+<p>Assuming that <span class="math display">\[\begin{aligned}\varepsilon_t &amp;= \frac{y_t - \hat{y}_{t|t-1}}{\hat{y}_{t|t-1}}\\
+                            &amp;\sim \text{NID}(0, \sigma^2),
+\end{aligned}\]</span></p>
+<p>get multiplicative form of the state space model: <span class="math display">\[\begin{aligned}
+\text{Measurement Equation} \;\;\;\; y_t &amp;= \ell_{t-1}(1 + \varepsilon_t)\\
+\text{State Equation} \;\;\;\; \ell_t &amp;= \ell_{t-1}(1 + + \alpha e_t)
+\end{aligned}\]</span></p>
+</div>
+<div id="etsaan-holts-linear-method-with-additive-errors" class="section level3">
+<h3>ETS(A,A,N): Holt’s linear method with additive errors</h3>
+<p>Assuming that one-step-ahead training errors given by <span class="math display">\[\begin{aligned}\varepsilon_t &amp;= y_t - \ell_{t-1} -  b_{t-1}\\
+                            &amp;\sim \text{NID}(0, \sigma^2),
+\end{aligned}\]</span></p>
+<p>and substituting into error correction equations for Holt’s linear method obtain: <span class="math display">\[\begin{aligned}
+\text{Measurement Equation} \;\;\;\; y_t &amp;= \ell_{t-1} +  b_{t-1} + \varepsilon_t\\
+\text{State Equation} \;\;\;\; \ell_t &amp;= \ell_{t-1} +  b_{t-1} + \alpha \varepsilon_t\\
+\text{Trend Equation}\;\;\;\;   b_t &amp;=  b_{t-1} + \beta \varepsilon_t
+\end{aligned}\]</span> where <span class="math inline">\(\beta = \alpha \beta^*\)</span>.</p>
+</div>
+<div id="etsman-holts-linear-method-with-multiplicative-errors" class="section level3">
+<h3>ETS(M,A,N): Holt’s linear method with multiplicative errors</h3>
+<p>See book for details.</p>
+</div>
+<div id="other-ets-models" class="section level3">
+<h3>Other ETS models</h3>
+<p>See book for taxonomy of innovations state space model for each of the ETS models.</p>
+<p>Possibilities are:</p>
+<p>Additive Error Model:</p>
+<table>
+<tr>
+<th>
+Trend Component
+</th>
+<th colspan="3">
+Seasonal Component
+</th>
+</tr>
+<tr>
+<th>
+ 
+</th>
+<th>
+N (None)
+</th>
+<th>
+A (Additive)
+</th>
+<th>
+M (Multiplicative)
+</th>
+</tr>
+<tr>
+<th>
+N (None)
+</th>
+<td>
+(A,N,N)
+</td>
+<td>
+(A,N,A)
+</td>
+<td style="background-color:grey">
+(A,N,M)
+</td>
+</tr>
+<tr>
+<th>
+A (Additive)
+</th>
+<td>
+(A,A,N)
+</td>
+<td>
+(A,A,A)
+</td>
+<td style="background-color:grey">
+(A,A,M)
+</td>
+</tr>
+<tr>
+<th>
+A<span class="math inline">\(_d\)</span> (Additive damped)
+</th>
+<td>
+(A,A<span class="math inline">\(_d\)</span>,N)
+</td>
+<td>
+(A,A<span class="math inline">\(_d\)</span>,A)
+</td>
+<td style="background-color:grey">
+(A,A<span class="math inline">\(_d\)</span>,M)
+</td>
+</tr>
+<tr>
+<th>
+M (Multiplicative)
+</th>
+<td>
+(A,M,N)
+</td>
+<td>
+(A,M,A)
+</td>
+<td>
+(A,M,M)
+</td>
+</tr>
+<tr>
+<th>
+M<span class="math inline">\(_d\)</span> (Multiplicative damped)
+</th>
+<td>
+(A,M<span class="math inline">\(_d\)</span>,N)
+</td>
+<td>
+(A,M<span class="math inline">\(_d\)</span>,A)
+</td>
+<td>
+(A,M<span class="math inline">\(_d\)</span>,M)
+</td>
+</tr>
+</table>
+<p>Note those that are greyed out are not usually considered in model selection; the last two trend rows have not been discussed.</p>
+</div>
+</div>
+<div id="estimation-and-model-selection" class="section level2">
+<h2>Estimation and model selection</h2>
+<p>MLE is used to estimate parameters.</p>
+<div id="model-selection" class="section level3">
+<h3>Model selection</h3>
+<p>Can determine which ETS model most appropriate using either:</p>
+<ul>
+<li>AIC = <span class="math inline">\(-2\log(L) + 2k\)</span></li>
+<li>AIC<span class="math inline">\(_{\text{c}}\)</span> (AIC adjusted for small sample bias) = </li>
+<li>BIC = $ + k[-1]</li>
+</ul>
+<p>The following models can cause instability due to division by values potential close to zero in the state equations, and so are usually not considered in model selection:</p>
+<ul>
+<li>ETS(A,N,M)</li>
+<li>ETC(A,A,M)</li>
+<li>ETC(A,A<span class="math inline">\(_d\)</span>,M)</li>
+</ul>
+<p>Models with multiplicative errors are useful when the data are strictly positive, but are not numerically stable when the data contain zeros or negative values in which case only six fully additive models would be applied).</p>
+</div>
+<div id="the-ets-function-in-r" class="section level3">
+<h3>The <code>ets()</code> function in R</h3>
+<p>The <code>ets()</code> function in the <code>forecast</code> package:</p>
+<ul>
+<li>Used to estimate the ets models</li>
+<li>Does not produce forcasts, but instead estimates the model parameters.</li>
+<li>Uses the AICc model criteria by default</li>
+</ul>
+<p>Function arguments:</p>
+<table style="width:67%;">
+<colgroup>
+<col width="15%" />
+<col width="51%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>y</code></td>
+<td>Time series to be forecast</td>
+</tr>
+<tr class="even">
+<td><code>model</code></td>
+<td>Three letter code (Error, Trend, Seasonality), where Error<span class="math inline">\(\in{A,M,Z}\)</span>, Trend</td>
+</tr>
+<tr class="odd">
+<td><code>damped</code></td>
+<td>To dampen trend, i.e. to transform <span class="math inline">\(A\)</span> to <span class="math inline">\(A_d\)</span> or <span class="math inline">\(M\)</span> to <span class="math inline">\(M_d\)</span></td>
+</tr>
+<tr class="even">
+<td><code>alpha</code></td>
+<td>Smoothing parameter for the level</td>
+</tr>
+<tr class="odd">
+<td><code>beta</code></td>
+<td>Smoothing parameter for the trend (slope)</td>
+</tr>
+<tr class="even">
+<td><code>gamma</code></td>
+<td>Smoothing parameter for the seasonality</td>
+</tr>
+<tr class="odd">
+<td><code>phi</code></td>
+<td>Damping parameter</td>
+</tr>
+<tr class="even">
+<td><code>\lambda</code></td>
+<td>Box-Cox transformation parmater; whether time series is transformed before model is estimated</td>
+</tr>
+<tr class="odd">
+<td><code>biasadj</code></td>
+<td>If <code>TRUE</code> and <code>lambda</code> is not null, then back-transformed fitted values and forecasts will be bias-adjusted</td>
+</tr>
+<tr class="even">
+<td><code>additive.only</code></td>
+<td>Only models with additive components will be considered</td>
+</tr>
+<tr class="odd">
+<td><code>restrict</code></td>
+<td>If true (default), models that cause numerical difficulaties are not considered</td>
+</tr>
+<tr class="even">
+<td><code>allow.multiplicative.method</code></td>
+<td>Multiplicative trend models which were not disucssed here</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="working-with-ets-objects" class="section level3">
+<h3>Working with <code>ets</code> objects</h3>
+<p>Useful functions that work on <code>ets</code> objects:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Returns:</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>coef()</code></td>
+<td>Fitted parameters</td>
+</tr>
+<tr class="even">
+<td><code>accuracy()</code></td>
+<td>Accuracty measures computed on training data</td>
+</tr>
+<tr class="odd">
+<td><code>summary()</code></td>
+<td>summary information about fitted values</td>
+</tr>
+<tr class="even">
+<td><code>autoplot()</code></td>
+<td>Time plots of the components</td>
+</tr>
+<tr class="odd">
+<td><code>plot()</code></td>
+<td>Time plots of the componetns</td>
+</tr>
+<tr class="even">
+<td><code>residuals()</code></td>
+<td>Residuals of the estimated model</td>
+</tr>
+<tr class="odd">
+<td><code>fitted()</code></td>
+<td>One-step forecasts for the training data</td>
+</tr>
+<tr class="even">
+<td><code>simulate()</code></td>
+<td>Future sample paths from the fitted model</td>
+</tr>
+<tr class="odd">
+<td><code>forecast()</code></td>
+<td>Point forecasts and prediction intervals</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="example-international-tourist-visitor-nights-in-australia-1" class="section level3">
+<h3>Example: International tourist visitor nights in Australia</h3>
+<p>Example: Fit ETS model tourist visitor nights in Australia over the period 2005-2015.</p>
+<pre class="r"><code>aust &lt;- window(austourists, start=2005)
+fit &lt;- ets(aust)
+summary(fit)</code></pre>
+<pre><code>## ETS(M,A,M) 
+## 
+## Call:
+##  ets(y = aust) 
+## 
+##   Smoothing parameters:
+##     alpha = 0.1908 
+##     beta  = 0.0392 
+##     gamma = 2e-04 
+## 
+##   Initial states:
+##     l = 32.3679 
+##     b = 0.9281 
+##     s = 1.0218 0.9628 0.7683 1.2471
+## 
+##   sigma:  0.0383
+## 
+##      AIC     AICc      BIC 
+## 224.8628 230.1569 240.9205 
+## 
+## Training set error measures:
+##                      ME     RMSE     MAE        MPE     MAPE     MASE
+## Training set 0.04836907 1.670893 1.24954 -0.1845609 2.692849 0.409454
+##                   ACF1
+## Training set 0.2005962</code></pre>
+<p>Best fit model is a multiplicative Holt-Winters’ method with multiplicative error (i.e. incorporates trend and seasonality)</p>
+<p><span class="math display">\[\begin{aligned}
+\text{Forecast equation}\;\;\;  \hat{y}_t &amp;= (\ell_{t-1} + b_{t-1} )s_{t - m}(1 + \varepsilon_t)\\
+\text{Level equation}\;\;\;          \ell_t &amp;=  (\ell_{t-1} + b_{t-1})(1 + \alpha\varepsilon_t)\\
+\text{Trend equation}\;\;\;          b_t &amp;= b_{t-1} + \beta(\ell_{t-1} + b_{t-1}) \varepsilon_t \\
+\text{Seasonal equation}\;\;\;       s_t &amp;= s_{t-m}(1 + \gamma\varepsilon_t) 
+\end{aligned}\]</span></p>
+<p>Components:</p>
+<pre class="r"><code>autoplot(fit)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_ets_autoplot-1.png" width="672" /></p>
+<p>Residuals (note, if type = “response”, then the fitted values are computed for the h-step forecasts, otherwise the detault is type = ‘innovation’ in which the regular residuals are used.)</p>
+<pre class="r"><code>cbind(&#39;Residuals&#39; = residuals(fit),
+      &#39;Forecast errors&#39; = residuals(fit,type=&#39;response&#39;)) %&gt;%
+  autoplot(facet=TRUE) + xlab(&quot;Year&quot;) + ylab(&quot;&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_ets_resid-1.png" width="672" /></p>
+<p>Note:</p>
+<ul>
+<li>Level: estimate of the local mean or level of the data generating process</li>
+<li>Trend: Change between successive data points; at a particular point of time, if trend is 2, the estimated growth between two time points is 2.</li>
+<li>Seasonality: Deviation from the local mean due to seasonality</li>
+</ul>
+</div>
+</div>
+<div id="forecasting-with-ets-models" class="section level2">
+<h2>Forecasting with ETS models</h2>
+<p>Point forecast obtained by iterating the equations for each time point and setting all <span class="math inline">\(\varepsilon_t = 0\)</span>.</p>
+<p>To predict international visitor nights for 2016-2017:</p>
+<pre class="r"><code>fit %&gt;% forecast(h = 8) %&gt;%
+    autoplot() +
+  ylab(&quot;International visitor night in Australia (millions)&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_ets_forecast-1.png" width="672" /></p>
+<p>Forecast variance expressions provided in book.</p>
+</div>
+</div>
+<div id="arima-models" class="section level1">
+<h1>ARIMA models</h1>
+<p>Approaches to time series forecasting:</p>
+<ul>
+<li>Exponential smoothing; based on description of the trend and seasonality in the data</li>
+<li>ARIMA; based on description of autocorrelations in the data. Requires understanding of stationarity and differencing techniques.</li>
+</ul>
+<div id="stationarity-and-differencing" class="section level2">
+<h2>Stationarity and differencing</h2>
+<p><strong>Stationary time series</strong>: One whose properties does not depend on time at which series is observed; time series with trends, or with seasonality, are not stationary. The following will rule out a series form being stationary:</p>
+<ul>
+<li>Seasonality</li>
+<li>Trends and chaning levels</li>
+<li>Increasing variance</li>
+</ul>
+<p>Recall: <strong>Cyclic</strong>; when data rises and falls but not of a fixed frequency and may be related to an economic or business cycle. If fluctuations are not of a fixed frequency then they are cyclic. A time series with cyclic behaviour (but with no trend or seasonality) is stationary.</p>
+<p>Stationary time series can be identified using:</p>
+<ul>
+<li>Time series plot</li>
+<li>ACF plot
+<ul>
+<li>if time series is stationary, ACF will drop to zero relativly quickly (similarly, <span class="math inline">\(r_1\)</span> will often by large and positive)</li>
+<li>If time series is non-stationary, ACF will decrease sloly</li>
+</ul></li>
+</ul>
+<div id="differencing" class="section level3">
+<h3>Differencing</h3>
+<p><strong>Differencing</strong>: Difference between consecutive observations</p>
+<pre><code>* Help stability the mean of the time series by removing changes in the level of a time series (and therefore reduce) trend and seasonality.  In case of daily data, the difference time series gives the daily change in the observed values.
+* Makes non-stationary series stationary </code></pre>
+<p>Transformations: To stability variance of a time series</p>
+</div>
+<div id="random-walk-model" class="section level3">
+<h3>Random walk model</h3>
+<p>Differenced series</p>
+<pre><code>* Change between consecutive observations in the original series, \[y_t^\prime = y_t - y_{t-1}\]
+* May be referred to as **first differences** to distinguish from seasonal differences.
+* Will only have $T-1$ values, since not possible to calculate $y_1^\prime$ for first observation
+* If white noise, the model for the original series can be written as a random walk model
+$$\begin{aligned}
+    y_t - y_{t-1} &amp;= \varepsilon_t \\
+    y_t = y_{t-1} + \varepsilon_t
+\end{aligned}$$</code></pre>
+<p>Random walk model:</p>
+<pre><code>* Widely used for non-stationary data, esp in finance/economics
+* Have long periods of apparent trends (up or down)
+* Sudden and unpreditable changes in direction
+* Forecasts future values equal to last observation
+* Underpins naive forecasts</code></pre>
+<p>Closely related model in which differences have a non-zero mean: <span class="math display">\[y_t = y_{t-1} + \varepsilon_t + c\]</span></p>
+<pre><code>* If $c&gt;0$, $y_t$ will drift upwards
+* If $c &lt; 0$, $y_t$ will drift downwards
+* Underpins drift method</code></pre>
+</div>
+<div id="second-order-differencing" class="section level3">
+<h3>Second-order differencing</h3>
+<p>It may be necessary to difference data twice, in which case <span class="math inline">\(y_t^{\prime \prime}\)</span> will have <span class="math inline">\(T-2\)</span> values. Usually not necessary to difference more than twice. <span class="math display">\[\begin{aligned}
+y_t^{\prime \prime} &amp;= y_t^{\prime} - y_{t-1}^{\prime \prime}\\
+                    &amp;= (y_t - y_{t-1}) - (y_{t-1} - y_{t-2})\\
+                    &amp;= y_t - 2y_{t-1} - y_{t-2}
+\end{aligned}\]</span></p>
+</div>
+<div id="seasonal-differencing" class="section level3">
+<h3>Seasonal differencing</h3>
+<p><strong>Seasonal difference</strong></p>
+<ul>
+<li><p>Difference between observation and previous observation from same season <span class="math display">\[y_t^{\prime} = y_t - y_{t-m}\]</span> where <span class="math inline">\(m\)</span> = number of seasons.</p></li>
+<li>Referred to as lag-<span class="math inline">\(m\)</span> differences.</li>
+<li>If seasonally differenced appears to be white noise, then appropriate model is: <span class="math display">\[y_t = y_{t-m} + \varepsilon_t\]</span></li>
+<li>Forecasts are set to last observation from same season</li>
+<li><p>Interpreted as the change between one year to the next</p></li>
+</ul>
+<pre class="r"><code>cbind(&quot;Sales ($million)&quot; = a10,
+      &quot;Monthly log sales&quot; = log(a10),
+      &quot;Annual change in log sales&quot; = diff(log(a10),12)) %&gt;%
+  autoplot(facets=TRUE) +
+    xlab(&quot;Year&quot;) + ylab(&quot;&quot;) +
+    ggtitle(&quot;Antidiabetic drug sales&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/a10_differencing-1.png" width="672" /> It may sometimes be necessary to take first differences of seasonal differences, e.g.;</p>
+<pre class="r"><code>cbind(&quot;Billion kWh&quot; = usmelec,
+      &quot;Logs&quot; = log(usmelec),
+      &quot;Seasonally\n differenced logs&quot; = diff(log(usmelec),12),
+      &quot;Doubly\n differenced logs&quot; =  diff(diff(log(usmelec),12),1)) %&gt;%
+  autoplot(facets=TRUE) +
+    xlab(&quot;Year&quot;) + ylab(&quot;&quot;) +
+    ggtitle(&quot;Monthly US net electricity generation&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/usmelec_differences-1.png" width="672" /></p>
+<p>Formal tests for differencing exist, but can be subjective as to which differeing to apply.</p>
+<p>Whilst it makes no difference whether to apply seasonal or first difference first, if stat has a strong seasonal pattern, recommend to do first as it may be all that is required.</p>
+</div>
+<div id="unit-root-tests" class="section level3">
+<h3>Unit root tests</h3>
+<ul>
+<li>Used to determine, somewhat more objectively, whether differencing is required.</li>
+<li>Exist a number of tests with different assumptions that may lead to different examples</li>
+<li>Example: Kwiatkowski-Philllips-Schmidt-Shin (KPSS) test, via <code>ur.kpss()</code> function: H<span class="math inline">\(_0\)</span>: data is stationary H<span class="math inline">\(_a\)</span>: data is not stationary, i.e. if p &lt; 0.05, differencing required.</li>
+</ul>
+<pre class="r"><code>require(urca)</code></pre>
+<pre><code>## Loading required package: urca</code></pre>
+<pre class="r"><code>goog %&gt;% ur.kpss() %&gt;% summary()</code></pre>
+<pre><code>## 
+## ####################### 
+## # KPSS Unit Root Test # 
+## ####################### 
+## 
+## Test is of type: mu with 7 lags. 
+## 
+## Value of test-statistic is: 10.7223 
+## 
+## Critical value for a significance level of: 
+##                 10pct  5pct 2.5pct  1pct
+## critical values 0.347 0.463  0.574 0.739</code></pre>
+<p>Given test statistic &gt; 1pct critical value, p-value &lt; 0.01 and so reject null hypothesis.</p>
+<pre class="r"><code>goog %&gt;% diff() %&gt;% ur.kpss() %&gt;% summary()</code></pre>
+<pre><code>## 
+## ####################### 
+## # KPSS Unit Root Test # 
+## ####################### 
+## 
+## Test is of type: mu with 7 lags. 
+## 
+## Value of test-statistic is: 0.0324 
+## 
+## Critical value for a significance level of: 
+##                 10pct  5pct 2.5pct  1pct
+## critical values 0.347 0.463  0.574 0.739</code></pre>
+<p>Given test statistic &lt; 10 pct critical value, p-value &gt; 0.1 and so accept null hypothesis and conclude that differenced dat are stationary.</p>
+<p>The <code>ndiffs()</code> function can be used to determine the appropritate number of first differences</p>
+<pre class="r"><code>ndiffs(goog)</code></pre>
+<pre><code>## [1] 1</code></pre>
+<p>Similarly, the <code>nsdiffs()</code> function can be used to deternube the appropritate number of seasonal differences</p>
+<pre class="r"><code>usmelec %&gt;% log() %&gt;% nsdiffs()</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>#&gt; [1] 1
+usmelec %&gt;% log() %&gt;% diff(lag=12) %&gt;% ndiffs()</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>#&gt; [1] 1</code></pre>
+</div>
+</div>
+<div id="backshift-notation-b" class="section level2">
+<h2>Backshift notation (<span class="math inline">\(B\)</span>)</h2>
+<ul>
+<li>Useful notation when working with time series lags</li>
+<li><span class="math inline">\(B\)</span> = “Back up by one time unit”</li>
+<li><span class="math inline">\(By_t = y_{t-1}\)</span>: <span class="math inline">\(B\)</span> operating on <span class="math inline">\(y_t\)</span> has the effect of shifting the data back one period</li>
+<li><span class="math inline">\(B(By_t) = B^2y_t = y_{t-2}\)</span>: <span class="math inline">\(B\)</span> operating on <span class="math inline">\(y_t\)</span> has the effect of shifting the data back two periods period</li>
+<li><span class="math inline">\(B^{12}y_t\)</span>: For monthly data, the same month last year</li>
+<li>Useful for describing the process of <em>differencing</em>
+<ul>
+<li>First order difference: <span class="math display">\[y_t^{\prime} = y_t - y_{t-1} = y_t - By_t = (1-B)y_t \]</span></li>
+<li>Second order difference: <span class="math display">\[
+\begin{aligned}
+y_t^{\prime\prime} &amp;= y_t - 2y_{t-1} - y_{t-2} \\
+                                            &amp;= y_t - 2By_t - B^2y_t \\
+                                            &amp;= (1-B)^2y_t
+                                    \end{aligned}\]</span></li>
+</ul></li>
+<li>In general, a <span class="math inline">\(d\)</span>th-order difference can be written as <span class="math display">\[(1-B)^dy_t\]</span></li>
+<li>Useful when combining differences, as operator can be treated using ordinary algebraic rules, example: seasonal difference followed by a first difference <span class="math display">\[\begin{aligned}
+(1-B)(1-B^m)y_t &amp;= (1-B-B^m + B^{m+1})y_t  \\
+            &amp;= y_t - y_{t-1}  - y_{t-m}  - y_{t-m-1}
+                                        \end{aligned}\]</span></li>
+</ul>
+</div>
+<div id="autoregressive-models-arp" class="section level2">
+<h2>Autoregressive models, AR(p)</h2>
+<ul>
+<li>Multiple regression: Forecast variable of interest using linear combination of predictors</li>
+<li>Autogregression: Forecast variable of interest using linear combination of past values of itself</li>
+<li>Autoregressive model of order <span class="math inline">\(p\)</span> model, <strong>AR(p) model</strong>,: <span class="math display">\[y_t = c + \phi_1 y_{t-1} + \phi_2 y_{t-2} + \ldots +  \phi_p y_{t-p} + \varepsilon_t\]</span></li>
+</ul>
+<p>The variance of the error term will change the scale of the series, not the patterns.</p>
+<p>For an AR(1) model:</p>
+<pre><code>* when $\phi_1 = 0$, $y_t$ is equivalent ot white noise
+* when $\phi_1 = 1$ and $c = 0$, $y_t$ is equivalent to a random walk
+* when $\phi_1 = 1$ and $c \neq 0$, $y_t$ is equivalent to a random walk with drift
+* when $\phi_1 &lt; 0$, $y_t$ tends to oscillate between positive and negative values</code></pre>
+<p>Autoregressive models generally restricted to stationary data; following restrictions required:</p>
+<pre><code>* AR(1): $|\phi_1| &lt; 1$
+* AR(2): $\phi_2|&lt; 1$, $\phi_2 + \phi_1 &lt; 1$, $\phi_2 - \phi_1 &lt; 1$
+* AR(3) and onwards: complicated!  Let R deal with it.</code></pre>
+</div>
+<div id="moving-average-models-maq" class="section level2">
+<h2>Moving average models, MA(q)</h2>
+<ul>
+<li>Uses forecast errors in a regression-like model</li>
+<li><p>Moving average of order <span class="math inline">\(q\)</span>: <span class="math display">\[y_t = c + \varepsilon_t + \theta_1 \varepsilon_{t-1} + \theta_2 \varepsilon_{t-2} + \ldots +  \theta_q \varepsilon_{t-q} \]</span></p></li>
+<li>Not a regression in the usual sense as the values of <span class="math inline">\(\epsilon_t\)</span> are not observed.</li>
+<li>Each value of <span class="math inline">\(y_t\)</span> ~ weighted moving average of the past few forecast errors</li>
+<li><p>MA(q) <span class="math inline">\(\neq\)</span> moving average smoothing (<code>ma</code> function); MA(q) to forecast future values, while moving average smoothing used to estimate trend-cycle of past values.</p></li>
+</ul>
+<p>Any AR(<span class="math inline">\(p\)</span>) model can be written as an MA(<span class="math inline">\(\infty\)</span>) model <span class="math display">\[\begin{aligned}
+y_t &amp;= \phi_1 y_{t-1} + \varepsilon_t \\
+    &amp;= \phi_1(\phi_1 y_{t-2} + \varepsilon_{t-1}) + \varepsilon_t\\
+    &amp;= \phi_1^2 y_{t-2} + \phi_1\varepsilon_{t-1} + \varepsilon_t\\
+    &amp;= \phi_1^3 y_{t-3} + \phi_1^2 \varepsilon_{t-2} + \phi_1\varepsilon_{t-1} + \varepsilon_t\\
+    \text{etc.}
+\end{aligned}\]</span></p>
+<p>Provided <span class="math inline">\(-1 &lt; \phi_1 &lt; 1\)</span>, <span class="math inline">\(\phi_1^k \rightarrow 0\)</span> as <span class="math inline">\(k\)</span> gets largers, such that <span class="math display">\[y_t = \varepsilon_t + \phi_1 \varepsilon_{t-1} + \phi_1^2 \varepsilon_{t-2} + \phi_1^3 \varepsilon_{t-3} + \ldots\]</span> which is an MA(<span class="math inline">\(\infty\)</span>) process</p>
+<p>If certain constraints imposed on the MA parameters:</p>
+<pre><code>* MA is also invertible; i.e. can write MA($q$) as AR($\infty$)
+* MA model will be mathematically _desirable_</code></pre>
+<p>Invertibility constraints (similar to stationarity constraints of AR models):</p>
+<pre><code>* MA(1): $|\theta_1| &lt; 1$,
+* MA(2): $|\theta_2| &lt; 1$,  $\theta_2 + \theta_1 &lt; 1$, $\theta_2 - \theta_1 &lt; 1$
+* MA(3) and onwards: complicated!  Let R deal with it</code></pre>
+<p>Reasoning behind constraints: The invertible MA(1) process can be written as AR(<span class="math inline">\(\infty\)</span>) <span class="math display">\[\varepsilon_t = \sum_{j=1}^{\infty}(-\theta)^j y_{t-j}\]</span></p>
+<ul>
+<li>Nonsensical! <span class="math inline">\(|\theta| &gt; 1\)</span>: more distant observations will have greater influence on current error</li>
+<li>Nonsensical! <span class="math inline">\(|\theta| = 1\)</span>: distant and recent observations will have the same influence on current error</li>
+<li>Sensible! <span class="math inline">\(|\theta| &lt; 1\)</span>: more recent observations will have greater influence on current error</li>
+</ul>
+</div>
+<div id="non-seasonal-arimapdq-models" class="section level2">
+<h2>Non-seasonal ARIMA(p,d,q) models</h2>
+<p>Non-seasonal ARIMA model: * AutoRegressive Integrated Moving Average * AR(p) + Differencing(d) + MA(q) * Integration = antonym of differencing; a time series which needs to be differenced to be made stationary is said to be an “integrated” version of a stationary series * Model written as: <span class="math display">\[
+y_t^\prime = c + \phi_1 y_{t-1}^\prime + \ldots + \phi_p y_{t-p} +
+                + \theta_1 \varepsilon_{t-1} +  \ldots +  \theta_q \varepsilon_{t-q}
+                + \varepsilon_t \]</span> where <span class="math inline">\(y_t^\prime\)</span> is the differenced series and may have been differenced mroe than once and</p>
+<ul>
+<li><span class="math inline">\(p\)</span> = order of the autoregressive part (lagged values of <span class="math inline">\(y_t\)</span> as predictors)</li>
+<li><span class="math inline">\(d\)</span> = degree of first differencing</li>
+<li><span class="math inline">\(q\)</span> = order of the moving average part (lagged errors as predictors)</li>
+</ul>
+<p>Random-walk and random-trend models, autoregressive models, and exponential smoothing models are all special cases of ARIMA models:</p>
+<p>———————–|——————————— White noise | ARIMA(0, 0, 0) Random Walk | ARIMA(0, 1, 0) with no constant Random Walk with drift | ARIMA(0, 1, 0) with a constant Autoregression | ARIMA(<span class="math inline">\(p\)</span>, 0, 0) Moving average | ARIMA(0, 0, <span class="math inline">\(q\)</span>)</p>
+<p>Combining components to form more complicated models easier when working with backshift ntation.</p>
+<ul>
+<li>AR(<span class="math inline">\(p\)</span>):</li>
+</ul>
+<div id="us-consumption-expenditure" class="section level3">
+<h3>US consumption expenditure</h3>
+</div>
+<div id="understanding-arima-models" class="section level3">
+<h3>Understanding ARIMA models</h3>
+</div>
+<div id="acf-and-pacf-plots" class="section level3">
+<h3>ACF and PACF plots</h3>
+</div>
+</div>
+<div id="estimation-and-order-selection" class="section level2">
+<h2>Estimation and order selection</h2>
+<div id="maximum-likelihood-estimation" class="section level3">
+<h3>Maximum likelihood estimation</h3>
+</div>
+<div id="information-criteria" class="section level3">
+<h3>Information Criteria</h3>
+</div>
+</div>
+<div id="arima-modelling-in-r" class="section level2">
+<h2>ARIMA modelling in R</h2>
+<div id="how-does-auto.arima-work" class="section level3">
+<h3>How does <code>auto.arima()</code> work?</h3>
+</div>
+<div id="choosing-your-own-model" class="section level3">
+<h3>Choosing your own model</h3>
+</div>
+<div id="modelling-procedure" class="section level3">
+<h3>Modelling procedure</h3>
+</div>
+<div id="example-seasonally-adjusted-electrical-equipment-orders" class="section level3">
+<h3>Example: Seasonally adjusted electrical equipment orders</h3>
+</div>
+<div id="understanding-constants-in-r" class="section level3">
+<h3>Understanding constants in R</h3>
+</div>
+</div>
+<div id="forecasting" class="section level2">
+<h2>Forecasting</h2>
+<div id="point-forecasts" class="section level3">
+<h3>Point forecasts</h3>
+</div>
+<div id="prediction-intervals-1" class="section level3">
+<h3>Prediction intervals</h3>
+</div>
+</div>
+<div id="seasonal-arima-models" class="section level2">
+<h2>Seasonal ARIMA models</h2>
+<div id="acfpacf" class="section level3">
+<h3>ACF/PACF</h3>
+</div>
+<div id="example-european-quarterly-retail-trade" class="section level3">
+<h3>Example: European quarterly retail trade</h3>
+</div>
+<div id="example-corticosteroid-drug-sales-in-australia" class="section level3">
+<h3>Example: Corticosteroid drug sales in Australia</h3>
+</div>
+</div>
+<div id="arima-vs-ets" class="section level2">
+<h2>ARIMA vs ETS</h2>
+<div id="example-comparing-auto.arima-and-ets-on-non-seasonal-data" class="section level3">
+<h3>Example: Comparing auto.arima() and ets() on non-seasonal data</h3>
+</div>
+<div id="example-comparing-auto.arima-and-ets-on-seasonal-data" class="section level3">
+<h3>Example: Comparing auto.arima() and ets() on seasonal data</h3>
+</div>
+</div>
+</div>
+<div id="dynamic-regression-models" class="section level1">
+<h1>Dynamic regression models</h1>
+<div id="estimation" class="section level2">
+<h2>Estimation</h2>
+</div>
+<div id="regression-and-arima-errors-in-r" class="section level2">
+<h2>Regression and ARIMA errors in R</h2>
+</div>
+<div id="forecasting-1" class="section level2">
+<h2>Forecasting</h2>
+</div>
+<div id="stochastic-and-deterministic-trends" class="section level2">
+<h2>Stochastic and deterministic trends</h2>
+</div>
+<div id="lagged-predictors" class="section level2">
+<h2>Lagged predictors</h2>
+</div>
+</div>
+<div id="forecasting-hierarchical-or-grouped-time-series" class="section level1">
+<h1>Forecasting hierarchical or grouped time series</h1>
+<div id="hierarchical-time-sereis" class="section level2">
+<h2>Hierarchical time sereis</h2>
+</div>
+<div id="grouped-time-series" class="section level2">
+<h2>Grouped time series</h2>
+</div>
+<div id="the-bottom-up-approach" class="section level2">
+<h2>The bottom-up approach</h2>
+</div>
+<div id="top-down-approaches" class="section level2">
+<h2>Top-down approaches</h2>
+</div>
+<div id="middle-out-approaches" class="section level2">
+<h2>Middle-out approaches</h2>
+</div>
+<div id="mapping-matrices" class="section level2">
+<h2>Mapping matrices</h2>
+</div>
+<div id="the-optimal-reconciliation-approach" class="section level2">
+<h2>The optimal reconciliation approach</h2>
+</div>
+</div>
+<div id="advanced-forecasting-methods" class="section level1">
+<h1>Advanced forecasting methods</h1>
+<div id="complex-seasonality" class="section level2">
+<h2>Complex seasonality</h2>
+</div>
+<div id="vector-autoregressions" class="section level2">
+<h2>Vector autoregressions</h2>
+</div>
+<div id="neural-network-models" class="section level2">
+<h2>Neural network models</h2>
+</div>
+<div id="bootstrapping-and-bagging" class="section level2">
+<h2>Bootstrapping and bagging</h2>
+</div>
+</div>
+<div id="some-practical-forecasting-issues" class="section level1">
+<h1>Some practical forecasting issues</h1>
+<div id="weekly-daily-and-sub-daily-data" class="section level2">
+<h2>Weekly, daily and sub-daily data</h2>
+</div>
+<div id="time-series-of-counts" class="section level2">
+<h2>Time series of counts</h2>
+</div>
+<div id="ensuring-forecasts-say-within-limits" class="section level2">
+<h2>Ensuring forecasts say within limits</h2>
+</div>
+<div id="forecast-combinations" class="section level2">
+<h2>Forecast combinations</h2>
+</div>
+<div id="prediction-intervals-for-aggregates" class="section level2">
+<h2>Prediction intervals for aggregates</h2>
+</div>
+<div id="backcasting" class="section level2">
+<h2>Backcasting</h2>
+</div>
+<div id="very-long-and-very-short-time-series" class="section level2">
+<h2>Very long and very short time series</h2>
+</div>
+<div id="forecasting-on-training-and-test-sets" class="section level2">
+<h2>Forecasting on training and test sets</h2>
+</div>
+<div id="dealing-with-missing-vlues-and-other-outliers" class="section level2">
+<h2>Dealing with missing vlues and other outliers</h2>
+<pre class="r"><code> #plot(x &lt;- stl(log(co2), s.window = &quot;per&quot;, t.window = 1000))</code></pre>
+</div>
+</div>

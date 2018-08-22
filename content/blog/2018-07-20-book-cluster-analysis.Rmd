@@ -17,6 +17,64 @@ tags:
 require(cluster.datasets)
 ```
 
+# Measurement of proximity
+
+## Introduction
+
+Dissimilarity = distance = simalirty = proximity.  Small dissimilarity/distance.  Large similarity
+
+Proximity:
+
+* Direct
+* Indirect
+
+## Similarity measures for cateogrical data
+
+* Similarity measures most commonly used
+* Generally scaled in [0,1]
+* Two individuals have similarity coefficient equal to one if they have identical values for all variables.
+
+
+### Similarity measures for binary data
+
+* Difficulty arises with zero; attributing a large degree of similarity to a pair of individuals because they lack a number of attributes may not be sensible
+* Similarity measures include
+    * Matching coefficient: Use when co-abscence important
+    * Jaccard coefficient
+    * Rogers and Tanimoto: Also treat positive matches and negative matches equally.
+    * Sneath and Sokal
+    * Gower and Leendre
+
+### Similarity measures for categorical data with more than two levels
+* Can consider each level as a single binary vairable, however there will be a large number of negative matches.
+* Better to allocate a score of zero or one to each variable, depending on whether the two individuals are the same on that variable.  These scores are then averaged over all p variables to give similarity coefficient \[S_{ij} \frac{1}{p}\sum^p_{k = 1} s_{ijk}\]
+* Transformed genetic dissimilarity measure discussed
+* Linguists have assigned 1 to pairs if the variable value is in the same group (e.g. of words with a similar meaning)
+
+## Dissimilarity and distance measures for continuous data
+
+Distance measure types;
+
+* Distance measures
+    * Euclidean distance (l2 norm)\[d_{ij} = \left[\sum^p_{k = 1}w^2_k(x_{ik} - x_{jk})^2\right]\]
+    * City block distance (taxicab, rectilinear, Manhattan) (l1 norm) \[d_{ij} = \left[\sum^p_{k = 1}w^2_k|x_{ik} - x_{jk}|\right]\]
+    * Minkowski distance ($l_r$ norm)
+    * Canberra distance; very sensitive to small changes near $x_{ik} = x_{jk} = 0$
+    * Pearson correlation
+    * Angular separation (cross product index())
+* Correlation-type measures
+
+## Similarity measures for data containing both continuous and categorical variables
+## Proximity measures fro structured data
+## Inter-group proximity measures
+### Inter-group proximity derived from teh proximity matrix
+### Inter-group proximity based on group summaries for contiuous data
+### Inter-group proximity based on gorup summaries for categorical data
+
+## Weighting variables
+## Standardization
+## Choise of proximity measure
+
 # Miscellaneous clustering methods
 
 ## Density search clustering techniques

@@ -631,7 +631,7 @@ highCorr <- findCorrelation(segCorr, .75)
 length(highCorr)
 ```
 
-2. Feature exraction algorithms (e.g. PCA) can also be used to mitigate effect of correlations; the disadvantage is that they make connection between predictors more complex and as unsupervised no gurantee that resulting components will have relationship with outcome. 
+2. Feature extraction algorithms (e.g. PCA) can also be used to mitigate effect of correlations; the disadvantage is that they make connection between predictors more complex and as unsupervised no guarantee that resulting components will have relationship with outcome. 
 3. Simulated Annealing (e.g., `subselect` package)
 4. Genetic Algorithms
 
@@ -1204,10 +1204,10 @@ corrInfo(saMat)
 corrInfo(gaMat) 
 ```
 
-The main difference between these results is that the greedy approach of \knfun{findCorrelation} is much more conservative than the techniques found in the \pkg{subselect} package. 
+The main difference between these results is that the greedy approach of `findCorrelation` is much more conservative than the techniques found in the `subselect` package. 
 
 
-# Chapter 4: Over-Fiting and Model Tuning
+# Chapter 4: Over-Fitting and Model Tuning
 
 Aim: Strategies to avoid overfitting so that model can predict new samples with similar degree of accuracy as for training data.  Will use model tuning (of model parameters) to maximise model performance.  Traditionally, training set to build and tune model and test set to estimate performance.  Modern approach is to split data into multiple training and test data sets.
 
@@ -1305,7 +1305,7 @@ Modifications:
 
 ## Case Study: Credit Scoring
 Aim: predict probability that applicants have good credit
-Dataset: German credit dat set
+Dataset: German credit data set
 Samples: 1000 
 Class distribution: Good(70%), Bad(30%)
 Baseline accuracy: Predict all to be good, such that accuracy is 70%

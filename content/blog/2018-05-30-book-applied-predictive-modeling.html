@@ -521,7 +521,7 @@ highCorr &lt;- findCorrelation(segCorr, .75)
 length(highCorr)</code></pre>
 <pre><code>## [1] 43</code></pre>
 <ol start="2" style="list-style-type: decimal">
-<li>Feature exraction algorithms (e.g. PCA) can also be used to mitigate effect of correlations; the disadvantage is that they make connection between predictors more complex and as unsupervised no gurantee that resulting components will have relationship with outcome.</li>
+<li>Feature extraction algorithms (e.g. PCA) can also be used to mitigate effect of correlations; the disadvantage is that they make connection between predictors more complex and as unsupervised no guarantee that resulting components will have relationship with outcome.</li>
 <li>Simulated Annealing (e.g., <code>subselect</code> package)</li>
 <li>Genetic Algorithms</li>
 </ol>
@@ -1176,12 +1176,12 @@ corrInfo(saMat) </code></pre>
 corrInfo(gaMat) </code></pre>
 <pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 ## -0.88931 -0.16774  0.03500  0.03328  0.24175  0.92184</code></pre>
-<p>The main difference between these results is that the greedy approach of  is much more conservative than the techniques found in the  package.</p>
+<p>The main difference between these results is that the greedy approach of <code>findCorrelation</code> is much more conservative than the techniques found in the <code>subselect</code> package.</p>
 </div>
 </div>
 </div>
-<div id="chapter-4-over-fiting-and-model-tuning" class="section level1">
-<h1>Chapter 4: Over-Fiting and Model Tuning</h1>
+<div id="chapter-4-over-fitting-and-model-tuning" class="section level1">
+<h1>Chapter 4: Over-Fitting and Model Tuning</h1>
 <p>Aim: Strategies to avoid overfitting so that model can predict new samples with similar degree of accuracy as for training data. Will use model tuning (of model parameters) to maximise model performance. Traditionally, training set to build and tune model and test set to estimate performance. Modern approach is to split data into multiple training and test data sets.</p>
 <div id="the-problem-of-over-fitting" class="section level2">
 <h2>The Problem of Over-Fitting</h2>
@@ -1279,7 +1279,7 @@ Unlike in k-fold cross validation, a sample can be in multiple hold-out sets.</p
 </div>
 <div id="case-study-credit-scoring" class="section level2">
 <h2>Case Study: Credit Scoring</h2>
-<p>Aim: predict probability that applicants have good credit Dataset: German credit dat set Samples: 1000 Class distribution: Good(70%), Bad(30%) Baseline accuracy: Predict all to be good, such that accuracy is 70% Predictors: credit history, employment, account status, loan amount. Majority categorical and so converted to dummy variables. After conversion, there were 41 predictors.</p>
+<p>Aim: predict probability that applicants have good credit Dataset: German credit data set Samples: 1000 Class distribution: Good(70%), Bad(30%) Baseline accuracy: Predict all to be good, such that accuracy is 70% Predictors: credit history, employment, account status, loan amount. Majority categorical and so converted to dummy variables. After conversion, there were 41 predictors.</p>
 </div>
 <div id="choosing-final-tuning-parameters" class="section level2">
 <h2>Choosing Final Tuning Parameters</h2>

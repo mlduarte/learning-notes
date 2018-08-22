@@ -740,12 +740,67 @@ where $\phi_l$ is the correlation coefficient of the observations with those at 
  
 #### Moving Average Components ($q$)
 
-Memory of process for preceding random shocks.  For example, when $q = 2$ there is a relationship betweent he current score and the random shock at lag 2 and the model is ARIMA (0, 0, 2): \[Y_t = a_t -\theta_1 a_{t-1} - \theta_2 a_{t-2}\]
+Memory of process for preceding random shocks.  For example, when $q = 2$ there is a relationship between the current score and the random shock at lag 2 and the model is ARIMA (0, 0, 2): \[Y_t = a_t -\theta_1 a_{t-1} - \theta_2 a_{t-2}\]
 
 #### Mixed Models
 When the series has both auto-regressive and moving average components so that both types of correlations are required, e.g. ARIMA(1, 0, 1):\[Y_t = \phi_1 Y_{t-1} - \theta_1 a_{t-1} + a_t\]
 
 #### ACFs and PACFs
+Lag 1: Autocorrelation between $Y_{t-1}$ and $Y_t$
+Lag 2: Autocorrelation and partial autocorrelation between $Y_{t-2}$ and $Y_t$
+
+Autocorelation: \[r_k = \frac{\frac{1}{N-k}(Y_t - \bar{Y})(Y_{t-k}-\bar{Y})}{\frac{1}{N-1}(Y_t - \bar{Y})^2}\]
+where $N$ is the number of observations, $k$ is the lag, $\bar{Y}$ is the mean of the series and the denominatior is the variance
+
+Standard error of an autocorrelation is based on the squared autocorrelation at previous lags;
+\[\text{SE}_{r_k} = \begin{cases} 0 & k = 1\\
+                        \sqrt{\frac{1 + 2 \sum^{k - 1}_{l = 0} r_l^2}{N}}  & k > 1
+                    \end{cases}\]
+                    
+Partial autocorrelation: More complex; based on recurive technique, however the following have been shown:
+\[\begin{align} \text{PACF}(1) & = \text{ACF}(1) \\
+                  \text{PACF}(2) & = \frac{\text{ACF}(2) - [\text{ACF}(1)]^2}{1 - [\text{ACF}(1)]^2} \\
+                   \text{PACF}(3) & = \frac{-2\text{ACF}(1)\text{ACF}(2) - [\text{ACF}(1)]^2\text{ACF}(3)}{1 + 2[\text{ACF}(1)]^2 \text{ACF}(2) - [\text{ACF}(2)]^2 - 2 [\text{ACF}(1)]^2} \\
+                   \end{align} \]
+
+Standard error of a partial autocorrelation: \[\text{SE}_{pr} = \frac{1}{\sqrt{N}}\]
+
+Differenced scores are used when differencing has been used to remove trend.
+
+The standard errors are used to assess full and partial autocorrelation significance.
+
+```{r ts_r}
+
+df %>% 
+    select(week, q1) %>%
+    arrange(desc(week)) %>%
+    mutate(q_tm1 = lead(q1),
+        ybar = mean(q1, na.rm = TRUE),
+           num = (q1 - ybar)*(q_tm1 - ybar),
+            den = (q1 - ybar)^2) %>%
+    summarise(r1 = (1/(n() - 1) * sum(num, na.rm = TRUE)) / ( 1/(n() - 1) * sum(den, na.rm = TRUE)) ,
+              se_r1 = sqrt(1 / n()))
+              
+
+```
+
+
+The ACF and PACF plots are used to identify whether the process is an autoregressive ($p$) or moving average ($q$) process, noting that hybrid processes are quire rare.
+
+Autoregressive (AR) Process ($p$) | Moving Average (MA) Process ($q$) | Mixed ARMA model | Nonstationary ($d$)
+------------------------- | ------------------------- | ------------------------- | ------------------------- 
+* Noise / shock has a lasting effect                        | * Noise / shock quickly vanishes with time        |                                           |
+* ACF slowly declines, PACF spikes at lag $p$               | * ACF spikes at $q$ lags, PACF slowly declines    | * slowly declining ACF and PACF           | * Single PACF peak; ACF has spikes or damped sign wave
+* $p$ = Number of spikes on PACF                            | * $q$ = Number of spikes on ACF                   | * $p$ and $q$ not evident; start with 1   | 
+
+
+```{r}
+ts <- ts(df$quality)
+ts_diff <- diff(ts)
+acf(ts_diff, lag.max = 16)
+pacf(ts_diff)
+```
+Note that lag 0 is shown; whereas SAS/SPSS start with lag 1.  Here is there is spike in the ACF at lag 1 and the PACF trends towards 0, so this is probably an ARIMA(0, 0, 1) model, although because it has been differenced it is ARIMA(0, 1, 1).  The series has both trend and memory for the preceding random shock.  If this time series is about the quality of computes in a manufacturing process then we would say that teh quality is generally increasing, however the quality is one week is influenced by random events in the manufacturing process.
 
 ### Estimating Model Parameters 
 
@@ -783,7 +838,7 @@ When the series has both auto-regressive and moving average components so that b
 
 ### Evaluation of Assumptions
 
-#### Normality ozf Sampling Distributions
+#### Normality of Sampling Distributions
 
 #### Homogeneity of Variance
 
