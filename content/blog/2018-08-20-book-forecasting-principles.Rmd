@@ -2318,6 +2318,7 @@ Reasoning behind constraints:  The invertible MA(1) process can be written as AR
 ## Non-seasonal ARIMA(p,d,q) models
 
 Non-seasonal ARIMA model:
+
 * AutoRegressive Integrated Moving Average
 * AR(p) + Differencing(d) + MA(q)
 * Integration = antonym of differencing; a time series which needs to be differenced to be made stationary is said to be an "integrated" version of a stationary series
@@ -2334,6 +2335,7 @@ where $y_t^\prime$ is the differenced series and may have been differenced mroe 
 
 Random-walk and random-trend models, autoregressive models, and exponential smoothing models are all special cases of ARIMA models:
 
+-----------------------|---------------------------------
 -----------------------|---------------------------------
 White noise             | ARIMA(0, 0, 0)
 Random Walk             | ARIMA(0, 1, 0) with no constant

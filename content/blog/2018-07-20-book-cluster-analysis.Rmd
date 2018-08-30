@@ -13,70 +13,281 @@ tags:
 - Clustering
 ---
 
-```{r load_data_pckg}
+```{r load_data_pckg, message=FALSE, warning=FALSE}
 require(cluster.datasets)
+require(cluster)
+require(tidyverse)
+require(knitr)
+
 ```
+
+# An Introduction to classification and clustering
+## Introduction
+## Reasons for classifying
+## Numerical methods of classification – cluster analysis
+## What is a cluster?
+## Examples of the use of clustering
+### Market research
+### Astronomy
+### Psychiatry 
+### Weather classification 
+### Archaeology 
+### Bioinformatics and genetics 
+## Summary
+
+
+# Detecting clusters graphically 
+## Introduction 
+## Detecting clusters with univariate and bivariate plots of data
+### Histograms 
+### Scatterplots
+### Density estimation
+### Scatterplot matrices 
+## Using lower-dimensional projections of multivariate data for graphical representations
+### Principal components analysis of multivariate data
+### Exploratory projection pursuit
+### Multidimensional scaling 
+## Three-dimensional plots and trellis graphics 
+## Summary
 
 # Measurement of proximity
 
 ## Introduction
 
-Dissimilarity = distance = simalirty = proximity.  Small dissimilarity/distance.  Large similarity
+Dissimilarity = distance.  Similarity = proximity.  Small dissimilarity/distance.  Large similarity
 
 Proximity:
 
-* Direct
-* Indirect
+* Direct: Proximity arises directly, e.g. in experiments where people are asked to judge the perceived similarity or dissimilarity of a set of stimuli or objects of interest
+* Indirect: Usually, the data describing objects needs to be converted in a matrix of similarities
 
 ## Similarity measures for cateogrical data
 
 * Similarity measures most commonly used
 * Generally scaled in [0,1]
-* Two individuals have similarity coefficient equal to one if they have identical values for all variables.
-
+* Two individuals have similarity coefficient, $s_{ij}$ equal to one if they have identical values for all variables.
+* Conversely, the dissimilarity is set to $1-s_{ij}$
 
 ### Similarity measures for binary data
 
-* Difficulty arises with zero; attributing a large degree of similarity to a pair of individuals because they lack a number of attributes may not be sensible
-* Similarity measures include
-    * Matching coefficient: Use when co-abscence important
-    * Jaccard coefficient
-    * Rogers and Tanimoto: Also treat positive matches and negative matches equally.
-    * Sneath and Sokal
-    * Gower and Leendre
+* Difficulty arises with zero; attributing a large degree of similarity to a pair of individuals because they lack a number of attributes may not be sensible.  Do co-absences contain useful information about the similarity of two objects?
 
+
+<table style="width:100%">
+<tr>
+<th> </th>
+<th colspan = 2>Individual $i$</th>
+</tr>
+<tr>
+<th></th>
+<th>1</th>
+<th>0</th>
+</tr>
+<tr>
+<th rowspan = 2>Individual $j$</th>
+<td>a</td>
+<td>b</td>
+</tr>
+<tr>
+<td>c</td>
+<td>d</td>
+</tr>
+</table>
+
+
+Similarity measures include:
+
+Measure                                 | Formula      
+----------------------------------------| -------------------------------------
+Matching coefficient                    |   $(a+d)/(a + b + c + d)$
+Jaccard coefficient                 | $a/(a + b + c)$
+Rogers and Tanimoto     | $(a+d)/[a + 2(b + c) + d]$
+Sneath and Sokal        | $a/[a + 2(b + c)]$
+Gower and Legendre (1)  | $(a + d) /[a + (b + c)/2 + d]$
+Gower and Legendre (2)  | $a/[a + (b + c)/2]$
+
+
+Use matching coefficient and / or Rogers and Tanimoto when co-absence important.    
+    
 ### Similarity measures for categorical data with more than two levels
-* Can consider each level as a single binary vairable, however there will be a large number of negative matches.
-* Better to allocate a score of zero or one to each variable, depending on whether the two individuals are the same on that variable.  These scores are then averaged over all p variables to give similarity coefficient \[S_{ij} \frac{1}{p}\sum^p_{k = 1} s_{ijk}\]
+* Can consider each level as a single binary variable, however there will be a large number of negative matches.
+* Better to allocate a score of zero or one to each variable, depending on whether the two individuals are the same on that variable.  These scores are then averaged over all $p$ variables to give similarity coefficient \[S_{ij} \frac{1}{p}\sum^p_{k = 1} s_{ijk}\]
 * Transformed genetic dissimilarity measure discussed
 * Linguists have assigned 1 to pairs if the variable value is in the same group (e.g. of words with a similar meaning)
 
 ## Dissimilarity and distance measures for continuous data
 
-Distance measure types;
+* Distance measure types;* Typically quantified by dissimilarity or distance measures
+* **Distance Measure**: Fulfills metric (triangular) inequality $\delta_{ij} + \delta_{im} \geq \delta_{jm}$ for pairs of individuals.
+* Can use weights for each variable
 
 * Distance measures
-    * Euclidean distance (l2 norm)\[d_{ij} = \left[\sum^p_{k = 1}w^2_k(x_{ik} - x_{jk})^2\right]\]
-    * City block distance (taxicab, rectilinear, Manhattan) (l1 norm) \[d_{ij} = \left[\sum^p_{k = 1}w^2_k|x_{ik} - x_{jk}|\right]\]
+
+    * Euclidean distance (l2 norm)
+    \[d_{ij} = \left[\sum^p_{k = 1}w^2_k(x_{ik} - x_{jk})^2\right]^{1/2}\]
+    * City block distance (taxicab, rectilinear, Manhattan) (l1 norm) \d_{ij} = \left[\sum^p_{k = 1}w^2_k|x_{ik} - x_{jk}|\]
     * Minkowski distance ($l_r$ norm)
     * Canberra distance; very sensitive to small changes near $x_{ik} = x_{jk} = 0$
-    * Pearson correlation
-    * Angular separation (cross product index())
+
+
 * Correlation-type measures
 
+    * Pearson correlation
+    * Angular separation: the correlation is the cosine of the angle between two vectors connecting the origin to the 2 $p$-dimensional observations.  
+    * Rows are standardised; not columns, therefore require same scale.  
+
 ## Similarity measures for data containing both continuous and categorical variables
-## Proximity measures fro structured data
+
+Options:
+
+* Dichotomize all variables and use a similarity measure for binary data
+* Rescale all variables so that they are on the same scale by replacing variable values by their ranks among the objects (assuming can be ranked/ordered) and then using a measure for continuous data
+* Construct a dissimilarity measure for each type of variable and combine with or without differential weighting into a single coefficient
+* Use Gower's general similarity measure:
+\[s_{ij} = \sum_{k = 1}^p w_{ijk}s_{ijk} / \sum_{k = 1}^p w_{ijk}\]
+
+where $s_{ijk}$ is the similarity between individuals $i$ and $j$ according to variable $k$ and $w_{ijk}$ is typically 0 (value missing for one or both individuals, or if $k$ is binary and want to exclude absences) or 1 (valid)
+
+For binary or categorical variables, $s_{ijk} = 1$ if two individuals have the same value, otherwise $s_{ijk} = 0$ 
+
+For continuous variables, $s_{ij} = 1 - |x_{ik} - x_{jk}|/R_k
+where $R_k$ is the range of observations for the $k$th variable.   This is equivalent to the city block distance after scaling the $k$th variable to unit range.
+
+```{r data_video}
+data.video <- data.frame(ever = c(rep("Yes", 10), "No", NA),
+                      time = c(2, 0, 0, 0.5, 0, 0, 0, 0, 2, 0, NA, 30),
+                      like = c(rep("Somewhat", 6), "Not really", rep("Somewhat", 3), NA, "No"),
+                      where = c(rep("HC", 2), "A", rep("HC", 2), "HS", "HC", "HC", "HS", "HC", NA, NA),
+                      freq = c("w", rep("m", 3), rep("s", 4), "d", "s", NA, NA),
+                      busy = c(rep("N", 8), "Y", "N", NA, NA), 
+                      educ = c("Y", "N", "N", "Y", "Y", "N", "N", "N", "Y", "Y", NA, NA)
+                      )
+data.video <- data.video %>% mutate(like = as.numeric(factor(like, levels = c("No", "Not really", "Somewhat"))),
+                      freq = as.numeric(factor(freq, levels = c("d", "w", "m", "s"))))
+
+# sex = c("f", "f", "m", "f", "f", "m", "m", "f", rep("m", 3), NA),
+#age = c(19, 18, rep(19, 4), 20, rep(19, 4), NA),
+#grade  = c("A", "C", rep("B", 6), rep("A", 3), NA)
+
+data.video %>% kable()
+
+```
+
+For individuals 1, 2
+* ever = $1 \times 1$
+* time = $1 \times (1-|2-0|/30$
+* like = $1 \times (1-|2-2|/3$
+* where = $1 \times 1$
+* freq = $1 \times (1-|2-3|/3$. 
+* busy = $1 \times 1$
+* educ = $1 \times 0$
+
+Dissimilarity matrix:
+```{r gower_dissimilarity}
+round(daisy(data.video, metric = "gower"),2)
+```
+
+In R, see packages `cluster`, `clusterSim` and `proxy`
+
+## Proximity measures for structured data
+
+Examples of structured data:
+
+* Repeated measures of the same outcome variable under different conditions (e.g. times, spatial positions, etc). Examples:
+    * A child's height at times $t_1, t_2, \ldots, t_p$
+    * Measures for different experimental conditions, A, B, or C
+
+* May help the model the means and covariances of repeated measures by a reduced set of parameters (see Chapter 7)
+
+Approaches: 
+* Use reduced set of relevant summaries, examples for continuous data
+    * For time, fit linear or nonlinear regression models to individual time courses, e.g. if child's height linear use the regression intercept and slope of the fitted curve.  Dissimilarity could then be calculated as the Euclidean distance between the standardised regression coefficients (standardisation covered later)
+    * With repeated measures per class, could use mean value per class
+    * When structured data arises from known factor model, can use values of underlying factors
+* Can also use summaries for categorical data
+    * Quantiles (ordinal data)
+    * Proportions of particular categories
+* Many measures exist for sequence data, e.g. Levenshtein distance, edit distance, optimal matching algorithms
+
 ## Inter-group proximity measures
-### Inter-group proximity derived from teh proximity matrix
-### Inter-group proximity based on group summaries for contiuous data
+
+Basic approaches: 
+* Summarise the proximities of individuals in each group
+* Describe a representative observation by choosing a suitable summary statistic for each variable, with the inter-group proximity defined as the proximity between the representative observations
+
+### Inter-group proximity derived from the proximity matrix
+
+Options:
+* Nearest neighbour distance: Take smallest dissimilarity between any two individuals, one from each group.  Basis of _single linkage_
+* Furthest-neighbour distance: Take largest dissimilarity between any two individuals, one from each group.  Basis of _complete linkage_
+* Take average dissimilarity between any two individuals, one from each group.  Basis of _group average clustering_
+
+### Inter-group proximity based on group summaries for continuous data
+
+* Substitute group means (_centroid_) for variable values in inter-individual measures, i.e. Euclidean or city-block distances.  This method, however, does not take into account within-group variation.
+* Mahalanobi's generalised distance, $D^2$
+\[D^2 = (bar{x}_A -bar{x}_B)^\prime W^{-1} (bar{x}_A -bar{x}_B)\]
+where $W^{-1}$ is the pooled within-group covariance matrix for the two groups.
+
+    * Small correlations: $D^2$ ~ squared Euclidean distances on variables standardized by dividing their within group standard deviation
+    * Increases with increasing distances between two group centres and with decreasing within-group variation
+    * Inappropriate when the covariance matrix is approximately the same in the two groups
+* Chadda and Marcus inter-group distance measure
+* Normal Information Radius (NIR)
+    
+
 ### Inter-group proximity based on gorup summaries for categorical data
 
+* Balakrishnan and Sanghvi dissimilarity index:
+    \[G^2 =  = \sum_{k=1}^p \sum_{l=1}^{c_k + 1} \frac{(p_{Akl}-p_{Bkl})^2}{p_{kl}},\]
+    
+where $p_{Akl}$ and $p_{Bkl}$ are proportions of the $l$th category of the $k$th variable in group A and B and $p_{kl} = \frac{1}{2}(p_{Akl} + p_{Bkl})$, $c_k + 1$ is the number of categories for the $k$th variable and $p$ is the number of variables.
+* Generalised Mahalanobis distance: 
+\[D^2 = (p_A -p_B)^\prime W_p^{-1} (p_A - p_B)\]
+where $p_A$ is the sample proportions in group A and $W_p$ is the sample covariance matrix.  
+
+
 ## Weighting variables
+* Selection of variables into study = weighting; those excluded have a weight of zero
+* Standardisation essentially weights all variables
+* Weights my be chosen by: 
+    * Judgement on behalf of investigator
+    * Some aspect of the data matrix
+        * e.g. weight to be inversely proportion to variability (standard deviation or range)
+        of variable.  So more weight given to variables with less variability.  Range found to be most effective.  Method equivalent to standardisation.  Note however that total variability = within-group variability + between group variability.  Argument exists that should not reduce importance of variable because of between-group variation.  Defining variable weights
+inversely proportional to a measure of total variability can have the serious
+disadvantage of diluting differences between groups on the variables which are
+the best discriminators.  The problem is, however, that groups are not known... However, attempts have been made to estimate this.  See Art and Gnanadeskian.  
+        * Find weights to minimize departure from _ultrametricity_ (discussed later)
+    * Variable selection; iteratively identify variables which lead to internally cohesive and externally isolated clusters, and when clustered single, produce agreement with other variable subsets.  
+
+Method effectiveness:
+* Equal weights, total standard deviation weights and range weights generally ineffective
+* Weighting to optimise fitting of a hierarchical tree often less effective than above
+* Weighting based on estimates of within-cluster variability work well
+* Forward variable selection among better performers.
+
 ## Standardization
-## Choise of proximity measure
+* Most common suggestion: Standardise each variable to unit variance prior to any analysis
+
+    * Autoscaling = standard scoring = z-scoring: Uses standard deviation
+    * Alternative: Median absolute deviation, ranges (latter shown to outperform autoscaling)
+    * Implied assumption is that importance of variable decreases with increasing variability
+    * Consider methods that estimate within-group variability, or use cluster methods whose grouping solutions are not affected by a variable's unit of measurement.
+
+## Choice of proximity measure
+
+Choice of proximity measure will depend on: 
+
+* Nature of data 
+* Scale of data
+* Clustering algorithm to be employed
+
+
+
+
 
 # Miscellaneous clustering methods
-
 ## Density search clustering techniques
 ## Density-based spatial clustering of applications with noise
 ## Techniques which allow overlapping clusters
@@ -112,7 +323,7 @@ In the following chart, X is the input layer, Z the hidden layer and Y the outpu
 ![Neural Network](/graphs/nn.png)
 
 
-The model is typically trainined by minimising the RSS (residual sum of squares).
+The model is typically trained by minimising the RSS (residual sum of squares).
 
 
 
@@ -133,9 +344,9 @@ Algorithm:
  * Unlike in $k$-means, the $p$-dimensional weight vectors associated with the $k$ output nodes are initially assigned a random value between (0, 1)
  * Each of the $p$-dimensional observations ($\mathbf{x}$) are also scaled in (0, 1)
  * The Euclidean distance (or other distance) is calculated between the observation and each of the $k$ $p$-dimensional weight vectors (neurons).  
- * The neuron with the smallest distance (the winner) is updated, as are a small neighbourhood of neurons around the winner; its weight vector $\mathbf{w}_\text{old}$ is brought closer to the input patterns $\mathbf{x}$ as follwos:
+ * The neuron with the smallest distance (the winner) is updated, as are a small neighbourhood of neurons around the winner; its weight vector $\mathbf{w}_\text{old}$ is brought closer to the input patterns $\mathbf{x}$ as follows:
  \[\mathbf{w}_\text{new} = \mathbf{w}_\text{old} + \alpha(\mathbf{x} - \mathbf{w}_\text{old})\]
- The value of $\alpha$ is a small fraction, which decreases as learning takes place, as does the size of the neighbourhood.  The excited neurons in the neighbourhood ofthe winner are udpated in a similar manner but with a smaller $\alpha$.
+ The value of $\alpha$ is a small fraction, which decreases as learning takes place, as does the size of the neighbourhood.  The excited neurons in the neighbourhood of the winner are updated in a similar manner but with a smaller $\alpha$.
  * As the network learns, the weights are modified and the input observations are provisionally assigned to clusters.
  
 

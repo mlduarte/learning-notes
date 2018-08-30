@@ -15,17 +15,97 @@ tags:
 
 
 
-<pre class="r"><code>require(cluster.datasets)</code></pre>
-<pre><code>## Loading required package: cluster.datasets</code></pre>
-<div id="measurement-of-proximity" class="section level1">
-<h1>Measurement of proximity</h1>
+<pre class="r"><code>require(cluster.datasets)
+require(cluster)
+require(tidyverse)
+require(knitr)</code></pre>
+<div id="an-introduction-to-classification-and-clustering" class="section level1">
+<h1>An Introduction to classification and clustering</h1>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>Dissimilarity = distance = simalirty = proximity. Small dissimilarity/distance. Large similarity</p>
+</div>
+<div id="reasons-for-classifying" class="section level2">
+<h2>Reasons for classifying</h2>
+</div>
+<div id="numerical-methods-of-classification-cluster-analysis" class="section level2">
+<h2>Numerical methods of classification – cluster analysis</h2>
+</div>
+<div id="what-is-a-cluster" class="section level2">
+<h2>What is a cluster?</h2>
+</div>
+<div id="examples-of-the-use-of-clustering" class="section level2">
+<h2>Examples of the use of clustering</h2>
+<div id="market-research" class="section level3">
+<h3>Market research</h3>
+</div>
+<div id="astronomy" class="section level3">
+<h3>Astronomy</h3>
+</div>
+<div id="psychiatry" class="section level3">
+<h3>Psychiatry</h3>
+</div>
+<div id="weather-classification" class="section level3">
+<h3>Weather classification</h3>
+</div>
+<div id="archaeology" class="section level3">
+<h3>Archaeology</h3>
+</div>
+<div id="bioinformatics-and-genetics" class="section level3">
+<h3>Bioinformatics and genetics</h3>
+</div>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+</div>
+</div>
+<div id="detecting-clusters-graphically" class="section level1">
+<h1>Detecting clusters graphically</h1>
+<div id="introduction-1" class="section level2">
+<h2>Introduction</h2>
+</div>
+<div id="detecting-clusters-with-univariate-and-bivariate-plots-of-data" class="section level2">
+<h2>Detecting clusters with univariate and bivariate plots of data</h2>
+<div id="histograms" class="section level3">
+<h3>Histograms</h3>
+</div>
+<div id="scatterplots" class="section level3">
+<h3>Scatterplots</h3>
+</div>
+<div id="density-estimation" class="section level3">
+<h3>Density estimation</h3>
+</div>
+<div id="scatterplot-matrices" class="section level3">
+<h3>Scatterplot matrices</h3>
+</div>
+</div>
+<div id="using-lower-dimensional-projections-of-multivariate-data-for-graphical-representations" class="section level2">
+<h2>Using lower-dimensional projections of multivariate data for graphical representations</h2>
+<div id="principal-components-analysis-of-multivariate-data" class="section level3">
+<h3>Principal components analysis of multivariate data</h3>
+</div>
+<div id="exploratory-projection-pursuit" class="section level3">
+<h3>Exploratory projection pursuit</h3>
+</div>
+<div id="multidimensional-scaling" class="section level3">
+<h3>Multidimensional scaling</h3>
+</div>
+</div>
+<div id="three-dimensional-plots-and-trellis-graphics" class="section level2">
+<h2>Three-dimensional plots and trellis graphics</h2>
+</div>
+<div id="summary-1" class="section level2">
+<h2>Summary</h2>
+</div>
+</div>
+<div id="measurement-of-proximity" class="section level1">
+<h1>Measurement of proximity</h1>
+<div id="introduction-2" class="section level2">
+<h2>Introduction</h2>
+<p>Dissimilarity = distance. Similarity = proximity. Small dissimilarity/distance. Large similarity</p>
 <p>Proximity:</p>
 <ul>
-<li>Direct</li>
-<li>Indirect</li>
+<li>Direct: Proximity arises directly, e.g. in experiments where people are asked to judge the perceived similarity or dissimilarity of a set of stimuli or objects of interest</li>
+<li>Indirect: Usually, the data describing objects needs to be converted in a matrix of similarities</li>
 </ul>
 </div>
 <div id="similarity-measures-for-cateogrical-data" class="section level2">
@@ -33,27 +113,94 @@ tags:
 <ul>
 <li>Similarity measures most commonly used</li>
 <li>Generally scaled in [0,1]</li>
-<li>Two individuals have similarity coefficient equal to one if they have identical values for all variables.</li>
+<li>Two individuals have similarity coefficient, <span class="math inline">\(s_{ij}\)</span> equal to one if they have identical values for all variables.</li>
+<li>Conversely, the dissimilarity is set to <span class="math inline">\(1-s_{ij}\)</span></li>
 </ul>
 <div id="similarity-measures-for-binary-data" class="section level3">
 <h3>Similarity measures for binary data</h3>
 <ul>
-<li>Difficulty arises with zero; attributing a large degree of similarity to a pair of individuals because they lack a number of attributes may not be sensible</li>
-<li>Similarity measures include
-<ul>
-<li>Matching coefficient: Use when co-abscence important</li>
-<li>Jaccard coefficient</li>
-<li>Rogers and Tanimoto: Also treat positive matches and negative matches equally.</li>
-<li>Sneath and Sokal</li>
-<li>Gower and Leendre</li>
-</ul></li>
+<li>Difficulty arises with zero; attributing a large degree of similarity to a pair of individuals because they lack a number of attributes may not be sensible. Do co-absences contain useful information about the similarity of two objects?</li>
 </ul>
+<table style="width:100%">
+<tr>
+<th>
+</th>
+<th colspan="2">
+Individual <span class="math inline">\(i\)</span>
+</th>
+</tr>
+<tr>
+<th>
+</th>
+<th>
+1
+</th>
+<th>
+0
+</th>
+</tr>
+<tr>
+<th rowspan="2">
+Individual <span class="math inline">\(j\)</span>
+</th>
+<td>
+a
+</td>
+<td>
+b
+</td>
+</tr>
+<tr>
+<td>
+c
+</td>
+<td>
+d
+</td>
+</tr>
+</table>
+<p>Similarity measures include:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Measure</th>
+<th>Formula</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Matching coefficient</td>
+<td><span class="math inline">\((a+d)/(a + b + c + d)\)</span></td>
+</tr>
+<tr class="even">
+<td>Jaccard coefficient</td>
+<td><span class="math inline">\(a/(a + b + c)\)</span></td>
+</tr>
+<tr class="odd">
+<td>Rogers and Tanimoto</td>
+<td><span class="math inline">\((a+d)/[a + 2(b + c) + d]\)</span></td>
+</tr>
+<tr class="even">
+<td>Sneath and Sokal</td>
+<td><span class="math inline">\(a/[a + 2(b + c)]\)</span></td>
+</tr>
+<tr class="odd">
+<td>Gower and Legendre (1)</td>
+<td><span class="math inline">\((a + d) /[a + (b + c)/2 + d]\)</span></td>
+</tr>
+<tr class="even">
+<td>Gower and Legendre (2)</td>
+<td><span class="math inline">\(a/[a + (b + c)/2]\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Use matching coefficient and / or Rogers and Tanimoto when co-absence important.</p>
 </div>
 <div id="similarity-measures-for-categorical-data-with-more-than-two-levels" class="section level3">
 <h3>Similarity measures for categorical data with more than two levels</h3>
 <ul>
-<li>Can consider each level as a single binary vairable, however there will be a large number of negative matches.</li>
-<li>Better to allocate a score of zero or one to each variable, depending on whether the two individuals are the same on that variable. These scores are then averaged over all p variables to give similarity coefficient <span class="math display">\[S_{ij} \frac{1}{p}\sum^p_{k = 1} s_{ijk}\]</span></li>
+<li>Can consider each level as a single binary variable, however there will be a large number of negative matches.</li>
+<li>Better to allocate a score of zero or one to each variable, depending on whether the two individuals are the same on that variable. These scores are then averaged over all <span class="math inline">\(p\)</span> variables to give similarity coefficient <span class="math display">\[S_{ij} \frac{1}{p}\sum^p_{k = 1} s_{ijk}\]</span></li>
 <li>Transformed genetic dissimilarity measure discussed</li>
 <li>Linguists have assigned 1 to pairs if the variable value is in the same group (e.g. of words with a similar meaning)</li>
 </ul>
@@ -61,46 +208,279 @@ tags:
 </div>
 <div id="dissimilarity-and-distance-measures-for-continuous-data" class="section level2">
 <h2>Dissimilarity and distance measures for continuous data</h2>
-<p>Distance measure types;</p>
 <ul>
-<li>Distance measures
+<li>Distance measure types;* Typically quantified by dissimilarity or distance measures</li>
+<li><strong>Distance Measure</strong>: Fulfills metric (triangular) inequality <span class="math inline">\(\delta_{ij} + \delta_{im} \geq \delta_{jm}\)</span> for pairs of individuals.</li>
+<li><p>Can use weights for each variable</p></li>
+<li><p>Distance measures</p>
 <ul>
-<li>Euclidean distance (l2 norm)<span class="math display">\[d_{ij} = \left[\sum^p_{k = 1}w^2_k(x_{ik} - x_{jk})^2\right]\]</span></li>
-<li>City block distance (taxicab, rectilinear, Manhattan) (l1 norm) <span class="math display">\[d_{ij} = \left[\sum^p_{k = 1}w^2_k|x_{ik} - x_{jk}|\right]\]</span></li>
+<li>Euclidean distance (l2 norm) <span class="math display">\[d_{ij} = \left[\sum^p_{k = 1}w^2_k(x_{ik} - x_{jk})^2\right]^{1/2}\]</span></li>
+<li>City block distance (taxicab, rectilinear, Manhattan) (l1 norm) _{ij} = </li>
 <li>Minkowski distance (<span class="math inline">\(l_r\)</span> norm)</li>
 <li>Canberra distance; very sensitive to small changes near <span class="math inline">\(x_{ik} = x_{jk} = 0\)</span></li>
-<li>Pearson correlation</li>
-<li>Angular separation (cross product index())</li>
 </ul></li>
-<li>Correlation-type measures</li>
+<li><p>Correlation-type measures</p>
+<ul>
+<li>Pearson correlation</li>
+<li>Angular separation: the correlation is the cosine of the angle between two vectors connecting the origin to the 2 <span class="math inline">\(p\)</span>-dimensional observations.<br />
+</li>
+<li>Rows are standardised; not columns, therefore require same scale.</li>
+</ul></li>
 </ul>
 </div>
 <div id="similarity-measures-for-data-containing-both-continuous-and-categorical-variables" class="section level2">
 <h2>Similarity measures for data containing both continuous and categorical variables</h2>
+<p>Options:</p>
+<ul>
+<li>Dichotomize all variables and use a similarity measure for binary data</li>
+<li>Rescale all variables so that they are on the same scale by replacing variable values by their ranks among the objects (assuming can be ranked/ordered) and then using a measure for continuous data</li>
+<li>Construct a dissimilarity measure for each type of variable and combine with or without differential weighting into a single coefficient</li>
+<li>Use Gower’s general similarity measure: <span class="math display">\[s_{ij} = \sum_{k = 1}^p w_{ijk}s_{ijk} / \sum_{k = 1}^p w_{ijk}\]</span></li>
+</ul>
+<p>where <span class="math inline">\(s_{ijk}\)</span> is the similarity between individuals <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> according to variable <span class="math inline">\(k\)</span> and <span class="math inline">\(w_{ijk}\)</span> is typically 0 (value missing for one or both individuals, or if <span class="math inline">\(k\)</span> is binary and want to exclude absences) or 1 (valid)</p>
+<p>For binary or categorical variables, <span class="math inline">\(s_{ijk} = 1\)</span> if two individuals have the same value, otherwise <span class="math inline">\(s_{ijk} = 0\)</span></p>
+<p>For continuous variables, $s_{ij} = 1 - |x_{ik} - x_{jk}|/R_k where <span class="math inline">\(R_k\)</span> is the range of observations for the <span class="math inline">\(k\)</span>th variable. This is equivalent to the city block distance after scaling the <span class="math inline">\(k\)</span>th variable to unit range.</p>
+<pre class="r"><code>data.video &lt;- data.frame(ever = c(rep(&quot;Yes&quot;, 10), &quot;No&quot;, NA),
+                      time = c(2, 0, 0, 0.5, 0, 0, 0, 0, 2, 0, NA, 30),
+                      like = c(rep(&quot;Somewhat&quot;, 6), &quot;Not really&quot;, rep(&quot;Somewhat&quot;, 3), NA, &quot;No&quot;),
+                      where = c(rep(&quot;HC&quot;, 2), &quot;A&quot;, rep(&quot;HC&quot;, 2), &quot;HS&quot;, &quot;HC&quot;, &quot;HC&quot;, &quot;HS&quot;, &quot;HC&quot;, NA, NA),
+                      freq = c(&quot;w&quot;, rep(&quot;m&quot;, 3), rep(&quot;s&quot;, 4), &quot;d&quot;, &quot;s&quot;, NA, NA),
+                      busy = c(rep(&quot;N&quot;, 8), &quot;Y&quot;, &quot;N&quot;, NA, NA), 
+                      educ = c(&quot;Y&quot;, &quot;N&quot;, &quot;N&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;N&quot;, &quot;N&quot;, &quot;N&quot;, &quot;Y&quot;, &quot;Y&quot;, NA, NA)
+                      )
+data.video &lt;- data.video %&gt;% mutate(like = as.numeric(factor(like, levels = c(&quot;No&quot;, &quot;Not really&quot;, &quot;Somewhat&quot;))),
+                      freq = as.numeric(factor(freq, levels = c(&quot;d&quot;, &quot;w&quot;, &quot;m&quot;, &quot;s&quot;))))
+
+# sex = c(&quot;f&quot;, &quot;f&quot;, &quot;m&quot;, &quot;f&quot;, &quot;f&quot;, &quot;m&quot;, &quot;m&quot;, &quot;f&quot;, rep(&quot;m&quot;, 3), NA),
+#age = c(19, 18, rep(19, 4), 20, rep(19, 4), NA),
+#grade  = c(&quot;A&quot;, &quot;C&quot;, rep(&quot;B&quot;, 6), rep(&quot;A&quot;, 3), NA)
+
+data.video %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">ever</th>
+<th align="right">time</th>
+<th align="right">like</th>
+<th align="left">where</th>
+<th align="right">freq</th>
+<th align="left">busy</th>
+<th align="left">educ</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Yes</td>
+<td align="right">2.0</td>
+<td align="right">3</td>
+<td align="left">HC</td>
+<td align="right">2</td>
+<td align="left">N</td>
+<td align="left">Y</td>
+</tr>
+<tr class="even">
+<td align="left">Yes</td>
+<td align="right">0.0</td>
+<td align="right">3</td>
+<td align="left">HC</td>
+<td align="right">3</td>
+<td align="left">N</td>
+<td align="left">N</td>
+</tr>
+<tr class="odd">
+<td align="left">Yes</td>
+<td align="right">0.0</td>
+<td align="right">3</td>
+<td align="left">A</td>
+<td align="right">3</td>
+<td align="left">N</td>
+<td align="left">N</td>
+</tr>
+<tr class="even">
+<td align="left">Yes</td>
+<td align="right">0.5</td>
+<td align="right">3</td>
+<td align="left">HC</td>
+<td align="right">3</td>
+<td align="left">N</td>
+<td align="left">Y</td>
+</tr>
+<tr class="odd">
+<td align="left">Yes</td>
+<td align="right">0.0</td>
+<td align="right">3</td>
+<td align="left">HC</td>
+<td align="right">4</td>
+<td align="left">N</td>
+<td align="left">Y</td>
+</tr>
+<tr class="even">
+<td align="left">Yes</td>
+<td align="right">0.0</td>
+<td align="right">3</td>
+<td align="left">HS</td>
+<td align="right">4</td>
+<td align="left">N</td>
+<td align="left">N</td>
+</tr>
+<tr class="odd">
+<td align="left">Yes</td>
+<td align="right">0.0</td>
+<td align="right">2</td>
+<td align="left">HC</td>
+<td align="right">4</td>
+<td align="left">N</td>
+<td align="left">N</td>
+</tr>
+<tr class="even">
+<td align="left">Yes</td>
+<td align="right">0.0</td>
+<td align="right">3</td>
+<td align="left">HC</td>
+<td align="right">4</td>
+<td align="left">N</td>
+<td align="left">N</td>
+</tr>
+<tr class="odd">
+<td align="left">Yes</td>
+<td align="right">2.0</td>
+<td align="right">3</td>
+<td align="left">HS</td>
+<td align="right">1</td>
+<td align="left">Y</td>
+<td align="left">Y</td>
+</tr>
+<tr class="even">
+<td align="left">Yes</td>
+<td align="right">0.0</td>
+<td align="right">3</td>
+<td align="left">HC</td>
+<td align="right">4</td>
+<td align="left">N</td>
+<td align="left">Y</td>
+</tr>
+<tr class="odd">
+<td align="left">No</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="left">NA</td>
+<td align="right">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">NA</td>
+<td align="right">30.0</td>
+<td align="right">1</td>
+<td align="left">NA</td>
+<td align="right">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+</tbody>
+</table>
+<p>For individuals 1, 2 * ever = <span class="math inline">\(1 \times 1\)</span> * time = <span class="math inline">\(1 \times (1-|2-0|/30\)</span> * like = <span class="math inline">\(1 \times (1-|2-2|/3\)</span> * where = <span class="math inline">\(1 \times 1\)</span> * freq = <span class="math inline">\(1 \times (1-|2-3|/3\)</span>. * busy = <span class="math inline">\(1 \times 1\)</span> * educ = <span class="math inline">\(1 \times 0\)</span></p>
+<p>Dissimilarity matrix:</p>
+<pre class="r"><code>round(daisy(data.video, metric = &quot;gower&quot;),2)</code></pre>
+<pre><code>## Dissimilarities :
+##       1    2    3    4    5    6    7    8    9   10   11
+## 2  0.20                                                  
+## 3  0.34 0.14                                             
+## 4  0.05 0.15 0.29                                        
+## 5  0.10 0.19 0.33 0.05                                   
+## 6  0.39 0.19 0.19 0.34 0.29                              
+## 7  0.32 0.12 0.26 0.26 0.21 0.21                         
+## 8  0.25 0.05 0.19 0.19 0.14 0.14 0.07                    
+## 9  0.33 0.53 0.53 0.39 0.44 0.44 0.65 0.58               
+## 10 0.10 0.19 0.33 0.05 0.00 0.29 0.21 0.14 0.44          
+## 11 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00     
+## 12 0.97 1.00 1.00 0.99 1.00 1.00 0.75 1.00 0.97 1.00   NA
+## 
+## Metric :  mixed ;  Types = N, I, I, N, I, N, N 
+## Number of objects : 12</code></pre>
+<p>In R, see packages <code>cluster</code>, <code>clusterSim</code> and <code>proxy</code></p>
 </div>
-<div id="proximity-measures-fro-structured-data" class="section level2">
-<h2>Proximity measures fro structured data</h2>
+<div id="proximity-measures-for-structured-data" class="section level2">
+<h2>Proximity measures for structured data</h2>
+<p>Examples of structured data:</p>
+<ul>
+<li>Repeated measures of the same outcome variable under different conditions (e.g. times, spatial positions, etc). Examples:
+<ul>
+<li>A child’s height at times <span class="math inline">\(t_1, t_2, \ldots, t_p\)</span></li>
+<li>Measures for different experimental conditions, A, B, or C</li>
+</ul></li>
+<li>May help the model the means and covariances of repeated measures by a reduced set of parameters (see Chapter 7)</li>
+</ul>
+<p>Approaches: * Use reduced set of relevant summaries, examples for continuous data * For time, fit linear or nonlinear regression models to individual time courses, e.g. if child’s height linear use the regression intercept and slope of the fitted curve. Dissimilarity could then be calculated as the Euclidean distance between the standardised regression coefficients (standardisation covered later) * With repeated measures per class, could use mean value per class * When structured data arises from known factor model, can use values of underlying factors * Can also use summaries for categorical data * Quantiles (ordinal data) * Proportions of particular categories * Many measures exist for sequence data, e.g. Levenshtein distance, edit distance, optimal matching algorithms</p>
 </div>
 <div id="inter-group-proximity-measures" class="section level2">
 <h2>Inter-group proximity measures</h2>
-<div id="inter-group-proximity-derived-from-teh-proximity-matrix" class="section level3">
-<h3>Inter-group proximity derived from teh proximity matrix</h3>
+<p>Basic approaches: * Summarise the proximities of individuals in each group * Describe a representative observation by choosing a suitable summary statistic for each variable, with the inter-group proximity defined as the proximity between the representative observations</p>
+<div id="inter-group-proximity-derived-from-the-proximity-matrix" class="section level3">
+<h3>Inter-group proximity derived from the proximity matrix</h3>
+<p>Options: * Nearest neighbour distance: Take smallest dissimilarity between any two individuals, one from each group. Basis of <em>single linkage</em> * Furthest-neighbour distance: Take largest dissimilarity between any two individuals, one from each group. Basis of <em>complete linkage</em> * Take average dissimilarity between any two individuals, one from each group. Basis of <em>group average clustering</em></p>
 </div>
-<div id="inter-group-proximity-based-on-group-summaries-for-contiuous-data" class="section level3">
-<h3>Inter-group proximity based on group summaries for contiuous data</h3>
+<div id="inter-group-proximity-based-on-group-summaries-for-continuous-data" class="section level3">
+<h3>Inter-group proximity based on group summaries for continuous data</h3>
+<ul>
+<li>Substitute group means (<em>centroid</em>) for variable values in inter-individual measures, i.e. Euclidean or city-block distances. This method, however, does not take into account within-group variation.</li>
+<li><p>Mahalanobi’s generalised distance, <span class="math inline">\(D^2\)</span> <span class="math display">\[D^2 = (bar{x}_A -bar{x}_B)^\prime W^{-1} (bar{x}_A -bar{x}_B)\]</span> where <span class="math inline">\(W^{-1}\)</span> is the pooled within-group covariance matrix for the two groups.</p>
+<ul>
+<li>Small correlations: <span class="math inline">\(D^2\)</span> ~ squared Euclidean distances on variables standardized by dividing their within group standard deviation</li>
+<li>Increases with increasing distances between two group centres and with decreasing within-group variation</li>
+<li>Inappropriate when the covariance matrix is approximately the same in the two groups</li>
+</ul></li>
+<li>Chadda and Marcus inter-group distance measure</li>
+<li><p>Normal Information Radius (NIR)</p></li>
+</ul>
 </div>
 <div id="inter-group-proximity-based-on-gorup-summaries-for-categorical-data" class="section level3">
 <h3>Inter-group proximity based on gorup summaries for categorical data</h3>
+<ul>
+<li>Balakrishnan and Sanghvi dissimilarity index: <span class="math display">\[G^2 =  = \sum_{k=1}^p \sum_{l=1}^{c_k + 1} \frac{(p_{Akl}-p_{Bkl})^2}{p_{kl}},\]</span></li>
+</ul>
+<p>where <span class="math inline">\(p_{Akl}\)</span> and <span class="math inline">\(p_{Bkl}\)</span> are proportions of the <span class="math inline">\(l\)</span>th category of the <span class="math inline">\(k\)</span>th variable in group A and B and <span class="math inline">\(p_{kl} = \frac{1}{2}(p_{Akl} + p_{Bkl})\)</span>, <span class="math inline">\(c_k + 1\)</span> is the number of categories for the <span class="math inline">\(k\)</span>th variable and <span class="math inline">\(p\)</span> is the number of variables. * Generalised Mahalanobis distance: <span class="math display">\[D^2 = (p_A -p_B)^\prime W_p^{-1} (p_A - p_B)\]</span> where <span class="math inline">\(p_A\)</span> is the sample proportions in group A and <span class="math inline">\(W_p\)</span> is the sample covariance matrix.</p>
 </div>
 </div>
 <div id="weighting-variables" class="section level2">
 <h2>Weighting variables</h2>
+<ul>
+<li>Selection of variables into study = weighting; those excluded have a weight of zero</li>
+<li>Standardisation essentially weights all variables</li>
+<li>Weights my be chosen by:
+<ul>
+<li>Judgement on behalf of investigator</li>
+<li>Some aspect of the data matrix
+<ul>
+<li>e.g. weight to be inversely proportion to variability (standard deviation or range) of variable. So more weight given to variables with less variability. Range found to be most effective. Method equivalent to standardisation. Note however that total variability = within-group variability + between group variability. Argument exists that should not reduce importance of variable because of between-group variation. Defining variable weights inversely proportional to a measure of total variability can have the serious disadvantage of diluting differences between groups on the variables which are the best discriminators. The problem is, however, that groups are not known… However, attempts have been made to estimate this. See Art and Gnanadeskian.<br />
+</li>
+<li>Find weights to minimize departure from <em>ultrametricity</em> (discussed later)</li>
+</ul></li>
+<li>Variable selection; iteratively identify variables which lead to internally cohesive and externally isolated clusters, and when clustered single, produce agreement with other variable subsets.</li>
+</ul></li>
+</ul>
+<p>Method effectiveness: * Equal weights, total standard deviation weights and range weights generally ineffective * Weighting to optimise fitting of a hierarchical tree often less effective than above * Weighting based on estimates of within-cluster variability work well * Forward variable selection among better performers.</p>
 </div>
 <div id="standardization" class="section level2">
 <h2>Standardization</h2>
+<ul>
+<li><p>Most common suggestion: Standardise each variable to unit variance prior to any analysis</p>
+<ul>
+<li>Autoscaling = standard scoring = z-scoring: Uses standard deviation</li>
+<li>Alternative: Median absolute deviation, ranges (latter shown to outperform autoscaling)</li>
+<li>Implied assumption is that importance of variable decreases with increasing variability</li>
+<li>Consider methods that estimate within-group variability, or use cluster methods whose grouping solutions are not affected by a variable’s unit of measurement.</li>
+</ul></li>
+</ul>
 </div>
-<div id="choise-of-proximity-measure" class="section level2">
-<h2>Choise of proximity measure</h2>
+<div id="choice-of-proximity-measure" class="section level2">
+<h2>Choice of proximity measure</h2>
+<p>Choice of proximity measure will depend on:</p>
+<ul>
+<li>Nature of data</li>
+<li>Scale of data</li>
+<li>Clustering algorithm to be employed</li>
+</ul>
 </div>
 </div>
 <div id="miscellaneous-clustering-methods" class="section level1">
@@ -138,7 +518,7 @@ tags:
 <li>The neuron will only fire if the summation is positive (sign = 1)</li>
 </ul>
 <p>In the following chart, X is the input layer, Z the hidden layer and Y the output layer. <img src="/graphs/nn.png" alt="Neural Network" /></p>
-<p>The model is typically trainined by minimising the RSS (residual sum of squares).</p>
+<p>The model is typically trained by minimising the RSS (residual sum of squares).</p>
 </div>
 <div id="the-kohonen-self-organising-map" class="section level3">
 <h3>The Kohonen self-organising map</h3>
@@ -159,7 +539,7 @@ tags:
 <li>Each of the <span class="math inline">\(p\)</span>-dimensional observations (<span class="math inline">\(\mathbf{x}\)</span>) are also scaled in (0, 1)</li>
 <li>The Euclidean distance (or other distance) is calculated between the observation and each of the <span class="math inline">\(k\)</span> <span class="math inline">\(p\)</span>-dimensional weight vectors (neurons).<br />
 </li>
-<li>The neuron with the smallest distance (the winner) is updated, as are a small neighbourhood of neurons around the winner; its weight vector <span class="math inline">\(\mathbf{w}_\text{old}\)</span> is brought closer to the input patterns <span class="math inline">\(\mathbf{x}\)</span> as follwos: <span class="math display">\[\mathbf{w}_\text{new} = \mathbf{w}_\text{old} + \alpha(\mathbf{x} - \mathbf{w}_\text{old})\]</span> The value of <span class="math inline">\(\alpha\)</span> is a small fraction, which decreases as learning takes place, as does the size of the neighbourhood. The excited neurons in the neighbourhood ofthe winner are udpated in a similar manner but with a smaller <span class="math inline">\(\alpha\)</span>.</li>
+<li>The neuron with the smallest distance (the winner) is updated, as are a small neighbourhood of neurons around the winner; its weight vector <span class="math inline">\(\mathbf{w}_\text{old}\)</span> is brought closer to the input patterns <span class="math inline">\(\mathbf{x}\)</span> as follows: <span class="math display">\[\mathbf{w}_\text{new} = \mathbf{w}_\text{old} + \alpha(\mathbf{x} - \mathbf{w}_\text{old})\]</span> The value of <span class="math inline">\(\alpha\)</span> is a small fraction, which decreases as learning takes place, as does the size of the neighbourhood. The excited neurons in the neighbourhood of the winner are updated in a similar manner but with a smaller <span class="math inline">\(\alpha\)</span>.</li>
 <li>As the network learns, the weights are modified and the input observations are provisionally assigned to clusters.</li>
 </ul>
 </div>

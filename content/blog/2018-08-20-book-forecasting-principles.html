@@ -2663,17 +2663,50 @@ y_t &amp;= \phi_1 y_{t-1} + \varepsilon_t \\
 </div>
 <div id="non-seasonal-arimapdq-models" class="section level2">
 <h2>Non-seasonal ARIMA(p,d,q) models</h2>
-<p>Non-seasonal ARIMA model: * AutoRegressive Integrated Moving Average * AR(p) + Differencing(d) + MA(q) * Integration = antonym of differencing; a time series which needs to be differenced to be made stationary is said to be an “integrated” version of a stationary series * Model written as: <span class="math display">\[
-y_t^\prime = c + \phi_1 y_{t-1}^\prime + \ldots + \phi_p y_{t-p} +
-                + \theta_1 \varepsilon_{t-1} +  \ldots +  \theta_q \varepsilon_{t-q}
-                + \varepsilon_t \]</span> where <span class="math inline">\(y_t^\prime\)</span> is the differenced series and may have been differenced mroe than once and</p>
+<p>Non-seasonal ARIMA model:</p>
 <ul>
+<li>AutoRegressive Integrated Moving Average</li>
+<li>AR(p) + Differencing(d) + MA(q)</li>
+<li>Integration = antonym of differencing; a time series which needs to be differenced to be made stationary is said to be an “integrated” version of a stationary series</li>
+<li><p>Model written as: <span class="math display">\[
+y_t^\prime = c + \phi_1 y_{t-1}^\prime + \ldots + \phi_p y_{t-p} +
+            + \theta_1 \varepsilon_{t-1} +  \ldots +  \theta_q \varepsilon_{t-q}
+            + \varepsilon_t \]</span> where <span class="math inline">\(y_t^\prime\)</span> is the differenced series and may have been differenced mroe than once and</p></li>
 <li><span class="math inline">\(p\)</span> = order of the autoregressive part (lagged values of <span class="math inline">\(y_t\)</span> as predictors)</li>
 <li><span class="math inline">\(d\)</span> = degree of first differencing</li>
-<li><span class="math inline">\(q\)</span> = order of the moving average part (lagged errors as predictors)</li>
+<li><p><span class="math inline">\(q\)</span> = order of the moving average part (lagged errors as predictors)</p></li>
 </ul>
 <p>Random-walk and random-trend models, autoregressive models, and exponential smoothing models are all special cases of ARIMA models:</p>
-<p>———————–|——————————— White noise | ARIMA(0, 0, 0) Random Walk | ARIMA(0, 1, 0) with no constant Random Walk with drift | ARIMA(0, 1, 0) with a constant Autoregression | ARIMA(<span class="math inline">\(p\)</span>, 0, 0) Moving average | ARIMA(0, 0, <span class="math inline">\(q\)</span>)</p>
+<table>
+<thead>
+<tr class="header">
+<th>———————–</th>
+<th>———————————</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>White noise</td>
+<td>ARIMA(0, 0, 0)</td>
+</tr>
+<tr class="even">
+<td>Random Walk</td>
+<td>ARIMA(0, 1, 0) with no constant</td>
+</tr>
+<tr class="odd">
+<td>Random Walk with drift</td>
+<td>ARIMA(0, 1, 0) with a constant</td>
+</tr>
+<tr class="even">
+<td>Autoregression</td>
+<td>ARIMA(<span class="math inline">\(p\)</span>, 0, 0)</td>
+</tr>
+<tr class="odd">
+<td>Moving average</td>
+<td>ARIMA(0, 0, <span class="math inline">\(q\)</span>)</td>
+</tr>
+</tbody>
+</table>
 <p>Combining components to form more complicated models easier when working with backshift ntation.</p>
 <ul>
 <li>AR(<span class="math inline">\(p\)</span>):</li>
