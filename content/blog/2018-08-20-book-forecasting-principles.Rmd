@@ -22,6 +22,7 @@ require(fpp2)
 require(GGally)
 require(gridExtra)
 require(knitr)
+require(lubridate)
 ```
 
 
@@ -2324,7 +2325,7 @@ Non-seasonal ARIMA model:
 * Integration = antonym of differencing; a time series which needs to be differenced to be made stationary is said to be an "integrated" version of a stationary series
 * Model written as:
 \[
-y_t^\prime = c + \phi_1 y_{t-1}^\prime + \ldots + \phi_p y_{t-p} +
+y_t^\prime = c + \phi_1 y_{t-1}^\prime + \ldots + \phi_p y_{t-p}^\prime +
                 + \theta_1 \varepsilon_{t-1} +  \ldots +  \theta_q \varepsilon_{t-q}
                 + \varepsilon_t \]
 where $y_t^\prime$ is the differenced series and may have been differenced mroe than once and 
@@ -2348,83 +2349,1238 @@ Combining components to form more complicated models easier when working with ba
 * AR($p$): 
 
 
+<!-- Other references:
+https://www.quora.com/Whats-the-difference-between-ARMA-ARIMA-and-ARIMAX-in-laymans-terms-What-exactly-do-P-D-Q-mean-and-how-do-you-know-what-to-put-in-for-them-in-say-R-1-0-2-or-2-1-1
 
-### US consumption expenditure
+https://onlinecourses.science.psu.edu/stat510/node/72/
+
+Time Series Analysis: Forecasting and Control
+https://robjhyndman.com/hyndsight/arimax/
+
+TODO: Read these:
+
+https://www.theguardian.com/science/2014/jul/13/fourier-transform-maths-equations-history
+
+https://content.pivotal.io/blog/forecasting-time-series-data-with-multiple-seasonal-periods
+
+-->
+
+Combining components to form more complicated models easier when working with backshift notation.
+
+* ARIMA($p,d,q$) in backshift notation: 
+
+$$\begin{aligned}
+y_t^\prime &= c + \phi_1 y_{t-1}^\prime + \ldots + \phi_p y_{t-p}^\prime  +
+                + \theta_1 \varepsilon_{t-1} +  \ldots +  \theta_q \varepsilon_{t-q} + \varepsilon_t \\
+y_t^\prime - \phi_1 y_{t-1}^\prime - \ldots - \phi_p y_{t-p}^\prime &= c + \varepsilon_t + \theta_1 \varepsilon_{t-1} +  \ldots +  \theta_q \varepsilon_{t-q} \\
+(1-B)^d y_t - \phi_1 B (1-B)^d y_t - \ldots - \phi_p B^p (1-B)^d y_t &= c +\varepsilon_t + \theta_1 B \varepsilon_{t} +  \ldots +  \theta_q B^q \varepsilon_{t} \\
+ (1-\phi_1 B  - \ldots - \phi_p B^p)(1-B)^dy_t &= c + (1 + \theta_1 B +  \ldots +  \theta_q B^q) \varepsilon_{t} 
+\end{aligned}$$
+
+Note that `R` uses a slightly different parameterisation:
+\[(1-\phi_1 B  - \ldots - \phi_p B^p)(y_t^\prime - \mu) =  (1 + \theta_1 B +  \ldots +  \theta_q B^q) \varepsilon_{t} \]
+where $y_t^\prime = (1-B)^dy_t$, $c = \mu(1 - \phi_1 - \ldots - \phi_p )$ and $\mu$ is the mean of $y_t^\prime$.
+
+
+**Example**: US consumption expenditure
+
+Fit non-seasonal ARIMA model to quarterly percentage changes in US consumption expenditure:
+
+```{r uschange_autoplot}
+autoplot(uschange[,"Consumption"]) +
+  xlab("Year") + 
+    ylab("Quarterly percentage change")
+```
+
+```{r uschange_autoarima}
+(fit <- auto.arima(uschange[,"Consumption"]))
+```
+The resulting ARIMA(2,0,2) model is:
+\[y_t  = c + `r round(fit$model$phi[1],3)` y_{t-1} + `r round(fit$model$phi[2],3)` y_{t-2} +  `r round(fit$model$theta[1],3)` \varepsilon_{t-1}  +  `r round(fit$model$theta[2],3)` \varepsilon_{t-2} + \varepsilon_t\]
+
+where $c = `r round(fit$coef["intercept"],3)` (1 - `r round(fit$model$phi[1],3)` - `r round(fit$model$phi[2],3)` ) = `r round(fit$coef["intercept"]*(1 - fit$model$phi[1] -  fit$model$phi[2]),3)`$ and $\epsilon_t$ is white noise with standard deviation of `r round(sqrt(fit$sigma2),3)` = $\sqrt{`r round(fit$sigma2,3)`}$.
+
+Forecasts for 10 quarters:
+```{r uschange_arima_forecast}
+fit %>% forecast(h = 10) %>% autoplot(include = 80) +  ylab("Quarterly % change in US Expenditure Consumption")
+
+```
+```{r uschange_arima_clean, echo = FALSE}
+rm(fit)
+```
+
 ### Understanding ARIMA models
+
+* `auto.arima()` useful, but anything automated can be dangerous unless understand models
+* Long-term forecasts will,:
+    * if $c = 0$ and $d = 0$, go to zero
+    * if $c = 0$ and $d = 1$, go to non-zero constant
+    * if $c = 0$ and $d = 2$, follow straight line
+    * if $c \neq 0$ and $d = 0$, go to mean of data
+    * if $c \neq 0$ and $d = 1$, follow straight line
+    * if $c \neq 0$ and $d = 2$, follow quadratic trend
+* Impact of $d$ on prediction interval: 
+    * $d = 0$, long-term forecast standard deviation $\rightarrow$ standard deviation of historical data
+    * Higher $d$, more rapidly prediction intervals increase in size
+* Impact of $p$ important for cycles
+    * $p \geq 2$ + additional conditions $\rightarrow$ cyclic forecasts
+    * E.g. cyclic behaviour occurs if $p = 2$ and $\phi_1^2 + 4\phi_2 < 0$, in which case the average period of the cycles is:
+        \[\frac{2\pi}{\text{arc} \cos (-\phi_1(1-\phi_2) / (4\phi_2)}\]
+
+
+
+
 ### ACF and PACF plots
 
+* ACF and PACF plots can be used to determine $p$ and $q$
+* ACF: if $y_t$ and $y_{t-1}$  are correlated:
+    * $y_{t-1}$ and $y_{t-2}$ will be correlated
+    * But we don't know if $y$ and $y_{t-2}$ are correlated because the are both connected to $y_{t-1}$ or because of additional information contained in $y_{t-2}$.... PACF to the rescue.
+* PACF: Measure relationship between $y_t$ and $y_{t-k}$ after removing the effects of lags $1, 2, 3, \ldots, k-1$.  Note:
+    *  $\alpha_k$, the $k$th partial autocorrelation coefficient = $\phi_k$ in AR($k$) model.
+    * partial autocorrelations have same critical values of $\pm/\sqrt{T}$
+ 
+If both $p$ and $q$ positive, then plots not useful for determining values. However, plots can be helpful if data are from ARIMA($p,d,0$) or ARIMA($0,d,q$):
+
+* ARIMA($p,d,0$):
+    * ACF exponentially decaying or sinusoidal
+    * Significant spike at lag $p$ in PACF but none beyond lag $p$
+* ARIMA($0,d,q$):
+    * PACF is exponentially decaying or sinusoidal
+    * Significant spike at lag $q$ in the ACF, but non beyond lag $q$
+  
+Example ACF:   
+```{r uschange_acf, fig.height = 3, fig.width = 6}
+ggAcf(uschange[,"Consumption"],main="")
+```
+
+
+Example PACF:   
+```{r uschange_pacf, fig.height = 3, fig.width = 6}
+ggPacf(uschange[,"Consumption"],main="")
+```
+
+
+Example ACF and  PACF with one command:   
+```{r uschange_acf_pacf, fig.height = 3, fig.width = 6}
+ggtsdisplay(uschange[,"Consumption"],main="")
+```
+
+In this example, we see:
+
+* Exponentially decaying ACF
+* Significant spike at lag 3 in PACF, and none afterwards (ignoring the one significant spike at lag 22 as it is just outside the limits and not in the first few lags, recall multiple test error)
+* Suggests ARIMA(3,0,0) process
+
+```{r uschange_arima300}
+Arima(uschange[,"Consumption"], order=c(3,0,0))
+```
+
+Note:
+
+* This model slightly better than that obtained using `auto.arima()` based on AICc.
+* `auto.arima()$ does not consider all possible models; can be improved by setting `stepwise=FALSE` and `approximation = FALSE`.
+
+```{r uschange_autoarima_accurate}
+auto.arima(uschange[,"Consumption"], seasonal=FALSE, stepwise=FALSE, approximation=FALSE)
+```
+
+
 ## Estimation and order selection
-### Maximum likelihood estimation
-### Information Criteria
+
+
+
+Steps in fitting ARIMA model:
+
+1. Identify model order (i.e. $p$, $d$ and $q$) 
+2. Estimate parameters $c, \phi_1, \ldots \phi_p, \theta_1, \ldots, \theta_q$ using **MLE**.  Note that different software will give slightly different answers; _log likelihood_ (logarithm of the probability of the observed data coming from the estimated model) usually reported  
+3. Aim: Minimise one of the following criteria (authors preference is AICc) in order to determine $p$ and $q$.  For $d$, need another approach as differencing changes data on which likelihood is computed and so criterion values not comparable for models with different values of $d$.
+
+Criterion | Formula
+---------------------------------------------------------|-----------------------------------------------------------------
+Akaike's Information Criterion (AIC) | $\text{AIC} = -2\log{L} + 2(p + q + k + 1)$ 
+Corrected Akaike's Information Criterion (AICc) | $\text{AIC}_c = \text{AIC} + \frac{2(p + q + k + 1)(p + q + k + 2)}{(T -p - q - k - 2)}$ 
+Bayesian Information Criterion (BIC) | $\text{AIC} = \text{AIC} + [log(T)(p + q + k + 1)]$ 
+
 
 ## ARIMA modelling in R
+
 ### How does `auto.arima()` work?
+
+Algorithm: 
+
+1. Determine number of differences $0 \leq d \leq 2$ using repeated KPSS tests
+2. Determine $p$ and $q$ using stepwise search as follows:
+    a. Fit initial models
+        * p = q = 0 (with constant if $d \leq 1$)
+        * p = q = 0 (with no constant but only if  $d \leq 1$, otherwise equivalent to above!)
+        * p = 1, q = 0 (with constant if $d \leq 1$)
+        * p = 0, q = 1 (with constant if $d \leq 1$)
+        * p = q = 2 (with constant if $d \leq 1$)
+    b Choose model with smallest AICc as current model
+    c. Vary current model by adding/subtracting 1 from $p$ or $q$, or by including/excluding $c$ from current model.   Repeat until no lower AICc can be found.
+    
+Set `appromiation = FALSE` to avoid approximations being used to speed up search.  Use `stepwise = FALSE` to search a larger set of models.
+
+
 ### Choosing your own model
+
+* Use `Arima()` function to choose the model yourself
+* Although `arima()` exists, not recommended as it does allow:
+    * constant $c$ unless $d=0$ 
+    * `forecast` package to work
+    * application of model to new data
+    
+
 ### Modelling procedure
-### Example: Seasonally adjusted electrical equipment orders
+
+Recommended approach:
+
+1 Plot data to look for unusual observations
+2 Transform data to stabilise variance (Box-Cox)
+3 Take first differences of data until data stationary
+4 Examine ACF/PACF: Is ARIMA($p,d,0$) or ARIMA($0,d,q$) appropriate
+5 Try chosen model(s) and use AICc to search for better model
+6 Plot ACF of residual and do portmanteau test; if residuals do not look like white noise try a modified model
+7 Calculate forecasts
+
+Only steps 3-5 taken care of by `auto.arima()`.
+
+**Example**: Seasonally adjusted electrical equipment orders
+
+**Step 1** Plot seasonally adjusted data: shows sudden changes (GFC), but nothing unusual
+```{r elecequip_step1, fig.height = 3, fig.width = 6}
+elecequip %>% stl(s.window='periodic') %>% seasadj() -> eeadj
+autoplot(eeadj)
+```
+
+**Step 2**  Based on plot, doesn't appear necessary to do Box-Cox transformation
+
+**Step 3**  Data clearly not stationary, therefore difference.  First differenced data appears stationary.
+```{r elecequip_step3}
+eeadj %>% diff() %>% ggtsdisplay(main="")
+```
+
+**Step 4**  ACF and PACF suggest ARIMA(3,1,0) process as:
+    * ACF __sinusoidal__
+    * Significant spike at lag 3 in PACF but none beyond lag 3 (with few exceptions at much later lags)
+    
+**Step 5**  Try chosen ARIMA(3,1,0) model and then variations to compare AICc:
+```{r elecequip_step5, message=FALSE, warning=FALSE}
+fit1 <- Arima(eeadj, order=c(3,1,0))
+fit2 <- Arima(eeadj, order=c(4,1,0))
+fit3 <- Arima(eeadj, order=c(2,1,0))
+fit4 <- Arima(eeadj, order=c(3,1,1))
+
+data.frame(model = c("orig", "p + 1", "p-1", "q+1"), aicc = c(fit1$aicc, fit2$aicc, fit3$aicc, fit4$aicc)) %>%
+    mutate(aicc = round(aicc,1)) %>% kable()
+
+```
+
+```{r elecequip_step5_clean, echo = FALSE}
+rm(fit1, fit2, fit3, fit4)
+```
+
+
+Note that ARIMA(3,1,1) is slightly lower (but is it significantly lower?)
+
+**Step 6** ACF plot of residual shows no significant lags; portmanteau test returns large $p$ value and therefore accept null hypothesis that residuals are white noise.
+```{r elecequip_step6}
+fit <- Arima(eeadj, order=c(3,1,1))
+checkresiduals(fit)
+```
+**Step 7** Forecast from chosen model
+```{r elecequip_step7}
+autoplot(forecast(fit))
+
+```
+```{r elecequip_step7_clean, echo = FALSE}
+rm(eeadj, fit)
+```
+
+    
 ### Understanding constants in R
+Apparently the following three are equivalent (although I unfortunately couldn't determine the algebra )
+$$\begin{aligned}
+ (1-\phi_1 B  - \ldots - \phi_p B^p)(1-B)^dy_t &= c + (1 + \theta_1 B +  \ldots +  \theta_q B^q) \varepsilon_{t} \\
+ (1-\phi_1 B  - \ldots - \phi_p B^p)(1-B)^d(y_t - \mu t^d/d!) &=  (1 + \theta_1 B +  \ldots +  \theta_q B^q) \varepsilon_{t} \\
+ (1-\phi_1 B  - \ldots - \phi_p B^p)(y_t^\prime - \mu) &=  (1 + \theta_1 B +  \ldots +  \theta_q B^q) \varepsilon_{t} \\
+\end{aligned}$$
 
+
+where $y_t^\prime = (1-B)^dy_t$, $c = \mu(1 - \phi_1 - \ldots - \phi_p )$ and $\mu$ is the mean of $y_t^\prime$.
+and so:
+
+* When the process is non-stationary (i.e. a $d$ term exists), the constant is equivalent to a polynomial trend of order $d$
+* When $d = 0$, then $\mu=\bar{y}_t$ and `Arima()` provides an estimate.  This will be close to the sample mean of the time series but not exact as sample mean is not MLE when $p + q > 0$.  Setting `include.mean = FALSE` will force $\mu = c = 0$
+* When $d > 0$, `Arima()` sets $c = \mu = 0$
+    * When $d = 1$ then setting `include.drift` or `include.constant` allows $\mu \neq 0$
+    * When $d > 1$, no constant allowed as quadratic or higher order trend dangerous when forecasting.
+ 
 ## Forecasting
-### Point forecasts
-### Prediction intervals
 
-## Seasonal ARIMA models
-### ACF/PACF
-### Example: European quarterly retail trade
-### Example: Corticosteroid drug sales in Australia
 
+Steps to obtain **point forecasts**: 
+
+
+* Expand ARIMA equation so that $y_t$ is alone on LHS.  Example: ARIMA(3,1,1) model can be re-written as:
+\[y_t = (1 + \hat{\phi}_1)y_{t-1} - (\hat{\phi}_1 - \hat{\phi}_2)y_{t-2} - (\hat{\phi}_2 - \hat{\phi}_3)y_{t-3} + \hat{\phi}_3y_{t-4} + \varepsilon_t + \hat{\theta}_1 \varepsilon_{t-1}\]
+
+* Rewrite equation, replacing $t$ by $T+h$, starting with $h = 1$ then incrementing $h$ as required
+\[y_{T+1} = (1 + \hat{\phi}_1)y_{T} - (\hat{\phi}_1 - \hat{\phi}_2)y_{T-1} - (\hat{\phi}_2 - \hat{\phi}_3)y_{T-2} + \hat{\phi}_3y_{T-3} + \varepsilon_{T+1} + \hat{\theta}_1 \varepsilon_{T}\]
+ 
+* Replace:
+    * Future observations with their forecasts (none at lag 1)
+    * Future errors with zero (in e.g., set $\varepsilon_{T+1} = 0$)
+    * Past errors with residuals (in e.g., set $\varepsilon_{T} = e_T$, the last observed residual )
+
+
+    
+**Prediction intervals**
+
+* Calculations provided in book
+* Based on assumption that residual are uncorrelated and normally distributed, otherwise prediction intervals incorrect.  Therefore, always plot ACF and histogram of residuals to check assumptions before producing prediction intervals.
+* For stationary models ($d=0$), prediction intervals will converge and so for long horizons all the same
+* For non-stationary models ($d > 0$), prediction intervals will continue to grow into the future
+
+
+## Seasonal ARIMA models, ARIMA(p,d,q)(P,D,Q)$_m$
+
+* $m$ = number of observations per year
+* E.g. ARIMA(1,1,1)(1,1,1)$_4$ without constant:
+    * Quarterly data (m = 4)
+    * $(1-\phi_1B)(1-\Phi_1B^4)(1-B)(1-B^4)y_t = (1 + \theta_1B)(1 + \Theta_1B^4)\varepsilon_t$
+    
+
+ARIMA(0,0,0)(1,0,0)$_{12}$
+
+* Exponential decay in seasonal lags of __ACF__ 
+* Spike at lag 12 in __PACF__
+
+ARIMA(0,0,0)(0,0,1)$_{12}$
+
+* Spike at lag 12 in __ACF__ , no other significant spikes
+* Exponential decay in seasonal lags of __PACF__ (at lags 12, 24, 36, ...)
+
+
+
+**Example**: European quarterly retail trade
+
+Data:
+```{r euretail_data, fig.height = 3, fig.width = 6}
+autoplot(euretail) + ylab("Retail index") + xlab("Year")
+```
+
+* First take seasonal difference (before considering other non-stationarity)
+
+```{r euretail_seasdiff}
+euretail %>% diff(lag=4) %>% ggtsdisplay()
+```
+
+* Still non-stationarity exists, therefore take difference
+```{r euretail_seasdiff_diff}
+euretail %>% diff(lag=4) %>% diff() %>% ggtsdisplay()
+```
+
+* Now need to find ARIMA model based on ACF and PACF:
+    * Significant spike at lag 4 in PACF and ACF suggest seasonal MA(1) (or seasonal AR(1)) lag
+    * Significant spike at lag 1 suggest MA(1) (or AR(1))
+    
+```{r euretail_ma1}
+euretail %>%  Arima(order = c(0, 1, 1), seasonal = c(0, 1, 1)) -> fit1 
+euretail %>%  Arima(order = c(1, 1, 0), seasonal = c(1, 1, 0)) -> fit2
+fit1$aicc
+
+fit2$aicc
+
+fit1 %>% residuals() %>% ggtsdisplay()
+
+```
+Given there exists significant lag at 2 and almost at 3, consider other models:
+```{r euretail_ma2}
+euretail %>%  Arima(order = c(0, 1, 2), seasonal = c(0, 1, 1)) -> fit3
+euretail %>%  Arima(order = c(0, 1, 3), seasonal = c(0, 1, 1)) -> fit4
+fit1$aicc
+fit3$aicc
+fit4$aicc
+fit4 %>% checkresiduals()
+```
+As all spikes are within significance limits and residuals appear to be white noise, can use model for forecasting (next three years):
+```{r euretail_forecast}
+fit4 %>% forecast(h=12) %>% autoplot()
+```
+
+* Forecasts follow recent trend in data
+* Large and rapidly increasing prediction intervals show could increase or decrease at any time (i.e. while point forecast trend downward, prediction interval allows data to trend upwards during forecast period.)
+
+```{r euretail_autoarima}
+auto.arima(euretail) # shortcuts
+auto.arima(euretail, stepwise = FALSE, approximation = FALSE)
+
+```
+```{r euretail_auto_clean, echo = FALSE}
+rm(list = ls(pattern = "^fit"))
+```
+
+    
+**Example**: Corticosteroid drug sales in Australia
+
+Data; take logarithm to stabilise variance
+```{r h02_data}
+lh02 <- log(h02)
+cbind("H02 sales (million scripts)" = h02, "Log H02 sales"=lh02) %>%
+  autoplot(facets=TRUE) + xlab("Year") + ylab("")
+```
+
+Seasonally differenced data:
+```{r h02_season_diff}
+lh02 %>% diff(lag=12) %>%
+  ggtsdisplay(xlab="Year",
+    main="Seasonally differenced H02 scripts")
+```
+
+Initial model to try: ARIMA(3,0,0)(2,1,0)[12]
+
+* Seasonal lag in PACF at 12, 24, .. -> Seasonal AR(2)
+* Exponentially declining ACF and significant lags in PACF at 1, 2, 3 -> AR(3)
+
+Recall that the Box-Cox transformation with $\lambda = 0$ is the logarithmic transformation.
+```{r h02_arima}
+ res <- data.frame(p=rep(3,7), d = rep(0,7), q = c(1,1,1,1,0,2,1), P = c(0,1,0,2,2,2,1), D = rep(1,7), Q = c(2,1,1,0,0,0,0)) %>%
+    mutate(model = paste0("ARIMA(", p, ",", d, ",", q, ")(", P, ",", D, ",", Q, ")[12]")) %>%
+    group_by(model) %>%
+    nest() %>%
+    mutate(fit = map(data, ~Arima(h02, order = c(.x$p, .x$d, .x$q), seasonal = c(.x$P, .x$D, .x$Q), lambda = 0))) %>%
+    mutate(aicc = map_dbl(fit, "aicc"))
+
+res %>% select(model, aicc)
+
+```
+
+Of all models, ARIMA(3,0,1)(0,1,2)[12], has the smallest AICc (noting the negative values!)
+```{r h02_arima_best}
+# note can also use first()
+(fit <- res %>% filter(model == "ARIMA(3,0,1)(0,1,2)[12]") %>% select(fit) %>% pull() %>% `[[`(1))
+checkresiduals(fit, lag = 36)
+```
+
+* There are still significant spikes in the ACF and model fails Ljung-Box test
+* Model can be used for forecasting and prediction intervals may not be accurate.
+* Sometimes it is not possible to find a model that passes all of the tests
+
+Test set evaluation:
+
+* Fit model using data from July 1991 to June 2006
+* Forecast data for July 2006 to June 2008
+
+
+```{r h02_test_arima}
+
+res <- data.frame(
+    p = c(rep(3,7),2,2), 
+    d = c(rep(0,7),1,1), 
+    q = c(1,1,1,1,0,2,1,4,3), 
+    P = c(0,1,0,2,2,2,1,0,0), 
+    D = c(rep(1,7),1,1), 
+    Q = c(2,1,1,0,0,0,0,1,1)
+    ) %>%
+    mutate(model = paste0("ARIMA(", p, ",", d, ",", q, ")(", P, ",", D, ",", Q, ")[12]")) %>%
+    group_by(model) %>%
+    nest() %>%
+    mutate(fit = map(data, ~Arima(window(h02, start = c(1991, 7), end = c(2006, 6)), order = c(.x$p, .x$d, .x$q), seasonal = c(.x$P, .x$D, .x$Q), lambda = 0)),
+           pred = map(fit, ~forecast(.x, h = 24)),
+           accuracy = map(pred, ~accuracy(.x, h02)), 
+           rmse = map_dbl(accuracy, function(x) x[2, "RMSE"]))
+
+select(res, model, rmse)
+
+
+```
+
+* When comparing models using test set, comparisons are always valid (i.e. can include some with no and first differencing), unlike when comparing models based on AICc.
+* No model pass all residuals test, in practice use best model could find, even if it could not pass all tests
+
+```{r h02_arima_forecast_test}
+res %>% filter(model == "ARIMA(3,0,1)(0,1,2)[12]") %>% select(pred) %>% pull() %>% first() %>% autoplot(PI = FALSE) +  ylab("H02 sales (million scripts)") + xlab("Year")
+
+
+```
+
+```{r h02_arima_clean, echo = FALSE}
+rm(fit, res, lh02)
+```
 
 ## ARIMA vs ETS
-### Example: Comparing auto.arima() and ets() on non-seasonal data
-### Example: Comparing auto.arima() and ets() on seasonal data
 
+* Linear exponential smoothing models are special cases of ARIMA models
+* Non-linear exponential models have no ARIMA equivalent; equally there exist ARIMA models with no equivalent ETS model.
+* All ETS models are non-stationary; there exist stationary ARIMA models.
+
+By this, it is meant, as per [Stack Exchange](https://stats.stackexchange.com/questions/76696/non-stationary-time-series-forecasting) 
+
+> Exponential smoothing methods are only really appropriate if the data are non-stationary. Using an exponential smoothing method on stationary data is not wrong but is sub-optimal.
+
+Recall: ETS(Error,Trend,Seasonality) where:
+
+* Error = {Additive, Multiplicative}
+* Trend = {None, Additive, Additive Damped}
+* Seasonal = {None, Additive, Multiplicative}
+
+ETS Model | ARIMA Model 
+-----------------------| -------------------------
+ETS(A,N,N) | ARIMA(0,1,1) 
+ETS(A,A,N) | ARIMA(0,2,1) 
+ETS(A,A$_D$,N) | ARIMA(1,1,2) 
+ETS(A,N,A) | ARIMA(0,1,m)(0,1,0)$_m$ 
+ETS(A,A,A) | ARIMA(0,1,m+1)(0,1,0)$_m$ 
+ETS(A,A$_D$,A) | ARIMA(1,1,m+1) (0,1,0)$_m$
+
+* Equivalence of parameters also provided.  
+* AICc cannot be used to compare models of different classes (i.e. to compare ARIMA and ETS model), because likelihood computed in different ways. Only train/test or cross-validation can be used.
+
+
+**Example**: Comparing auto.arima() and ets() on non-seasonal data
+```{r air_multimodel}
+air <- window(ausair, start=1990)
+
+fets <- function(x, h) {
+  forecast(ets(x), h = h)
+}
+
+farima <- function(x, h) {
+  forecast(auto.arima(x), h=h)
+}
+
+tribble(~model, ~func,
+             'fets', fets,
+             'farima', farima) %>%
+    mutate(e = map(func, ~tsCV(y=air, forecastfunction = .x, h = 1)), 
+           mse = map_dbl(e, ~mean(.^2, na.rm = TRUE)))
+
+air %>% ets() %>% forecast() %>% autoplot()
+
+
+```
+```{r air_multimodel_clean, echo = FALSE}
+rm(air, farima, fets)
+```
+
+
+**Example**: Comparing auto.arima() and ets() on seasonal data
+```{r qcement_multimodel}
+
+require(fpp2); require(forecast); require(tidyverse)
+# Consider the qcement data beginning in 1988
+cement <- window(qcement, start=1988)
+
+# Use 20 years of the data as the training set
+train <- window(cement, end=c(2007,4))
+
+res <- tribble(~func,
+             'auto.arima',
+             'ets') %>%
+    mutate(fit = invoke_map(func, list(train)),
+           pred = map(fit, ~forecast(., h = 4*(2013-2007)+1)),
+           accuracy = map(pred, ~accuracy(., qcement)),
+           train = map(accuracy, function(x) x[1, ]),
+           test = map(accuracy, function(x) x[2, ]))
+
+res %>% unnest(test, train, .preserve = func) %>% 
+    
+    # How do I get the name of the list of lists instead of having to do the following line?
+    mutate(metric = rep(names(res$train[1][[1]]), 2)) %>%
+    filter(metric %in% c("RMSE", "MAE", "MAPE", "MASE")) %>% select(func, metric, train, test) %>%
+    gather("data", "value", -func, -metric) %>%
+    mutate(value = round(value, 3)) %>%
+    spread(func, value) %>%
+    arrange(desc(data), metric) 
+
+
+```
+See that ARIMA fits training data slightly better, but ETS model providers more accurate forecasts on test set.  
+
+```{r qcement_ets}
+# Generate forecasts from an ETS model
+cement %>% ets() %>% forecast(h=12) %>% autoplot()
+
+```
+```{r qcement_ets_clean, echo = FALSE}
+rm(res, cement, train)
+```
 
 
 # Dynamic regression models
+
+Allow error in regression model to contain autocorrelation following an ARIMA model (to emphasise, $\epsilon_t$ replaced with $\eta_t$), e.g. if error follows ARIMA(1,1,1):
+$$\begin{aligned}
+y_t = \beta_0 + \beta_1 x_{1,t} + \ldots + \beta_{k,t} + \eta_t,\\
+(1 - \phi_1B)(1-B)\eta_t = (1 + \theta_1B)\epsilon_t
+\end{aligned}$$
+
+Model has two error terms:
+1. Regression model error ($\eta_t$)
+2. ARIMA model error ($\epsilon_t$), assumed to be white noise
+
 ## Estimation
+
+* Need to minimise SSE($\epsilon_t$), not SSE($\eta_t$)
+* All variables need to be stationary (i.e. response variable and predictors); otherwise estimates will not be consistent / meaningful.  Exception: if non-stationary variables are co-integrated (i.e. if there is a linear combination of the non-stationary $y_t# and the predictors that is stationary)
+* Usually best to difference all variables if at least one needs differencing.  
+* New definitions:
+    * **Model in levels**: Model based on original data (with no differencing)
+    * **Model in differences**: Model with all variables differenced
+* A regression model with ARIMA models is equivalent to a regression model in differences with ARMA errors (i.e. it is missing the "I" for integrated/differencing)
+
+
+$$\begin{aligned}
+y_t = \beta_0 + \beta_1 x_{1,t} + \ldots + \beta_{k,t} + \eta_t,\\
+(1 - \phi_1B)(1-B)\eta_t = (1 + \theta_1B)\epsilon_t
+\end{aligned}$$
+
+$$\begin{aligned}
+y_t = \beta_0 + \beta_1 x_{1,t}^\prime + \ldots + \beta_{k,t}^\prime + \eta_t^\prime,\\
+(1 - \phi_1B)\eta_t^\prime = (1 + \theta_1B)\epsilon_t
+\end{aligned}$$
+
+
+
 ## Regression and ARIMA errors in R
+
+* `Arima()` with argument `xreg`
+
+    * Fits regression model with ARIMA errors
+    * `order` specifies order of ARIMA error model
+    * Differencing applied to all variables, if specified.
+    * Set `include.drift = TRUE` to include constant term in differenced model
+
+* `auto.arima()` with argument `xreg` 
+
+    * Requires specification of the predictors
+    * Will determine best ARIMA model for the errors
+    * Best predictors can be determined via AICc; repeat for all subsets of predictors to be considered and select model with lowest AICc
+    
+**Example**: US Personal Consumption and Income
+
+Aim: Forecast changes in expenditure based on changes in income, noting that a change in income may not lead to an instant change in consumption; but ignored here.
+
+```{r uschange_regarima_data}
+
+autoplot(uschange[,1:2], facets=TRUE) +
+  xlab("Year") + ylab("") +
+  ggtitle("Quarterly changes in US consumption  and personal income")
+
+```
+No need for any differencing as already stationary.  
+
+
+```{r uschange_regarima}
+
+(fit <- auto.arima(uschange[,"Consumption"], xreg=uschange[,"Income"]))
+
+```
+
+Fitted model is a regression model with ARMA(1,2) error:
+$$\begin{aligned}
+y_t  = `r round(fit$coef["intercept"],3)` + `r round(fit$coef["xreg"],3)` x_{t} + \eta_t \\
+\eta_t = `r round(fit$coef["ar1"],3)`\eta_{t-1} + \varepsilon_t + 
+`r round(fit$coef["ma1"],3)`\varepsilon_{t-1} + `r round(fit$coef["ma2"],3)`\varepsilon_{t-2}\\
+\epsilon_t \sim \text{NID}(0,`r round(fit$sigma2,3)`)
+\end{aligned}$$
+
+
+Regression and ARIMA errors:
+
+```{r uschange_regarima_residuals}
+cbind("Regression Errors" = residuals(fit, type="regression"),
+      "ARIMA errors" = residuals(fit, type="innovation")) %>%
+  autoplot(facets=TRUE)
+```
+
+Check ARIMA errors for white noise series:
+
+```{r uschange_regarima_arima_residuals}
+checkresiduals(fit)
+
+```
+```{r uschange_regarima_arima_residuals_clean, echo = FALSE}
+rm(fit)
+```
+
+
 ## Forecasting
+
+To forecast:
+
+* Forecast regression part: First forecast predictors using separate model or assumed future values
+* Forecast ARIMA part
+* Combine results
+
+**Example**: US Personal Consumption and Income
+
+Continuing on with example to: Forecast changes in expenditure based on changes in income, noting that a change in income may not lead to an instant change in consumption; but ignored here.
+
+Assumption: Future percentage change in personal disposable income = mean percentage change from the last 40 years
+
+```{r us_regarima_forecast}
+fit <- auto.arima(uschange[,"Consumption"], xreg=uschange[,"Income"])
+
+fcast <- forecast(fit, xreg=rep(mean(uschange[,2]),8))
+
+autoplot(fcast) + xlab("Year") +  ylab("Percentage change")
+```
+
+```{r us_regarima_clean, include=FALSE, echo = FALSE}
+rm(fit, fcast)
+```
+
+
+Prediction interval now smaller than with ARIMA model only; i.e. income change explains some of the variation
+
+**Note** Prediction intervals of regression models (with/without ARIMA errors) do not take into account uncertainty in the forecasts of the predictors; prediction interval therefore condition on estimated future values of predictor variables
+
+
+**Example**: Forecasting electricity demand
+```{r elec_temp_demand}
+
+ggplot(data.frame(elecdaily)) + 
+    geom_point(aes(Temperature, Demand))
+
+autoplot(elecdaily[, c("Demand", "Temperature")], facets = TRUE) + ylab("")
+
+
+```
+U-Shape suggests quadratic regression model.
+
+```{r elecdaily_xreg}
+xreg <- cbind(MaxTemp = elecdaily[, "Temperature"],
+              MaxTempSq = elecdaily[, "Temperature"]^2,
+              Workday = elecdaily[, "WorkDay"])
+
+fit <- auto.arima(elecdaily[, "Demand"], xreg = xreg)
+
+checkresiduals(fit)
+```
+
+This model has significant autocorrelation in residuals, therefore prediction intervals are not reliable (and should not be shown).  Can provide point forecast though:
+
+* For 14 days ahead
+* For illustration, temperature set to constant 26 degrees (scenario based forecasting)
+
+
+```{r elecdaily_xreg_forecast}
+fcast <- forecast(fit,
+  xreg = cbind(rep(26,14), rep(26^2,14),
+    c(0,1,0,0,1,1,1,1,1,0,0,1,1,1)))
+
+#?autoplot.forecast
+autoplot(fcast, PI = FALSE) + ylab("Electricity demand (GW)")
+
+
+
+```
+
+```{r elecdaily_xreg_clean, include=FALSE, echo = FALSE}
+rm(fcast, fit, xreg)
+```
+
+
 ## Stochastic and deterministic trends
+
+Linear trend can be modelled as:
+
+* **Deterministic trend**: Regression model where $\eta_t$ is an ARMA process
+
+$$\begin{aligned}
+y_t = \beta_0 + \beta_1 t + \eta_t,\\
+(1 - \phi_1B)\eta_t = (1 + \theta_1B)\epsilon_t
+\end{aligned}$$
+
+* Obtained in `auto.arima()` by setting `d=0`.
+* Assumes slope of trend is not going to change over time
+    
+* **Stochastic trend**:  Regression model where $\eta_t$ is an ARIMA process with $d$ = 1.  This is equivalent to $\eta_t^\prime$ being an ARMA process
+
+$$\begin{aligned}
+y_t - y_{t-1} = \beta_1 + \eta_t^\prime,\\
+(1 - \phi_1B)\eta_t^\prime = (1 + \theta_1B)\epsilon_t
+\end{aligned}$$
+
+The regression model can be rewritten as $y_t = $y_{t-1} + \beta_1 + \eta_t^\prime$ is is similar to a random walk model with drift, but different in that the error term is an ARMA process rather than white noise.
+
+* Obtained in `auto.arima()` by setting `d=1`.
+* Doesn't assume that rate of growth will continue
+* Safer to use for forecasting, specially for longer forecast horizons as prediction itnervals allows for greater uncertainty in future growth.
+    
+**Example**: International visitors to Australia
+
+Data:
+```{r austa_preview, fig.width=6, fig.height=3}
+autoplot(austa) + xlab("Year") +
+  ylab("millions of people") +
+  ggtitle("Total annual international visitors to Australia")
+```
+
+Deterministic trend model:
+```{r austa_deterministic} 
+trend <- seq_along(austa)
+(fit1 <- auto.arima(austa, d=0, xreg=trend))
+```
+
+$$\begin{aligned}
+y_t  &= `r round(fit1$coef["intercept"],3)` + `r round(fit1$coef["xreg"],3)` x_{t} + \eta_t \\
+\eta_t &= `r round(fit1$coef["ar1"],3)`\eta_{t-1} + `r round(fit1$coef["ar2"],3)`\eta_{t-2}  + \varepsilon_t\\
+\epsilon_t &\sim \text{NID}(0,`r round(fit1$sigma2,3)`)
+\end{aligned}$$
+
+As per regression equation, the estimated growth in visitor numbers is 0.17 million people per year.
+
+
+Stochastic trend model:
+```{r austa_stochastic} 
+trend <- seq_along(austa)
+(fit2 <- auto.arima(austa, d=1))
+```
+
+The model is as follows:
+$$\begin{aligned}
+y_t - y_{t-1}  &= `r round(fit2$coef["drift"],3)`  + \eta_t^\prime \\
+\eta_t^\prime  &=   
+`r round(fit2$coef["ma1"],3)`\varepsilon_{t-1} + \varepsilon_t\\
+\epsilon_t &\sim \text{NID}(0,`r round(fit2$sigma2,3)`)
+\end{aligned}$$
+
+Equivalently, written as:
+$$\begin{aligned}
+y_t   &= y_0 + `r round(fit2$coef["drift"],3)`t  + \eta_t^\prime \\
+\eta_t &=  \eta_{t-1}  + 
+`r round(fit2$coef["ma1"],3)`\varepsilon_{t-1} + \varepsilon_t \\
+\epsilon_t &\sim \text{NID}(0,`r round(fit2$sigma2,3)`)
+\end{aligned}$$
+
+Similar to the deterministic trend model, estimated growth in visitor numbers is 0.17.
+
+Difference between models is in prediction intervals; stochastic trend model has much wider prediction interval due to non-stationary error
+
+```{r austa_regtrend_forecast} 
+fc1 <- forecast(fit1, xreg = cbind(trend = length(austa) + 1:10))
+fc2 <- forecast(fit2, h=10)
+
+autoplot(austa) +
+  autolayer(fc2, series="Stochastic trend") +
+  autolayer(fc1, series="Deterministic trend") +
+  ggtitle("Forecasts from trend models") +
+  xlab("Year") + ylab("Visitors to Australia (millions)") +
+  guides(colour=guide_legend(title="Forecast"))
+
+
+```
+
+```{r austa_regtrend_clean, echo=FALSE, message=FALSE, warning=FALSE}
+rm(fc1, fc2, fit1, fit2, trend)
+```
+
+
+## Dynamic harmonic regression
+
+Data Frequency | Seasonality (example only)
+---------------|-----------------------------
+Daily   | 365
+Weekly  | 52
+Half/Hourly | 48 (shortest)
+
+* ARIMA, ETS designed for shorter periods, e.g. for monthly data (12) or quarterly (4)
+* `ets()` allows maximum frequency of $m=24$, equivalent to 23 parameters to be estimated
+* `Arima()` and `auto.arima()` allow maximum $m = 350$, but will usually run out of memory at $m > 200$.
+* Seasonal differencing of high order does not make much sense, e.g. for daily data: What happened today vs what happened exactly 1 year ago with no constraint on a smooth seasonal pattern
+
+
+Recommended approach: **Harmonic regression**.  
+
+* Seasonal pattern modelled using Fourier terms and short-term series dynamics handled by ARMA error.
+* Advantages:
+    * Any length seasonality allowed
+    * Can have different seasonal periods (each with their own Fourier terms)
+    * THe number of fourier terms ($K$ is the number of sine and cosine terms to return)
+    * For small $K$, seasonal pattern is smooth
+    * Short-term dynamics handles with simple ARMA error
+* Disadvantage (compared to seasonal ARIMA model)
+    * Seasonality assumed to be fixed (i.e. pattern not allowed to change over time) (however usually constant except for long time series)
+    
+**Example**: Australian eating out expenditure
+
+* Monthly data
+* Seasonality - Fourier
+* Other dynamics - ARIMA errors
+* `forecast::fourier()`: 
+    * `x`: Seasonal time series.
+    * `K`: Maximum order(s) of Fourier terms
+    * `h`: Number of periods ahead to forecast 
+    * Period of Fourier terms is determined from the ts characteristics of $x$.
+
+In following example, AICc minimised for $K = 5$.
+```{r auscafe_harmonic}
+
+cafe04 <- window(auscafe, start=2004)
+plots <- list()
+for (i in seq(6)) {
+  fit <- auto.arima(cafe04, xreg = fourier(cafe04, K = i), seasonal = FALSE, lambda = 0)
+  plots[[i]] <- autoplot(forecast(fit, xreg=fourier(cafe04, K=i, h=24))) +
+    xlab(paste("K=",i,"   AICC=",round(fit[["aicc"]],2))) +
+    ylab("") + ylim(1.5,4.7)
+}
+gridExtra::grid.arrange( plots[[1]],plots[[2]],plots[[3]], plots[[4]],plots[[5]],plots[[6]], nrow=3)
+
+
+
+```
+
+```{r auscafe_harmonic_clean, message=FALSE, warning=FALSE, include=FALSE, echo=FALSE}
+rm(fit, plots, i, cafe04)
+```
+
+
 ## Lagged predictors
 
+* Predictor impact may not occur for some time
+* Predictor impact may diminish over time
+* With one predictor, model allowing for lagged effects is:
+\[y_t = \beta_0 + \gamma_0 x_t + \gamma_1 x_{t-1} + \ldots + \gamma_k x_{t-k} + \eta_t\]
+where $\eta_t$ is an ARIMA process.  Value of $k$ (regression) and $p$ and $q$ (ARIMA) can be determined using AICc.
+
+**Example**: TV advertising and insurance quotations
+
+Aim: Use ad expenditure to predict insurance quotations (and therefore new policies)
+
+* Consider that ad expenditure can impact sales for current and following 3 months (i.e. test with $k$ = 0, 1, 2 and 3.)
+* In order to compare models using same data, exclude first three months 
+
+```{r insurance_data}
+autoplot(insurance, facets=TRUE) +
+  xlab("Year") + ylab("") +
+  ggtitle("Insurance advertising and quotations")
+```
+
+* Data (lag 0) is for Jan 2002 until April 2005.
+* Lag 1 will be from Dec 2002 
+* Lag 2 will be from Nov 2002 
+* Lag 3 will be from Oct 2002
+
+Note: In the following, if you do not include `head(nrow(insurance))`, the lagged values will have greater number of rows than the response variable.
+
+```{r insurance_lags}
+# Lagged predictors. Test 0, 1, 2 or 3 lags.
+Advert <- cbind(
+    AdLag0 = insurance[,"TV.advert"],
+    AdLag1 = stats::lag(insurance[,"TV.advert"],-1),
+    AdLag2 = stats::lag(insurance[,"TV.advert"],-2),
+    AdLag3 = stats::lag(insurance[,"TV.advert"],-3))  %>%
+  head(nrow(insurance))
+
+max.lag <- 4
+N <- nrow(insurance)
+# Restrict data so models use same fitting period
+fit1 <- auto.arima(insurance[max.lag:N,1], xreg=Advert[max.lag:N,1], stationary=TRUE)
+fit2 <- auto.arima(insurance[max.lag:N,1], xreg=Advert[max.lag:N,1:2], stationary=TRUE)
+fit3 <- auto.arima(insurance[max.lag:N,1], xreg=Advert[max.lag:N,1:3], stationary=TRUE)
+fit4 <- auto.arima(insurance[max.lag:N,1], xreg=Advert[max.lag:N,1:4], stationary=TRUE)
+
+# AICc
+c(fit1[["aicc"]],fit2[["aicc"]],fit3[["aicc"]],fit4[["aicc"]])
+
+
+```
+```{r insurance_lags_clean, include=FALSE, echo = FALSE}
+rm(max.lag, N, fit1, fit2, fit3, fit4)
+```
+
+
+Best model (based on AICc) has 2 lagged predictors; advertising have effect on quotes for current and following month.  Can now re-estimate model with all data.
+
+```{r insurance_chosen_lag}
+(fit <- auto.arima(insurance[,1], xreg=Advert[,1:2],  stationary=TRUE))
+```
+
+Resulting model: 2-period lagged regression model with AR(3) errors;
+
+$$\begin{aligned}
+y_t  &= `r round(fit$coef["intercept"],3)` + `r round(fit$coef["AdLag0"],3)` x_{t} + `r round(fit$coef["AdLag1"],3)` x_{t-1} + \eta_t \\
+\eta_t &= `r round(fit$coef["ar1"],3)`\eta_{t-1} + `r round(fit$coef["ar2"],3)`\eta_{t-2}  + `r round(fit$coef["ar3"],3)`\eta_{t-3}  + \varepsilon_t\\
+\epsilon_t &\sim \text{NID}(0,`r round(fit$sigma2,3)`)
+\end{aligned}$$
+
+
+Forecasts can be calculating by assuming future values for advertising variable.  Here set to 8 units; forecasts made for next 20 months.
+```{r insurance_lag_forecast}
+fc8 <- forecast(fit, 
+                h=20,  
+                xreg=cbind(
+                    AdLag0 = rep(8,20), 
+                    AdLag1 = c(Advert[40,1], rep(8,19))))
+
+autoplot(fc8) + ylab("Quotes") +  ggtitle("Forecast quotes with future advertising set to 8")
+
+rm(Advert, fit, fc8)
+```
+
+
 # Forecasting hierarchical or grouped time series
-## Hierarchical time sereis
+
+When want, e.g. forecasts for Australia wide and each state, with state forecasts adding up to Australia wide forecast. 
+<!--
+## Hierarchical time series
 ## Grouped time series
 ## The bottom-up approach
 ## Top-down approaches
 ## Middle-out approaches
 ## Mapping matrices
 ## The optimal reconciliation approach
+-->
 
 # Advanced forecasting methods
+
 ## Complex seasonality
+
+* High frequency data can have multiple seasonal patterns:
+
+Data frequency | Possible patterns
+-----------------| ----------------------------
+Daily Data | Weekly, Anual
+Hourly Data | Daily, Weekly, Annual
+Weekly | Annual (period = ~52.179)
+
+* `ts` can handle only one type of seasonality, which is usally assumed to take __integer__ values
+* Methods: 
+
+    * `msts` for multiple seasonality time series and non-integer frequencies.  Retruns mulitple seasonal components, trend and remainder components.  Ensure to consider vertical scales when interpretign charts.  To forecast, use `stlf()` to:
+        * Forecast each seasonal foreast using seasonal naive method
+        * Use ETS (or othe rmethod) for seasonally adjusted data
+    * Dynamic harmonic regression with multiple seasonal periods; add Fourier terms for each seasonal period
+    * TBATS model (Fourier terms with an exponential smoothing state space model and Box Cox trasnformation in automated model); unlike dynamic harmonic regression allows seasonality to change slowly over time.  Disadvantage is that is can be slow to estimate and does not allow covariates (unlike harmonic regression)
+    
+**Example**: Call arrivals per 5 minute interval each weekday between 7:00am and 9:05pm for 33 weeks
+
+* Daily seasaonality has frequency = 169
+* Weekly seasonality has frequency = 845
+
+
+```{r call_freq_calcs, eval=FALSE, include=FALSE}
+md <- as.duration(ymd_hm("2018-09-07 07:00") %--% ymd_hm("2018-09-07 21:05"))/dminutes(1)/5
+mw <- md * 5
+```
+Data: 
+```{r call_view, message=FALSE, warning=FALSE}
+# All data
+p1 <- autoplot(calls) +
+  ylab("Call volume") + xlab("Weeks") +
+  scale_x_continuous(breaks=seq(1,33,by=2))
+
+# 4 weeks
+p2 <- autoplot(window(calls, end=4)) +
+  ylab("Call volume") + xlab("Weeks") +
+  scale_x_continuous(minor_breaks = seq(1,4,by=0.2))
+
+gridExtra::grid.arrange(p1,p2)
+
+rm(p1, p2)
+```
+Decomposition using STL with multiple seasonal periods model; note that trend and weekly seasonality explain much less of the variation than daily seasonality.
+
+```{r calls_decompose_mstl}
+calls %>% mstl() %>% autoplot() + xlab("Week")
+```
+
+Forecast using decomposition:
+```{r calls_decompose_forecast}
+calls %>% stlf() %>% autoplot() + xlab("Week")
+```
+
+Dynamic harmonic regression with multiple seasonal periods, using log transformation to ensure forecasts and prediction intervals remain positive:
+
+TODO: Understand why 10,10 chosen for fourier.
+
+This model is EXTREMELY slow....
+```{r calls_harmonic_reg, eval=FALSE, include=FALSE, echo = TRUE}
+fit <- auto.arima(calls, seasonal=FALSE, lambda=0, xreg=fourier(calls, K=c(10,10)))
+
+fit %>%
+  forecast(xreg=fourier(calls, K=c(10,10), h=2*169)) %>%
+  autoplot(include=5*169) +
+    ylab("Call volume") + xlab("Weeks")
+```
+
+
+TBATS example provided.
+
+
+**Example**: Electricity demand modelling
+
+Aim: Forecast electricity demand based on:
+    * Historical demand over 1/2 hourly intervals  (1year)
+    * Temperatures
+
+Data:
+```{r elecdemand_view2}
+p1 <- autoplot(elecdemand[,c("Demand","Temperature")],
+    facet=TRUE) +
+  scale_x_continuous(minor_breaks=NULL,
+    breaks=2014+
+      cumsum(c(0,31,28,31,30,31,30,31,31,30,31,30))/365,
+    labels=month.abb) +
+  xlab("Time") + ylab("")
+
+p2 <- elecdemand %>%
+  as.data.frame() %>%
+  ggplot(aes(x=Temperature, y=Demand)) + geom_point() +
+    xlab("Temperature (degrees Celsius)") +
+    ylab("Demand (GW)")
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+rm(p1, p2)
+```
+
+Model: Regression with piecewise linear function of termperature (with knot at 18 degrees) and harmonic regression terms to allow for daily seasonal pattern
+
+TODO: Understand this after reviewing regression chapter.
+```{r elecdemand_plf, eval=FALSE, include=FALSE}
+# Get temperatures of 18 and above; set to 18 is temperature below 18 
+
+cooling <- pmax(elecdemand[,"Temperature"], 18)
+
+fit <- auto.arima(elecdemand[,"Demand"],
+         xreg = 
+             cbind(fourier(elecdemand, c(10,10,0)),
+               heating=elecdemand[,"Temperature"],
+               cooling=cooling))
+```
+
+Forecasts require  meteorological model forecasts or scenario forecasts.  Here use repeat of last 2 days
+
+TODO: Review and understand: 
+```{r elecdemand_plf_forecast, eval=FALSE, include=FALSE}
+temps <- subset(elecdemand[,"Temperature"],
+          start=NROW(elecdemand)-2*48+1)
+fc <- forecast(fit,
+        xreg=cbind(fourier(temps, c(10,10,0)),
+          heating=temps, cooling=pmax(temps,18)))
+autoplot(fc, include=14*48)
+```
+
+
+
+TODO: Read following sections in more detail:
+
 ## Vector autoregressions
+
+Allow for bidirectional relationship between forecast and predictor variables.  i.e. that predictor infleunces forecast variable which then adjusts the predictor variable.  
+
+
 ## Neural network models
+
+* Allow complex nonlinear relationships between response variable and predictors.
+
+* Lagged values of the time series can be used as inputs to a neural network (similar to linear autorgression model); called neural network autoregression or NNAR model.
+
 ## Bootstrapping and bagging
+
+Can simulate time series (generate new series similar to observed one) by:
+
+* Box-Cox transform series
+* Decompose into trend, seasonal and remainder coponents using STL
+* Bootstrap remainder series (but because there may be autocorrelation within STL remainder, use "blocked bloostrap", where contiguous sections of TS selected at random and joined together)
+* Add bootstrapped remainder to trend and seasonal compoennts
+* Reverse Box-Cox transformation
+
+Advantage:
+
+* Better measure of forecast uncertainty; most prediction intervals too narrow
+* Improve point forecast using "bagging"
+
+Sources of uncertainty:
+
+* Random error term (only term accounted for in prediction intervals)
+* Parameter estimates (bootstrapping incorporates this as welll)
+* Choice of model
+* Continuaction of process into future
+
+
+```{r bootseries, message=FALSE, warning=FALSE}
+bootseries <- bld.mbb.bootstrap(debitcards, 10) %>%
+  as.data.frame() %>% ts(start=2000, frequency=12)
+
+autoplot(debitcards) +
+  autolayer(bootseries, colour=TRUE) +
+  autolayer(debitcards, colour=FALSE) +
+  ylab("Bootstrapped series") + guides(colour="none")
+```
+
+Method of using bootstrapped samples to obtain better idea of forecast accuracy and prediction interval:
+
+* Fit model to each series; model will likely be the same but parameters will likely differ
+* Use mean (point forecast) and quantiles (prediction intervals) of each simulated sample path to form point forecasts and prediction intervals
+
+
 
 # Some practical forecasting issues
 ## Weekly, daily and sub-daily data
 ## Time series of counts
+
+* Methods to date assume continuous sample space, which is fine if counts > 100.
+* Small counts need to use alternative model (outside scope of book)
+* Croston's method: Transform data into:
+    * Demand ($q$)
+    * Time between demand (inter-arrival time) ($a$)
+
 ## Ensuring forecasts say within limits
+
+* To impose positivity, specify Box-Cox parameter $\lambda = 0$.  Set `biasadj = TRUE` to ensure forecasts are the means fo the fore distirbutions
+* To impose that data is within interval $(a, b)$, 
+    * Map data to whole real line using scaled logit transform \[y = \log \left(\frac{x-a}{b-x}\right)\]
+    * Fit model
+    * Transform back using:
+    \[x = \frac{(b-a)e^y}{1 + e^y} + a\]
+
 ## Forecast combinations
+
+By averaging the forecast values of many models get best results
+
 ## Prediction intervals for aggregates
+
+Eg: To forecast next month's sales based on weekly data
+
+* If point forecasts are means, adding up will give good point estimate
+* Due to correlatinos between forecast errors, prediction intervals tricky>
+* Approach:
+    * Forecast many (1000) future sample paths for next 4 weeks
+    * Take mean of total forecasts for point estimate
+    * Take quantil for prediction intervals
+    
 ## Backcasting
+
+Backcasting = forecasting time series in reverse
+
 ## Very long and very short time series
+
+No rule of thumb for what is short (some say < 30) or long (? > 200)
+
+
 ## Forecasting on training and test sets
-## Dealing with missing vlues and other outliers
 
+is linear interpolated. More sophisticated approaches in `imputeTs` package.
 
+## Dealing with missing values and other outliers
 
-
-
-
+### Missing values
+* If missingness is not random, need to account. E.g. store closed on public holiday, but next day may have more sales.  Use indicator variable to state whether day is holiday or not. 
+* Some methos allow for missing values, for those that don't (`ets()`, `stlf()` and `tbats()`):
+    * Take the seciton of data after hte last mising vlue
+    * Replace missing value with estimates, e.g. using `na.interp()`.  For non-seasonal data, simple linear interpolation is used to fill in the missing sections; for seasonal data, an STL decomposition is used to estimate the seassonal component and then the seasonally adjsuted series 
     
-    
+### Outliers
 
-
-
-
-```{r}
- #plot(x <- stl(log(co2), s.window = "per", t.window = 1000))
-```
-
+* May be error or simply unusual
+* Impact how well methods work
+* Best to replace with missing values or with a more consistent estimate
+* HOWEVER, best not to replace without thinking why they have occurred as may provide useful information about process that produced them (which should be taken into account when forecasting)
+* If genuine error, or won't occur in forecasting period, then replacing them is the best option
+* `tsoutliers()` function designed to identify ouliers and suggest potential replacement values.
+* `tsclean()` identifies and replaces outliers and replaces missing values.  Should be used with caution.  
