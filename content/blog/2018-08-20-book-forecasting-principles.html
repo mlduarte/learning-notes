@@ -2669,7 +2669,7 @@ y_t &amp;= \phi_1 y_{t-1} + \varepsilon_t \\
 <li>AR(p) + Differencing(d) + MA(q)</li>
 <li>Integration = antonym of differencing; a time series which needs to be differenced to be made stationary is said to be an “integrated” version of a stationary series</li>
 <li><p>Model written as: <span class="math display">\[
-y_t^\prime = c + \phi_1 y_{t-1}^\prime + \ldots + \phi_p y_{t-p} +
+y_t^\prime = c + \phi_1 y_{t-1}^\prime + \ldots + \phi_p y_{t-p}^\prime +
             + \theta_1 \varepsilon_{t-1} +  \ldots +  \theta_q \varepsilon_{t-q}
             + \varepsilon_t \]</span> where <span class="math inline">\(y_t^\prime\)</span> is the differenced series and may have been differenced mroe than once and</p></li>
 <li><span class="math inline">\(p\)</span> = order of the autoregressive part (lagged values of <span class="math inline">\(y_t\)</span> as predictors)</li>
@@ -2711,129 +2711,1174 @@ y_t^\prime = c + \phi_1 y_{t-1}^\prime + \ldots + \phi_p y_{t-p} +
 <ul>
 <li>AR(<span class="math inline">\(p\)</span>):</li>
 </ul>
-<div id="us-consumption-expenditure" class="section level3">
-<h3>US consumption expenditure</h3>
-</div>
+<!-- Other references:
+https://www.quora.com/Whats-the-difference-between-ARMA-ARIMA-and-ARIMAX-in-laymans-terms-What-exactly-do-P-D-Q-mean-and-how-do-you-know-what-to-put-in-for-them-in-say-R-1-0-2-or-2-1-1
+
+https://onlinecourses.science.psu.edu/stat510/node/72/
+
+Time Series Analysis: Forecasting and Control
+https://robjhyndman.com/hyndsight/arimax/
+
+TODO: Read these:
+
+https://www.theguardian.com/science/2014/jul/13/fourier-transform-maths-equations-history
+
+https://content.pivotal.io/blog/forecasting-time-series-data-with-multiple-seasonal-periods
+
+-->
+<p>Combining components to form more complicated models easier when working with backshift notation.</p>
+<ul>
+<li>ARIMA(<span class="math inline">\(p,d,q\)</span>) in backshift notation:</li>
+</ul>
+<p><span class="math display">\[\begin{aligned}
+y_t^\prime &amp;= c + \phi_1 y_{t-1}^\prime + \ldots + \phi_p y_{t-p}^\prime  +
+                + \theta_1 \varepsilon_{t-1} +  \ldots +  \theta_q \varepsilon_{t-q} + \varepsilon_t \\
+y_t^\prime - \phi_1 y_{t-1}^\prime - \ldots - \phi_p y_{t-p}^\prime &amp;= c + \varepsilon_t + \theta_1 \varepsilon_{t-1} +  \ldots +  \theta_q \varepsilon_{t-q} \\
+(1-B)^d y_t - \phi_1 B (1-B)^d y_t - \ldots - \phi_p B^p (1-B)^d y_t &amp;= c +\varepsilon_t + \theta_1 B \varepsilon_{t} +  \ldots +  \theta_q B^q \varepsilon_{t} \\
+ (1-\phi_1 B  - \ldots - \phi_p B^p)(1-B)^dy_t &amp;= c + (1 + \theta_1 B +  \ldots +  \theta_q B^q) \varepsilon_{t} 
+\end{aligned}\]</span></p>
+<p>Note that <code>R</code> uses a slightly different parameterisation: <span class="math display">\[(1-\phi_1 B  - \ldots - \phi_p B^p)(y_t^\prime - \mu) =  (1 + \theta_1 B +  \ldots +  \theta_q B^q) \varepsilon_{t} \]</span> where <span class="math inline">\(y_t^\prime = (1-B)^dy_t\)</span>, <span class="math inline">\(c = \mu(1 - \phi_1 - \ldots - \phi_p )\)</span> and <span class="math inline">\(\mu\)</span> is the mean of <span class="math inline">\(y_t^\prime\)</span>.</p>
+<p><strong>Example</strong>: US consumption expenditure</p>
+<p>Fit non-seasonal ARIMA model to quarterly percentage changes in US consumption expenditure:</p>
+<pre class="r"><code>autoplot(uschange[,&quot;Consumption&quot;]) +
+  xlab(&quot;Year&quot;) + 
+    ylab(&quot;Quarterly percentage change&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_autoplot-1.png" width="672" /></p>
+<pre class="r"><code>(fit &lt;- auto.arima(uschange[,&quot;Consumption&quot;]))</code></pre>
+<pre><code>## Series: uschange[, &quot;Consumption&quot;] 
+## ARIMA(2,0,2) with non-zero mean 
+## 
+## Coefficients:
+##          ar1      ar2      ma1     ma2    mean
+##       1.3908  -0.5813  -1.1800  0.5584  0.7463
+## s.e.  0.2553   0.2078   0.2381  0.1403  0.0845
+## 
+## sigma^2 estimated as 0.3511:  log likelihood=-165.14
+## AIC=342.28   AICc=342.75   BIC=361.67</code></pre>
+<p>The resulting ARIMA(2,0,2) model is: <span class="math display">\[y_t  = c + 1.391 y_{t-1} + -0.581 y_{t-2} +  -1.18 \varepsilon_{t-1}  +  0.558 \varepsilon_{t-2} + \varepsilon_t\]</span></p>
+<p>where <span class="math inline">\(c = 0.746 (1 - 1.391 - -0.581 ) = 0.142\)</span> and <span class="math inline">\(\epsilon_t\)</span> is white noise with standard deviation of 0.593 = <span class="math inline">\(\sqrt{0.351}\)</span>.</p>
+<p>Forecasts for 10 quarters:</p>
+<pre class="r"><code>fit %&gt;% forecast(h = 10) %&gt;% autoplot(include = 80) +  ylab(&quot;Quarterly % change in US Expenditure Consumption&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_arima_forecast-1.png" width="672" /></p>
 <div id="understanding-arima-models" class="section level3">
 <h3>Understanding ARIMA models</h3>
+<ul>
+<li><code>auto.arima()</code> useful, but anything automated can be dangerous unless understand models</li>
+<li>Long-term forecasts will,:
+<ul>
+<li>if <span class="math inline">\(c = 0\)</span> and <span class="math inline">\(d = 0\)</span>, go to zero</li>
+<li>if <span class="math inline">\(c = 0\)</span> and <span class="math inline">\(d = 1\)</span>, go to non-zero constant</li>
+<li>if <span class="math inline">\(c = 0\)</span> and <span class="math inline">\(d = 2\)</span>, follow straight line</li>
+<li>if <span class="math inline">\(c \neq 0\)</span> and <span class="math inline">\(d = 0\)</span>, go to mean of data</li>
+<li>if <span class="math inline">\(c \neq 0\)</span> and <span class="math inline">\(d = 1\)</span>, follow straight line</li>
+<li>if <span class="math inline">\(c \neq 0\)</span> and <span class="math inline">\(d = 2\)</span>, follow quadratic trend</li>
+</ul></li>
+<li>Impact of <span class="math inline">\(d\)</span> on prediction interval:
+<ul>
+<li><span class="math inline">\(d = 0\)</span>, long-term forecast standard deviation <span class="math inline">\(\rightarrow\)</span> standard deviation of historical data</li>
+<li>Higher <span class="math inline">\(d\)</span>, more rapidly prediction intervals increase in size</li>
+</ul></li>
+<li>Impact of <span class="math inline">\(p\)</span> important for cycles
+<ul>
+<li><span class="math inline">\(p \geq 2\)</span> + additional conditions <span class="math inline">\(\rightarrow\)</span> cyclic forecasts</li>
+<li>E.g. cyclic behaviour occurs if <span class="math inline">\(p = 2\)</span> and <span class="math inline">\(\phi_1^2 + 4\phi_2 &lt; 0\)</span>, in which case the average period of the cycles is: <span class="math display">\[\frac{2\pi}{\text{arc} \cos (-\phi_1(1-\phi_2) / (4\phi_2)}\]</span></li>
+</ul></li>
+</ul>
 </div>
 <div id="acf-and-pacf-plots" class="section level3">
 <h3>ACF and PACF plots</h3>
+<ul>
+<li>ACF and PACF plots can be used to determine <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span></li>
+<li>ACF: if <span class="math inline">\(y_t\)</span> and <span class="math inline">\(y_{t-1}\)</span> are correlated:
+<ul>
+<li><span class="math inline">\(y_{t-1}\)</span> and <span class="math inline">\(y_{t-2}\)</span> will be correlated</li>
+<li>But we don’t know if <span class="math inline">\(y\)</span> and <span class="math inline">\(y_{t-2}\)</span> are correlated because the are both connected to <span class="math inline">\(y_{t-1}\)</span> or because of additional information contained in <span class="math inline">\(y_{t-2}\)</span>…. PACF to the rescue.</li>
+</ul></li>
+<li>PACF: Measure relationship between <span class="math inline">\(y_t\)</span> and <span class="math inline">\(y_{t-k}\)</span> after removing the effects of lags <span class="math inline">\(1, 2, 3, \ldots, k-1\)</span>. Note:
+<ul>
+<li><span class="math inline">\(\alpha_k\)</span>, the <span class="math inline">\(k\)</span>th partial autocorrelation coefficient = <span class="math inline">\(\phi_k\)</span> in AR(<span class="math inline">\(k\)</span>) model.</li>
+<li>partial autocorrelations have same critical values of <span class="math inline">\(\pm/\sqrt{T}\)</span></li>
+</ul></li>
+</ul>
+<p>If both <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> positive, then plots not useful for determining values. However, plots can be helpful if data are from ARIMA(<span class="math inline">\(p,d,0\)</span>) or ARIMA(<span class="math inline">\(0,d,q\)</span>):</p>
+<ul>
+<li>ARIMA(<span class="math inline">\(p,d,0\)</span>):
+<ul>
+<li>ACF exponentially decaying or sinusoidal</li>
+<li>Significant spike at lag <span class="math inline">\(p\)</span> in PACF but none beyond lag <span class="math inline">\(p\)</span></li>
+</ul></li>
+<li>ARIMA(<span class="math inline">\(0,d,q\)</span>):
+<ul>
+<li>PACF is exponentially decaying or sinusoidal</li>
+<li>Significant spike at lag <span class="math inline">\(q\)</span> in the ACF, but non beyond lag <span class="math inline">\(q\)</span></li>
+</ul></li>
+</ul>
+<p>Example ACF:</p>
+<pre class="r"><code>ggAcf(uschange[,&quot;Consumption&quot;],main=&quot;&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_acf-1.png" width="576" /></p>
+<p>Example PACF:</p>
+<pre class="r"><code>ggPacf(uschange[,&quot;Consumption&quot;],main=&quot;&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_pacf-1.png" width="576" /></p>
+<p>Example ACF and PACF with one command:</p>
+<pre class="r"><code>ggtsdisplay(uschange[,&quot;Consumption&quot;],main=&quot;&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_acf_pacf-1.png" width="576" /></p>
+<p>In this example, we see:</p>
+<ul>
+<li>Exponentially decaying ACF</li>
+<li>Significant spike at lag 3 in PACF, and none afterwards (ignoring the one significant spike at lag 22 as it is just outside the limits and not in the first few lags, recall multiple test error)</li>
+<li>Suggests ARIMA(3,0,0) process</li>
+</ul>
+<pre class="r"><code>Arima(uschange[,&quot;Consumption&quot;], order=c(3,0,0))</code></pre>
+<pre><code>## Series: uschange[, &quot;Consumption&quot;] 
+## ARIMA(3,0,0) with non-zero mean 
+## 
+## Coefficients:
+##          ar1     ar2     ar3    mean
+##       0.2274  0.1604  0.2027  0.7449
+## s.e.  0.0713  0.0723  0.0712  0.1029
+## 
+## sigma^2 estimated as 0.3494:  log likelihood=-165.17
+## AIC=340.34   AICc=340.67   BIC=356.5</code></pre>
+<p>Note:</p>
+<ul>
+<li>This model slightly better than that obtained using <code>auto.arima()</code> based on AICc.</li>
+<li><code>auto.arima()$ does not consider all possible models; can be improved by setting</code>stepwise=FALSE<code>and</code>approximation = FALSE`.</li>
+</ul>
+<pre class="r"><code>auto.arima(uschange[,&quot;Consumption&quot;], seasonal=FALSE, stepwise=FALSE, approximation=FALSE)</code></pre>
+<pre><code>## Series: uschange[, &quot;Consumption&quot;] 
+## ARIMA(3,0,0) with non-zero mean 
+## 
+## Coefficients:
+##          ar1     ar2     ar3    mean
+##       0.2274  0.1604  0.2027  0.7449
+## s.e.  0.0713  0.0723  0.0712  0.1029
+## 
+## sigma^2 estimated as 0.3494:  log likelihood=-165.17
+## AIC=340.34   AICc=340.67   BIC=356.5</code></pre>
 </div>
 </div>
 <div id="estimation-and-order-selection" class="section level2">
 <h2>Estimation and order selection</h2>
-<div id="maximum-likelihood-estimation" class="section level3">
-<h3>Maximum likelihood estimation</h3>
-</div>
-<div id="information-criteria" class="section level3">
-<h3>Information Criteria</h3>
-</div>
+<p>Steps in fitting ARIMA model:</p>
+<ol style="list-style-type: decimal">
+<li>Identify model order (i.e. <span class="math inline">\(p\)</span>, <span class="math inline">\(d\)</span> and <span class="math inline">\(q\)</span>)</li>
+<li>Estimate parameters <span class="math inline">\(c, \phi_1, \ldots \phi_p, \theta_1, \ldots, \theta_q\)</span> using <strong>MLE</strong>. Note that different software will give slightly different answers; <em>log likelihood</em> (logarithm of the probability of the observed data coming from the estimated model) usually reported<br />
+</li>
+<li>Aim: Minimise one of the following criteria (authors preference is AICc) in order to determine <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span>. For <span class="math inline">\(d\)</span>, need another approach as differencing changes data on which likelihood is computed and so criterion values not comparable for models with different values of <span class="math inline">\(d\)</span>.</li>
+</ol>
+<table>
+<colgroup>
+<col width="46%" />
+<col width="53%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Criterion</th>
+<th>Formula</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Akaike’s Information Criterion (AIC)</td>
+<td><span class="math inline">\(\text{AIC} = -2\log{L} + 2(p + q + k + 1)\)</span></td>
+</tr>
+<tr class="even">
+<td>Corrected Akaike’s Information Criterion (AICc)</td>
+<td><span class="math inline">\(\text{AIC}_c = \text{AIC} + \frac{2(p + q + k + 1)(p + q + k + 2)}{(T -p - q - k - 2)}\)</span></td>
+</tr>
+<tr class="odd">
+<td>Bayesian Information Criterion (BIC)</td>
+<td><span class="math inline">\(\text{AIC} = \text{AIC} + [log(T)(p + q + k + 1)]\)</span></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="arima-modelling-in-r" class="section level2">
 <h2>ARIMA modelling in R</h2>
 <div id="how-does-auto.arima-work" class="section level3">
 <h3>How does <code>auto.arima()</code> work?</h3>
+<p>Algorithm:</p>
+<ol style="list-style-type: decimal">
+<li>Determine number of differences <span class="math inline">\(0 \leq d \leq 2\)</span> using repeated KPSS tests</li>
+<li>Determine <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> using stepwise search as follows:
+<ol style="list-style-type: lower-alpha">
+<li>Fit initial models
+<ul>
+<li>p = q = 0 (with constant if <span class="math inline">\(d \leq 1\)</span>)</li>
+<li>p = q = 0 (with no constant but only if <span class="math inline">\(d \leq 1\)</span>, otherwise equivalent to above!)</li>
+<li>p = 1, q = 0 (with constant if <span class="math inline">\(d \leq 1\)</span>)</li>
+<li>p = 0, q = 1 (with constant if <span class="math inline">\(d \leq 1\)</span>)</li>
+<li>p = q = 2 (with constant if <span class="math inline">\(d \leq 1\)</span>) b Choose model with smallest AICc as current model</li>
+</ul></li>
+<li>Vary current model by adding/subtracting 1 from <span class="math inline">\(p\)</span> or <span class="math inline">\(q\)</span>, or by including/excluding <span class="math inline">\(c\)</span> from current model. Repeat until no lower AICc can be found.</li>
+</ol></li>
+</ol>
+<p>Set <code>appromiation = FALSE</code> to avoid approximations being used to speed up search. Use <code>stepwise = FALSE</code> to search a larger set of models.</p>
 </div>
 <div id="choosing-your-own-model" class="section level3">
 <h3>Choosing your own model</h3>
+<ul>
+<li>Use <code>Arima()</code> function to choose the model yourself</li>
+<li>Although <code>arima()</code> exists, not recommended as it does allow:
+<ul>
+<li>constant <span class="math inline">\(c\)</span> unless <span class="math inline">\(d=0\)</span></li>
+<li><code>forecast</code> package to work</li>
+<li>application of model to new data</li>
+</ul></li>
+</ul>
 </div>
 <div id="modelling-procedure" class="section level3">
 <h3>Modelling procedure</h3>
-</div>
-<div id="example-seasonally-adjusted-electrical-equipment-orders" class="section level3">
-<h3>Example: Seasonally adjusted electrical equipment orders</h3>
+<p>Recommended approach:</p>
+<p>1 Plot data to look for unusual observations 2 Transform data to stabilise variance (Box-Cox) 3 Take first differences of data until data stationary 4 Examine ACF/PACF: Is ARIMA(<span class="math inline">\(p,d,0\)</span>) or ARIMA(<span class="math inline">\(0,d,q\)</span>) appropriate 5 Try chosen model(s) and use AICc to search for better model 6 Plot ACF of residual and do portmanteau test; if residuals do not look like white noise try a modified model 7 Calculate forecasts</p>
+<p>Only steps 3-5 taken care of by <code>auto.arima()</code>.</p>
+<p><strong>Example</strong>: Seasonally adjusted electrical equipment orders</p>
+<p><strong>Step 1</strong> Plot seasonally adjusted data: shows sudden changes (GFC), but nothing unusual</p>
+<pre class="r"><code>elecequip %&gt;% stl(s.window=&#39;periodic&#39;) %&gt;% seasadj() -&gt; eeadj
+autoplot(eeadj)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_step1-1.png" width="576" /></p>
+<p><strong>Step 2</strong> Based on plot, doesn’t appear necessary to do Box-Cox transformation</p>
+<p><strong>Step 3</strong> Data clearly not stationary, therefore difference. First differenced data appears stationary.</p>
+<pre class="r"><code>eeadj %&gt;% diff() %&gt;% ggtsdisplay(main=&quot;&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_step3-1.png" width="672" /></p>
+<p><strong>Step 4</strong> ACF and PACF suggest ARIMA(3,1,0) process as: * ACF <strong>sinusoidal</strong> * Significant spike at lag 3 in PACF but none beyond lag 3 (with few exceptions at much later lags)</p>
+<p><strong>Step 5</strong> Try chosen ARIMA(3,1,0) model and then variations to compare AICc:</p>
+<pre class="r"><code>fit1 &lt;- Arima(eeadj, order=c(3,1,0))
+fit2 &lt;- Arima(eeadj, order=c(4,1,0))
+fit3 &lt;- Arima(eeadj, order=c(2,1,0))
+fit4 &lt;- Arima(eeadj, order=c(3,1,1))
+
+data.frame(model = c(&quot;orig&quot;, &quot;p + 1&quot;, &quot;p-1&quot;, &quot;q+1&quot;), aicc = c(fit1$aicc, fit2$aicc, fit3$aicc, fit4$aicc)) %&gt;%
+    mutate(aicc = round(aicc,1)) %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">model</th>
+<th align="right">aicc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">orig</td>
+<td align="right">995.8</td>
+</tr>
+<tr class="even">
+<td align="left">p + 1</td>
+<td align="right">996.1</td>
+</tr>
+<tr class="odd">
+<td align="left">p-1</td>
+<td align="right">1014.3</td>
+</tr>
+<tr class="even">
+<td align="left">q+1</td>
+<td align="right">995.7</td>
+</tr>
+</tbody>
+</table>
+<p>Note that ARIMA(3,1,1) is slightly lower (but is it significantly lower?)</p>
+<p><strong>Step 6</strong> ACF plot of residual shows no significant lags; portmanteau test returns large <span class="math inline">\(p\)</span> value and therefore accept null hypothesis that residuals are white noise.</p>
+<pre class="r"><code>fit &lt;- Arima(eeadj, order=c(3,1,1))
+checkresiduals(fit)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_step6-1.png" width="672" /></p>
+<pre><code>## 
+##  Ljung-Box test
+## 
+## data:  Residuals from ARIMA(3,1,1)
+## Q* = 24.034, df = 20, p-value = 0.2409
+## 
+## Model df: 4.   Total lags used: 24</code></pre>
+<p><strong>Step 7</strong> Forecast from chosen model</p>
+<pre class="r"><code>autoplot(forecast(fit))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_step7-1.png" width="672" /></p>
 </div>
 <div id="understanding-constants-in-r" class="section level3">
 <h3>Understanding constants in R</h3>
+<p>Apparently the following three are equivalent (although I unfortunately couldn’t determine the algebra ) <span class="math display">\[\begin{aligned}
+ (1-\phi_1 B  - \ldots - \phi_p B^p)(1-B)^dy_t &amp;= c + (1 + \theta_1 B +  \ldots +  \theta_q B^q) \varepsilon_{t} \\
+ (1-\phi_1 B  - \ldots - \phi_p B^p)(1-B)^d(y_t - \mu t^d/d!) &amp;=  (1 + \theta_1 B +  \ldots +  \theta_q B^q) \varepsilon_{t} \\
+ (1-\phi_1 B  - \ldots - \phi_p B^p)(y_t^\prime - \mu) &amp;=  (1 + \theta_1 B +  \ldots +  \theta_q B^q) \varepsilon_{t} \\
+\end{aligned}\]</span></p>
+<p>where <span class="math inline">\(y_t^\prime = (1-B)^dy_t\)</span>, <span class="math inline">\(c = \mu(1 - \phi_1 - \ldots - \phi_p )\)</span> and <span class="math inline">\(\mu\)</span> is the mean of <span class="math inline">\(y_t^\prime\)</span>. and so:</p>
+<ul>
+<li>When the process is non-stationary (i.e. a <span class="math inline">\(d\)</span> term exists), the constant is equivalent to a polynomial trend of order <span class="math inline">\(d\)</span></li>
+<li>When <span class="math inline">\(d = 0\)</span>, then <span class="math inline">\(\mu=\bar{y}_t\)</span> and <code>Arima()</code> provides an estimate. This will be close to the sample mean of the time series but not exact as sample mean is not MLE when <span class="math inline">\(p + q &gt; 0\)</span>. Setting <code>include.mean = FALSE</code> will force <span class="math inline">\(\mu = c = 0\)</span></li>
+<li>When <span class="math inline">\(d &gt; 0\)</span>, <code>Arima()</code> sets <span class="math inline">\(c = \mu = 0\)</span>
+<ul>
+<li>When <span class="math inline">\(d = 1\)</span> then setting <code>include.drift</code> or <code>include.constant</code> allows <span class="math inline">\(\mu \neq 0\)</span></li>
+<li>When <span class="math inline">\(d &gt; 1\)</span>, no constant allowed as quadratic or higher order trend dangerous when forecasting.</li>
+</ul></li>
+</ul>
 </div>
 </div>
 <div id="forecasting" class="section level2">
 <h2>Forecasting</h2>
-<div id="point-forecasts" class="section level3">
-<h3>Point forecasts</h3>
+<p>Steps to obtain <strong>point forecasts</strong>:</p>
+<ul>
+<li><p>Expand ARIMA equation so that <span class="math inline">\(y_t\)</span> is alone on LHS. Example: ARIMA(3,1,1) model can be re-written as: <span class="math display">\[y_t = (1 + \hat{\phi}_1)y_{t-1} - (\hat{\phi}_1 - \hat{\phi}_2)y_{t-2} - (\hat{\phi}_2 - \hat{\phi}_3)y_{t-3} + \hat{\phi}_3y_{t-4} + \varepsilon_t + \hat{\theta}_1 \varepsilon_{t-1}\]</span></p></li>
+<li><p>Rewrite equation, replacing <span class="math inline">\(t\)</span> by <span class="math inline">\(T+h\)</span>, starting with <span class="math inline">\(h = 1\)</span> then incrementing <span class="math inline">\(h\)</span> as required <span class="math display">\[y_{T+1} = (1 + \hat{\phi}_1)y_{T} - (\hat{\phi}_1 - \hat{\phi}_2)y_{T-1} - (\hat{\phi}_2 - \hat{\phi}_3)y_{T-2} + \hat{\phi}_3y_{T-3} + \varepsilon_{T+1} + \hat{\theta}_1 \varepsilon_{T}\]</span></p></li>
+<li>Replace:
+<ul>
+<li>Future observations with their forecasts (none at lag 1)</li>
+<li>Future errors with zero (in e.g., set <span class="math inline">\(\varepsilon_{T+1} = 0\)</span>)</li>
+<li>Past errors with residuals (in e.g., set <span class="math inline">\(\varepsilon_{T} = e_T\)</span>, the last observed residual )</li>
+</ul></li>
+</ul>
+<p><strong>Prediction intervals</strong></p>
+<ul>
+<li>Calculations provided in book</li>
+<li>Based on assumption that residual are uncorrelated and normally distributed, otherwise prediction intervals incorrect. Therefore, always plot ACF and histogram of residuals to check assumptions before producing prediction intervals.</li>
+<li>For stationary models (<span class="math inline">\(d=0\)</span>), prediction intervals will converge and so for long horizons all the same</li>
+<li>For non-stationary models (<span class="math inline">\(d &gt; 0\)</span>), prediction intervals will continue to grow into the future</li>
+</ul>
 </div>
-<div id="prediction-intervals-1" class="section level3">
-<h3>Prediction intervals</h3>
-</div>
-</div>
-<div id="seasonal-arima-models" class="section level2">
-<h2>Seasonal ARIMA models</h2>
-<div id="acfpacf" class="section level3">
-<h3>ACF/PACF</h3>
-</div>
-<div id="example-european-quarterly-retail-trade" class="section level3">
-<h3>Example: European quarterly retail trade</h3>
-</div>
-<div id="example-corticosteroid-drug-sales-in-australia" class="section level3">
-<h3>Example: Corticosteroid drug sales in Australia</h3>
-</div>
+<div id="seasonal-arima-models-arimapdqpdq_m" class="section level2">
+<h2>Seasonal ARIMA models, ARIMA(p,d,q)(P,D,Q)<span class="math inline">\(_m\)</span></h2>
+<ul>
+<li><span class="math inline">\(m\)</span> = number of observations per year</li>
+<li>E.g. ARIMA(1,1,1)(1,1,1)<span class="math inline">\(_4\)</span> without constant:
+<ul>
+<li>Quarterly data (m = 4)</li>
+<li><span class="math inline">\((1-\phi_1B)(1-\Phi_1B^4)(1-B)(1-B^4)y_t = (1 + \theta_1B)(1 + \Theta_1B^4)\varepsilon_t\)</span></li>
+</ul></li>
+</ul>
+<p>ARIMA(0,0,0)(1,0,0)<span class="math inline">\(_{12}\)</span></p>
+<ul>
+<li>Exponential decay in seasonal lags of <strong>ACF</strong></li>
+<li>Spike at lag 12 in <strong>PACF</strong></li>
+</ul>
+<p>ARIMA(0,0,0)(0,0,1)<span class="math inline">\(_{12}\)</span></p>
+<ul>
+<li>Spike at lag 12 in <strong>ACF</strong> , no other significant spikes</li>
+<li>Exponential decay in seasonal lags of <strong>PACF</strong> (at lags 12, 24, 36, …)</li>
+</ul>
+<p><strong>Example</strong>: European quarterly retail trade</p>
+<p>Data:</p>
+<pre class="r"><code>autoplot(euretail) + ylab(&quot;Retail index&quot;) + xlab(&quot;Year&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_data-1.png" width="576" /></p>
+<ul>
+<li>First take seasonal difference (before considering other non-stationarity)</li>
+</ul>
+<pre class="r"><code>euretail %&gt;% diff(lag=4) %&gt;% ggtsdisplay()</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_seasdiff-1.png" width="672" /></p>
+<ul>
+<li>Still non-stationarity exists, therefore take difference</li>
+</ul>
+<pre class="r"><code>euretail %&gt;% diff(lag=4) %&gt;% diff() %&gt;% ggtsdisplay()</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_seasdiff_diff-1.png" width="672" /></p>
+<ul>
+<li>Now need to find ARIMA model based on ACF and PACF:
+<ul>
+<li>Significant spike at lag 4 in PACF and ACF suggest seasonal MA(1) (or seasonal AR(1)) lag</li>
+<li>Significant spike at lag 1 suggest MA(1) (or AR(1))</li>
+</ul></li>
+</ul>
+<pre class="r"><code>euretail %&gt;%  Arima(order = c(0, 1, 1), seasonal = c(0, 1, 1)) -&gt; fit1 
+euretail %&gt;%  Arima(order = c(1, 1, 0), seasonal = c(1, 1, 0)) -&gt; fit2
+fit1$aicc</code></pre>
+<pre><code>## [1] 75.71724</code></pre>
+<pre class="r"><code>fit2$aicc</code></pre>
+<pre><code>## [1] 77.00764</code></pre>
+<pre class="r"><code>fit1 %&gt;% residuals() %&gt;% ggtsdisplay()</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_ma1-1.png" width="672" /> Given there exists significant lag at 2 and almost at 3, consider other models:</p>
+<pre class="r"><code>euretail %&gt;%  Arima(order = c(0, 1, 2), seasonal = c(0, 1, 1)) -&gt; fit3
+euretail %&gt;%  Arima(order = c(0, 1, 3), seasonal = c(0, 1, 1)) -&gt; fit4
+fit1$aicc</code></pre>
+<pre><code>## [1] 75.71724</code></pre>
+<pre class="r"><code>fit3$aicc</code></pre>
+<pre><code>## [1] 74.26992</code></pre>
+<pre class="r"><code>fit4$aicc</code></pre>
+<pre><code>## [1] 68.39031</code></pre>
+<pre class="r"><code>fit4 %&gt;% checkresiduals()</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_ma2-1.png" width="672" /></p>
+<pre><code>## 
+##  Ljung-Box test
+## 
+## data:  Residuals from ARIMA(0,1,3)(0,1,1)[4]
+## Q* = 0.51128, df = 4, p-value = 0.9724
+## 
+## Model df: 4.   Total lags used: 8</code></pre>
+<p>As all spikes are within significance limits and residuals appear to be white noise, can use model for forecasting (next three years):</p>
+<pre class="r"><code>fit4 %&gt;% forecast(h=12) %&gt;% autoplot()</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_forecast-1.png" width="672" /></p>
+<ul>
+<li>Forecasts follow recent trend in data</li>
+<li>Large and rapidly increasing prediction intervals show could increase or decrease at any time (i.e. while point forecast trend downward, prediction interval allows data to trend upwards during forecast period.)</li>
+</ul>
+<pre class="r"><code>auto.arima(euretail) # shortcuts</code></pre>
+<pre><code>## Series: euretail 
+## ARIMA(1,1,2)(0,1,1)[4] 
+## 
+## Coefficients:
+##          ar1      ma1     ma2     sma1
+##       0.7362  -0.4663  0.2163  -0.8433
+## s.e.  0.2243   0.1990  0.2101   0.1876
+## 
+## sigma^2 estimated as 0.1587:  log likelihood=-29.62
+## AIC=69.24   AICc=70.38   BIC=79.63</code></pre>
+<pre class="r"><code>auto.arima(euretail, stepwise = FALSE, approximation = FALSE)</code></pre>
+<pre><code>## Series: euretail 
+## ARIMA(0,1,3)(0,1,1)[4] 
+## 
+## Coefficients:
+##          ma1     ma2     ma3     sma1
+##       0.2630  0.3694  0.4200  -0.6636
+## s.e.  0.1237  0.1255  0.1294   0.1545
+## 
+## sigma^2 estimated as 0.156:  log likelihood=-28.63
+## AIC=67.26   AICc=68.39   BIC=77.65</code></pre>
+<p><strong>Example</strong>: Corticosteroid drug sales in Australia</p>
+<p>Data; take logarithm to stabilise variance</p>
+<pre class="r"><code>lh02 &lt;- log(h02)
+cbind(&quot;H02 sales (million scripts)&quot; = h02, &quot;Log H02 sales&quot;=lh02) %&gt;%
+  autoplot(facets=TRUE) + xlab(&quot;Year&quot;) + ylab(&quot;&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/h02_data-1.png" width="672" /></p>
+<p>Seasonally differenced data:</p>
+<pre class="r"><code>lh02 %&gt;% diff(lag=12) %&gt;%
+  ggtsdisplay(xlab=&quot;Year&quot;,
+    main=&quot;Seasonally differenced H02 scripts&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/h02_season_diff-1.png" width="672" /></p>
+<p>Initial model to try: ARIMA(3,0,0)(2,1,0)[12]</p>
+<ul>
+<li>Seasonal lag in PACF at 12, 24, .. -&gt; Seasonal AR(2)</li>
+<li>Exponentially declining ACF and significant lags in PACF at 1, 2, 3 -&gt; AR(3)</li>
+</ul>
+<p>Recall that the Box-Cox transformation with <span class="math inline">\(\lambda = 0\)</span> is the logarithmic transformation.</p>
+<pre class="r"><code> res &lt;- data.frame(p=rep(3,7), d = rep(0,7), q = c(1,1,1,1,0,2,1), P = c(0,1,0,2,2,2,1), D = rep(1,7), Q = c(2,1,1,0,0,0,0)) %&gt;%
+    mutate(model = paste0(&quot;ARIMA(&quot;, p, &quot;,&quot;, d, &quot;,&quot;, q, &quot;)(&quot;, P, &quot;,&quot;, D, &quot;,&quot;, Q, &quot;)[12]&quot;)) %&gt;%
+    group_by(model) %&gt;%
+    nest() %&gt;%
+    mutate(fit = map(data, ~Arima(h02, order = c(.x$p, .x$d, .x$q), seasonal = c(.x$P, .x$D, .x$Q), lambda = 0))) %&gt;%
+    mutate(aicc = map_dbl(fit, &quot;aicc&quot;))
+
+res %&gt;% select(model, aicc)</code></pre>
+<pre><code>## # A tibble: 7 x 2
+##   model                    aicc
+##   &lt;chr&gt;                   &lt;dbl&gt;
+## 1 ARIMA(3,0,1)(0,1,2)[12] -485.
+## 2 ARIMA(3,0,1)(1,1,1)[12] -484.
+## 3 ARIMA(3,0,1)(0,1,1)[12] -484.
+## 4 ARIMA(3,0,1)(2,1,0)[12] -476.
+## 5 ARIMA(3,0,0)(2,1,0)[12] -475.
+## 6 ARIMA(3,0,2)(2,1,0)[12] -475.
+## 7 ARIMA(3,0,1)(1,1,0)[12] -463.</code></pre>
+<p>Of all models, ARIMA(3,0,1)(0,1,2)[12], has the smallest AICc (noting the negative values!)</p>
+<pre class="r"><code># note can also use first()
+(fit &lt;- res %&gt;% filter(model == &quot;ARIMA(3,0,1)(0,1,2)[12]&quot;) %&gt;% select(fit) %&gt;% pull() %&gt;% `[[`(1))</code></pre>
+<pre><code>## Series: h02 
+## ARIMA(3,0,1)(0,1,2)[12] 
+## Box Cox transformation: lambda= 0 
+## 
+## Coefficients:
+##           ar1     ar2     ar3     ma1     sma1     sma2
+##       -0.1603  0.5481  0.5678  0.3827  -0.5222  -0.1768
+## s.e.   0.1636  0.0878  0.0942  0.1895   0.0861   0.0872
+## 
+## sigma^2 estimated as 0.004278:  log likelihood=250.04
+## AIC=-486.08   AICc=-485.48   BIC=-463.28</code></pre>
+<pre class="r"><code>checkresiduals(fit, lag = 36)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/h02_arima_best-1.png" width="672" /></p>
+<pre><code>## 
+##  Ljung-Box test
+## 
+## data:  Residuals from ARIMA(3,0,1)(0,1,2)[12]
+## Q* = 50.712, df = 30, p-value = 0.01045
+## 
+## Model df: 6.   Total lags used: 36</code></pre>
+<ul>
+<li>There are still significant spikes in the ACF and model fails Ljung-Box test</li>
+<li>Model can be used for forecasting and prediction intervals may not be accurate.</li>
+<li>Sometimes it is not possible to find a model that passes all of the tests</li>
+</ul>
+<p>Test set evaluation:</p>
+<ul>
+<li>Fit model using data from July 1991 to June 2006</li>
+<li>Forecast data for July 2006 to June 2008</li>
+</ul>
+<pre class="r"><code>res &lt;- data.frame(
+    p = c(rep(3,7),2,2), 
+    d = c(rep(0,7),1,1), 
+    q = c(1,1,1,1,0,2,1,4,3), 
+    P = c(0,1,0,2,2,2,1,0,0), 
+    D = c(rep(1,7),1,1), 
+    Q = c(2,1,1,0,0,0,0,1,1)
+    ) %&gt;%
+    mutate(model = paste0(&quot;ARIMA(&quot;, p, &quot;,&quot;, d, &quot;,&quot;, q, &quot;)(&quot;, P, &quot;,&quot;, D, &quot;,&quot;, Q, &quot;)[12]&quot;)) %&gt;%
+    group_by(model) %&gt;%
+    nest() %&gt;%
+    mutate(fit = map(data, ~Arima(window(h02, start = c(1991, 7), end = c(2006, 6)), order = c(.x$p, .x$d, .x$q), seasonal = c(.x$P, .x$D, .x$Q), lambda = 0)),
+           pred = map(fit, ~forecast(.x, h = 24)),
+           accuracy = map(pred, ~accuracy(.x, h02)), 
+           rmse = map_dbl(accuracy, function(x) x[2, &quot;RMSE&quot;]))
+
+select(res, model, rmse)</code></pre>
+<pre><code>## # A tibble: 9 x 2
+##   model                     rmse
+##   &lt;chr&gt;                    &lt;dbl&gt;
+## 1 ARIMA(3,0,1)(0,1,2)[12] 0.0622
+## 2 ARIMA(3,0,1)(1,1,1)[12] 0.0630
+## 3 ARIMA(3,0,1)(0,1,1)[12] 0.0644
+## 4 ARIMA(3,0,1)(2,1,0)[12] 0.0646
+## 5 ARIMA(3,0,0)(2,1,0)[12] 0.0661
+## 6 ARIMA(3,0,2)(2,1,0)[12] 0.0645
+## 7 ARIMA(3,0,1)(1,1,0)[12] 0.0679
+## 8 ARIMA(2,1,4)(0,1,1)[12] 0.0632
+## 9 ARIMA(2,1,3)(0,1,1)[12] 0.0634</code></pre>
+<ul>
+<li>When comparing models using test set, comparisons are always valid (i.e. can include some with no and first differencing), unlike when comparing models based on AICc.</li>
+<li>No model pass all residuals test, in practice use best model could find, even if it could not pass all tests</li>
+</ul>
+<pre class="r"><code>res %&gt;% filter(model == &quot;ARIMA(3,0,1)(0,1,2)[12]&quot;) %&gt;% select(pred) %&gt;% pull() %&gt;% first() %&gt;% autoplot(PI = FALSE) +  ylab(&quot;H02 sales (million scripts)&quot;) + xlab(&quot;Year&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/h02_arima_forecast_test-1.png" width="672" /></p>
 </div>
 <div id="arima-vs-ets" class="section level2">
 <h2>ARIMA vs ETS</h2>
-<div id="example-comparing-auto.arima-and-ets-on-non-seasonal-data" class="section level3">
-<h3>Example: Comparing auto.arima() and ets() on non-seasonal data</h3>
-</div>
-<div id="example-comparing-auto.arima-and-ets-on-seasonal-data" class="section level3">
-<h3>Example: Comparing auto.arima() and ets() on seasonal data</h3>
-</div>
+<ul>
+<li>Linear exponential smoothing models are special cases of ARIMA models</li>
+<li>Non-linear exponential models have no ARIMA equivalent; equally there exist ARIMA models with no equivalent ETS model.</li>
+<li>All ETS models are non-stationary; there exist stationary ARIMA models.</li>
+</ul>
+<p>By this, it is meant, as per <a href="https://stats.stackexchange.com/questions/76696/non-stationary-time-series-forecasting">Stack Exchange</a></p>
+<blockquote>
+<p>Exponential smoothing methods are only really appropriate if the data are non-stationary. Using an exponential smoothing method on stationary data is not wrong but is sub-optimal.</p>
+</blockquote>
+<p>Recall: ETS(Error,Trend,Seasonality) where:</p>
+<ul>
+<li>Error = {Additive, Multiplicative}</li>
+<li>Trend = {None, Additive, Additive Damped}</li>
+<li>Seasonal = {None, Additive, Multiplicative}</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>ETS Model</th>
+<th>ARIMA Model</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ETS(A,N,N)</td>
+<td>ARIMA(0,1,1)</td>
+</tr>
+<tr class="even">
+<td>ETS(A,A,N)</td>
+<td>ARIMA(0,2,1)</td>
+</tr>
+<tr class="odd">
+<td>ETS(A,A<span class="math inline">\(_D\)</span>,N)</td>
+<td>ARIMA(1,1,2)</td>
+</tr>
+<tr class="even">
+<td>ETS(A,N,A)</td>
+<td>ARIMA(0,1,m)(0,1,0)<span class="math inline">\(_m\)</span></td>
+</tr>
+<tr class="odd">
+<td>ETS(A,A,A)</td>
+<td>ARIMA(0,1,m+1)(0,1,0)<span class="math inline">\(_m\)</span></td>
+</tr>
+<tr class="even">
+<td>ETS(A,A<span class="math inline">\(_D\)</span>,A)</td>
+<td>ARIMA(1,1,m+1) (0,1,0)<span class="math inline">\(_m\)</span></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Equivalence of parameters also provided.<br />
+</li>
+<li>AICc cannot be used to compare models of different classes (i.e. to compare ARIMA and ETS model), because likelihood computed in different ways. Only train/test or cross-validation can be used.</li>
+</ul>
+<p><strong>Example</strong>: Comparing auto.arima() and ets() on non-seasonal data</p>
+<pre class="r"><code>air &lt;- window(ausair, start=1990)
+
+fets &lt;- function(x, h) {
+  forecast(ets(x), h = h)
+}
+
+farima &lt;- function(x, h) {
+  forecast(auto.arima(x), h=h)
+}
+
+tribble(~model, ~func,
+             &#39;fets&#39;, fets,
+             &#39;farima&#39;, farima) %&gt;%
+    mutate(e = map(func, ~tsCV(y=air, forecastfunction = .x, h = 1)), 
+           mse = map_dbl(e, ~mean(.^2, na.rm = TRUE)))</code></pre>
+<pre><code>## # A tibble: 2 x 4
+##   model  func   e          mse
+##   &lt;chr&gt;  &lt;list&gt; &lt;list&gt;   &lt;dbl&gt;
+## 1 fets   &lt;fn&gt;   &lt;S3: ts&gt;  7.86
+## 2 farima &lt;fn&gt;   &lt;S3: ts&gt;  9.62</code></pre>
+<pre class="r"><code>air %&gt;% ets() %&gt;% forecast() %&gt;% autoplot()</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/air_multimodel-1.png" width="672" /></p>
+<p><strong>Example</strong>: Comparing auto.arima() and ets() on seasonal data</p>
+<pre class="r"><code>require(fpp2); require(forecast); require(tidyverse)
+# Consider the qcement data beginning in 1988
+cement &lt;- window(qcement, start=1988)
+
+# Use 20 years of the data as the training set
+train &lt;- window(cement, end=c(2007,4))
+
+res &lt;- tribble(~func,
+             &#39;auto.arima&#39;,
+             &#39;ets&#39;) %&gt;%
+    mutate(fit = invoke_map(func, list(train)),
+           pred = map(fit, ~forecast(., h = 4*(2013-2007)+1)),
+           accuracy = map(pred, ~accuracy(., qcement)),
+           train = map(accuracy, function(x) x[1, ]),
+           test = map(accuracy, function(x) x[2, ]))
+
+res %&gt;% unnest(test, train, .preserve = func) %&gt;% 
+    
+    # How do I get the name of the list of lists instead of having to do the following line?
+    mutate(metric = rep(names(res$train[1][[1]]), 2)) %&gt;%
+    filter(metric %in% c(&quot;RMSE&quot;, &quot;MAE&quot;, &quot;MAPE&quot;, &quot;MASE&quot;)) %&gt;% select(func, metric, train, test) %&gt;%
+    gather(&quot;data&quot;, &quot;value&quot;, -func, -metric) %&gt;%
+    mutate(value = round(value, 3)) %&gt;%
+    spread(func, value) %&gt;%
+    arrange(desc(data), metric) </code></pre>
+<pre><code>## # A tibble: 8 x 4
+##   metric data  auto.arima   ets
+##   &lt;chr&gt;  &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;
+## 1 MAE    train      0.08  0.08 
+## 2 MAPE   train      4.35  4.37 
+## 3 MASE   train      0.543 0.544
+## 4 RMSE   train      0.101 0.102
+## 5 MAE    test       0.167 0.154
+## 6 MAPE   test       7.65  6.99 
+## 7 MASE   test       1.14  1.05 
+## 8 RMSE   test       0.198 0.184</code></pre>
+<p>See that ARIMA fits training data slightly better, but ETS model providers more accurate forecasts on test set.</p>
+<pre class="r"><code># Generate forecasts from an ETS model
+cement %&gt;% ets() %&gt;% forecast(h=12) %&gt;% autoplot()</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/qcement_ets-1.png" width="672" /></p>
 </div>
 </div>
 <div id="dynamic-regression-models" class="section level1">
 <h1>Dynamic regression models</h1>
+<p>Allow error in regression model to contain autocorrelation following an ARIMA model (to emphasise, <span class="math inline">\(\epsilon_t\)</span> replaced with <span class="math inline">\(\eta_t\)</span>), e.g. if error follows ARIMA(1,1,1): <span class="math display">\[\begin{aligned}
+y_t = \beta_0 + \beta_1 x_{1,t} + \ldots + \beta_{k,t} + \eta_t,\\
+(1 - \phi_1B)(1-B)\eta_t = (1 + \theta_1B)\epsilon_t
+\end{aligned}\]</span></p>
+<p>Model has two error terms: 1. Regression model error (<span class="math inline">\(\eta_t\)</span>) 2. ARIMA model error (<span class="math inline">\(\epsilon_t\)</span>), assumed to be white noise</p>
 <div id="estimation" class="section level2">
 <h2>Estimation</h2>
+<ul>
+<li>Need to minimise SSE(<span class="math inline">\(\epsilon_t\)</span>), not SSE(<span class="math inline">\(\eta_t\)</span>)</li>
+<li>All variables need to be stationary (i.e. response variable and predictors); otherwise estimates will not be consistent / meaningful. Exception: if non-stationary variables are co-integrated (i.e. if there is a linear combination of the non-stationary $y_t# and the predictors that is stationary)</li>
+<li>Usually best to difference all variables if at least one needs differencing.<br />
+</li>
+<li>New definitions:
+<ul>
+<li><strong>Model in levels</strong>: Model based on original data (with no differencing)</li>
+<li><strong>Model in differences</strong>: Model with all variables differenced</li>
+</ul></li>
+<li>A regression model with ARIMA models is equivalent to a regression model in differences with ARMA errors (i.e. it is missing the “I” for integrated/differencing)</li>
+</ul>
+<p><span class="math display">\[\begin{aligned}
+y_t = \beta_0 + \beta_1 x_{1,t} + \ldots + \beta_{k,t} + \eta_t,\\
+(1 - \phi_1B)(1-B)\eta_t = (1 + \theta_1B)\epsilon_t
+\end{aligned}\]</span></p>
+<p><span class="math display">\[\begin{aligned}
+y_t = \beta_0 + \beta_1 x_{1,t}^\prime + \ldots + \beta_{k,t}^\prime + \eta_t^\prime,\\
+(1 - \phi_1B)\eta_t^\prime = (1 + \theta_1B)\epsilon_t
+\end{aligned}\]</span></p>
 </div>
 <div id="regression-and-arima-errors-in-r" class="section level2">
 <h2>Regression and ARIMA errors in R</h2>
+<ul>
+<li><p><code>Arima()</code> with argument <code>xreg</code></p>
+<ul>
+<li>Fits regression model with ARIMA errors</li>
+<li><code>order</code> specifies order of ARIMA error model</li>
+<li>Differencing applied to all variables, if specified.</li>
+<li>Set <code>include.drift = TRUE</code> to include constant term in differenced model</li>
+</ul></li>
+<li><p><code>auto.arima()</code> with argument <code>xreg</code></p>
+<ul>
+<li>Requires specification of the predictors</li>
+<li>Will determine best ARIMA model for the errors</li>
+<li>Best predictors can be determined via AICc; repeat for all subsets of predictors to be considered and select model with lowest AICc</li>
+</ul></li>
+</ul>
+<p><strong>Example</strong>: US Personal Consumption and Income</p>
+<p>Aim: Forecast changes in expenditure based on changes in income, noting that a change in income may not lead to an instant change in consumption; but ignored here.</p>
+<pre class="r"><code>autoplot(uschange[,1:2], facets=TRUE) +
+  xlab(&quot;Year&quot;) + ylab(&quot;&quot;) +
+  ggtitle(&quot;Quarterly changes in US consumption  and personal income&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_regarima_data-1.png" width="672" /> No need for any differencing as already stationary.</p>
+<pre class="r"><code>(fit &lt;- auto.arima(uschange[,&quot;Consumption&quot;], xreg=uschange[,&quot;Income&quot;]))</code></pre>
+<pre><code>## Series: uschange[, &quot;Consumption&quot;] 
+## Regression with ARIMA(1,0,2) errors 
+## 
+## Coefficients:
+##          ar1      ma1     ma2  intercept    xreg
+##       0.6922  -0.5758  0.1984     0.5990  0.2028
+## s.e.  0.1159   0.1301  0.0756     0.0884  0.0461
+## 
+## sigma^2 estimated as 0.3219:  log likelihood=-156.95
+## AIC=325.91   AICc=326.37   BIC=345.29</code></pre>
+<p>Fitted model is a regression model with ARMA(1,2) error: <span class="math display">\[\begin{aligned}
+y_t  = 0.599 + 0.203 x_{t} + \eta_t \\
+\eta_t = 0.692\eta_{t-1} + \varepsilon_t + 
+-0.576\varepsilon_{t-1} + 0.198\varepsilon_{t-2}\\
+\epsilon_t \sim \text{NID}(0,0.322)
+\end{aligned}\]</span></p>
+<p>Regression and ARIMA errors:</p>
+<pre class="r"><code>cbind(&quot;Regression Errors&quot; = residuals(fit, type=&quot;regression&quot;),
+      &quot;ARIMA errors&quot; = residuals(fit, type=&quot;innovation&quot;)) %&gt;%
+  autoplot(facets=TRUE)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_regarima_residuals-1.png" width="672" /></p>
+<p>Check ARIMA errors for white noise series:</p>
+<pre class="r"><code>checkresiduals(fit)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_regarima_arima_residuals-1.png" width="672" /></p>
+<pre><code>## 
+##  Ljung-Box test
+## 
+## data:  Residuals from Regression with ARIMA(1,0,2) errors
+## Q* = 5.8916, df = 3, p-value = 0.117
+## 
+## Model df: 5.   Total lags used: 8</code></pre>
 </div>
 <div id="forecasting-1" class="section level2">
 <h2>Forecasting</h2>
+<p>To forecast:</p>
+<ul>
+<li>Forecast regression part: First forecast predictors using separate model or assumed future values</li>
+<li>Forecast ARIMA part</li>
+<li>Combine results</li>
+</ul>
+<p><strong>Example</strong>: US Personal Consumption and Income</p>
+<p>Continuing on with example to: Forecast changes in expenditure based on changes in income, noting that a change in income may not lead to an instant change in consumption; but ignored here.</p>
+<p>Assumption: Future percentage change in personal disposable income = mean percentage change from the last 40 years</p>
+<pre class="r"><code>fit &lt;- auto.arima(uschange[,&quot;Consumption&quot;], xreg=uschange[,&quot;Income&quot;])
+
+fcast &lt;- forecast(fit, xreg=rep(mean(uschange[,2]),8))
+
+autoplot(fcast) + xlab(&quot;Year&quot;) +  ylab(&quot;Percentage change&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/us_regarima_forecast-1.png" width="672" /></p>
+<p>Prediction interval now smaller than with ARIMA model only; i.e. income change explains some of the variation</p>
+<p><strong>Note</strong> Prediction intervals of regression models (with/without ARIMA errors) do not take into account uncertainty in the forecasts of the predictors; prediction interval therefore condition on estimated future values of predictor variables</p>
+<p><strong>Example</strong>: Forecasting electricity demand</p>
+<pre class="r"><code>ggplot(data.frame(elecdaily)) + 
+    geom_point(aes(Temperature, Demand))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elec_temp_demand-1.png" width="672" /></p>
+<pre class="r"><code>autoplot(elecdaily[, c(&quot;Demand&quot;, &quot;Temperature&quot;)], facets = TRUE) + ylab(&quot;&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elec_temp_demand-2.png" width="672" /> U-Shape suggests quadratic regression model.</p>
+<pre class="r"><code>xreg &lt;- cbind(MaxTemp = elecdaily[, &quot;Temperature&quot;],
+              MaxTempSq = elecdaily[, &quot;Temperature&quot;]^2,
+              Workday = elecdaily[, &quot;WorkDay&quot;])
+
+fit &lt;- auto.arima(elecdaily[, &quot;Demand&quot;], xreg = xreg)
+
+checkresiduals(fit)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdaily_xreg-1.png" width="672" /></p>
+<pre><code>## 
+##  Ljung-Box test
+## 
+## data:  Residuals from Regression with ARIMA(2,1,2)(2,0,0)[7] errors
+## Q* = 28.229, df = 4, p-value = 1.121e-05
+## 
+## Model df: 10.   Total lags used: 14</code></pre>
+<p>This model has significant autocorrelation in residuals, therefore prediction intervals are not reliable (and should not be shown). Can provide point forecast though:</p>
+<ul>
+<li>For 14 days ahead</li>
+<li>For illustration, temperature set to constant 26 degrees (scenario based forecasting)</li>
+</ul>
+<pre class="r"><code>fcast &lt;- forecast(fit,
+  xreg = cbind(rep(26,14), rep(26^2,14),
+    c(0,1,0,0,1,1,1,1,1,0,0,1,1,1)))
+
+#?autoplot.forecast
+autoplot(fcast, PI = FALSE) + ylab(&quot;Electricity demand (GW)&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdaily_xreg_forecast-1.png" width="672" /></p>
 </div>
 <div id="stochastic-and-deterministic-trends" class="section level2">
 <h2>Stochastic and deterministic trends</h2>
+<p>Linear trend can be modelled as:</p>
+<ul>
+<li><strong>Deterministic trend</strong>: Regression model where <span class="math inline">\(\eta_t\)</span> is an ARMA process</li>
+</ul>
+<p><span class="math display">\[\begin{aligned}
+y_t = \beta_0 + \beta_1 t + \eta_t,\\
+(1 - \phi_1B)\eta_t = (1 + \theta_1B)\epsilon_t
+\end{aligned}\]</span></p>
+<ul>
+<li>Obtained in <code>auto.arima()</code> by setting <code>d=0</code>.</li>
+<li><p>Assumes slope of trend is not going to change over time</p></li>
+<li><p><strong>Stochastic trend</strong>: Regression model where <span class="math inline">\(\eta_t\)</span> is an ARIMA process with <span class="math inline">\(d\)</span> = 1. This is equivalent to <span class="math inline">\(\eta_t^\prime\)</span> being an ARMA process</p></li>
+</ul>
+<p><span class="math display">\[\begin{aligned}
+y_t - y_{t-1} = \beta_1 + \eta_t^\prime,\\
+(1 - \phi_1B)\eta_t^\prime = (1 + \theta_1B)\epsilon_t
+\end{aligned}\]</span></p>
+<p>The regression model can be rewritten as $y_t = <span class="math inline">\(y_{t-1} + \beta_1 + \eta_t^\prime\)</span> is is similar to a random walk model with drift, but different in that the error term is an ARMA process rather than white noise.</p>
+<ul>
+<li>Obtained in <code>auto.arima()</code> by setting <code>d=1</code>.</li>
+<li>Doesn’t assume that rate of growth will continue</li>
+<li>Safer to use for forecasting, specially for longer forecast horizons as prediction itnervals allows for greater uncertainty in future growth.</li>
+</ul>
+<p><strong>Example</strong>: International visitors to Australia</p>
+<p>Data:</p>
+<pre class="r"><code>autoplot(austa) + xlab(&quot;Year&quot;) +
+  ylab(&quot;millions of people&quot;) +
+  ggtitle(&quot;Total annual international visitors to Australia&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austa_preview-1.png" width="576" /></p>
+<p>Deterministic trend model:</p>
+<pre class="r"><code>trend &lt;- seq_along(austa)
+(fit1 &lt;- auto.arima(austa, d=0, xreg=trend))</code></pre>
+<pre><code>## Series: austa 
+## Regression with ARIMA(2,0,0) errors 
+## 
+## Coefficients:
+##          ar1      ar2  intercept    xreg
+##       1.1127  -0.3805     0.4156  0.1710
+## s.e.  0.1600   0.1585     0.1897  0.0088
+## 
+## sigma^2 estimated as 0.02979:  log likelihood=13.6
+## AIC=-17.2   AICc=-15.2   BIC=-9.28</code></pre>
+<p><span class="math display">\[\begin{aligned}
+y_t  &amp;= 0.416 + 0.171 x_{t} + \eta_t \\
+\eta_t &amp;= 1.113\eta_{t-1} + -0.38\eta_{t-2}  + \varepsilon_t\\
+\epsilon_t &amp;\sim \text{NID}(0,0.03)
+\end{aligned}\]</span></p>
+<p>As per regression equation, the estimated growth in visitor numbers is 0.17 million people per year.</p>
+<p>Stochastic trend model:</p>
+<pre class="r"><code>trend &lt;- seq_along(austa)
+(fit2 &lt;- auto.arima(austa, d=1))</code></pre>
+<pre><code>## Series: austa 
+## ARIMA(0,1,1) with drift 
+## 
+## Coefficients:
+##          ma1   drift
+##       0.3006  0.1735
+## s.e.  0.1647  0.0390
+## 
+## sigma^2 estimated as 0.03376:  log likelihood=10.62
+## AIC=-15.24   AICc=-14.46   BIC=-10.57</code></pre>
+<p>The model is as follows: <span class="math display">\[\begin{aligned}
+y_t - y_{t-1}  &amp;= 0.173  + \eta_t^\prime \\
+\eta_t^\prime  &amp;=   
+0.301\varepsilon_{t-1} + \varepsilon_t\\
+\epsilon_t &amp;\sim \text{NID}(0,0.034)
+\end{aligned}\]</span></p>
+<p>Equivalently, written as: <span class="math display">\[\begin{aligned}
+y_t   &amp;= y_0 + 0.173t  + \eta_t^\prime \\
+\eta_t &amp;=  \eta_{t-1}  + 
+0.301\varepsilon_{t-1} + \varepsilon_t \\
+\epsilon_t &amp;\sim \text{NID}(0,0.034)
+\end{aligned}\]</span></p>
+<p>Similar to the deterministic trend model, estimated growth in visitor numbers is 0.17.</p>
+<p>Difference between models is in prediction intervals; stochastic trend model has much wider prediction interval due to non-stationary error</p>
+<pre class="r"><code>fc1 &lt;- forecast(fit1, xreg = cbind(trend = length(austa) + 1:10))
+fc2 &lt;- forecast(fit2, h=10)
+
+autoplot(austa) +
+  autolayer(fc2, series=&quot;Stochastic trend&quot;) +
+  autolayer(fc1, series=&quot;Deterministic trend&quot;) +
+  ggtitle(&quot;Forecasts from trend models&quot;) +
+  xlab(&quot;Year&quot;) + ylab(&quot;Visitors to Australia (millions)&quot;) +
+  guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austa_regtrend_forecast-1.png" width="672" /></p>
+</div>
+<div id="dynamic-harmonic-regression" class="section level2">
+<h2>Dynamic harmonic regression</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Data Frequency</th>
+<th>Seasonality (example only)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Daily</td>
+<td>365</td>
+</tr>
+<tr class="even">
+<td>Weekly</td>
+<td>52</td>
+</tr>
+<tr class="odd">
+<td>Half/Hourly</td>
+<td>48 (shortest)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>ARIMA, ETS designed for shorter periods, e.g. for monthly data (12) or quarterly (4)</li>
+<li><code>ets()</code> allows maximum frequency of <span class="math inline">\(m=24\)</span>, equivalent to 23 parameters to be estimated</li>
+<li><code>Arima()</code> and <code>auto.arima()</code> allow maximum <span class="math inline">\(m = 350\)</span>, but will usually run out of memory at <span class="math inline">\(m &gt; 200\)</span>.</li>
+<li>Seasonal differencing of high order does not make much sense, e.g. for daily data: What happened today vs what happened exactly 1 year ago with no constraint on a smooth seasonal pattern</li>
+</ul>
+<p>Recommended approach: <strong>Harmonic regression</strong>.</p>
+<ul>
+<li>Seasonal pattern modelled using Fourier terms and short-term series dynamics handled by ARMA error.</li>
+<li>Advantages:
+<ul>
+<li>Any length seasonality allowed</li>
+<li>Can have different seasonal periods (each with their own Fourier terms)</li>
+<li>THe number of fourier terms (<span class="math inline">\(K\)</span> is the number of sine and cosine terms to return)</li>
+<li>For small <span class="math inline">\(K\)</span>, seasonal pattern is smooth</li>
+<li>Short-term dynamics handles with simple ARMA error</li>
+</ul></li>
+<li>Disadvantage (compared to seasonal ARIMA model)
+<ul>
+<li>Seasonality assumed to be fixed (i.e. pattern not allowed to change over time) (however usually constant except for long time series)</li>
+</ul></li>
+</ul>
+<p><strong>Example</strong>: Australian eating out expenditure</p>
+<ul>
+<li>Monthly data</li>
+<li>Seasonality - Fourier</li>
+<li>Other dynamics - ARIMA errors</li>
+<li><code>forecast::fourier()</code>:
+<ul>
+<li><code>x</code>: Seasonal time series.</li>
+<li><code>K</code>: Maximum order(s) of Fourier terms</li>
+<li><code>h</code>: Number of periods ahead to forecast</li>
+<li>Period of Fourier terms is determined from the ts characteristics of <span class="math inline">\(x\)</span>.</li>
+</ul></li>
+</ul>
+<p>In following example, AICc minimised for <span class="math inline">\(K = 5\)</span>.</p>
+<pre class="r"><code>cafe04 &lt;- window(auscafe, start=2004)
+plots &lt;- list()
+for (i in seq(6)) {
+  fit &lt;- auto.arima(cafe04, xreg = fourier(cafe04, K = i), seasonal = FALSE, lambda = 0)
+  plots[[i]] &lt;- autoplot(forecast(fit, xreg=fourier(cafe04, K=i, h=24))) +
+    xlab(paste(&quot;K=&quot;,i,&quot;   AICC=&quot;,round(fit[[&quot;aicc&quot;]],2))) +
+    ylab(&quot;&quot;) + ylim(1.5,4.7)
+}
+gridExtra::grid.arrange( plots[[1]],plots[[2]],plots[[3]], plots[[4]],plots[[5]],plots[[6]], nrow=3)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/auscafe_harmonic-1.png" width="672" /></p>
 </div>
 <div id="lagged-predictors" class="section level2">
 <h2>Lagged predictors</h2>
+<ul>
+<li>Predictor impact may not occur for some time</li>
+<li>Predictor impact may diminish over time</li>
+<li>With one predictor, model allowing for lagged effects is: <span class="math display">\[y_t = \beta_0 + \gamma_0 x_t + \gamma_1 x_{t-1} + \ldots + \gamma_k x_{t-k} + \eta_t\]</span> where <span class="math inline">\(\eta_t\)</span> is an ARIMA process. Value of <span class="math inline">\(k\)</span> (regression) and <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> (ARIMA) can be determined using AICc.</li>
+</ul>
+<p><strong>Example</strong>: TV advertising and insurance quotations</p>
+<p>Aim: Use ad expenditure to predict insurance quotations (and therefore new policies)</p>
+<ul>
+<li>Consider that ad expenditure can impact sales for current and following 3 months (i.e. test with <span class="math inline">\(k\)</span> = 0, 1, 2 and 3.)</li>
+<li>In order to compare models using same data, exclude first three months</li>
+</ul>
+<pre class="r"><code>autoplot(insurance, facets=TRUE) +
+  xlab(&quot;Year&quot;) + ylab(&quot;&quot;) +
+  ggtitle(&quot;Insurance advertising and quotations&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/insurance_data-1.png" width="672" /></p>
+<ul>
+<li>Data (lag 0) is for Jan 2002 until April 2005.</li>
+<li>Lag 1 will be from Dec 2002</li>
+<li>Lag 2 will be from Nov 2002</li>
+<li>Lag 3 will be from Oct 2002</li>
+</ul>
+<p>Note: In the following, if you do not include <code>head(nrow(insurance))</code>, the lagged values will have greater number of rows than the response variable.</p>
+<pre class="r"><code># Lagged predictors. Test 0, 1, 2 or 3 lags.
+Advert &lt;- cbind(
+    AdLag0 = insurance[,&quot;TV.advert&quot;],
+    AdLag1 = stats::lag(insurance[,&quot;TV.advert&quot;],-1),
+    AdLag2 = stats::lag(insurance[,&quot;TV.advert&quot;],-2),
+    AdLag3 = stats::lag(insurance[,&quot;TV.advert&quot;],-3))  %&gt;%
+  head(nrow(insurance))
+
+max.lag &lt;- 4
+N &lt;- nrow(insurance)
+# Restrict data so models use same fitting period
+fit1 &lt;- auto.arima(insurance[max.lag:N,1], xreg=Advert[max.lag:N,1], stationary=TRUE)
+fit2 &lt;- auto.arima(insurance[max.lag:N,1], xreg=Advert[max.lag:N,1:2], stationary=TRUE)
+fit3 &lt;- auto.arima(insurance[max.lag:N,1], xreg=Advert[max.lag:N,1:3], stationary=TRUE)
+fit4 &lt;- auto.arima(insurance[max.lag:N,1], xreg=Advert[max.lag:N,1:4], stationary=TRUE)
+
+# AICc
+c(fit1[[&quot;aicc&quot;]],fit2[[&quot;aicc&quot;]],fit3[[&quot;aicc&quot;]],fit4[[&quot;aicc&quot;]])</code></pre>
+<pre><code>## [1] 68.49968 60.02357 62.83253 68.01684</code></pre>
+<p>Best model (based on AICc) has 2 lagged predictors; advertising have effect on quotes for current and following month. Can now re-estimate model with all data.</p>
+<pre class="r"><code>(fit &lt;- auto.arima(insurance[,1], xreg=Advert[,1:2],  stationary=TRUE))</code></pre>
+<pre><code>## Series: insurance[, 1] 
+## Regression with ARIMA(3,0,0) errors 
+## 
+## Coefficients:
+##          ar1      ar2     ar3  intercept  AdLag0  AdLag1
+##       1.4117  -0.9317  0.3591     2.0393  1.2564  0.1625
+## s.e.  0.1698   0.2545  0.1592     0.9931  0.0667  0.0591
+## 
+## sigma^2 estimated as 0.2165:  log likelihood=-23.89
+## AIC=61.78   AICc=65.28   BIC=73.6</code></pre>
+<p>Resulting model: 2-period lagged regression model with AR(3) errors;</p>
+<p><span class="math display">\[\begin{aligned}
+y_t  &amp;= 2.039 + 1.256 x_{t} + 0.162 x_{t-1} + \eta_t \\
+\eta_t &amp;= 1.412\eta_{t-1} + -0.932\eta_{t-2}  + 0.359\eta_{t-3}  + \varepsilon_t\\
+\epsilon_t &amp;\sim \text{NID}(0,0.217)
+\end{aligned}\]</span></p>
+<p>Forecasts can be calculating by assuming future values for advertising variable. Here set to 8 units; forecasts made for next 20 months.</p>
+<pre class="r"><code>fc8 &lt;- forecast(fit, 
+                h=20,  
+                xreg=cbind(
+                    AdLag0 = rep(8,20), 
+                    AdLag1 = c(Advert[40,1], rep(8,19))))
+
+autoplot(fc8) + ylab(&quot;Quotes&quot;) +  ggtitle(&quot;Forecast quotes with future advertising set to 8&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/insurance_lag_forecast-1.png" width="672" /></p>
+<pre class="r"><code>rm(Advert, fit, fc8)</code></pre>
 </div>
 </div>
 <div id="forecasting-hierarchical-or-grouped-time-series" class="section level1">
 <h1>Forecasting hierarchical or grouped time series</h1>
-<div id="hierarchical-time-sereis" class="section level2">
-<h2>Hierarchical time sereis</h2>
-</div>
-<div id="grouped-time-series" class="section level2">
-<h2>Grouped time series</h2>
-</div>
-<div id="the-bottom-up-approach" class="section level2">
-<h2>The bottom-up approach</h2>
-</div>
-<div id="top-down-approaches" class="section level2">
-<h2>Top-down approaches</h2>
-</div>
-<div id="middle-out-approaches" class="section level2">
-<h2>Middle-out approaches</h2>
-</div>
-<div id="mapping-matrices" class="section level2">
-<h2>Mapping matrices</h2>
-</div>
-<div id="the-optimal-reconciliation-approach" class="section level2">
-<h2>The optimal reconciliation approach</h2>
-</div>
+<p>When want, e.g. forecasts for Australia wide and each state, with state forecasts adding up to Australia wide forecast. <!--
+## Hierarchical time series
+## Grouped time series
+## The bottom-up approach
+## Top-down approaches
+## Middle-out approaches
+## Mapping matrices
+## The optimal reconciliation approach
+--></p>
 </div>
 <div id="advanced-forecasting-methods" class="section level1">
 <h1>Advanced forecasting methods</h1>
 <div id="complex-seasonality" class="section level2">
 <h2>Complex seasonality</h2>
+<ul>
+<li>High frequency data can have multiple seasonal patterns:</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Data frequency</th>
+<th>Possible patterns</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Daily Data</td>
+<td>Weekly, Anual</td>
+</tr>
+<tr class="even">
+<td>Hourly Data</td>
+<td>Daily, Weekly, Annual</td>
+</tr>
+<tr class="odd">
+<td>Weekly</td>
+<td>Annual (period = ~52.179)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>ts</code> can handle only one type of seasonality, which is usally assumed to take <strong>integer</strong> values</li>
+<li><p>Methods:</p>
+<ul>
+<li><code>msts</code> for multiple seasonality time series and non-integer frequencies. Retruns mulitple seasonal components, trend and remainder components. Ensure to consider vertical scales when interpretign charts. To forecast, use <code>stlf()</code> to:
+<ul>
+<li>Forecast each seasonal foreast using seasonal naive method</li>
+<li>Use ETS (or othe rmethod) for seasonally adjusted data</li>
+</ul></li>
+<li>Dynamic harmonic regression with multiple seasonal periods; add Fourier terms for each seasonal period</li>
+<li>TBATS model (Fourier terms with an exponential smoothing state space model and Box Cox trasnformation in automated model); unlike dynamic harmonic regression allows seasonality to change slowly over time. Disadvantage is that is can be slow to estimate and does not allow covariates (unlike harmonic regression)</li>
+</ul></li>
+</ul>
+<p><strong>Example</strong>: Call arrivals per 5 minute interval each weekday between 7:00am and 9:05pm for 33 weeks</p>
+<ul>
+<li>Daily seasaonality has frequency = 169</li>
+<li>Weekly seasonality has frequency = 845</li>
+</ul>
+<p>Data:</p>
+<pre class="r"><code># All data
+p1 &lt;- autoplot(calls) +
+  ylab(&quot;Call volume&quot;) + xlab(&quot;Weeks&quot;) +
+  scale_x_continuous(breaks=seq(1,33,by=2))
+
+# 4 weeks
+p2 &lt;- autoplot(window(calls, end=4)) +
+  ylab(&quot;Call volume&quot;) + xlab(&quot;Weeks&quot;) +
+  scale_x_continuous(minor_breaks = seq(1,4,by=0.2))
+
+gridExtra::grid.arrange(p1,p2)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/call_view-1.png" width="672" /></p>
+<pre class="r"><code>rm(p1, p2)</code></pre>
+<p>Decomposition using STL with multiple seasonal periods model; note that trend and weekly seasonality explain much less of the variation than daily seasonality.</p>
+<pre class="r"><code>calls %&gt;% mstl() %&gt;% autoplot() + xlab(&quot;Week&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/calls_decompose_mstl-1.png" width="672" /></p>
+<p>Forecast using decomposition:</p>
+<pre class="r"><code>calls %&gt;% stlf() %&gt;% autoplot() + xlab(&quot;Week&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/calls_decompose_forecast-1.png" width="672" /></p>
+<p>Dynamic harmonic regression with multiple seasonal periods, using log transformation to ensure forecasts and prediction intervals remain positive:</p>
+<p>TODO: Understand why 10,10 chosen for fourier.</p>
+<p>This model is EXTREMELY slow….</p>
+<p>TBATS example provided.</p>
+<p><strong>Example</strong>: Electricity demand modelling</p>
+<p>Aim: Forecast electricity demand based on: * Historical demand over 1/2 hourly intervals (1year) * Temperatures</p>
+<p>Data:</p>
+<pre class="r"><code>p1 &lt;- autoplot(elecdemand[,c(&quot;Demand&quot;,&quot;Temperature&quot;)],
+    facet=TRUE) +
+  scale_x_continuous(minor_breaks=NULL,
+    breaks=2014+
+      cumsum(c(0,31,28,31,30,31,30,31,31,30,31,30))/365,
+    labels=month.abb) +
+  xlab(&quot;Time&quot;) + ylab(&quot;&quot;)
+
+p2 &lt;- elecdemand %&gt;%
+  as.data.frame() %&gt;%
+  ggplot(aes(x=Temperature, y=Demand)) + geom_point() +
+    xlab(&quot;Temperature (degrees Celsius)&quot;) +
+    ylab(&quot;Demand (GW)&quot;)
+
+gridExtra::grid.arrange(p1, p2, nrow = 1)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdemand_view2-1.png" width="672" /></p>
+<pre class="r"><code>rm(p1, p2)</code></pre>
+<p>Model: Regression with piecewise linear function of termperature (with knot at 18 degrees) and harmonic regression terms to allow for daily seasonal pattern</p>
+<p>TODO: Understand this after reviewing regression chapter.</p>
+<p>Forecasts require meteorological model forecasts or scenario forecasts. Here use repeat of last 2 days</p>
+<p>TODO: Review and understand:</p>
+<p>TODO: Read following sections in more detail:</p>
 </div>
 <div id="vector-autoregressions" class="section level2">
 <h2>Vector autoregressions</h2>
+<p>Allow for bidirectional relationship between forecast and predictor variables. i.e. that predictor infleunces forecast variable which then adjusts the predictor variable.</p>
 </div>
 <div id="neural-network-models" class="section level2">
 <h2>Neural network models</h2>
+<ul>
+<li><p>Allow complex nonlinear relationships between response variable and predictors.</p></li>
+<li><p>Lagged values of the time series can be used as inputs to a neural network (similar to linear autorgression model); called neural network autoregression or NNAR model.</p></li>
+</ul>
 </div>
 <div id="bootstrapping-and-bagging" class="section level2">
 <h2>Bootstrapping and bagging</h2>
+<p>Can simulate time series (generate new series similar to observed one) by:</p>
+<ul>
+<li>Box-Cox transform series</li>
+<li>Decompose into trend, seasonal and remainder coponents using STL</li>
+<li>Bootstrap remainder series (but because there may be autocorrelation within STL remainder, use “blocked bloostrap”, where contiguous sections of TS selected at random and joined together)</li>
+<li>Add bootstrapped remainder to trend and seasonal compoennts</li>
+<li>Reverse Box-Cox transformation</li>
+</ul>
+<p>Advantage:</p>
+<ul>
+<li>Better measure of forecast uncertainty; most prediction intervals too narrow</li>
+<li>Improve point forecast using “bagging”</li>
+</ul>
+<p>Sources of uncertainty:</p>
+<ul>
+<li>Random error term (only term accounted for in prediction intervals)</li>
+<li>Parameter estimates (bootstrapping incorporates this as welll)</li>
+<li>Choice of model</li>
+<li>Continuaction of process into future</li>
+</ul>
+<pre class="r"><code>bootseries &lt;- bld.mbb.bootstrap(debitcards, 10) %&gt;%
+  as.data.frame() %&gt;% ts(start=2000, frequency=12)
+
+autoplot(debitcards) +
+  autolayer(bootseries, colour=TRUE) +
+  autolayer(debitcards, colour=FALSE) +
+  ylab(&quot;Bootstrapped series&quot;) + guides(colour=&quot;none&quot;)</code></pre>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/bootseries-1.png" width="672" /></p>
+<p>Method of using bootstrapped samples to obtain better idea of forecast accuracy and prediction interval:</p>
+<ul>
+<li>Fit model to each series; model will likely be the same but parameters will likely differ</li>
+<li>Use mean (point forecast) and quantiles (prediction intervals) of each simulated sample path to form point forecasts and prediction intervals</li>
+</ul>
 </div>
 </div>
 <div id="some-practical-forecasting-issues" class="section level1">
@@ -2843,27 +3888,82 @@ y_t^\prime = c + \phi_1 y_{t-1}^\prime + \ldots + \phi_p y_{t-p} +
 </div>
 <div id="time-series-of-counts" class="section level2">
 <h2>Time series of counts</h2>
+<ul>
+<li>Methods to date assume continuous sample space, which is fine if counts &gt; 100.</li>
+<li>Small counts need to use alternative model (outside scope of book)</li>
+<li>Croston’s method: Transform data into:
+<ul>
+<li>Demand (<span class="math inline">\(q\)</span>)</li>
+<li>Time between demand (inter-arrival time) (<span class="math inline">\(a\)</span>)</li>
+</ul></li>
+</ul>
 </div>
 <div id="ensuring-forecasts-say-within-limits" class="section level2">
 <h2>Ensuring forecasts say within limits</h2>
+<ul>
+<li>To impose positivity, specify Box-Cox parameter <span class="math inline">\(\lambda = 0\)</span>. Set <code>biasadj = TRUE</code> to ensure forecasts are the means fo the fore distirbutions</li>
+<li>To impose that data is within interval <span class="math inline">\((a, b)\)</span>,
+<ul>
+<li>Map data to whole real line using scaled logit transform <span class="math display">\[y = \log \left(\frac{x-a}{b-x}\right)\]</span></li>
+<li>Fit model</li>
+<li>Transform back using: <span class="math display">\[x = \frac{(b-a)e^y}{1 + e^y} + a\]</span></li>
+</ul></li>
+</ul>
 </div>
 <div id="forecast-combinations" class="section level2">
 <h2>Forecast combinations</h2>
+<p>By averaging the forecast values of many models get best results</p>
 </div>
 <div id="prediction-intervals-for-aggregates" class="section level2">
 <h2>Prediction intervals for aggregates</h2>
+<p>Eg: To forecast next month’s sales based on weekly data</p>
+<ul>
+<li>If point forecasts are means, adding up will give good point estimate</li>
+<li>Due to correlatinos between forecast errors, prediction intervals tricky&gt;</li>
+<li>Approach:
+<ul>
+<li>Forecast many (1000) future sample paths for next 4 weeks</li>
+<li>Take mean of total forecasts for point estimate</li>
+<li>Take quantil for prediction intervals</li>
+</ul></li>
+</ul>
 </div>
 <div id="backcasting" class="section level2">
 <h2>Backcasting</h2>
+<p>Backcasting = forecasting time series in reverse</p>
 </div>
 <div id="very-long-and-very-short-time-series" class="section level2">
 <h2>Very long and very short time series</h2>
+<p>No rule of thumb for what is short (some say &lt; 30) or long (? &gt; 200)</p>
 </div>
 <div id="forecasting-on-training-and-test-sets" class="section level2">
 <h2>Forecasting on training and test sets</h2>
+<p>is linear interpolated. More sophisticated approaches in <code>imputeTs</code> package.</p>
 </div>
-<div id="dealing-with-missing-vlues-and-other-outliers" class="section level2">
-<h2>Dealing with missing vlues and other outliers</h2>
-<pre class="r"><code> #plot(x &lt;- stl(log(co2), s.window = &quot;per&quot;, t.window = 1000))</code></pre>
+<div id="dealing-with-missing-values-and-other-outliers" class="section level2">
+<h2>Dealing with missing values and other outliers</h2>
+<div id="missing-values" class="section level3">
+<h3>Missing values</h3>
+<ul>
+<li>If missingness is not random, need to account. E.g. store closed on public holiday, but next day may have more sales. Use indicator variable to state whether day is holiday or not.</li>
+<li>Some methos allow for missing values, for those that don’t (<code>ets()</code>, <code>stlf()</code> and <code>tbats()</code>):
+<ul>
+<li>Take the seciton of data after hte last mising vlue</li>
+<li>Replace missing value with estimates, e.g. using <code>na.interp()</code>. For non-seasonal data, simple linear interpolation is used to fill in the missing sections; for seasonal data, an STL decomposition is used to estimate the seassonal component and then the seasonally adjsuted series</li>
+</ul></li>
+</ul>
+</div>
+<div id="outliers" class="section level3">
+<h3>Outliers</h3>
+<ul>
+<li>May be error or simply unusual</li>
+<li>Impact how well methods work</li>
+<li>Best to replace with missing values or with a more consistent estimate</li>
+<li>HOWEVER, best not to replace without thinking why they have occurred as may provide useful information about process that produced them (which should be taken into account when forecasting)</li>
+<li>If genuine error, or won’t occur in forecasting period, then replacing them is the best option</li>
+<li><code>tsoutliers()</code> function designed to identify ouliers and suggest potential replacement values.</li>
+<li><code>tsclean()</code> identifies and replaces outliers and replaces missing values. Should be used with caution.</li>
+</ul>
+</div>
 </div>
 </div>
