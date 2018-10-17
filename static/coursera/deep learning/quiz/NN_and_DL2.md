@@ -1,3 +1,6 @@
+`$S_n = \sum_{i=1}^n X_i$`
+
+
 ## Week 2 Quiz - Neural Network Basics
 
 1. What does a neuron compute?
