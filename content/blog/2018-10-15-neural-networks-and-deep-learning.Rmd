@@ -5,6 +5,7 @@ date: '2018-10-15'
 slug: neural-networks-and-deep-learning
 categories: []
 tags: []
+banner: img/banners/NNandDL.png
 ---
 
 ```{r init, message=FALSE, warning=FALSE, echo = FALSE}
@@ -14,10 +15,8 @@ require(reticulate)
 ```
 
 
-# Neural Networks and Deep Learning
-
-## Introduction
-### Introduction to Deep Learning
+# Introduction {#week1}
+## Introduction to Deep Learning
 Deep learning $\equiv$ training a neural network.
 
 What is a Neural Network?  Example: Housing price prediction 
@@ -29,7 +28,7 @@ where the neuron, computes the linear function, takes a max of zero and outputs 
 * A larger NN is formed by stacking many of these NNs together.  
 ![NN_eg](/img/DLS_NNIntro.png)
 
-### Supervised Learning with Neural Networks
+## Supervised Learning with Neural Networks
 
 Input(x)            | Output (y)                    | Application           | Type of NN
 --------------------| ----------------------------- | ----------------------|-----------------------------------
@@ -54,7 +53,7 @@ Deep learning can be applied to both types of data;
 * Unstructured data: Audio, images, text.  Features might be pixel values in an image or individual words in a  piece of text.  Deep learning helping to interpret unstructured data as well.
 
 
-### Why is Deep Learning taking off?
+## Why is Deep Learning taking off?
 
 Basic technical ideas have been around for decades.  Main drivers for rise of deep learning:
 
@@ -73,7 +72,7 @@ Hero of Deep Learning: Geoffrey Hinton
 
 * 1982: Hinton, Rumelhart: seminal backpropagation algorithm, but it had been developed many times earlier.  
 * Example "Mary has mother Victoria", gave features such as nationality, generation, branch of family tree
-## Basics of Neural Network programming.  Two views.  Psychologist: Concept = bundle of features.  AI: Concept = formal structuralist view  
+# Basics of Neural Network programming.  Two views.  Psychologist: Concept = bundle of features.  AI: Concept = formal structuralist view  
 * Most proud of work with Terry Segnowski (wake and sleep phases) vs back propagation (forward pass and backward pass) (Boltzmann machines)  Restricted Boltzmann machines were ingredients of the winning entry for the Netflix competition.
 * Restricted Boltzmann machine.  One layer of hidden features, can learn one layer.  Then treat those features as data and do it again.  And repeat.  Uy Tay: Treat these as a single model; on top a restricted Boltzmann machine and below it use a Sigmoid belief net.
 * Recirculation algorithm: send information around loop so that information doesn't change.  You want to train it without having to do back propagation.  Don't want to change info.  Relates to spike-timing dependent plasticity
@@ -83,10 +82,10 @@ Hero of Deep Learning: Geoffrey Hinton
 
 
 
-## Neural Network Basics
+# Neural Network Basics {#week2}
 
-### Logistic Regression as a Neural Network
-#### Binary Classification
+## Logistic Regression as a Neural Network
+## Binary Classification
 
 * When implement NN< want to process entire training set without using an explicit for loop
 * Usually have forward propagation followed by backward propagation step
@@ -112,7 +111,7 @@ Notation:
 
 Refer to _notation guide_ if you forget!
 
-#### Logistic Regression
+## Logistic Regression
 
 * Given $x$, want $\hat{y} = P(y = 1 | x)$
 * Features: $x \in \mathbb{R}^{n_x}$
@@ -146,7 +145,7 @@ Aim of logistic regression: Learn parameters $w$ and $b$ so that $\hat{y}$ is a 
 Note: In this course, treat W and B separately, where B corresponds to an intercept term.
 
 
-#### Logistic Regression Cost Function
+## Logistic Regression Cost Function
 
 First, recall log function:
 ```{r log_function, fig.height=3, fig.width=6}
@@ -206,7 +205,7 @@ Loss function applied to just a single training example.  Cost function is cost 
 Logistic regression can be seen as a very very small neural network.
 
 
-#### Gradient Descent
+## Gradient Descent
 Used to learn the parameters $w$ and $b$ on your training algorithm.  
 
 Recap: $\hat{y} = \sigma(w^Tx + b)$, $\sigma(z) = \frac{1}{1 + e^{-z}}$
@@ -231,7 +230,7 @@ Recall definition of derivative = slope of function (height/width).
 ![Gradient Descent Algorithm](/img/DLS_GradDesc.png)
 
 
-#### Computation graph
+## Computation graph
 
 Computations of NN organised in terms of 
 
@@ -294,7 +293,7 @@ $$\begin{aligned}
 In code use **dvar** for derivative of final output variable, such as $J$, with respect to various intermediate quantities.
 
 
-#### Logistic Regression Gradient Descent
+## Logistic Regression Gradient Descent
 
 Recap: 
 $$\begin{aligned}
@@ -348,7 +347,7 @@ $$\begin{aligned}
 \end{aligned}$$
 
 
-#### Gradient Descent on $m$ Examples
+## Gradient Descent on $m$ Examples
 Previously, with 1 training example, used loss function.  Here with $m$ training examples, use cost function 
 
 $$\begin{aligned}
@@ -392,8 +391,8 @@ In deep learning, without using explicit for-loops will help you scale.  Better 
 
 This is one step of the gradient descent algorithm.
 
-### Python and Vectorisation
-#### Vectorisation
+## Python and Vectorisation
+## Vectorisation
 
 Deep learning shines with large training sets (therefore very important for code to run quickly)
 
@@ -434,7 +433,7 @@ Non-vectorised version took about 300 times faster
 A lot of scaleable deep learning algorithms are don on a GPU (Graphics processing unit).  Within Jupyter on CPU.  Both GPU and CPU have parallelization instructions (SIMD = single instruction multiple data).  Built-in functions such as np.function that don't require a for loop are used, it enables Python to take better advantage of parallelism.  GPU is very good at SIMD calculations, but CPU not bad either.
 
 
-#### More Vectorisation Examples
+## More Vectorisation Examples
 
 Whenever possible avoid explicit for-loops.
 
@@ -511,7 +510,7 @@ $$\begin{aligned}
     b := b - \alpha db \\
 \end{aligned}$$
 
-#### Vectorising Logistic Regression Predictions
+## Vectorising Logistic Regression Predictions
 
 Vectorisation to compute predictions, $a$: 
 
@@ -538,7 +537,7 @@ Similarly, let:
 
 * $A = [a^{(1)} a^{(2)} \ldots a^{(m)}]$ = $\sigma(Z)$
 
-#### Vectorising Logistic Regression Output
+## Vectorising Logistic Regression Output
 How to use vectorisation to perform gradient computations for all $M$ training samples:
 
 Recall for gradient computation, calculated
@@ -590,8 +589,8 @@ dw &= \frac{1}{m} \mathbf{X} dz^T  \\
     dz^{(m)}\\
 \end{array} \right]\\
 &= \frac{1}{m}[x^{(1)}dz^{(1)} + \ldots + x^{(m)}dz^{(m)}]
-    
- \end{aligned}  $$
+  
+ \end{aligned}$$
 
 Implementing Vectorised Logistic Regression
 1. Initialise $J=0$, $db = 0$, $dw = \text{np.zeros}(n_x, 1)$
@@ -610,7 +609,7 @@ Implementing Vectorised Logistic Regression
 If want multiple iterations of gradient descent, then will still need for-loop
 
 
-#### Broadcasting in Python
+## Broadcasting in Python
 
 Technique that python and numpy allows you to use to make code more efficient
 
@@ -640,7 +639,7 @@ Broadcasting allows you to divide a $3 \times 4$ matrix by a $1 \times 4$ matrix
 
 For more information, see `numpy` documentation.  Equivalent to `bsxfun` in Matlab and Octave.
 
-#### A note on python/numpy vectors
+## A note on python/numpy vectors
 
 Flexibility + broadcasting = strength and weakness
 
@@ -670,19 +669,18 @@ Recommendations:
 * Use `assert(a.shape == (5,1))` type statements to ensure shape
 
 
-#### Quick tour of Jupyter/iPython Notebooks
+## Quick tour of Jupyter/iPython Notebooks
 
 * Shift + Enter to run (but could be different) 
 * Cell > Run Cells
 * Markdown cell
 * Code is running on a kernel; with excessively large job, the kernel might die.  Just click Kernel > Restart
 
-#### Explanation of logistic regression cost function
+## Explanation of logistic regression cost function
 
-### Notebook: Python Basics with numpy
-### Practice Programming Assignment: Python Basics with numpy
 
-### Hero of Deep Learning: Pieter Abbeel
+
+## Hero of Deep Learning: Pieter Abbeel
 
 Deep reinforcement learning.  Many more questions than in supervised learning.  Where does the data come from?  What actions you took early got you the reward later?  Safety issues.  Still need to solve longer horizon problems.  Wants to run the reinforcement learning in the inner loop to try to improve it.  See also Andrej Karpathy's deep learning course which has videos online.  Berkeley has a deep reinforcement learning course which has all of the lectures online.
 
@@ -693,7 +691,3 @@ Discusses article in [Mashable](https://mashable.com/2017/07/28/16-year-old-ai-g
 At present, deep reinforcement learning always starts from scratch, would be better if it could learn from the past.
 
 
-- [ ] $\mathcal{L}^{(i)}(\hat{y}^{(i)}, y^{(i)}) = |y^{(i)} - \hat{y}^{(i)}|$
-- [ ] $\mathcal{L}^{(i)}(\hat{y}^{(i)}, y^{(i)}) = -(y^{(i)} \log(\hat{y}^{(i)}) + (1- y^{(i)}) \log(1 - \hat{y}^{(i)})$
-- [ ] $\mathcal{L}^{(i)}(\hat{y}^{(i)}, y^{(i)}) = |y^{(i)} - \hat{y}^{(i)}|^2$
-- [x] $\mathcal{L}^{(i)}(\hat{y}^{(i)}, y^{(i)}) = \max(0, y^{(i)} - \hat{y}^{(i)})$

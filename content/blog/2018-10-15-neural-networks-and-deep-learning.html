@@ -5,16 +5,15 @@ date: '2018-10-15'
 slug: neural-networks-and-deep-learning
 categories: []
 tags: []
+banner: img/banners/NNandDL.png
 ---
 
 
 
-<div id="neural-networks-and-deep-learning" class="section level1">
-<h1>Neural Networks and Deep Learning</h1>
-<div id="introduction" class="section level2">
-<h2>Introduction</h2>
-<div id="introduction-to-deep-learning" class="section level3">
-<h3>Introduction to Deep Learning</h3>
+<div id="week1" class="section level1">
+<h1>Introduction</h1>
+<div id="introduction-to-deep-learning" class="section level2">
+<h2>Introduction to Deep Learning</h2>
 <p>Deep learning <span class="math inline">\(\equiv\)</span> training a neural network.</p>
 <p>What is a Neural Network? Example: Housing price prediction</p>
 <ul>
@@ -25,8 +24,8 @@ tags: []
 <img src="/img/DLS_NNIntro.png" alt="NN_eg" /></li>
 </ul>
 </div>
-<div id="supervised-learning-with-neural-networks" class="section level3">
-<h3>Supervised Learning with Neural Networks</h3>
+<div id="supervised-learning-with-neural-networks" class="section level2">
+<h2>Supervised Learning with Neural Networks</h2>
 <table>
 <colgroup>
 <col width="19%" />
@@ -96,8 +95,8 @@ tags: []
 <li>Unstructured data: Audio, images, text. Features might be pixel values in an image or individual words in a piece of text. Deep learning helping to interpret unstructured data as well.</li>
 </ul>
 </div>
-<div id="why-is-deep-learning-taking-off" class="section level3">
-<h3>Why is Deep Learning taking off?</h3>
+<div id="why-is-deep-learning-taking-off" class="section level2">
+<h2>Why is Deep Learning taking off?</h2>
 <p>Basic technical ideas have been around for decades. Main drivers for rise of deep learning:</p>
 <ul>
 <li><p>Amount of data (computer, sensors, cell phones, etc) <img src="/img/DLS_DrivenByScale.png" alt="NN_eg" /> Note that <span class="math inline">\(m\)</span> is used to denote the number of training examples.</p></li>
@@ -112,7 +111,7 @@ tags: []
 <ul>
 <li>1982: Hinton, Rumelhart: seminal backpropagation algorithm, but it had been developed many times earlier.<br />
 </li>
-<li>Example “Mary has mother Victoria”, gave features such as nationality, generation, branch of family tree ## Basics of Neural Network programming. Two views. Psychologist: Concept = bundle of features. AI: Concept = formal structuralist view<br />
+<li>Example “Mary has mother Victoria”, gave features such as nationality, generation, branch of family tree # Basics of Neural Network programming. Two views. Psychologist: Concept = bundle of features. AI: Concept = formal structuralist view<br />
 </li>
 <li>Most proud of work with Terry Segnowski (wake and sleep phases) vs back propagation (forward pass and backward pass) (Boltzmann machines) Restricted Boltzmann machines were ingredients of the winning entry for the Netflix competition.</li>
 <li>Restricted Boltzmann machine. One layer of hidden features, can learn one layer. Then treat those features as data and do it again. And repeat. Uy Tay: Treat these as a single model; on top a restricted Boltzmann machine and below it use a Sigmoid belief net.</li>
@@ -122,12 +121,13 @@ tags: []
 </ul>
 </div>
 </div>
-<div id="neural-network-basics" class="section level2">
-<h2>Neural Network Basics</h2>
-<div id="logistic-regression-as-a-neural-network" class="section level3">
-<h3>Logistic Regression as a Neural Network</h3>
-<div id="binary-classification" class="section level4">
-<h4>Binary Classification</h4>
+<div id="week2" class="section level1">
+<h1>Neural Network Basics</h1>
+<div id="logistic-regression-as-a-neural-network" class="section level2">
+<h2>Logistic Regression as a Neural Network</h2>
+</div>
+<div id="binary-classification" class="section level2">
+<h2>Binary Classification</h2>
 <ul>
 <li>When implement NN&lt; want to process entire training set without using an explicit for loop</li>
 <li>Usually have forward propagation followed by backward propagation step</li>
@@ -151,8 +151,8 @@ tags: []
 </ul>
 <p>Refer to <em>notation guide</em> if you forget!</p>
 </div>
-<div id="logistic-regression" class="section level4">
-<h4>Logistic Regression</h4>
+<div id="logistic-regression" class="section level2">
+<h2>Logistic Regression</h2>
 <ul>
 <li>Given <span class="math inline">\(x\)</span>, want <span class="math inline">\(\hat{y} = P(y = 1 | x)\)</span></li>
 <li>Features: <span class="math inline">\(x \in \mathbb{R}^{n_x}\)</span></li>
@@ -182,8 +182,8 @@ tags: []
 <p>Aim of logistic regression: Learn parameters <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> so that <span class="math inline">\(\hat{y}\)</span> is a good estimate of chance of <span class="math inline">\(y\)</span> being 1 or 0.</p>
 <p>Note: In this course, treat W and B separately, where B corresponds to an intercept term.</p>
 </div>
-<div id="logistic-regression-cost-function" class="section level4">
-<h4>Logistic Regression Cost Function</h4>
+<div id="logistic-regression-cost-function" class="section level2">
+<h2>Logistic Regression Cost Function</h2>
 <p>First, recall log function:</p>
 <pre class="r"><code>data.frame(x = seq(0,1,0.001)) %&gt;%
     mutate(y = log(x)) %&gt;%
@@ -228,8 +228,8 @@ tags: []
 <p>Loss function applied to just a single training example. Cost function is cost of parameters. In training logistic regression, want to find <span class="math inline">\(W\)</span> and <span class="math inline">\(B\)</span> to minimize overall cost function <span class="math inline">\(J\)</span>.</p>
 <p>Logistic regression can be seen as a very very small neural network.</p>
 </div>
-<div id="gradient-descent" class="section level4">
-<h4>Gradient Descent</h4>
+<div id="gradient-descent" class="section level2">
+<h2>Gradient Descent</h2>
 <p>Used to learn the parameters <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> on your training algorithm.</p>
 <p>Recap: <span class="math inline">\(\hat{y} = \sigma(w^Tx + b)\)</span>, <span class="math inline">\(\sigma(z) = \frac{1}{1 + e^{-z}}\)</span></p>
 <p>The cost function, <span class="math inline">\(J(w,b) = \frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) = -\frac{1}{m}\sum^m_{i=1}\left[y^{(i)} \log \hat{y}^{(i)} + (1-y^{(i)})\log(1-\hat{y}^{(i)})\right]\)</span>, is convex.</p>
@@ -248,8 +248,8 @@ Recall definition of derivative = slope of function (height/width).</p>
 <p class="caption">Gradient Descent Algorithm</p>
 </div>
 </div>
-<div id="computation-graph" class="section level4">
-<h4>Computation graph</h4>
+<div id="computation-graph" class="section level2">
+<h2>Computation graph</h2>
 <p>Computations of NN organised in terms of</p>
 <ul>
 <li>Forward propagation step (compute output of NN) (left to right)</li>
@@ -308,8 +308,8 @@ Recall definition of derivative = slope of function (height/width).</p>
 </ul>
 <p>In code use <strong>dvar</strong> for derivative of final output variable, such as <span class="math inline">\(J\)</span>, with respect to various intermediate quantities.</p>
 </div>
-<div id="logistic-regression-gradient-descent" class="section level4">
-<h4>Logistic Regression Gradient Descent</h4>
+<div id="logistic-regression-gradient-descent" class="section level2">
+<h2>Logistic Regression Gradient Descent</h2>
 <p>Recap: <span class="math display">\[\begin{aligned}
      z &amp;= w^Tx + b \\
      \hat{y} &amp;= a = \sigma(z)  = \frac{1}{1 + e^{-z}}\\
@@ -350,8 +350,8 @@ Recall definition of derivative = slope of function (height/width).</p>
     b := b - \alpha db \\
 \end{aligned}\]</span></p>
 </div>
-<div id="gradient-descent-on-m-examples" class="section level4">
-<h4>Gradient Descent on <span class="math inline">\(m\)</span> Examples</h4>
+<div id="gradient-descent-on-m-examples" class="section level2">
+<h2>Gradient Descent on <span class="math inline">\(m\)</span> Examples</h2>
 <p>Previously, with 1 training example, used loss function. Here with <span class="math inline">\(m\)</span> training examples, use cost function</p>
 <p><span class="math display">\[\begin{aligned}
 J(w,b)  = \frac{1}{m} \sum^m_{i=1} \mathcal{L}(a^{(i)},y^{(i)}) \\
@@ -389,11 +389,11 @@ b := b - \alpha db \\
 <p>In deep learning, without using explicit for-loops will help you scale. Better to use vectorisation techniques to remove for-loops (this is very important for deep learning)</p>
 <p>This is one step of the gradient descent algorithm.</p>
 </div>
+<div id="python-and-vectorisation" class="section level2">
+<h2>Python and Vectorisation</h2>
 </div>
-<div id="python-and-vectorisation" class="section level3">
-<h3>Python and Vectorisation</h3>
-<div id="vectorisation" class="section level4">
-<h4>Vectorisation</h4>
+<div id="vectorisation" class="section level2">
+<h2>Vectorisation</h2>
 <p>Deep learning shines with large training sets (therefore very important for code to run quickly)</p>
 <p>Calculation of <span class="math inline">\(z = w^T x + b\)</span>, for <span class="math inline">\(w \in \mathbb{R}^{n_x}\)</span>, <span class="math inline">\(x \in \mathbb{R}^{n_x}\)</span>:</p>
 <ul>
@@ -412,23 +412,23 @@ tic = time.time()
 c = np.dot(a,b)
 toc = time.time()
 print(c)</code></pre>
-<pre><code>## 249915.045846</code></pre>
+<pre><code>## 250032.679165</code></pre>
 <pre class="python"><code>print(&quot;Vectorised version:&quot; + str(1000*(toc-tic)) + &quot;ms&quot;)</code></pre>
-<pre><code>## Vectorised version:6.67691230774ms</code></pre>
+<pre><code>## Vectorised version:6.96301460266ms</code></pre>
 <pre class="python"><code>c = 0
 tic = time.time()
 for i in range(1000000):
     c += a[i]*b[i]
 toc = time.time()
 print(c)</code></pre>
-<pre><code>## 249915.045846</code></pre>
+<pre><code>## 250032.679165</code></pre>
 <pre class="python"><code>print(&quot;For loop:&quot; + str(1000*(toc-tic)) + &quot;ms&quot;)</code></pre>
-<pre><code>## For loop:1014.99199867ms</code></pre>
+<pre><code>## For loop:1015.5069828ms</code></pre>
 <p>Non-vectorised version took about 300 times faster</p>
 <p>A lot of scaleable deep learning algorithms are don on a GPU (Graphics processing unit). Within Jupyter on CPU. Both GPU and CPU have parallelization instructions (SIMD = single instruction multiple data). Built-in functions such as np.function that don’t require a for loop are used, it enables Python to take better advantage of parallelism. GPU is very good at SIMD calculations, but CPU not bad either.</p>
 </div>
-<div id="more-vectorisation-examples" class="section level4">
-<h4>More Vectorisation Examples</h4>
+<div id="more-vectorisation-examples" class="section level2">
+<h2>More Vectorisation Examples</h2>
 <p>Whenever possible avoid explicit for-loops.</p>
 <p>Example: To calculate <span class="math inline">\(u = Av\)</span>, <span class="math inline">\(u_i = \sum_jA_{ij} v_j\)</span></p>
 <ul>
@@ -487,8 +487,8 @@ b := b - \alpha db \\
 \end{aligned}\]</span></li>
 </ol>
 </div>
-<div id="vectorising-logistic-regression-predictions" class="section level4">
-<h4>Vectorising Logistic Regression Predictions</h4>
+<div id="vectorising-logistic-regression-predictions" class="section level2">
+<h2>Vectorising Logistic Regression Predictions</h2>
 <p>Vectorisation to compute predictions, <span class="math inline">\(a\)</span>:</p>
 <p>Forward Propagation:</p>
 <p><span class="math display">\[\begin{aligned}
@@ -507,8 +507,8 @@ a^{(1)} = \sigma(z^{(1)})   &amp;&amp; a^{(2)} = \sigma(z^{(2)}) &amp;&amp;&amp;
 <li><span class="math inline">\(A = [a^{(1)} a^{(2)} \ldots a^{(m)}]\)</span> = <span class="math inline">\(\sigma(Z)\)</span></li>
 </ul>
 </div>
-<div id="vectorising-logistic-regression-output" class="section level4">
-<h4>Vectorising Logistic Regression Output</h4>
+<div id="vectorising-logistic-regression-output" class="section level2">
+<h2>Vectorising Logistic Regression Output</h2>
 <p>How to use vectorisation to perform gradient computations for all <span class="math inline">\(M\)</span> training samples:</p>
 <p>Recall for gradient computation, calculated</p>
 <p><span class="math display">\[
@@ -552,7 +552,7 @@ dw &amp;= \frac{1}{m} \mathbf{X} dz^T  \\
     dz^{(m)}\\
 \end{array} \right]\\
 &amp;= \frac{1}{m}[x^{(1)}dz^{(1)} + \ldots + x^{(m)}dz^{(m)}]
-    
+  
  \end{aligned}\]</span>
 <p>$$</p>
 <p>Implementing Vectorised Logistic Regression 1. Initialise <span class="math inline">\(J=0\)</span>, <span class="math inline">\(db = 0\)</span>, <span class="math inline">\(dw = \text{np.zeros}(n_x, 1)\)</span></p>
@@ -562,8 +562,8 @@ dw &amp;= \frac{1}{m} \mathbf{X} dz^T  \\
 </ol>
 <p>If want multiple iterations of gradient descent, then will still need for-loop</p>
 </div>
-<div id="broadcasting-in-python" class="section level4">
-<h4>Broadcasting in Python</h4>
+<div id="broadcasting-in-python" class="section level2">
+<h2>Broadcasting in Python</h2>
 <p>Technique that python and numpy allows you to use to make code more efficient</p>
 <p>Broadcasting example. Aim to calculate percentage of calories from carbs, proteins and fats, i.e. % in carbs in apples is 56 / (56 + 1.2 + 1.8). Can this be done without an explicit for-loop?</p>
 <div class="figure">
@@ -590,8 +590,8 @@ print(percentage)</code></pre>
 <p><strong>Examples</strong> <img src="/img/DLS_broadcastingEg2.png" alt="Broadcasting Eg" /></p>
 <p>For more information, see <code>numpy</code> documentation. Equivalent to <code>bsxfun</code> in Matlab and Octave.</p>
 </div>
-<div id="a-note-on-pythonnumpy-vectors" class="section level4">
-<h4>A note on python/numpy vectors</h4>
+<div id="a-note-on-pythonnumpy-vectors" class="section level2">
+<h2>A note on python/numpy vectors</h2>
 <p>Flexibility + broadcasting = strength and weakness</p>
 <ul>
 <li>Strength: can get a lot of done with just one line of code</li>
@@ -600,30 +600,30 @@ print(percentage)</code></pre>
 <pre class="python"><code>import numpy as np
 a = np.random.randn(5) # 5 random gaussian
 print(a)</code></pre>
-<pre><code>## [-0.85347852 -0.07125377  0.36908888 -0.2051911  -1.12299932]</code></pre>
+<pre><code>## [ 0.78414359  1.07858824  0.07983952 -1.93059726 -1.74108108]</code></pre>
 <pre class="python"><code>print(a.shape) # rank 1 array, neither row nor column vector</code></pre>
 <pre><code>## (5,)</code></pre>
 <pre class="python"><code>print(a.T)     # looks the same as a</code></pre>
-<pre><code>## [-0.85347852 -0.07125377  0.36908888 -0.2051911  -1.12299932]</code></pre>
+<pre><code>## [ 0.78414359  1.07858824  0.07983952 -1.93059726 -1.74108108]</code></pre>
 <pre class="python"><code>print(np.dot(a, a.T)) #would expect matrix, instead get a number
 # recommends not using data structures of rank 1 array.
 # instead commit to making it a row or column vector</code></pre>
-<pre><code>## 2.17296014149</code></pre>
+<pre><code>## 8.54317722473</code></pre>
 <pre class="python"><code>a = np.random.randn(5,1)
 print(a)</code></pre>
-<pre><code>## [[-1.04835437]
-##  [-0.37202557]
-##  [ 0.85982875]
-##  [-0.85735614]
-##  [ 0.33712538]]</code></pre>
+<pre><code>## [[-0.88396813]
+##  [ 1.27800479]
+##  [-0.77295716]
+##  [ 0.08650741]
+##  [-0.57077476]]</code></pre>
 <pre class="python"><code>print(a.T)</code></pre>
-<pre><code>## [[-1.04835437 -0.37202557  0.85982875 -0.85735614  0.33712538]]</code></pre>
+<pre><code>## [[-0.88396813  1.27800479 -0.77295716  0.08650741 -0.57077476]]</code></pre>
 <pre class="python"><code>print(np.dot(a, a.T))</code></pre>
-<pre><code>## [[ 1.09904688  0.39001463 -0.90140523  0.89881305 -0.35342686]
-##  [ 0.39001463  0.13840302 -0.31987828  0.3189584  -0.12541926]
-##  [-0.90140523 -0.31987828  0.73930549 -0.73717946  0.28987009]
-##  [ 0.89881305  0.3189584  -0.73717946  0.73505955 -0.28903651]
-##  [-0.35342686 -0.12541926  0.28987009 -0.28903651  0.11365352]]</code></pre>
+<pre><code>## [[ 0.78139966 -1.12971551  0.6832695  -0.07646979  0.5045467 ]
+##  [-1.12971551  1.63329625 -0.98784296  0.11055689 -0.72945288]
+##  [ 0.6832695  -0.98784296  0.59746277 -0.06686652  0.44118444]
+##  [-0.07646979  0.11055689 -0.06686652  0.00748353 -0.04937625]
+##  [ 0.5045467  -0.72945288  0.44118444 -0.04937625  0.32578382]]</code></pre>
 <p>Recommendations:</p>
 <ul>
 <li>Don’t use <em>rank 1 arrays</em>; instead use row or column vectors. If do end up with a rank 1 array can use <code>a = a.reshape((5,1))</code> to reshape<br />
@@ -631,8 +631,8 @@ print(a)</code></pre>
 <li>Use <code>assert(a.shape == (5,1))</code> type statements to ensure shape</li>
 </ul>
 </div>
-<div id="quick-tour-of-jupyteripython-notebooks" class="section level4">
-<h4>Quick tour of Jupyter/iPython Notebooks</h4>
+<div id="quick-tour-of-jupyteripython-notebooks" class="section level2">
+<h2>Quick tour of Jupyter/iPython Notebooks</h2>
 <ul>
 <li>Shift + Enter to run (but could be different)</li>
 <li>Cell &gt; Run Cells</li>
@@ -640,28 +640,14 @@ print(a)</code></pre>
 <li>Code is running on a kernel; with excessively large job, the kernel might die. Just click Kernel &gt; Restart</li>
 </ul>
 </div>
-<div id="explanation-of-logistic-regression-cost-function" class="section level4">
-<h4>Explanation of logistic regression cost function</h4>
+<div id="explanation-of-logistic-regression-cost-function" class="section level2">
+<h2>Explanation of logistic regression cost function</h2>
 </div>
-</div>
-<div id="notebook-python-basics-with-numpy" class="section level3">
-<h3>Notebook: Python Basics with numpy</h3>
-</div>
-<div id="practice-programming-assignment-python-basics-with-numpy" class="section level3">
-<h3>Practice Programming Assignment: Python Basics with numpy</h3>
-</div>
-<div id="hero-of-deep-learning-pieter-abbeel" class="section level3">
-<h3>Hero of Deep Learning: Pieter Abbeel</h3>
+<div id="hero-of-deep-learning-pieter-abbeel" class="section level2">
+<h2>Hero of Deep Learning: Pieter Abbeel</h2>
 <p>Deep reinforcement learning. Many more questions than in supervised learning. Where does the data come from? What actions you took early got you the reward later? Safety issues. Still need to solve longer horizon problems. Wants to run the reinforcement learning in the inner loop to try to improve it. See also Andrej Karpathy’s deep learning course which has videos online. Berkeley has a deep reinforcement learning course which has all of the lectures online.</p>
 <p>Ensure to try things out with frameworks like TensorFlow, Chainer, Theano, PyTorch etc; it’s very easy to get going and get something up and running very quickly. To get to practice yourself, right?</p>
 <p>Discusses article in <a href="https://mashable.com/2017/07/28/16-year-old-ai-genius/#0Htj4Vt2IiqO">Mashable</a> about a 16-year-old who is one of the leaders on Kaggle competitions. And it just said, he just went out and learned things, found things online, learned everything himself and never actually took any formal course per se.</p>
 <p>At present, deep reinforcement learning always starts from scratch, would be better if it could learn from the past.</p>
-<ul>
-<li>[ ] <span class="math inline">\(\mathcal{L}^{(i)}(\hat{y}^{(i)}, y^{(i)}) = |y^{(i)} - \hat{y}^{(i)}|\)</span></li>
-<li>[ ] <span class="math inline">\(\mathcal{L}^{(i)}(\hat{y}^{(i)}, y^{(i)}) = -(y^{(i)} \log(\hat{y}^{(i)}) + (1- y^{(i)}) \log(1 - \hat{y}^{(i)})\)</span></li>
-<li>[ ] <span class="math inline">\(\mathcal{L}^{(i)}(\hat{y}^{(i)}, y^{(i)}) = |y^{(i)} - \hat{y}^{(i)}|^2\)</span></li>
-<li>[x] <span class="math inline">\(\mathcal{L}^{(i)}(\hat{y}^{(i)}, y^{(i)}) = \max(0, y^{(i)} - \hat{y}^{(i)})\)</span></li>
-</ul>
-</div>
 </div>
 </div>
