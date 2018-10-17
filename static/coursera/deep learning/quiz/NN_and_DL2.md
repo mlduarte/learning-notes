@@ -17,10 +17,10 @@
     
 2. Which of these is the "Logistic Loss"?
 
-    - [ ] $\mathcal{L}^{(i)}(\hat{y}^{(i)}, y}^{(i)}) = |y^{(i)} - \hat{y}^{(i)}|$
-    - [ ] $\mathcal{L}^{(i)}(\hat{y}^{(i)}, y}^{(i)}) = -(y^{(i)} \log(\hat{y}^{(i)}) + (1- y^{(i)}) \log(1 - \hat{y}^{(i)})$
-    - [ ] $\mathcal{L}^{(i)}(\hat{y}^{(i)}, y}^{(i)}) = |y^{(i)} - \hat{y}^{(i)}|^2$
-    - [ ] $\mathcal{L}^{(i)}(\hat{y}^{(i)}, y}^{(i)}) = \max(0, y^{(i)} - \hat{y}^{(i)})$
+    - [ ] `$\mathcal{L}^{(i)}(\hat{y}^{(i)}, y}^{(i)}) = |y^{(i)} - \hat{y}^{(i)}|$`
+    - [ ] `$\mathcal{L}^{(i)}(\hat{y}^{(i)}, y}^{(i)}) = -(y^{(i)} \log(\hat{y}^{(i)}) + (1- y^{(i)}) \log(1 - \hat{y}^{(i)})$`
+    - [ ] `$\mathcal{L}^{(i)}(\hat{y}^{(i)}, y}^{(i)}) = |y^{(i)} - \hat{y}^{(i)}|^2$`
+    - [ ] `$\mathcal{L}^{(i)}(\hat{y}^{(i)}, y}^{(i)}) = \max(0, y^{(i)} - \hat{y}^{(i)})$`
     
 3. Suppose img is a (32,32,3) array, representing a 32x32 image with 3 color channels red, green and blue. How do you reshape this into a column vector?
 
