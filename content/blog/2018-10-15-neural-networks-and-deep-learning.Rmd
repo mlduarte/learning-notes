@@ -1,0 +1,699 @@
+---
+title: Neural Networks and Deep Learning
+author: ''
+date: '2018-10-15'
+slug: neural-networks-and-deep-learning
+categories: []
+tags: []
+---
+
+```{r init, message=FALSE, warning=FALSE, echo = FALSE}
+require(tidyverse)
+require(latex2exp)
+require(reticulate)
+```
+
+
+# Neural Networks and Deep Learning
+
+## Introduction
+### Introduction to Deep Learning
+Deep learning $\equiv$ training a neural network.
+
+What is a Neural Network?  Example: Housing price prediction 
+
+* Aim predict price = f(size of house)
+*  Linear regression: Fit straight line, but know prices can never be 0, looks like piecewise linear regression, but simplest NN.
+\[\text{Size} \rightarrow \bigcirc \rightarrow \text{Price (y)}\],
+where the neuron, computes the linear function, takes a max of zero and outputs the price.  This function is called a **ReLU** (Rectified Linear Unit) function.  
+* A larger NN is formed by stacking many of these NNs together.  
+![NN_eg](/img/DLS_NNIntro.png)
+
+### Supervised Learning with Neural Networks
+
+Input(x)            | Output (y)                    | Application           | Type of NN
+--------------------| ----------------------------- | ----------------------|-----------------------------------
+Home features       | Price                         | Real Estate           | Standard
+Ad and user info    | Click on ad? (0/1)            | Online Advertising    | Standard
+Image               | Object ($1, \ldots, 1000$)    | Photo tagging         | Convolution on NN (CNN)
+Audio               | Text transcript               | Speech recognition    | Recurrent NN (RNN) (as sequential)
+English             | Chinese                       | Machine translation    | RNN (as sequential)
+Image, Radar info   | Position of other cars        | Autonomous driving    |(hybrid, incl. CNN)
+
+![NN_types](/img/DLS_NNTypes.png)
+
+Success will depend on selecting the appropriate:
+
+* $x$ and $y$
+* Type of NN
+
+
+Deep learning can be applied to both types of data;
+
+* Structured data:  Essentially databases of data.
+* Unstructured data: Audio, images, text.  Features might be pixel values in an image or individual words in a  piece of text.  Deep learning helping to interpret unstructured data as well.
+
+
+### Why is Deep Learning taking off?
+
+Basic technical ideas have been around for decades.  Main drivers for rise of deep learning:
+
+* Amount of data (computer, sensors, cell phones, etc)
+![NN_eg](/img/DLS_DrivenByScale.png)
+Note that $m$ is used to denote the number of training examples.
+
+* Computation.  Faster computation has helped increase the number of iterations through the Idea-Code-Experiment cycle as now can perform an iteration in 10 minutes / 1 day as opposed to a moth.
+* Algorithms (to make computation faster). Huge breakthrough: Sigmoid function -> ReLU function.  Gradient descent on the sigmoid function is very slow on the extreme values
+
+Course resources:
+
+* Discussion forum; questions technical questions, etc.  Go to course home page.  Otherwise at feedback@deeplearning.ai
+
+Hero of Deep Learning: Geoffrey Hinton
+
+* 1982: Hinton, Rumelhart: seminal backpropagation algorithm, but it had been developed many times earlier.  
+* Example "Mary has mother Victoria", gave features such as nationality, generation, branch of family tree
+## Basics of Neural Network programming.  Two views.  Psychologist: Concept = bundle of features.  AI: Concept = formal structuralist view  
+* Most proud of work with Terry Segnowski (wake and sleep phases) vs back propagation (forward pass and backward pass) (Boltzmann machines)  Restricted Boltzmann machines were ingredients of the winning entry for the Netflix competition.
+* Restricted Boltzmann machine.  One layer of hidden features, can learn one layer.  Then treat those features as data and do it again.  And repeat.  Uy Tay: Treat these as a single model; on top a restricted Boltzmann machine and below it use a Sigmoid belief net.
+* Recirculation algorithm: send information around loop so that information doesn't change.  You want to train it without having to do back propagation.  Don't want to change info.  Relates to spike-timing dependent plasticity
+* Fast weights
+* Capsules
+
+
+
+
+## Neural Network Basics
+
+### Logistic Regression as a Neural Network
+#### Binary Classification
+
+* When implement NN< want to process entire training set without using an explicit for loop
+* Usually have forward propagation followed by backward propagation step
+* Will use logistic regression to convey ideas
+* Example of binary classification: y = {1 = cat; 0 = no cat}
+* Representation of image in computer
+    * 3 matrices, one each for red, green and blue pixel intensity values
+    * If image is 64 pixels  $\times$  64 pixels, then would have 3 $64 \times 64$ matrices 
+    * In slide, the pictures are much smaller and so represented by 3 $5\times4$ matrices.
+* Pixel intensity values are unrolled into one feature vector $x$, which will have $3 \times 64\times 64$ rows, such that $n = n_x = n$ =`r scales::comma(3 * 64 * 64)`.
+
+Notation:
+
+* training example: $(x,y), \; x \in \mathbb{R}^{n_x}, y \in {0,1}$
+* $m = m_\text{train}$ training examples: $(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), \ldots, (x^{(m)}, y^{(m)})$
+* $m_\text{test}$ test examples
+* Data $X = \left[\begin{array}{cccc}
+\mid        & \mid          &           & \mid \\
+{\bf X}^{(1)} & {\bf X}^{(2)}   & \cdots    & {\bf X}^{(m)}\\
+\mid        & \mid          &           & \mid \\
+\end{array} \right]$, where $X$ has $n_x$ rows (number of features) and $m$ columns (number of training examples), i.e. $X \in \mathbb{R}^{n_x \times m}$.  Python: `X.shape = (n, m)`
+* Output (response value) is also stacked in columns, \[Y = [y^{(1)}, y^{(2)}, \ldots, y^{(m)}],\] i.e., $Y \in \mathbb{R}^{1 \times m}$.  Python: `Y.shape = (1, m)`
+
+Refer to _notation guide_ if you forget!
+
+#### Logistic Regression
+
+* Given $x$, want $\hat{y} = P(y = 1 | x)$
+* Features: $x \in \mathbb{R}^{n_x}$
+* Parameters: $w \in \mathbb{R}^{n_x}$, $b \in \mathbb{R}$
+* How to generate $\hat{y}$?
+    * Linear regression: $\hat{y} = w^Tx + b$.  Not good for binary classification, as want to enforce $0 \leq \hat{y} \leq 1$.
+    * Logistic regression: $\hat{y} = \sigma(w^Tx + b)$, where 
+        * Let $z = w^Tx + b$
+        * $\sigma$ is the sigmoid function, which cross the vertical axis at 0.5. 
+        \[\sigma(z) = \frac{1}{1 + e^{-z}}\]
+        
+```{r sigmoid_function, fig.height=3, fig.width=6}
+data.frame(z = seq(-10, 10, .001)) %>%
+    mutate(sigmoid = 1/(1 + exp(-z))) %>%
+    ggplot(aes(z, sigmoid)) + 
+    geom_line()
+```
+        
+        
+Recall exponential function will be close to 0 for large negative values and approach infinity for large positive values.
+```{r exp_function, fig.height=3, fig.width=6}
+data.frame(x = seq(-1, 1, .01)) %>%
+    mutate(y = exp(x)) %>%
+    ggplot(aes(x, y)) + 
+    geom_line() + 
+    labs(y = "exp(x)")
+```   
+
+Aim of logistic regression: Learn parameters $w$ and $b$ so that $\hat{y}$ is a good estimate of chance of $y$ being 1 or 0.
+
+Note: In this course, treat W and B separately, where B corresponds to an intercept term.
+
+
+#### Logistic Regression Cost Function
+
+First, recall log function:
+```{r log_function, fig.height=3, fig.width=6}
+data.frame(x = seq(0,1,0.001)) %>%
+    mutate(y = log(x)) %>%
+    ggplot(aes(x,y)) + 
+    geom_line() + 
+    labs(y = "y = log(x)")
+``` 
+
+Recall logistic regression model: $\hat{y} = \sigma(w^Tx + b)$ where $\sigma(z) = \frac{1}{1 + e^{-z}}$
+    
+Given ${(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), \ldots, (x^{(m)}, y^{(m)})}$, want $\hat{y}^{(i)} = y^{(i)}$.
+
+Noting that $z^{(i)} = w^Tx^{(i)} + b$
+
+**Loss (error) function**: 
+
+* Need to define to measure how good $\hat{y}$ is when true label is $y$.
+* Could do $\mathcal{L}(\hat{y}, y) = \frac{1}{2}(\hat{y} - y)^2$ but makes gradient descent not work well.  Optimisation problem becomes non-convex and with lots of local optima.
+* Use  $\mathcal{L}(\hat{y}, y) = -\left(y \log \hat{y} + (1-y)\log(1-\hat{y})\right)$
+
+if $y=1$, $\mathcal{L}(\hat{y}, y) = - \log \hat{y}$  to make loss function small, 
+
+* want $\log \hat{y}$ large (because of negative), therefore
+* want $\hat{y}$ large
+        
+```{r cost_term1, fig.height=3, fig.width=6}
+data.frame(yhat = seq(0,1,0.001)) %>%
+    mutate(cost = -log(yhat)) %>%
+    ggplot(aes(yhat,cost)) + 
+    geom_line() + 
+    xlab(TeX("$\\hat{y}$")) + 
+    ylab(TeX("$-\\log \\;\\hat{y}$"))
+```
+   
+if $y=0$, $\mathcal{L}(\hat{y}, y) = -\log(1-\hat{y})$
+
+* Want $\log (1-\hat{y})$ (because of negative) large, therefore
+* Want $\hat{y}$ small
+ 
+```{r cost_term2, fig.height=3, fig.width=6}
+data.frame(yhat = seq(0,1,0.001)) %>%
+    mutate(cost = -log(1-yhat)) %>%
+    ggplot(aes(yhat,cost)) + 
+    geom_line() + 
+    xlab(TeX("$\\hat{y}$")) + 
+    ylab(TeX("$-\\log \\;(1-\\hat{y})$"))
+```  
+
+**Cost function**:
+\[J(w,b) = \frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) = -\frac{1}{m}\sum^m_{i=1}\left[y^{(i)} \log \hat{y}^{(i)} + (1-y^{(i)})\log(1-\hat{y}^{(i)})\right]\]
+
+
+Loss function applied to just a single training example.  Cost function is cost of parameters.  In training logistic regression, want to find $W$ and $B$ to minimize overall cost function $J$.
+
+Logistic regression can be seen as a very very small neural network.
+
+
+#### Gradient Descent
+Used to learn the parameters $w$ and $b$ on your training algorithm.  
+
+Recap: $\hat{y} = \sigma(w^Tx + b)$, $\sigma(z) = \frac{1}{1 + e^{-z}}$
+
+The cost function, 
+$J(w,b) = \frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) = -\frac{1}{m}\sum^m_{i=1}\left[y^{(i)} \log \hat{y}^{(i)} + (1-y^{(i)})\log(1-\hat{y}^{(i)})\right]$, is convex.
+
+Want to find $w$, $b$ that minimize $J(w,b)$.
+
+For logistic regression, almost any initialisation of $w$ and $b$ works.  Usually set to zero for LR (could do random)
+
+Algorithm for just one parameter $w$:
+
+Repeat { 
+
+* $w := w - \alpha \frac{\partial J(w,b)}{\partial  w}$ 
+* $b := w - \alpha \frac{\partial  J(w,b)}{\partial  b}$ 
+    
+} where $\alpha$ is the learning rate.  
+Recall definition of derivative = slope of function (height/width).
+
+![Gradient Descent Algorithm](/img/DLS_GradDesc.png)
+
+
+#### Computation graph
+
+Computations of NN organised in terms of 
+
+* Forward propagation step (compute output of NN) (left to right)
+* Back propagation step (compute gradients / derivatives) (right to left)
+
+Computation graph explains why organised this way.
+
+Use computation graph when want to optimise J.
+
+* Forward propagation: Compute value of J
+* Back propagation: next slides
+
+**Example**: Find minimum of function $J(a,b,c) = 3(a + bc)$.
+
+Steps: 
+
+1. Initialisation.  Let $a = 5$, $b = 3$, $c = 2$.
+2. Forward Propagation.  Compute 
+
+* $u = bc \rightarrow 6$ 
+* $V = a + u \rightarrow 11$
+* $J = 3v \rightarrow 33$
+
+![Computation Graph](/img/DLS_ComputationGraph.png)
+
+3.  Back Propagation.  Compute
+
+* Compute derivative of $J$ with respect to $v$: \[\frac{dJ}{dv} = \frac{d(3v)}{dv} = 3\]
+* Compute derivative of $J$ with respect to $a$; use **chain rule** $\frac{dJ}{da} = \frac{dJ}{dv}\frac{dv}{da}$ such that 
+$$\begin{aligned}
+    \frac{dJ}{da}   &= \frac{dJ}{dv}\frac{dv}{da} \\
+                    &= \frac{d(3v)}{dv} \times \frac{d(a+u)}{da}\\
+                    &= 3 \times 1 \\
+                    & = 3
+\end{aligned}$$
+* Compute derivative of $J$ with respect to $u$;
+$$\begin{aligned}
+    \frac{dJ}{du}   &= \frac{dJ}{dv}\frac{dv}{du} \\
+                    &= \frac{d(3v)}{dv} \times \frac{d(a+u)}{du}\\
+                    &= 3 \times 1 \\
+                    & = 3
+\end{aligned}$$
+* Compute derivative of $J$ with respect to $b$;
+$$\begin{aligned}
+    \frac{dJ}{db}   &= \frac{dJ}{du}\frac{du}{db} \\
+                    &= 3 \times \frac{d(bc)}{db}\\
+                    &= 3 \times c \\
+                    & = 6
+\end{aligned}$$
+
+* Compute derivative of $J$ with respect to $c$;
+$$\begin{aligned}
+    \frac{dJ}{dc}   &= \frac{dJ}{du}\frac{du}{dc} \\
+                    &= 3 \times \frac{d(bc)}{dc}\\
+                    &= 3 \times b \\
+                    & = 9
+\end{aligned}$$
+
+In code use **dvar** for derivative of final output variable, such as $J$, with respect to various intermediate quantities.
+
+
+#### Logistic Regression Gradient Descent
+
+Recap: 
+$$\begin{aligned}
+     z &= w^Tx + b \\
+     \hat{y} &= a = \sigma(z)  = \frac{1}{1 + e^{-z}}\\
+     \mathcal{L}(a,y) &= -\left(y \log (a) + (1-y)\log(1-a)\right)
+\end{aligned}$$
+
+Consider logistic regression with two features, $w_1, w_2$,
+![Computation Graph](/img/DLS_ComputationGraphLR.png)
+Logistic Regression Derivatives:
+
+$$\begin{aligned} 
+ \text{"da"} =    \frac{d\mathcal{L}(a,y)}{da} &= \frac{d \left[-\left(y \log (a) + (1-y)\log(1-a)\right)\right]}{da}\\
+                    &= -\frac{y}{a} + \frac{1-y}{1-a} \\
+   \text{"dz"} =   \frac{d\mathcal{L}(a,y)}{dz} &= \frac{dL}{da}\frac{da}{dz} \\
+                        &= \frac{dL}{da} \times \left[\frac{d}{dz} \frac{1}{1 + e^{-z}}\right]\\
+                        &= \frac{dL}{da} \times \left[\frac{du}{dz}\frac{da}{du}\right] \;\;\text{where $u = 1 + e^{-z}$}\\
+                        & = \frac{dL}{da} \times \left[-e^{-z}(-u^{-2}\right]\\
+                        &= \frac{dL}{da} \times \left[e^{-z}(1 + e^{-z})^{-2}\right] \\
+                        & = \frac{dL}{da} \times \left[ \frac{e^{-z}}{(1 + e^{-z})^{-2}} \right]\\
+                        & =  \frac{dL}{da} \times \left[ a(1-a) \right] \\
+                        & =  \left[-\frac{y}{a} + \frac{1-y}{1-a}\right] \times \left[ a(1-a) \right] \\
+                        &= \left[-\frac{y(1-a)}{a(1-a)} + \frac{(1-y)a}{a(1-a)}\right] \times \left[ a(1-a) \right] \\
+                        &= -y(1-a) + (1-y)a \\
+                        &= -y +ya + a - ya \\
+                        &= a - y
+\end{aligned}$$
+
+Noting that $a = \frac{1}{1 + e^{-z}}$ and $1-a = \frac{1 + e^{-z} - 1}{1 + e^{-z}} = \frac{e^{-z}}{1 + e^{-z}}$
+
+
+Now compute by how much you have to change $w_1$, $w_2$ and $b$.
+$$\begin{aligned} 
+    \text{"dw1"} = \frac{d\mathcal{L}(a,y)}{dw_1} &= \frac{dz}{dw_1}\frac{dL}{dz} \\
+                        &= \frac{d(w_1x_1 + w_2x_2 + b)}{dw_1}\frac{dL}{dz} \\
+                         &= x_1 (a-y) \\
+   \text{"dw2"} = \frac{d\mathcal{L}(a,y)}{dw_2} &= \frac{dz}{dw_2}\frac{dL}{dz} \\
+                        &= \frac{d(w_1x_1 + w_2x_2 + b)}{dw_2}\frac{dL}{dz} \\
+                         &= x_2 (a-y) \\
+   \text{"db"} = \frac{d\mathcal{L}(a,y)}{db} &= \frac{dz}{db}\frac{dL}{dz} \\
+                        &= \frac{d(w_1x_1 + w_2x_2 + b)}{dw_1}\frac{dL}{dz} \\
+                         &=  (a-y) \\
+\end{aligned}$$
+
+The update steps are therefore:
+$$\begin{aligned}
+    w_1 := w_1 - \alpha dw_1 \\
+    w_2 := w_2 - \alpha dw_2 \\
+    b := b - \alpha db \\
+\end{aligned}$$
+
+
+#### Gradient Descent on $m$ Examples
+Previously, with 1 training example, used loss function.  Here with $m$ training examples, use cost function 
+
+$$\begin{aligned}
+J(w,b)  = \frac{1}{m} \sum^m_{i=1} \mathcal{L}(a^{(i)},y^{(i)}) \\
+\rightarrow a^{(i)} = \hat{y}^{(i)} = \sigma(z^{(i)}) = \sigma(w^Tx^{(i)} + b)
+\end{aligned}$$
+
+The derivative of the cost function w.r.t. $w_1$ is:
+\[\frac{d}{dw_1}J(w,b) = \frac{1}{m} \sum^m_{i=1} \frac{d}{dw_1}\mathcal{L}(a^{(i)},y^{(i)})\]
+ 
+The derivatives $\frac{d}{dw_1}\mathcal{L}(a^{(i)},y^{(i)})$ were computed in previous section, therefore need to take average in order to obtain for cost function (as opposed to loss function)
+
+
+To recap, one step of gradient descent (assuming just two features, i.e., $n = 2$):
+
+1. Initialise $J=0$, $dw_1 = 0$, $dw_2 = 0$, $db = 0$
+2. For $i = 1$ to $m$ (i.e., each training example)
+    * $z^{(i)} = w^T x^{(i)} + b$
+    * The prediction $a^{(i)} = \sigma(z^{(i)})$
+    * $J += -[y^{(i)}\log a^{(i)} + (1-y^{(i)})\log(1-a^{(i)})]$
+    * $dz^{(i)} = a^{(i)} - y^{(i)}$
+    * $dw_1 += x_1^{(i)} dz^{(i)}$
+    * $dw_2 += x_2^{(i)} dz^{(i)}$
+    * $db += dz^{(i)}$
+3. Need to divide by m, such that
+    * $J /=m$
+    * $dw_1 /= m$
+    * $dw_2 /= m$
+    * $db /= m$
+Noting that $J$, $dw_1$, $dw_2$, $db$ are accumulators, but $$z^{(i)}$ and $a^{(i)}$ are not accumulators, hence the superscript
+4.  Update the parameters: 
+$$\begin{aligned}
+    w_1 := w_1 - \alpha dw_1 \\
+    w_2 := w_2 - \alpha dw_2 \\
+    b := b - \alpha db \\
+\end{aligned}$$
+    
+Weakness in calculation as implemented here: Two for-loops; (1) over training example, (2) over features (here only two, but otherwise have $dw_1, dw_1, \ldots dw_n$)
+
+In deep learning, without using explicit for-loops will help you scale.  Better to use vectorisation techniques to remove for-loops (this is very important for deep learning)
+
+This is one step of the gradient descent algorithm.
+
+### Python and Vectorisation
+#### Vectorisation
+
+Deep learning shines with large training sets (therefore very important for code to run quickly)
+
+Calculation of  $z = w^T x + b$, for $w \in \mathbb{R}^{n_x}$, $x \in \mathbb{R}^{n_x}$:
+
+* Non-vectorised.  Set $z=0$ then for $i$ in range($n_x$), set $z += w{i} \times x[i]$.  At end of for-loop, set $z +=b$.
+* Vectorised form of calculating in Python is as follows:  $z$ = np.dot($w$, $x$) + $b$.
+
+Code:
+```{python eval=TRUE, echo = TRUE, results = 'hold'}
+import numpy as np
+a =  np.array([1,2,3,4])
+print(a)
+
+import time
+a = np.random.rand(1000000)
+b = np.random.rand(1000000)
+
+tic = time.time()
+c = np.dot(a,b)
+toc = time.time()
+
+print(c)
+print("Vectorised version:" + str(1000*(toc-tic)) + "ms")
+
+c = 0
+tic = time.time()
+for i in range(1000000):
+    c += a[i]*b[i]
+toc = time.time()
+
+print(c)
+print("For loop:" + str(1000*(toc-tic)) + "ms")
+```
+ 
+Non-vectorised version took about 300 times faster
+
+A lot of scaleable deep learning algorithms are don on a GPU (Graphics processing unit).  Within Jupyter on CPU.  Both GPU and CPU have parallelization instructions (SIMD = single instruction multiple data).  Built-in functions such as np.function that don't require a for loop are used, it enables Python to take better advantage of parallelism.  GPU is very good at SIMD calculations, but CPU not bad either.
+
+
+#### More Vectorisation Examples
+
+Whenever possible avoid explicit for-loops.
+
+Example: To calculate $u = Av$, $u_i = \sum_jA_{ij} v_j$
+
+* Non vectorised
+$$\begin{aligned}
+    & \text{for } i \ldots \\  
+   & \;\;\;\; \text{for } j \ldots \\  
+   & \;\;\;\; \;\;\;\;    u[i] += A[i][j] * v[j]
+\end{aligned}$$
+            
+* Vectorised:  $u = \text{np.dot}(A,v)$  
+    
+Example: Given $v =\left[\begin{array}{c}
+v_1 \\
+\cdots \\
+v_n \\
+\end{array} \right]$, need to apply exponenetial operation on every element, such that $u = \left[\begin{array}{c}
+e^{v_1} \\
+\cdots \\
+e^{v_n} \\
+\end{array} \right]$
+ 
+ 
+* Non-vectorised:
+```{python eval=FALSE, echo = TRUE}
+u  = np.zeros((n,1))
+for i in range(n):
+    u[i] = math.exp(v[i])
+```
+        
+* Vectorised
+```{python eval=FALSE, echo = TRUE}
+import numpy as np
+u = np.exp(v)
+```
+
+  
+Note that the `numpy` library has many vectorised functions, including:
+
+* np.log(v)
+* np.abs(v)
+* np.maximum(v, 0)
+* v**2
+* 1/v
+    
+    
+Here remove the for-loop for the features.  Now have just one left.  
+
+1. Initialise $J=0$, $db = 0$, $dw = \text{np.zeros}(n_x, 1)$
+
+2. For $i = 1$ to $m$, 
+
+    * $z^{(i)} = w^T x^{(i)} + b$
+    * The prediction $a^{(i)} = \sigma(z^{(i)})$
+    * $J += -[y^{(i)}\log a^{(i)} + (1-y^{(i)})\log(1-a^{(i)})]$
+    * $dz^{(i)} = a^{(i)} - y^{(i)}$
+    * `$dw += x{(i)} dz{(i)}$`
+    * $db += dz^{(i)}$
+
+3. Need to divide by m, such that
+
+    * $J /=m$
+    * `$dw /= m$`
+    * $db /= m$
+    
+Noting that $J$, $dw_1$, $dw_2$, $db$ are accumulators, but $z^{(i)}$ and $a^{(i)}$ are not accumulators, hence the superscript
+
+4.  Update the parameters: 
+$$\begin{aligned}
+    w_1 := w_1 - \alpha dw_1 \\
+    w_2 := w_2 - \alpha dw_2 \\
+    b := b - \alpha db \\
+\end{aligned}$$
+
+#### Vectorising Logistic Regression Predictions
+
+Vectorisation to compute predictions, $a$: 
+
+Forward Propagation:
+
+$$\begin{aligned}
+z^{(1)} = w^Tx^{(1)} + b    && z^{(2)} = w^Tx^{(2)} + b &&&  z^{(3)} = w^Tx^{(3)} + b \\ 
+a^{(1)} = \sigma(z^{(1)})   && a^{(2)} = \sigma(z^{(2)}) &&& a^{(3)} = \sigma(z^{(3)}) 
+\end{aligned}$$
+
+Let 
+
+ * $Z = [z^{(1)} z^{(2)} \ldots z^{(m)}$, where $z \in \mathbb{R}^{1 \times m}$
+ * Training inputs: $X = \left[\begin{array}{cccc}
+\mid        & \mid          &           & \mid \\
+{\bf X}^{(1)} & {\bf X}^{(2)}   & \cdots    & {\bf X}^{(m)}\\
+\mid        & \mid          &           & \mid \\
+\end{array} \right]$, where $X$ has $n_x$ rows (number of features) and $m$ columns (number of training examples), i.e. $X \in \mathbb{R}^{n_x \times m}$ 
+ * $\mathbf{b} = [b b \ldots b]$, where $b \in \mathbb{R}^{1 \times m}$
+ 
+So that $Z = w^T \mathbf{X} + \mathbf{b}$, achieved in python using `z = np.dot(w.T, x) + b`, but in python $b$ is a raw number, $1 \times 1$.  This operation is called **broadcasting**
+
+Similarly, let:
+
+* $A = [a^{(1)} a^{(2)} \ldots a^{(m)}]$ = $\sigma(Z)$
+
+#### Vectorising Logistic Regression Output
+How to use vectorisation to perform gradient computations for all $M$ training samples:
+
+Recall for gradient computation, calculated
+
+\[
+dz^{(1)} = a^{(1)} - y ^{(1)}\\
+dz^{(2)} = a^{(2)} - y ^{(2)}\\
+\vdots
+\]
+
+If
+
+* $dZ = [dz^{(1)} d^{(2)} \ldots d^{(m)}]$
+* $A = [a^{(1)} a^{(2)} \ldots a^{(m)}]$
+* $Y = [y^{(1)} y^{(2)} \ldots y^{(m)}]$
+
+Then $dZ = A - Y$
+
+In previous implementation still had for loop for $dw$ and $db$ over the training examples, i.e. for the $dw$
+\[
+dw = 0 \\
+dw += x^{(1)} dz^{(1)}\\
+dw += x^{(2)} dz^{(2)}\\
+\vdots\\
+dw/=m
+\]
+
+and for the $db$:
+\[
+db = 0 \\
+db +=  dz^{(1)}\\
+db += dz^{(2)}\\
+\vdots\\
+db/=m
+\]
+
+Vectorised version: \[db = \frac{1}{m}  \sum^m_{i=1}dz^{(i)} = \frac{1}{m}  \text{np.sum}(dz)\] and 
+$$\begin{aligned}
+dw &= \frac{1}{m} \mathbf{X} dz^T  \\
+    &= \frac{1}{m} \left[\begin{array}{cccc} \mid & \mid &   & \mid\\
+    {\bf X}^{(1)} & {\bf X}^{(2)}   & \cdots    & {\bf X}^{(m)} \\
+    \mid        & \mid          &           & \mid
+    \end{array}\right]
+    
+    \left[\begin{array}{c}
+    dz^{(1)}\\
+    dz^{(2)}\\
+    \vdots\\
+    dz^{(m)}\\
+\end{array} \right]\\
+&= \frac{1}{m}[x^{(1)}dz^{(1)} + \ldots + x^{(m)}dz^{(m)}]
+    
+ \end{aligned}  $$
+
+Implementing Vectorised Logistic Regression
+1. Initialise $J=0$, $db = 0$, $dw = \text{np.zeros}(n_x, 1)$
+
+2 Forward & back Propagation on all $m$ training examples
+    a. $Z = w^T \mathbf{X} + \mathbf{b}$, achieved in python using `z = np.dot(w.T, x) + b`
+    b. $A = \sigma(z)$
+    c. $dZ = A - Y$
+    d. $dw = \frac{1}{m} X dZ^T$
+    e. $db = \frac{1}{m} \text{np.sum}(dz)$
+
+3. Gradient descent update
+    w := w - \alpha dw
+    b := b - \alpha db
+
+If want multiple iterations of gradient descent, then will still need for-loop
+
+
+#### Broadcasting in Python
+
+Technique that python and numpy allows you to use to make code more efficient
+
+Broadcasting example.  Aim to calculate percentage of calories from carbs, proteins and fats, i.e. % in carbs in apples is 56 / (56 + 1.2 + 1.8).  Can this be done without an explicit for-loop?
+
+![Broadcasting Eg](/img/DLS_broadcastingEg.png)
+
+```{python broadcasting_eg, echo=TRUE}
+import numpy as np
+A = np.array([  [56.0, 0.0, 4.4, 68.0],
+                [1.2, 104.0, 52.0, 8.0],
+                [1.8, 135.0, 99.0, 0.9]])
+print(A)
+
+cal = A.sum(axis = 0) #to sum vertically
+print(cal)
+
+percentage = 100 * A/cal.reshape(1,4) # example of python broadcasting.  Dividing 3x4 by 1x4 matrix.
+print(percentage)
+
+```
+
+Broadcasting allows you to divide a $3 \times 4$ matrix by a $1 \times 4$ matrix. Python will auto-expand vectors / matrices to allow calculations of vectors and matrices.  
+
+**Examples** 
+![Broadcasting Eg](/img/DLS_broadcastingEg2.png)
+
+For more information, see `numpy` documentation.  Equivalent to `bsxfun` in Matlab and Octave.
+
+#### A note on python/numpy vectors
+
+Flexibility + broadcasting = strength and weakness
+
+* Strength: can get a lot of done with just one line of code
+* Weakness: with flexibility can add subtle bugs.  E.g. Column + row vector may give matrix, rather than perhaps wanted a column or row vector
+
+```{python}
+import numpy as np
+a = np.random.randn(5) # 5 random gaussian
+print(a)
+print(a.shape) # rank 1 array, neither row nor column vector
+print(a.T)     # looks the same as a
+print(np.dot(a, a.T)) #would expect matrix, instead get a number
+
+# recommends not using data structures of rank 1 array.
+# instead commit to making it a row or column vector
+a = np.random.randn(5,1)
+print(a)
+print(a.T)
+print(np.dot(a, a.T))
+```
+
+
+Recommendations:
+
+* Don't use _rank 1 arrays_; instead use row or column vectors.  If do end up with a rank 1 array can use `a = a.reshape((5,1))` to reshape  
+* Use `assert(a.shape == (5,1))` type statements to ensure shape
+
+
+#### Quick tour of Jupyter/iPython Notebooks
+
+* Shift + Enter to run (but could be different) 
+* Cell > Run Cells
+* Markdown cell
+* Code is running on a kernel; with excessively large job, the kernel might die.  Just click Kernel > Restart
+
+#### Explanation of logistic regression cost function
+
+### Notebook: Python Basics with numpy
+### Practice Programming Assignment: Python Basics with numpy
+
+### Hero of Deep Learning: Pieter Abbeel
+
+Deep reinforcement learning.  Many more questions than in supervised learning.  Where does the data come from?  What actions you took early got you the reward later?  Safety issues.  Still need to solve longer horizon problems.  Wants to run the reinforcement learning in the inner loop to try to improve it.  See also Andrej Karpathy's deep learning course which has videos online.  Berkeley has a deep reinforcement learning course which has all of the lectures online.
+
+Ensure to try things out with frameworks like TensorFlow, Chainer, Theano, PyTorch etc; it's very easy to get going and get something up and running very quickly. To get to practice yourself, right? 
+
+Discusses article in [Mashable](https://mashable.com/2017/07/28/16-year-old-ai-genius/#0Htj4Vt2IiqO) about a 16-year-old who is one of the leaders on Kaggle competitions. And it just said, he just went out and learned things, found things online, learned everything himself and never actually took any formal course per se. 
+
+At present, deep reinforcement learning always starts from scratch, would be better if it could learn from the past.
+
+
+- [ ] $\mathcal{L}^{(i)}(\hat{y}^{(i)}, y^{(i)}) = |y^{(i)} - \hat{y}^{(i)}|$
+- [ ] $\mathcal{L}^{(i)}(\hat{y}^{(i)}, y^{(i)}) = -(y^{(i)} \log(\hat{y}^{(i)}) + (1- y^{(i)}) \log(1 - \hat{y}^{(i)})$
+- [ ] $\mathcal{L}^{(i)}(\hat{y}^{(i)}, y^{(i)}) = |y^{(i)} - \hat{y}^{(i)}|^2$
+- [x] $\mathcal{L}^{(i)}(\hat{y}^{(i)}, y^{(i)}) = \max(0, y^{(i)} - \hat{y}^{(i)})$

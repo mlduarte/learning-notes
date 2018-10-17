@@ -66,6 +66,8 @@ loadPackages <- function(pkgs) {
 
 # use scriptLocation() for chapter analysis in text
 #AppliedPredictiveModeling::getPackages(1:4)
+
+
 loadPackages(c(
                "caret"
               , "CORElearn" # Classification, Regression and Feature Evaluation
@@ -75,7 +77,7 @@ loadPackages(c(
               , "DMwR"      # Data mining with R book
               #, "DWD" # Distance Weighted Discrimination; not current on CRAN
               , "earth" # MARS model
-            #  , "elasticnet" # elastic net
+              , "elasticnet" # elastic net
               , "ellipse"   # for drawing ellipse like confidence intervals
               , "e1071"     # Misc functions incl. skewness
             #  , "gbm"       # gradient boosting
@@ -84,6 +86,7 @@ loadPackages(c(
             #  , "ipred"     # Improved predictive models by indirect classification and bagging for classification, regression and survival
             #  , "kernlab"  # SVM, spectral clustering, kernal pca, ...
             #  , "klaR"     # classification and visualisation
+              , "lars"
               , "latticeExtra"  # lattice
             #  , "MASS"     # Modern applied statistics with S book
             #  , "mda"      # Mixture and flexible discriminant analysis
@@ -558,6 +561,7 @@ Advantage of less predictors:
 * Better model performance / stability without problematic and correlated variables
 
 Predictors to remove:
+
 * Zero Variance and near-zero
 * Correlated
 
@@ -568,7 +572,7 @@ Predictors to remove:
 
 To determine:
 
-1.Calculate number of unique variables / number of samples
+1. Calculate number of unique variables / number of samples
 2. Calculate frequency of unique values (or ratio of most common frequent to second most frequent)
 
 If  (1) fraction of unique values over sample size is low, e.g. $\leq$ 10% and (2) ratio of frequency of most prevalent value to the second most prevalent value is large, e.g. $\geq$ 20
@@ -969,6 +973,7 @@ This shows that many predictors are completely missing for some cases, e.g. the 
 predictors or imputation.
 
 In some cases, 100% of predictor values are missing and so imputation is unlikely to help. Options:
+
 * Remove cases with high proportion of missing values
 * Encode missing as another level
 
@@ -1165,7 +1170,7 @@ Other methods to remove correlated variables and search for quality subsets incl
 
 
 
-```{r bloodBrain_trim_for_anneal_and_genetic}
+```{r bloodBrain_trim_for_anneal_and_genetic, collapse = TRUE}
 require(subselect)
 ncol(bbb_cor_raw)
 trimmed <- trim.matrix(bbb_cor_raw, tolval=1000*.Machine$double.eps)$trimmedmat
@@ -1232,7 +1237,7 @@ Methods for determining tuning parameters:
     b. Fit model
     c. Predictor hold-outs
   3. Aggregate resampling into performance profile
-  4. determine final tuning parameters
+  4. Determine final tuning parameters
   6. Refit model with entire training set and final tuning parameters
 * Genetic Algorithms
 * Simplex search methods
@@ -1258,11 +1263,11 @@ Variants:
 
 Choice of $k$ has a bias-variance trade-off;
 
-**bias**: difference between estimated and true values of performance
+**Bias**: difference between estimated and true values of performance
 
 **variance**: Repeating the resampling procedure produces a very different value
 
-Small $k$, e.g. 2-3: Decreased variance, increased bias.  (Bias is similar to bootstrap but with larger variance) </br>
+Small $k$, e.g. 2-3: Decreased variance, increased bias.  (Bias is similar to bootstrap but with larger variance) <br>
 Large $k$: Increased variance, decreased bias.  More computationally taxing.
 
 Typically use $k$ = 5 or 10.  
@@ -1286,17 +1291,17 @@ For linear regression, can use generalised cross-validation (GCV) statistic to a
 Models with similar precision but higher complexity will have a larger GCV value.
 
 ### Repeated Training/Test Splits (a.k.a Leave-Group-Out CV or Monte Carlo CV)
-Practitioner determine percent split between training (75-80%) and test, in addition to the number of repetitions (50-200).
-Can increase proportion of data in training set with increased repetitions in order to decrease bias.Increasing repetitions will decrease uncertainty of performance estimates.  
-Unlike in k-fold cross validation, a sample can be in multiple hold-out sets.
+Practitioner determines percent split between training (75-80%) and test, in addition to the number of repetitions (50-200).
+Can increase proportion of data in training set with increased repetitions in order to decrease bias.  Increasing repetitions will decrease uncertainty of performance estimates.  
+Unlike in $k$-fold cross validation, a sample can be in multiple hold-out sets.
 
 ### The Bootstrap
 **Bootstrap Sample**: Random sample of data taken with replacement.  Bootstrap sample is same size as original data set.  Prediction is made on the **out-of-bag samples**, i.e. those samples not selected.
 
 In comparison to cross-validation, bootstrap technique has:
 
-* less uncertainty than k-fold cv
-* more bias (similar to 2-fold CV); bias will decease as training set sample size becomes large (on average 63.2% of data points represented at least once)
+* Less uncertainty than $k$-fold cv
+* More bias (similar to 2-fold CV); bias will decrease as training set sample size becomes large (on average 63.2% of data points represented at least once)
 
 Modifications:
 
@@ -1304,12 +1309,12 @@ Modifications:
 
 
 ## Case Study: Credit Scoring
-Aim: predict probability that applicants have good credit
-Dataset: German credit data set
-Samples: 1000 
-Class distribution: Good(70%), Bad(30%)
-Baseline accuracy: Predict all to be good, such that accuracy is 70%
-Predictors: credit history, employment, account status, loan amount.  Majority categorical and so converted to dummy variables.  After conversion, there were 41 predictors.  
+Aim: predict probability that applicants have good credit <br>
+Dataset: German credit data set <br>
+Samples: 1000  <br>
+Class distribution: Good(70%), Bad(30%) <br>
+Baseline accuracy: Predict all to be good, such that accuracy is 70% <br>
+Predictors: Credit history, employment, account status, loan amount.  Majority categorical and so converted to dummy variables.  After conversion, there were 41 predictors.  
 
 ## Choosing Final Tuning Parameters
 
@@ -1319,7 +1324,7 @@ Approach to choose final settings:
 * One-standard error method: Find the numerically optical model then the simplest model whose performance is within a single standard error.
 * Tolerance method: Choose simpler model that has performance ($X$) within tolerance of best ($O$), i.e. such that 
 \[(X-O)/O > \text{Tolerance}\]
-e.g. if best accuracy is 75% then with 4% loss in accuracy acceptable, then can choose accuracy at $O(1 +  \text{Tolerance} = .75*(1 - .04) = 0.72$.
+e.g. if best accuracy is 75% then with 4% loss in accuracy acceptable, then can choose accuracy, $X$, at $O(1 +  \text{Tolerance}) = .75*(1 - .04) = 0.72$.
 
 ## Data Splitting Recommendations
 
@@ -1410,14 +1415,14 @@ scales::percent(nrow(cvPredictors1)/nrow(trainPredictors))
 To fit a 5-nearest neighbour classification model to the training data can use:
 
 * `MASS:knn`
-* `ipre:ipredknn`
+* `ipred:ipredknn`
 * `caret::knn3`
 
 Conventions for specifying models:
 
 1. Formula interface. e.g. `modelFunction(response_var ~ predictors, data = data)`
-<\br>Advantages: Convenient; can specify transformations choose subset(s) of predictors in-line
-<\br>Disadvantage: Formula information not efficiently stored and can slow down computations with a large number of predictors
+<br>Advantages: Convenient; can specify transformations choose subset(s) of predictors in-line
+<br>Disadvantage: Formula information not efficiently stored and can slow down computations with a large number of predictors
 2. Matrix (non-formula) interface, e.g.`modelFunction(x = predictors_matrix, y = response_var_vector)`.  The predictors are typically a matrix or a dataframe.
 
 Not all R functions have both interfaces.
@@ -1433,9 +1438,145 @@ knnFit
 testPredictions <- predict(knnFit, newdata = testPredictors, type  = "class")
 head(testPredictions)
 ```
-### Determination of Tuning Parameters
 
-### Between-Model Comparisons
+
+#### Determination of Tuning Parameters
+
+R Packages / Functions:
+
+* e1071::tune - can evaluate 4 types of models across a range of parameters
+* ipred::errorest can resample single models
+* caret::train - built in modules for 144 models with capability for different resampling methods, performance measures, and algorithms for choosing best model profile.  
+
+SVM tuning parameters:
+
+* Cost parameter
+* Kernel parameter $\sigma$ which impacts smoothness of the decision boundary of the kernel (which may be linear, radial basis, ...) 
+
+Options:
+
+1. Try several combinations of both tuning parameters
+2. There is an analytical formula for a reasonable estimate of $\sigma$, use this and only tune the cost parameter. 
+
+```{r TuneGermanCreditSVM, results='hold'}
+data(GermanCredit)
+
+GermanCredit <- GermanCredit[, -nearZeroVar(GermanCredit)]
+GermanCredit$CheckingAccountStatus.lt.0 <- NULL
+GermanCredit$SavingsAccountBonds.lt.100 <- NULL
+GermanCredit$EmploymentDuration.lt.1 <- NULL
+GermanCredit$EmploymentDuration.Unemployed <- NULL
+GermanCredit$Personal.Male.Married.Widowed <- NULL
+GermanCredit$Property.Unknown <- NULL
+GermanCredit$Housing.ForFree <- NULL
+
+
+## Split the data into training (80%) and test sets (20%)
+set.seed(100)
+inTrain <- createDataPartition(GermanCredit$Class, p = .8)[[1]]
+GermanCreditTrain <- GermanCredit[ inTrain, ]
+GermanCreditTest  <- GermanCredit[-inTrain, ]
+
+# Basic call with 
+set.seed(1056)
+svmFit <- train(Class ~ .,
+    data = GermanCreditTrain,
+    method = "svmRadial",
+    preProc = c("center", "scale"),
+    tuneLength = 10,  
+    trControl = trainControl(method = "repeatedcv",   # default is bootstrap
+                             repeats = 5,
+                             classProbs = TRUE))
+svmFit
+
+rm(inTrain)
+```
+
+Line plot of the average performance profile of the SVM classification model:
+```{r plotGermanCreditSVMTuneFit}
+plot(svmFit, scales = list(x = list(log = 2)))
+```
+
+To predict new samples:
+```{r predictGermanCreditSVMTune, echo=TRUE, results = 'hold'}
+predictedClasses <- predict(svmFit, GermanCreditTest)
+str(predictedClasses)
+rm(predictedClasses)
+```
+
+Class probabilities
+```{r GermanCreditSvmClassProbs, echo=TRUE, results = 'hold'}
+predictedProbs <- predict(svmFit, newdata = GermanCreditTest, type = "prob")
+head(predictedProbs)
+rm(predictedProbs)
+```
+
+Other R packages/functions to estimate performance via resampling:
+
+* Design::validate
+* ipred::errorest
+* e1071::tune
+
+##### Between-Model Comparisons
+
+Logistic regression has no tuning parameters, but resampling can still be used to characterise the performance of the model.
+```{r GermanCreditsLR}
+set.seed(1056)
+lrFit <- train(Class ~ .,
+    data = GermanCreditTrain,
+    method = "glm",
+    trControl = trainControl(method = "repeatedcv",  
+                             repeats = 5))
+lrFit
+```
+
+
+* Use `resamples` function to compare models based on cross-validation statistics
+* Use same seed so get same resamples as per SVM and therefore paired accuracy measurements exist.
+* First, create `resamples` object from the models
+
+```{r modelComparisonResample}
+resamp <- resamples(list(SVM = svmFit, Logistic = lrFit))
+summary(resamp)
+```
+
+Visualisation of paired values:
+
+```{r modelComparisonResamplePlot, fig.height = 12, fig.width = 8, results = 'hold', fig.show='hold'}
+p1 <- xyplot(resamp)
+p2 <- parallelplot(resamp)
+p3 <- splom(resamp)
+p4 <- densityplot(resamp)
+p5 <- bwplot(resamp)
+p6 <- dotplot(resamp)
+p7 <- ggplot(resamp)
+gridExtra::grid.arrange(p1, p3, p2, p4, p5, p6, p7, ncol = 2)
+rm(list = ls(pattern = "^p\\d$")) 
+```
+
+To assess possible differences:
+```{r modelComparisonResampleDiff}
+modelDifferences <- diff(resamp)
+summary(modelDifferences)
+```
+The p-values for the model comparisons are `r round(modelDifferences$statistics$Accuracy$SVM.diff.Logistic$p.value,3)` for Accuracy and `r round(modelDifferences$statistics$Kappa$SVM.diff.Logistic$p.value,3)` for Kappa.  Note that the Kappa statistic (chapter 11:) was originally designed to assess the agreement between 2 raters 
+\[\text{Kappa} = \frac{O-E}{1-E}\]
+where $O$ = observed accuracy and $E$ is expected accuracy based on marginal totals of the confusion matrix.  Statistic takes values between -1 and 1; 
+
+* 0 :no agreement between observed and predicted
+* 1: perfect concordance
+* -1: prediction is perfect opposite direction of truth
+
+When class distributions equivalent, overall accuracy and Kappa are proportional.  Kappa values within 0.30 to 0.5 indicate reasonable agreement.
+
+With high accuracy (90%) and high expected accuracy (85%), Kappa will show moderate agreement between observed and predicted classes
+\[\text{Kappa} = \frac{90-85}{1-85} = 5/15 = 30%\]
+
+Kappa statistic can be extended to evaluate concordance in problems with > 2 classes.  With ordinal classes, can use weighted Kappa to enact more substantial penalties to errors further away from true result.
+
+```{r tuning_clean_up, include=FALSE}
+rm(GermanCredit, GermanCreditTest, GermanCreditTrain, lrFit, modelDifferences, resamp, svmFit)
+```
 
 
 ## Chapter 4 Exercises
@@ -1511,6 +1652,1049 @@ calculate the interval. For example, suppose a test set sample of 20 oil
 samples was set aside and 76 were used for model training. The width of the 95% confidence interval is 37.9%. Try different samples sizes and accuracy rates to understand the trade-off
 between the uncertainty in the results, the model performance, and the
 test set size.
+
+
+
+# Measuring Performance in Regression Models
+
+* Relying on single performance measure problematic
+* Use of visualisations critical
+
+
+## Quantitative Measures of Performance
+
+* **RMSE**: How far (on average) residuals are from zero $\equiv$ average distance between observed values and model predictions
+* **Coefficient of Determination ($R^2$)**: Proportion of variation in data explained by model; usually equal to squared value of correlation between observed and predicted values. 
+    * Measure of correlation not accuracy.  Looking at plot of observed vs predicted values may show that is under- or over- predicts for subsets of the data
+    * Dependent on sample variance (and therefore unit of measurement) of response variable , e.g. with RMSE = 1 and $s^2 = 4.2$ gives $R^2 = 1 - RMSE/s^2$ = `r scales::percent(1 - 1/4.2)`, but with $s^2 = 3$, the RSE is `r scales::percent(1 - 1/2)` 
+* **Spearman's Rank Correlation**: Correlation coefficient between ranks of observed and predicted outcomes, when focus is on ranking ability of model rather than predictive accuracy.
+
+## Variance-Bias Trade-Off
+
+$$\begin{aligned}
+\text{MSE} &= \frac{1}{n}\sum_{i = 1}^n (y_i - \hat{y}_i)^2 \\
+  E(\text{MSE}) &= \sigma^2 (\text{Model Bias})^2 + \text{Model Variance}
+\end{aligned}$$
+
+* Irreducible noise ($\sigma^2$); cannot be eliminated by modelling.  Based on assumption that $e_i \sim ?(0, \sigma^2)$
+* Bias(-squared): Closeness of model to true relationship between predictors and response
+* Model Variance: Changes to model fit with small perturbations in data
+
+**Overfitting**: Complex models usually have low bias and high variance
+
+**Underfitting**: Simple models generally have high bias and low variance 
+
+Note: Highly correlated predictors can lead to collinearity and therefore high model variance.  To mitigate, may be ideal to increase bias.
+
+### Computing
+```{r perf_load_data}
+observed <- c(0.22, 0.83, -0.12, 0.89, -0.23, -1.30, -0.15, -1.4,0.62, 0.99, -0.18, 0.32, 0.34, -0.30, 0.04, -0.87,
+0.55, -1.30, -1.15, 0.20)
+predicted <- c(0.24, 0.78, -0.66, 0.53, 0.70, -0.75, -0.41, -0.43,0.49, 0.79, -1.19, 0.06, 0.75, -0.07, 0.43, -0.42, -0.25, -0.64, -1.26, -0.07)
+
+residualValues <- observed - predicted
+summary(residualValues)
+```
+
+Plot of observed vs predicted values: to understand how model fits
+```{r perf_plot_obs_pred}
+ggplot(data.frame(observed, predicted), aes(observed, predicted)) + 
+  geom_point() + 
+  expand_limits(
+    x =  min(observed, predicted),
+    x =  max(observed, predicted),
+    y = min(observed, predicted), 
+    y = max(observed, predicted)) + 
+  geom_abline(intercept = 0, slope = 1)
+```
+
+Plot of residuals vs predicted values: to check for any systematic patterns in predictions
+```{r perf_plot_pred_resid}
+ggplot(data.frame(predicted, residualValues), aes(predicted, residualValues)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 0)
+```
+
+Coefficient of Determination: 
+```{r perf_R2, results='hold'}
+caret::R2(predicted, observed)
+cor(predicted, observed)^2
+```
+
+Root Mean Square Error:
+```{r perf_RMSE, results='hold'}
+caret::RMSE(predicted, observed)
+sqrt(mean(residualValues^2))
+```
+Rank Correlation:
+```{r perf_spearman}
+cor(predicted, observed, method = "spearman")
+```
+
+```{r perf_cleanup, include=FALSE}
+rm(observed, predicted, residualValues)
+```
+
+
+# Linear Regression and Its Cousins
+
+Form:
+\[y_i = b_0 + b_1x_{i1} + b_2x_{i2} + \ldots + b_P x_{iP} + e_i\]
+
+Models that are linear in the parameters:
+
+* Linear regression
+* Partial least squares (PLS)
+* Penalised models:
+    * Ridge regression
+    * The lasso
+    * Elastic net
+    
+Modelling objective: Estimate parameters such that SSE minimised.
+
+* Linear regression - minimises bias, higher model variance
+* Penalised model - lower model variance
+
+Advantage of linear models:
+
+* Interpretable
+* Relationships between predictors can be interpreted through coefficients ???
+* Can compute standard errors of coefficients (if willing to make assumptions regarding the distribution of model residuals) and therefore assess statistical significance of the predictors.  However inference is not goal of this book, but rather model prediction
+
+Disadvantage:
+
+* Only appropriate when relationship between predictors and response falls along a hyperplane; although can augment with higher order terms to capture curvature but may not be appropriate (in which case, nonlinear regression models and regression trees should be investigated)
+
+
+    
+## Linear Regression
+
+Aim: Find plane that minimizes SSE between observed and predicted response:
+\[\text{SSE} = \sum^n_{i=1}(y_i-\hat{y}_i)^2\]
+
+Ordinary Least Squares: Optimal plane that minimises the bias component of the bias-variance trade off, given by:
+\[(X^T X)^{-1} X^T y\]
+
+For proof and details around following theorem, see [OLS in Matrix Form, by Prof. Michael J Rosenfeld (Stanford University)](https://web.stanford.edu/~mrosenfe/soc_meth_proj3/matrix_OLS_NYU_notes.pdf)
+
+Gauss-Markov Theorem: Given the following assumptions, there will be no other linear and unbiased estimated of the coefficients that has a smaller sampling variance.  I.e., the OLS estimates or the Best Linear, Unbiased and Efficient estimated (BLUE).  Assumptions:
+
+* There is a linear relationship between $y$ and $X$
+* Identification condition: There is no perfect multicollinearities, i.e. the columns of $X$ are linearly independent
+* Zero conditional mean assumption: Disturbances average out to 0 for any value of $X$.  
+\[E(\epsilon|X) = 0\]
+Implies that $E(y) = X\beta$ and therefore that get the mean function right
+* Assumption of homoskedasticity and no autocorrelation, $E(\epsilon \epsilon^\prime|X) = \sigma^2I$.  Homoskedasticity states that the variance of $\epsilon_i$ is the same ($\sigma^2$) for all $i$, i.e., $\text{var}[\epsilon_i|X] = \sigma^2 \forall i$.  The assumption of no autocorrelation (uncorrelated errors) means that $\text{cov}[\epsilon_i, \epsilon_j|X] = 0 \forall i,j$, i.e. knowing something about the residual term for one observation tells nothing about the residual term for any other observation.
+* $X$ must be generated by a mechanism that is unrelated to $\epsilon$
+* Not required but typically assumed to make hypothesis testing easier: \[\epsilon|X \sim N(0, \sigma^2I)\]
+
+Training and validation techniques required to understand predictive ability of data, even though there are no tuning parameters.
+
+Disadvantages of linear regression:
+
+##### 1.  Requires the following conditions for unique set of regression coefficient,
+noting that optimal plane includes the term $(\mathbf{X}^T\mathbf{X})^{-1}$)
+
+  a. No perfect multicollinearities (no predictor can be determined from a combination of $\geq$ ` other predictors).  If not, can:
+    
+   * Replace $(\mathbf{X}^T\mathbf{X})^{-1}$ with conditional inverse (???)
+   * Remove predictors that are collinear.  By default, $R$ fits the largest identifiable model by removing variables the reverse order of appearance in the model formula.  
+        
+   Impact: Regression coefficients to determine predictions are not unique and therefore lose ability to meaningfully interpret coefficients.
+
+   Solutions: 
+   
+   * With small number of predictors, can manually remove offending predictors.  But with many predictors or those with complex relationship, may be better to choose a model that can tolerate collinearity.   Additionally, linear combinations of predictors may still be correlated with other predictors
+   * Use PCA, however new predictors will be linear combinations of original predictors which can impede practical understanding.  Note that this is known as principal component regression (PCR); see below..
+   
+  b.# samples > # predictors.  If not, 
+    
+* Use pre-processing techniques to remove pairwise correlated predictors and therefore reduce number of overall predictors
+* If problem remains, consider PCA, simultaneous dimension
+    reduction, regression via PLS or methods that shrink parameter
+    estimates (ridge regression, the lasso, or the elastic net).
+ 
+* Beware with Bootstrapping/cross-validation: Resampling may lead to less observations in training data than number of predictors.   
+    
+Note: After removing pairwise correlated predictors, regression may still be impacted by multicollinearity (which is when one ore more of the predictors are functions of $\geq$ 2 other predictors). 
+        
+The article [What Are the Effects of Multicollinearity and When Can I Ignore Them?](http://blog.minitab.com/blog/adventures-in-statistics-2/what-are-the-effects-of-multicollinearity-and-when-can-i-ignore-them) states the following:
+    
+* Moderate multicollinearity may not be problematic
+* Severe multicollinearity is because it can increase the variance of the coefficient estimates and make the estimates very sensitive to minor changes in the model.  This makes the coefficient estimates unstable and difficult to interpret.  It can cause the coefficients to switch signs and makes it more difficult to specify the correct model.  
+    
+In short the article states that, multicollinearity
+
+* Can make choosing the correct predictors more difficult
+* Interferes in determining precise effect of each predictors
+* Doesn't affect overall fit of the model or produce bad predictions. (so depending on goals, multicollinearity may not be a problem)
+    
+Multicollinearity can be diagnosed by investigating the variance inflation factors.  High VIFs (>5) suggest that coefficients are poorly estimated and that one should be wary of their p-values.  
+        
+Note:Higher-order terms (squared and cubed predictors) are correlated with main effect terms because they include the main effects term.  To reduce high VIFs produced by interaction and higher-order terms, you can standardise the continuous predictor variables. Centering the variables will remove the multicollinearity produced by interaction and higher-order terms and has the  added benefit of not changing the interpretation of coefficients; the coefficients continue to estimate the change in the mean response per unit increase in $X$ when all other predictors are held constant.
+    
+##### 2.  Solution is linear in parameters and therefore does not account for curvature or nonlinear structures.    
+
+To identify, examine diagnostic plots, looking for curvature in predicted-versus-residual plot. Can then include quadratic , cubic and interactions, but may make data matrix have more predictors than observations and matrix won't be invertible.
+
+##### 3. Impacted by "outliers" (_influencers_). 
+OLS aims to minimise SSE; outliers will have exponentially large residuals and so linear regression will adjust parameter estimates to better accommodate the outliers.  
+
+Robust regression has been developed to address these kind of issues:
+
+* Use alternative metric to SSE that is less sensitive to large outliers, e.g. find parameter estimates that minimise the sum of absolute errors, or use Huber function that uses squared residuals when they are small and  the residuals themselves when above a threshold.  
+
+
+
+
+## Principal Component Regression
+
+Two step regression:
+
+1. Dimension reduction via PCA
+2. Regression on PCA components
+
+Advantages:
+
+* Components uncorrelated
+* If variability in predictor space related to response variability then PCR has good change of identifying predictive relationship
+
+Disadvantages:
+
+* Not recommended; use instead PLS when there are correlated predictors and a linear regression-type solution desired
+* New predictors will be linear combinations of original predictors which can impede practical understanding
+* Components may not explain response variable; i.e. components are not selected with response in mind.  
+
+## Partial Least Squares 
+
+
+Based on nonlinear iterative partial least squares (NIPALS) algorithm:
+
+Iteratively seeks to find underlying, or latent, relationships among predictors which are highly correlated with response.  For univariate response, each iteration:
+
+* Assesses relationship between predictors $\mathbf{X}$ and response $\mathbf{y}$ and summarises with a vector of weights $\mathbf{w}$ (directions)
+* Orthogonally projects predictor data  onto the direction to generate scores $\mathbf{t}$ 
+* Scores used to generate loadings $\mathbf{p}$, which measure the correlation of the score vector to the original predictors
+* Deflates predictors and the response by subtracting current estimate of predictor and response, respectively.  These are then used to generate next set of weights, scores and loadings.
+
+PLSR | PCR
+--------------------------------------| -----------------------------------------------
+Simultaneously summarises variation of predictors while being optimally correlated with the outcome | Finds linear combinations of predictors to maximally summarise predictor space variability
+Supervised dimension reduction | Unsupervised procedure
+
+Preprocessing required for PLS:  Centre and scale; otherwise will be draw towards predictors with large variation
+
+Tuning parameters: Number of components to retain; can be determined using resampling techniques.
+
+Variable importance in the projection for $j$th predictor:
+\[\text{VIP} = \sqrt{\frac{\sum^h_{k=1}R^2(y,t_k)(w_{kj}/||w_k||)^2}{(1/p)\sum^h_{k=1}R^2(y,t_k)}},\]
+
+where 
+
+* $p$ = # predictor variables 
+* $h$ = # Components
+* $w_{kj}$ = Weight of $j$th predictor variable in component $k$
+* $R^2(y,t_k)$ = response variation explained by component $k$
+* Numerator: Weighted sum of normalised weights corresponding to the $j$th predictor, where the $j$th normalised weight is scaled by the amount of variation in the response explained by the $k$th component
+* Denominator: Total amount of response variation explained by all $k$ components
+* The larger the normalised weight and amount of response variation explained by the component, the more important the predictor
+
+Rule of thumb: Variables with VIP > 1 contain predictive information.
+Variables with small PLS regression coefficients and small VIP values not likely important and should be considered as candidates for removal from the model
+
+### Algorithmic Variations of PLS
+
+#### Alternatives to address computational inefficiencies:
+
+With $\geq$ 2500 samples or $\geq$ 20 predictors NIPALS becomes inefficient.  As both predictor matrix and response deflated, an $n \times P$ matrix and an $n \times 1$ vector must be recomputed, operated on, and stored in each iteration
+
+Alternative approaches:
+
+* kernel matrix approach
+* SIMPLS
+* etc
+
+
+#### Alternatives to consider nonlinearity
+Recall: PLS components summarise data through linear hyperplanes of original predictor space.  Can allow for non-linearity by:
+
+* Augmenting predictors with squared / cubic predictors.  Note: no need to add cross product terms
+* Using GIFI approach which bins predictors thought to have a nonlinear approach (based on prior knowledge or characteristics of data.
+
+However: Other predictive modeling technique can more naturally identify nonlinear structures (and are recommended) without having to modify predictor space.  
+
+## Penalised (a.ka.a Shrinkage) Models
+OLS coefficients unbiased and of all unbiased linear techniques will have lowest variance.  However may be possible to produce model with smaller SME by sacrificing some bias for a much more substantial drop in variance.  Predictors with large correlations -> large variance, can combat collinearity using biased models.
+
+### Ridge Regression
+To create bias, add penalty to SSE if estimates become large.  
+
+\[\text{SSE}_{L_2} = \sum^n_{i=1}(y_i-\hat{y}_i)^2 + \lambda \sum^P_{j=1}\beta_j^2\]
+
+$L_2$: Square (second-order penalty) being used; parameter estimates can only get large if proportional reduction in SSE.  Method shrinks estimates towards 0 as $\lambda$ penalty becomes large. Cross validation is used to optimise the penalty value.  
+
+Model does not perform feature selection; i.e. no parameter estimate will be set to 0
+
+Plots:
+
+1. Penalty vs standardized coefficients; as the penalty increases the standardized coefficients tend towards zero
+
+2. Fraction of full solution vs standardized coefficients.
+
+Fraction of full solution: Amount that the ridge regression coefficient estimates have been shrunken towards zero; small value indicates they have been shrunken very close to zero.
+\[||\hat{\beta}_\lambda^R||/||\hat{\beta}||_2\]
+where:
+
+* $\hat{\beta}_\lambda^R$ = ridge regression coefficients
+* $\hat{\beta}$ =least squares coefficient estimates
+* $||\beta||_2 = \sqrt{\sum^P_{j=1}\beta_j^2}$ is the $\ell_2$ norm, measures the distance of $\beta$ from zero.  
+
+As $\lambda$ increases, the $\ell_2$ norm of $\hat{\beta}_\lambda^R$ will decrease and so will the fraction of the full solution.
+
+The fraction of full solution ranges form 1 (when $\lambda = 0$ when ridge regression coefficient = OLS) to 0 (when $\lambda = \infty$)
+
+### Lasso (Least Absolute Shrinkage and Selection Operator Model)
+
+\[\text{SSE}_{L_1} = \sum^n_{i=1}(y_i-\hat{y}_i)^2 + \lambda \sum^P_{j=1}|\beta_j|\]
+
+Lasso Coefficient Path: Trace plot showing the relationship between the penalty and the standardised coefficients; as the penalty  
+
+The lasso has been extended to:
+
+* Linear discriminant analysis
+* PLS
+* PCA
+
+### Lasso vs Ridge
+
+Ridge                            | Lasso 
+---------------------------------| --------------------------------------
+L2 Norm                          | L1 Norm
+Coefficients are not set to zero | Performs features selection
+Shrinks coefficients of correlated predicted towards each other | Tends to pick one of the correlated predictors and ignore the rest
+
+Why Lasso Results in Feature Selection, but Not Ridge:
+
+Optimisation formulations:
+
+Ridge:
+\[\matrix{\text{minimize}\\\beta} \left\{ \sum^n_{i=1} \left(y_i - \beta_0 - \sum^p_{j=1}\beta_j x_{ij}\right)^2 \right\} \;\;\;\text{subject to }\sum^p_{j=1}\beta_j^2 \leq s\]
+
+Lasso:
+\[\matrix{\text{minimize}\\\beta} \left\{ \sum^n_{i=1} \left(y_i - \beta_0 - \sum^p_{j=1}\beta_j x_{ij}\right)^2 \right\} \;\;\;\text{subject to }\sum^p_{j=1}|\beta_j| \leq s\]
+
+i.e., $\forall \lambda$ there is a value of $s$ that will give the same ridge/lasso coefficient estimates.
+
+When $p = 2$,
+
+* Ridge: smallest RSS out of all points lies within diamond defined by $|\beta_1| + |\beta_2| \leq s$.
+* Ridge: smallest RSS out of all points lies within circle defined by $\beta^2_1 + \beta^2_2 \leq s$.
+
+When $s$ is large then constraint region is also large and so coefficient estimates can be large.  
+
+In the following chart:
+
+* $\hat{\beta}$ is the least squared solution
+* The blue circle is the ridge regression constraint
+* The black diamond is the lasso regression constraint
+* Each quadrant relates to a different regression problem
+* The ellipses in each quadrant are the contours of the residual sum of squares (RSS); all points on a given ellipse share a common value of the RSS.  As the ellipses expand away from $\hat{\beta}$, the RSS increases.
+* The lasso and ridge regression coefficient estimates are given by the first point at which an ellipse contacts the constraint region.
+
+Ridge regression constraint is circular and no sharp points and so intersection will not generally occur on an axis.  
+The lasso constraint has corners and so will often intersect at the corner (and therefore one of the coefficients will equal zero).  
+
+![Lasso/ Ridge Optimisation](LassoVsRidge.JPG)
+
+
+Further reasoning as to why Lasso leads to feature selection, as per [Cross Validated, Why does the Lasso provide Variable Selection?](https://stats.stackexchange.com/questions/74542/why-does-the-lasso-provide-variable-selection/74569): 
+
+Consider the model $y = \beta x + e$, with an L1 penalty on $\hat{\beta}$ and a least-squares loss function on $\hat{e}$.  We can expand the expression to be minimized as:
+
+\[\min y^Ty -2 y^Tx\hat{\beta} + \hat{\beta} x^Tx\hat{\beta} + 2\lambda|\hat{\beta}|\]
+
+Assume the least-squares solution is some $\hat{\beta} > 0$, which is equivalent to assuming that $y^Tx > 0$, and see what happens when we add the L1 penalty.  With $\hat{\beta}>0$, $|\hat{\beta}| = \hat{\beta}$, so the penalty term is equal to $2\lambda\beta$.  The derivative of the objective function w.r.t. $\hat{\beta}$ is:
+
+\[-2y^Tx +2x^Tx\hat{\beta} + 2\lambda\]  
+
+which evidently has solution $\hat{\beta} = (y^Tx - \lambda)/(x^Tx)$.  
+
+Obviously by increasing $\lambda$ we can drive $\hat{\beta}$ to zero (at $\lambda = y^Tx$).   However, once $\hat{\beta} = 0$, increasing $\lambda$ won't drive it negative, because, writing loosely, the instant $\hat{\beta}$ becomes negative, the derivative of the objective function changes to:
+
+\[-2y^Tx +2x^Tx\hat{\beta} - 2\lambda\]
+
+where the flip in the sign of $\lambda$ is due to the absolute value nature of the penalty term; with $\hat{\beta}< 0$, $|\hat{\beta}|\neq \hat{\beta}$. As the derivative is w.r.t. to $\hat{\beta}$ the sign flips on that term; not on the $-2y^Tx\hat{\beta}$ term because that term includes $\hat{\beta}$ not $|\hat{\beta}|$. 
+
+So when $\beta$ becomes negative, the penalty term becomes equal to $-2\lambda\beta$, and taking the derivative w.r.t. $\beta$ results in $-2\lambda$.  This leads to the solution $\hat{\beta} = (y^Tx + \lambda)/(x^Tx)$, which is obviously inconsistent with $\hat{\beta} < 0$ (given that the least squares solution $> 0$, which implies $y^Tx > 0$, and $\lambda > 0$).  There is an increase in the L1 penalty AND an increase in the squared error term (as we are moving farther from the least squares solution) when moving $\hat{\beta}$ from $0$ to $ < 0$, so we don't, we just stick at $\hat{\beta}=0$.
+
+It should be intuitively clear the same logic applies, with appropriate sign changes, for a least squares solution with $\hat{\beta} < 0$.  
+
+With the least squares penalty $\lambda\hat{\beta}^2$, however, the derivative becomes:
+
+\[-2y^Tx +2x^Tx\hat{\beta} + 2\lambda\hat{\beta}\]
+
+which evidently has solution $\hat{\beta} = y^Tx/(x^Tx + \lambda)$.  Obviously no increase in $\lambda$ will drive this all the way to zero.  So the L2 penalty can't act as a variable selection tool without some mild ad-hockery such as "set the parameter estimate equal to zero if it is less than $\epsilon$".  
+
+Obviously things can change when you move to multivariate models, for example, moving one parameter estimate around might force another one to change sign, but the general principle is the same: the L2 penalty function can't get you all the way to zero, because, writing very heuristically, it in effect adds to the "denominator" of the expression for $\hat{\beta}$, but the L1 penalty function can, because it in effect adds to the "numerator".  
+
+
+Source:
+
+* An Introduction to Statistical Learning with Applications in R, Casella, Fienberg and Olkin
+* [Regularization in Machine Learning: Connect the dots](https://towardsdatascience.com/regularization-in-machine-learning-connecting-the-dots-c6e030bfaddd)
+* [Cross Validated, Why does the Lasso provide Variable Selection?](https://stats.stackexchange.com/questions/74542/why-does-the-lasso-provide-variable-selection)
+
+
+
+### Least Angle Regression (LARS)
+Broad framework (that envelopes lasso) that can be used to fit lasso models more efficiently
+
+### Elastic Net
+Combines ridge and lasso:
+\[\text{SSE}_{\text{E}_\text{net}} = \sum^n_{i=1}(y_i-\hat{y}_i)^2 + \lambda_1 \sum^P_{j=1}\beta^2_j + \lambda_2 \sum^P_{j=1}|\beta_j|\]
+
+Advantage:
+
+* Enables regularisation via ridge-type penalty
+* Feature selection via lasso penalty
+
+Both penalties require tuning.
+
+
+
+## Computing - Case Study: Quantitative Structure-Activity Relationship Modeling
+
+Solubility Data:
+
+* Predictors for test and training test sets in data frames called `solTrainX` and `solTestX`
+* Alternative versions that have been Box-Cox transformed are in the data frames `solTrainXTrans` and `solTestXTrans`
+* Solubility (response value) for each compound contained in `solTrainY` and `solTestY`
+
+```{r loadSolubilityData, include=FALSE}
+data(solubility)
+# data objects
+# ls(pattern = "^solT")
+```
+
+* Each column of data corresponds to a predictor and the rows correspond to compounds.  There are `r ncol(solTrainX)` columns in the data.  Random sample of column names below:
+```{r sampleSolubilityPredictors, echo=FALSE, results='asis'}
+set.seed(2)
+cat(paste('\t*', 
+          sample(names(solTrainX), 8)
+          ), sep = '\n')
+```
+
+```{r solubilityFingers, include=FALSE}
+### Find the columns that are not fingerprints (i.e. the continuous
+### predictors). grep will return a list of integers corresponding to
+### column names that contain the pattern "FP".
+Fingerprints <- grep("FP", names(solTrainXtrans))
+SolubilityCounts <- grep("Num", names(solTrainXtrans))
+names(solTrainXtrans)[Fingerprints]
+names(solTrainXtrans)[SolubilityCounts]
+names(solTrainXtrans)[-c(Fingerprints, SolubilityCounts)]
+```
+
+Predictors:
+
+* `r length(Fingerprints)` binary descriptors
+* `r length(SolubilityCounts)` count descriptors
+* `r length(solTrainXtrans[-c(Fingerprints, SolubilityCounts)])` continuous descriptors
+
+Sample size: `r scales::comma(nrow(solTrainX) + nrow(solTestX))`
+
+* Data has been split into training and test sets:
+
+    * Training Set (n =  `r scales::comma(nrow(solTrainX))`
+        * To tune and estimate models
+        * To determine initial estimates of performance using repeated 10-fold cross-validation
+    * Test set n =  `r scales::comma(nrow(solTestX))`): For final characterisation of models of interest
+    
+**Data Exploration**
+
+```{r solubility_correlation}
+res <- cor(rbind(solTrainX, solTestX))
+res[lower.tri(res, diag = TRUE)] <- NA
+res <- as.data.frame(res) %>%
+    rownames_to_column(var = "VariableA") %>%
+    gather(key = "VariableB", value = "Correlation", -VariableA) %>%
+    filter(!is.na(Correlation)) %>%
+    mutate(AbsCorrelation = abs(Correlation)) %>%
+    arrange(desc(AbsCorrelation))
+
+# sum(res$Correlation > 0.9)
+
+```
+
+On average, descriptors are uncorrelated (average absolute correlation = `r round(mean(res$AbsCorrelation),2)`), however there are `r sum(res$Correlation > 0.9)` pairs of descriptors with a correlation greater than 0.9.   One pair of descriptors (SurfaceArea1 and SurfaceArea2) are identical for `r scales::percent(with( solTrainX, sum(SurfaceArea1 == SurfaceArea2)/(nrow(solTrainX) )))` of compounds, but small differences can contain certain information for prediction.
+
+```{r removeSolTrainBindTest, include=FALSE}
+rm(res)
+```
+
+
+The relationship between Solubility and 
+
+a. Molecular Weight; as molecular weight increases, solubility generally decreases
+b. `r names(solTrainX)[100]`
+```{r solubilityRelationshipEgs, message=FALSE, warning=FALSE, results = 'hold'}
+
+library(lattice)
+library(corrplot)
+
+### Some initial plots of the data
+
+p1 <- xyplot(solTrainY ~ solTrainX$MolWeight, type = c("p", "g"),
+       ylab = "Solubility (log)",
+       main = "(a)",
+       xlab = "Molecular Weight")
+# xyplot(solTrainY ~ solTrainX$NumRotBonds, type = c("p", "g"),
+#        ylab = "Solubility (log)",
+#        xlab = "Number of Rotatable Bonds")
+p2 <- bwplot(solTrainY ~ ifelse(solTrainX[,100] == 1, 
+                          "structure present", 
+                          "structure absent"),
+       ylab = "Solubility (log)",
+       main = "(b)",
+       horizontal = FALSE)
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+rm(p1, p2)
+```
+Skewness; recall that variables are considered skewed if max/min > 20 or if |skewness statistic| much greater than zero. 
+
+```{r solubilitySkewness}
+res <- solTrainX %>%
+  select(-starts_with("FP")) %>%
+  summarise_all(funs(e1071::skewness, n_distinct, max, min)) %>%
+  gather(key="key", value="value") %>%
+  extract(key, c("variable", "metric"), "(.*)_(e1071::skewness|n_distinct|max|min)") %>%
+    mutate(metric = ifelse(metric == "e1071::skewness", "skewness", metric)) %>%
+  spread(metric, value) %>%
+  mutate(max_min_ratio = ifelse(min==0, (max+1)/(min+1), max/min)) %>%
+  select(variable, n_distinct, skewness, max_min_ratio, min, max) %>%
+    mutate(AbsSkewness = abs(skewness)) 
+```
+
+The mean skewness of continuous variables in training set was `r round(mean(res$AbsSkewness),1)` (minimum `r round(min(res$AbsSkewness),1)`), maximum `r round(max(res$AbsSkewness),1)`), indicating variables have tendency to be right-skewed.
+
+
+```{r solubilitySkewnessCleanUp, include=FALSE}
+rm(res)
+```
+
+
+Box-Cox transformation were therefore applied to all predictors.  
+
+To check for linear relationships between predictors and solubility, scatter plots with regression line used which suggests both linear, e.g. MolWeight,  and non-linear, e.g., NumChlorine, relationships exist (may want to include some quadratic terms)
+
+```{r solubilityScatters, fig.height=10, message=FALSE, warning=FALSE}
+featurePlot(solTrainXtrans[, -Fingerprints],
+            solTrainY,
+            between = list(x = 1, y = 1),
+            type = c("g", "p", "smooth"),
+            labels = rep("", 2))
+```
+
+To check for significant between-predictor correlations, PCA used on full set of transformed predictors.
+
+<!--Errata: Figure 6.4, not cumulative-->
+```{r solubilityPCA}
+solPCA <- prcomp(solTrainXtrans, center = TRUE, scale = TRUE)
+#pctVar <-  solPCA$sdev^2/sum(solPCA$sdev^2)*100
+#head(pctVar)
+
+tab <- summary(solPCA)$importance[2,]
+tab <- data.frame(PC = names(tab), Var = tab, row.names=NULL, stringsAsFactors = FALSE) %>% mutate(PC=parse_number(PC))
+
+
+ggplot(tab, aes(x = PC, y=Var))+ 
+         geom_line() + 
+    scale_y_continuous(name = "% Variance", labels = scales::percent) +
+    xlab("Components")
+
+rm(tab, solPCA)
+```
+
+
+Scree plot shows that amount of variability drops sharply, with no one component accounting for more than 13% of variance.  This indicates that the structure of the data is contained in a much smaller number of dimensions than the number of dimensions in the original space; often due to large number of collinearities in the predictors.  
+Collinearity can create problems in developing some models (e.g. linear regression) and will require appropriate pre-processing steps.
+
+The correlation structure is shown for the transformed continuous predictor and shows many strong positive correlations.
+
+```{r solubilityCorrplot}
+### Full namespace used to call this function because the pls
+### package (also used in this chapter) has a function with the same
+### name.
+corrplot::corrplot(cor(solTrainXtrans[, -Fingerprints]), 
+                   order = "hclust", 
+                   tl.cex = .8)
+```
+
+### Ordinary Linear Regression 
+
+* Standard function `lm` requires predictors and response variable in same dataframe
+
+```{r fitLmToSolTrain}
+# all predictors
+trainingData <- solTrainXtrans
+trainingData$Solubility <- solTrainY
+lmFitAllPredictors <- lm(Solubility ~ ., data = trainingData)
+#summary(lmFitAllPredictors)
+# RMSE
+#sqrt(mean(lmFitAllPredictors$residuals^2))
+
+# R^2
+#summary(lmFitAllPredictors)$r.squared
+
+```
+
+
+
+
+Training set performance: 
+
+* RMSE = `r round(sqrt(mean(lmFitAllPredictors$residuals^2)),3)` 
+* $R^2$ = `r  round(summary(lmFitAllPredictors)$r.squared,3)`
+
+Can predict new samples using `predict` function:
+```{r predictLMToSolTest}
+lmPred1 <- predict(lmFitAllPredictors, solTestXtrans)
+head(lmPred1)
+```
+
+Test set performance estimated using `caret::defaultSummary`:
+```{r LMSolPerformance}
+lmValues1 <- data.frame(obs = solTestY, pred = lmPred1)
+defaultSummary(lmValues1)
+```
+
+
+
+
+
+**Resampling estimate of performance**
+
+* With ~1000 training samples, should be sufficient to use 10-fold cross-validation as opposed to repeated cross-validation in order to obtain reasonable estimates of model performance.  Use the function `trainControl` to specify type of resampling:
+
+```{r lmSolTrainPerf}
+
+### Create a control function that will be used across models. We
+### create the fold assignments explicitly instead of relying on the random number seed being set to identical values.
+set.seed(100)
+indx <- createFolds(solTrainY, returnTrain = TRUE)
+ctrl <- trainControl(method = "cv", index = indx)
+rm(indx)
+
+#ctrl <- trainControl(method = "cv", number = 10)
+
+set.seed(100)
+lmFit1 <- train(x = solTrainXtrans, y = solTrainY, method = "lm", trControl = ctrl)
+lmFit1
+
+
+```
+
+* For models built to explain, it is important to check model assumptions, such as the residual distribution.
+* For predictive models, some of the same diagnostic techniques can highlight where model is not predicting well.
+
+
+
+Plot of residuals vs predicted values:
+```{r plotlmSolTrainResidPred}
+## plot the points (type = 'p') and a background grid ('g')
+xyplot(resid(lmFit1) ~ predict(lmFit1), type = c("p", "g"), xlab = "Predicted", ylab = "Residuals")
+```
+
+* A random cloud of points should provide comfort that no major terms (e.g.. quadratics) missing from model
+* `resid` function generates model residuals for training set
+* `predict` function without additional dataset generates predicted values for training set
+
+
+Predicted vs observed values to assess how close predictions are to the actual values:
+```{r plotlmSolTrainObsPred}
+xyplot(solTrainY ~ predict(lmFit1), type = c("p", "g"), xlab = "Predicted", ylab = "Observed")
+```
+
+Basic diagnostic tests do not suggest any bias in prediction; distribution between predictive values and residuals appear to be random about zero.
+
+
+Can remove highly correlated predictors and build smaller model:
+
+Identify predictors that have high pairwise correlation and remove predictors so that no absolute pairwise correlation is greater than some pre-specified level (e.g. 0.9).  Note: In practice the threshold would need to be be smaller , however in this instance it would also remove important variables.  The section on Feature Selection will further discuss this data and how to investigate how terms fit into the model, interactions and nonlinear transformations.
+
+<!-- # Errata here: SolTrainY in book not solTestY -->
+```{r solTrainXCorrelations, results = 'hold'}
+
+### Linear regression model with all of the predictors. This will produce some warnings that a 'rank-deficient fit may be  misleading'. This is related to the predictors being so highly correlated that some of the math has broken down.
+# set.seed(100)
+# lmTune0 <- train(x = solTrainXtrans, y = solTrainY,
+#                 method = "lm",
+#                 trControl = ctrl)
+# lmTune0 
+
+### Now use a set of predictors reduced by unsupervised filtering; apply a filter to reduce extreme between-predictor correlations and note the lack of warnings.
+
+corThresh <- .9
+tooHigh <- findCorrelation(cor(solTrainXtrans), corThresh)
+corrPred <- names(solTrainXtrans)[tooHigh]
+trainXfiltered <- solTrainXtrans[, -tooHigh]
+testXfiltered <- solTestXtrans[, -tooHigh]
+
+set.seed(100)
+lmFiltered <- train(trainXfiltered, solTrainY, method = "lm", trControl = ctrl)
+lmFiltered
+
+# To obtain training R2
+lmValuesF <- data.frame(obs = solTrainY, pred = lmFiltered$finalModel$fitted.values)
+
+rm(tooHigh, trainXfiltered, testXfiltered, corrPred, corThresh)
+
+```
+
+
+Data | RMSE | $R^2$
+-------------|------|-------
+Training (All predictors) | `r round(sqrt(mean(lmFitAllPredictors$residuals^2)),3)` | `r  round(summary(lmFitAllPredictors)$r.squared,3)`
+Test (All predictors)    | `r round(defaultSummary(lmValues1)[1],3)`    | `r round(defaultSummary(lmValues1)[2],3)`
+Train (Filtered)| `r round(sqrt(mean(lmFiltered$finalModel$residuals^2)),3)`    | `r round(defaultSummary(lmValuesF)[2],3)`
+Test (Filtered)| `r round(lmFiltered$results[1,"RMSE"],3)`    | `r round(lmFiltered$results[1,"Rsquared"],3)`
+
+```{r cleanupLM, include=FALSE}
+rm(lmFitAllPredictors, lmValues1, lmValuesF, lmFiltered, lmFit1, lmPred1)
+```
+
+
+**Robust Linear Regression Model**, `MASS::rlm` uses Huber function by default.  
+
+
+```{r fitRlmToSolTrain, eval=FALSE}
+# converged in 18 iterations
+rlmFitAllPredictors <- MASS::rlm(Solubility ~ ., data = trainingData)
+rm(rlmFitAllPredictors)
+```
+
+However, it is recommended to first ensure that the covariance matrix is not singular, as `rlm` does not allow singularity.  
+
+Note that MASS::rlm solution converges without pre-processing of data, but caret::train with method = rlm does not converge.  **Question**:  Why not? Perhaps because performing 10-fold CV?
+
+ 
+```{r fitPCRobustRToSolTrain}
+
+set.seed(100)
+rlmPCA <- train(solTrainXtrans, solTrainY, method = "rlm", preProcess = "pca", trControl = ctrl, maxit = 30)
+
+rlmPCA
+rm(rlmPCA)
+```
+
+
+#### Partial Least Squares
+
+`pls::plsr` function
+
+* Requires model formula
+* The first Dayal and MacGregor kernel algorithm used; can specify others using the `method` argument, e.g. "oscorespls", "simpls", or "widekernelpls".
+* Use `ncomp` argument  to set number of components, otherwise maximum number of components will be calculated.
+* Use `validation` argument for K-fold or leave-one-out CV
+
+Helper functions to extract PLS components:
+
+* `loadings`
+* `scores`
+* `plot`
+
+Given that many predictors highly correlated and overall information within predictors space contained in smaller number of dimensions, predictor conditions are favourable for applying PLS.
+
+Use cross validation to determine optimal number of PLS components to retain in order to minimise RMSE.
+
+```{r solubilityPls, include=FALSE}
+#plsFit <- plsr(Solubility ~ ., data = trainingData)
+#predict(plsFit, solTestXtrans[1:5,], ncomp = 1:2)
+
+## The default tuning grid evaluates components 1... tuneLength
+set.seed(100)
+plsTune <- train(x = solTrainXtrans, 
+                 y = solTrainY, 
+                 method = "pls", 
+                 tuneLength = 20, 
+                 # ALT: 
+                 #tuneGrid = expand.grid(ncomp = 1:20),
+                 trControl = ctrl, 
+                 preProc = c("center", "scale"))
+#plsTune
+predict(plsTune, solTestXtrans)
+
+plsTune$bestTune[,"ncomp"]
+plsTune$results$RMSE[plsTune$bestTune[,"ncomp"]]
+
+```
+
+In the following code, PCR is performed using the same cross-validation sets to compare its performance to PLS.
+
+```{r solubilityPCR, include=FALSE}
+set.seed(100)
+pcrTune <- train(x = solTrainXtrans, y = solTrainY,
+                 method = "pcr",
+                 tuneGrid = expand.grid(ncomp = 1:35),
+                 trControl = ctrl)
+pcrTune                  
+```
+A comparison of PLS to PCR is below; PLS found a minimum RMSE (`r  round(plsTune$results$RMSE[plsTune$bestTune[,"ncomp"]],3)`) with `r plsTune$bestTune[,"ncomp"]` components, whereas PCR found a  minimum RMSE (`r  round(pcrTune$results$RMSE[pcrTune$bestTune[,"ncomp"]],3)`) with `r pcrTune$bestTune[,"ncomp"]` components.
+
+```{r solubilityPlsVsPCR}
+plsResamples <- plsTune$results
+plsResamples$Model <- "PLS"
+
+pcrResamples <- pcrTune$results
+pcrResamples$Model <- "PCR"
+
+plsPlotData <- rbind(plsResamples, pcrResamples)
+xyplot(RMSE ~ ncomp,
+       data = plsPlotData,
+       #aspect = 1,
+       xlab = "# Components",
+       ylab = "RMSE (Cross-Validation)",
+       auto.key = list(columns = 2),
+       groups = Model,
+       type = c("o", "g"))
+
+
+```
+
+Although predictive ability is similar, PLS finds a simpler model that uses far fewer components than PCR.  Using the one-standard error method (simpler solution within 1 standard error of numerically optimal value) reduces this to `r  min(which(plsTune$results$RMSE >=  plsTune$results$RMSE[plsTune$bestTune[,"ncomp"]] - plsTune$results$RMSESD[plsTune$bestTune[,"ncomp"]] & plsTune$results$RMSE <=  plsTune$results$RMSE[plsTune$bestTune[,"ncomp"]] + plsTune$results$RMSESD[plsTune$bestTune[,"ncomp"]]))` components for PLS and 
+`r min(which(pcrTune$results$RMSE >=  pcrTune$results$RMSE[pcrTune$bestTune[,"ncomp"]] - pcrTune$results$RMSESD[pcrTune$bestTune[,"ncomp"]] & pcrTune$results$RMSE <=  pcrTune$results$RMSE[pcrTune$bestTune[,"ncomp"]] + pcrTune$results$RMSESD[pcrTune$bestTune[,"ncomp"]]))` for PCR
+
+The following figure shows the relationship between the first two components of both PLS and PCR; the correlation is greater for the PLS components and illustrates why PLS is more quickly steered towards underlying relationship with the response.
+```{r solubilityScoresVsREsponse}
+as.data.frame(unclass(plsTune$finalModel$scores)) %>%
+    mutate(Model = "PLS", Solubility = solTrainY) %>%
+    gather(Component, Score, -Solubility, -Model) %>%
+    rbind(
+        as.data.frame(unclass(pcrTune$finalModel$scores)) %>%
+            mutate(Model = "PCR", Solubility = solTrainY) %>%
+            gather(Component, Score, -Solubility, -Model)) %>%
+    filter(Component %in% c("Comp 1", "Comp 2")) %>%
+    ggplot(aes(Score, Solubility)) + 
+    geom_point() + 
+    facet_grid(Model ~ Component)
+```
+
+Variable importance for the PLS model shown below:
+
+```{r solubilityPlsVarIMp, results = 'hold'}
+plsImp <- varImp(plsTune, scale = FALSE)
+plot(plsImp, top = 25, scales = list(y = list(cex = .95)))
+rm(plsImp, plsTune, plsPlotData, plsResamples, pcrTune, pcrResamples)
+```
+
+#### Penalized Regression Models
+
+Ridge Regression
+
+* MASS::lm.ridge
+* elasticnet::enet; 
+    * lambda specifies the ridge-regression penalty
+    * lasso penalty can be computed efficiently for many values of the penalty, predict.enet generates predictions for one or more values of the lasso penalty simultaneously using the `s` and `mode` argument.  For ridge regression, desire lasso penalty of 0 and so specify the full solution using `s=1` and `mode = "fraction"` 
+    
+**Notes on using `predict.enet`**: The meaning of `s` depends on the value of `model`.  For example, if `mode` = "norm" and `s` = 2000, then predict.enet will extract the coefficient vector with L1 norm = 2000.  If `mode` = "fraction" and `s`=0.45, then predict.enet will extract the coefficient vector with L1 norm fraction = 0.45.
+
+```{r ridgeRegression}
+
+ridgeModel <- elasticnet::enet(x = as.matrix(solTrainXtrans), y = solTrainY, lambda = 0.001)
+
+ridgePred <- predict(ridgeModel, newx = as.matrix(solTestXtrans), s = 1, mode = "fraction", type = "fit")
+
+rm(ridgeModel)
+head(ridgePred$fit)
+
+rm(ridgePred)
+```
+
+The following figure shows how the RMSE changes with $\lambda$; 
+```{r ridgeTune, results = 'hold'}
+# Define the candidate set of values
+ridgeGrid <- data.frame(lambda = seq(0, .1, length = 15))
+# ridgeGrid <- expand.grid(lambda = seq(0, .1, length = 15))
+
+set.seed(100)
+ridgeRegFit <- train(x = solTrainXtrans, 
+                     y = solTrainY, 
+                     method = "ridge", 
+                     tuneGrid = ridgeGrid, 
+                     trControl = ctrl, 
+                     preProc = c("center", "scale"))
+
+ridgeRegFit
+print(update(plot(ridgeRegFit ), xlab = "Penalty"))
+
+rm(ridgeGrid)
+```
+
+
+with no $\lambda$ the error is inflated, when increased, the error drops from `r ridgeRegFit$results$RMSE[1]` to `r ridgeRegFit$results$RMSE[15]`
+
+```{r plotRidgeRegCoeffPath, eval=FALSE, include=FALSE, results = 'hold'}
+coeffs <- predict(ridgeRegFit, type = "prob", mode = "fraction")
+
+
+as.data.frame(unclass(coeffs$coefficients)) %>%
+ mutate(Fraction = coeffs$fraction) %>%
+ gather(Variable, Coefficient, -Fraction) %>%
+ mutate(Col = ifelse(Variable %in% c("NumNonHAtoms", "NumNonHBonds", "NumMultBonds"), Variable, "Other"),
+        Col = factor(Col, levels = c("NumNonHAtoms", "NumNonHBonds", "NumMultBonds", "Other"))) %>%
+ ggplot(aes(x = Fraction, y = Coefficient, group=Variable, colour = Col)) +
+ geom_line() +
+     scale_color_manual(name = "", values = c("NumNonHAtoms" = "green", "NumNonHBonds" = "purple", "NumMultBonds" = "orange", "Other" = "gray"), breaks = c("NumNonHAtoms", "NumNonHBonds", "NumMultBonds")) + 
+    theme(legend.position = "bottom")
+
+rm(ridgeRegFit)
+rm(coeffs)
+```
+
+
+Lasso model
+
+* lars::lars
+* elastnet::enet; predictor data must be a matrix object.  Use normalize argument to center and scale prior to modelling.  lambda controls ridge regression penalty, setting to 0 fits the lass model.  Lasso penalty does not need to be specified until the time of prediction.
+* glmnet::enet
+* biglars (large data sets)
+* FLLat (fused lasso)
+* grplasso (group lasso)
+* penalized
+* relazo (relazes lasso)
+
+Predictors should be centered and scaled prior to modelling.  
+
+```{r lasso, results = 'hold'}
+enetModel <- elasticnet::enet(x = as.matrix(solTrainXtrans), y = solTrainY, lambda = 0, normalize = TRUE)
+
+enetPred <- predict(enetModel, newx = as.matrix(solTestXtrans), s = .1, mode = "fraction", type = "fit")
+
+head(enetPred$fit)
+rm(enetPred)
+```
+
+
+```{r lassoCoef, results = 'hold'}
+enetCoef<- predict(enetModel, newx = as.matrix(solTestXtrans), s = .1, mode = "fraction", type = "coefficients")
+tail(enetCoef$coefficients)
+
+rm(enetModel, enetCoef)
+```
+
+**Question**: How to recreate coefficient path ... 
+
+
+The following plot shows the performance profiles across three values of the ridge penalty and 20 values of the lasso penalty.  
+
+
+The pure lasso model (with $\lambda_1$ = 0) has an initial drop in the error and then an increase when the fraction of the full solution (amount that the ridge regression coefficient estimates have been shrunken towards zero; small value indicates they have been shrunken very close to zero) is greater than 0.2.  The two models with nonzero values of the ridge penalty have minimum errors
+with a larger model. 
+
+```{r lassoTune, results = 'hold'}
+
+enetGrid <- expand.grid(.lambda = c(0, 0.01, .1), .fraction = seq(.05, 1, length = 20))
+
+set.seed(100)
+enetTune <- train(solTrainXtrans, solTrainY,
+                  method = "enet",
+                  tuneGrid = enetGrid,
+                  trControl = ctrl,
+                  preProc = c("center", "scale"))
+
+plot(enetTune)
+
+coeffs <- predict.enet(enetTune$finalModel, type = "coefficients", mode = "fraction")
+
+as.data.frame(unclass(coeffs$coefficients)) %>%
+ mutate(Fraction = coeffs$fraction) %>%
+ gather(Variable, Coefficient, -Fraction) %>%
+ mutate(Col = ifelse(Variable %in% c("NumNonHAtoms", "NumNonHBonds", "NumMultBonds"), Variable, "Other"),
+        Col = factor(Col, levels = c("NumNonHAtoms", "NumNonHBonds", "NumMultBonds", "Other"))) %>%
+ ggplot(aes(x = Fraction, y = Coefficient, group=Variable, colour = Col)) +
+ geom_line() +
+     scale_color_manual(name = "", values = c("NumNonHAtoms" = "green", "NumNonHBonds" = "purple", "NumMultBonds" = "orange", "Other" = "gray"), breaks = c("NumNonHAtoms", "NumNonHBonds", "NumMultBonds")) + 
+    theme(legend.position = "bottom")
+
+rm(coeffs, enetGrid)
+
+```
+
+In the end, the optimal performance was associated with
+the lasso model ($\lambda = 0$) with a fraction of `r enetTune$bestTune[1, "fraction"]`, corresponding to `r sum(predict.enet(enetTune$finalModel, s=0.15, type="coef", mode="fraction")$coefficients != 0)`  predictors out of a possible `r ncol(solTrainXtrans)`.
+
+Note: To extract the coefficients used in the final model, use the following code, either specify the optimal fraction (s = `r enetTune$bestTune[1, "fraction"]`) or enter programmatically as follows:
+```{r enetCoefs, eval=FALSE}
+sum(predict.enet(enetTune$finalModel, s=enetTune$bestTune[1, "fraction"], type="coef", mode="fraction")$coefficients != 0)
+
+rm(enetTune)
+```
+
+
+```{r cleanupch6}
+rm(ctrl, solTestX, solTestXtrans, solTrainX, solTrainXtrans, trainingData, solTestY, solTrainY, Fingerprints, SolubilityCounts)
+```
+
+
+
+# Nonlinear Regression Models
+
+Linear regression models can be adapted to nonlinear trends in data by manually adding model terms but requires knowledge of specific nature of nonlinearity in data.
+
+Advantage of nonlinear models (NN, MARS, SVN, KNN, tree models) is that don't need to know, or specify, form of nonlinearity prior to model training. 
+
+## Neural Networks
+
+* Hidden units:
+    * Intermediary set of unobserved variables used in modelling (similar to PLS)
+    * Linear combination of original predictors, but typically transformed by a nonlinear function $g(\centerdot)$, e.g. the logistic/sigmoidal function 
+    $$
+    \begin{aligned}
+    h_k(\mathbf{x}) = g\left(\beta_{0k} + \sum^P_{i=1}x_j\beta_{jk}\right), \;\; \text{where}
+    \\
+    g(u) = \frac{1}{1 + e^{-u}}\end{aligned}
+    $$
+    
+    where $\beta_{jk}$ is the effect of the $j$th predictor on the $k$th hidden unit
+    
+    * Not estimated in hierarchical fashion (as per PLS)
+
+* Another linear combination connects the hidden units to the outcome:
+    \[f(\mathbf{x}) = \gamma_o + \sum^{H}_{k = 1} \gamma_k h_k\]
+
+
+For $H$ hidden units and $P$ predictors, there are $H(P+1) + (H + 1)$ parameters being estimated.  
+
+Solution:
+
+* Parameters usually optimised to minimize the sum of squared residuals
+* Parameters usually initialised to random variables
+* Back-propagation algorithm efficient, but solution is not a global solution, meaning no guarantee that resulting set of parameters are uniformly better than any other set
+
+Limitations
+
+* No global optimum
+* Tendency to overfit; solutions:
+    * Early stopping: Prematurely halt iterative algorithm for solving the regression equations, e.g. stop when error rate starts to increase (instead of using a numerical tolerance to indicate parameter estimates or error rates are stable)... but how to estimate the error rate?  Training error rate often optimistic and further splitting training set can be problematic
+    * Use weight decay, penalisation method to regularize the model (similar to ridge regression); add penalty ($\lambda$) so that any large value must have significant effect on model errors to be tolerated; aim would therefore be to minimize
+    \[\sum^n_{i=1}(y_i - f_i(x))^2 + \lambda\sum^H_{k=1}\sum^P_{j=0}\beta_{jk}^2 + \lambda\sum^H_{k=0}\gamma_k^2\]
+    
+
+Tuning parameters for weight decay NN include:
+
+* Regularization value, usually between 0 and 0.1
+* Number of hidden units.
+ 
+Since regression coefficients are being summed, should be centred and scaled prior to modelling (such that on same scale)
+
+**Self-organisation maps**
+
+* Similar model to NN
+* Can be used as unsupervised, exploratory technique or in supervised fashion for prediction
+
+
+
+
 
 # New R commands
 `apropos`: search R packages for a given term in currently loaded packages
