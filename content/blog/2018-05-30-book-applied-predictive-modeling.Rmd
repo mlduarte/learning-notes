@@ -1579,6 +1579,7 @@ rm(GermanCredit, GermanCreditTest, GermanCreditTrain, lrFit, modelDifferences, r
 ```
 
 
+
 ## Chapter 4 Exercises
 
 ### Exercise 4.1
@@ -2687,12 +2688,364 @@ Tuning parameters for weight decay NN include:
  
 Since regression coefficients are being summed, should be centred and scaled prior to modelling (such that on same scale)
 
+Neural network models may differ to  the single-layer feed forward NN represented here; e.g. can have:
+
+* More than one layer of hidden units
+* Loops in both directions
+* Bayesian approaches
+
+Limitations
+
+* Parameter estimates are locally optimal (unlikely to be a global optimum)
+    * To overcome, use **model averaging**, i.e., create several models with different starting values and average the results to produce a more stable prediction
+    * Adversely affected by high correlation among predictor variables (since use gradients to optimise the model parameters).  To overcome use the following techniques which have the added advantage of fewer model terms thus improving computational time:
+        * Pre-filter predictors to remove predictors that are associated with high correlations.
+        * Use a feature extraction technique, i.e., principal component analysis prior to modelling to eliminate correlations.  
+        
+        
 **Self-organisation maps**
 
 * Similar model to NN
 * Can be used as unsupervised, exploratory technique or in supervised fashion for prediction
 
 
+## Multivariate Adaptive Regression Splines (MARS)
+
+* Uses surrogate (instead of original) features
+* Surrogate features:
+    * Contrasted version of a predictor
+    * Usually a function of one or two predictors
+* For each original predictor, have left-hand and right-hand surrogate features which are essentially piecewise linear and operate on isolated portion of original data.  The cutpoint / spline is determined by considering each data point as a candidate; that which achieves the minimum error is used.  New features described by a hinge function:
+\[h(x) = \begin{cases} x \; x > 0 \\
+                        0 \; x \leq 0
+                        \end{cases}\]
+A **pair** of hinge functions can be written as:
+
+* $h(x-a)$ which is non-zero when $x>a$, and
+* $h(a - x)$ which is non-zero when $x < a$
+
+Model Building Strategy:
+
+* Similar to forward stepwise linear regression, but instead of using original inputs, can use hinge functions, so model has form:
+    \[f(X) = \beta_0 + \sum^M_{i=1}\beta_m h_m(x)\]
+* Given a choice for $h_m$, coefficients $\beta_m$ estimating by minimising RSS (i.e. by standard linear regression), but how to choose $h_m$?
+
+The collection of basis functions is \[C = {(X_j-t)+, (t - X_j)+}, t \in {x_{ij},x_{2j}, \ldots x_{Nj}}, j = 1, 2, \ldots, p. \]  If all input values distinct then there are $2Np$ basis functions.  The basis function from the collection that produces the largest decrease in training error is selected.   The process is continued until model set contains some preset maximum number of terms.  
+* Typically a backward deletion procedure is applied.  The term whose removal causes the smallest increase in residual squared error is deleted to produce an estimated best model for each number of terms $\lambda$.
+
+* Iteratively look for next set of features that yield best model fit
+* Consider each data point for predictor as candidate cut point by creating linear regression model with candidate features and calculate corresponding model error.
+
+Note that MARS can select a predictor more than once during the iterations.  
+see [http://uc-r.github.io/mars](http://uc-r.github.io/mars)
+
+MARS can also build models where features involve multiple predictors at once.
+
+* Second-degree MARS model: Conduct same search of single term and after creating initial pair of features, instigate another search to create new cuts to couple with each of the original features, e.g. to include terms $A$, $A \times B$,  $A \times C$
+
+Tuning parameters:
+
+* Degree of features
+* Number of retained terms
+    * Can be automatically determined using default pruning procedure (GCV).  Evaluates individual model.  Since it does not reflect uncertainty from feature selection, suffers from selection bias.  
+    * Set by user
+    * Determined using external resampling technique (e.g. cross-validation).  Exposed to variation in entire model building process, including feature selection.
+
+Advantages:
+
+* Model automatically conducts feature selection therefore potentially things predictor set using same algorithm used to build model.  Feature selection routine has a direct connection to functional performance.
+* Interpretability.  Each hinge function responsible for specific region.  
+    * When model is additive (one-degree), contribution of each predictor can be isolated without need to consider others.  
+    * When model is non-additive, (e.g. 2-degree and 2 predictors, 3 out 4 regions will be zero) can isolate interaction.
+* Requires little pre-processing.  Data transformations and filtering of predictors not required;     * a zero variance predictor will never be chosen for a split since it offers no possible predictive information.
+    * Correlated predictors do not drastically impact model performance but can complicate model interpretation. 
+    
+Variable Model Importance:  To understand how predictors affect model 
+
+* Track reduction in RMSE (GCV stat) when adding feature to model (and attribute to original feature)
+
+Interpreting additive model: Can original predictor and predicted response value when all others are held constant at their mean level.  The additive nature of the model allows each predictor to be viewed in isolation.  Changing the values of the other predictor variables will not alter the shape of the profile, only the location on the $y$-axis where the profile starts.
+
+
+## Support Vector Machines
+
+* Originally developed for classification models
+* Used for robust regression; to minimize effect of outliers
+* Many types; here $\epsilon$-insensitive regression
+* Recall: regression aim to minimize SSE, but can be influenced by just one observation falling far from data trend.
+* With influential observations, consider alternative minimisation metrics:
+    * Huber function; squared residuals when small and absolute residuals when large
+* SVM for regression function $\sim$ Huber function; for given threshold ($\epsilon$)
+    * Data points with residuals within threshold do not contribute to regression fit $\rightarrow$ Samples that the model fits well have _no_ effect on regression equation.  With large $\epsilon$ only outliers define regression line
+    * Data points with absolute difference > $\epsilon$ contribute linear-scale amount; i.e. squared residuals not used.
+    * Aim: to choose regression coefficients that minimise:
+\[\text{Cost}\sum^n_{i=1}L_e(y_i - \hat{y}_i) + \sigma^P_{j=1}\beta_j^2,\]
+where $L_e(\centerdot)$ is the $\epsilon$-insensitive function and the _cost_ parameter is used to penalise large residuals (unlike weight decay in neural networks it is attached to residuals and not parameters)
+
+Prediction with simple linear regression for new sample $u$:
+\[\hat{y} = \beta_0 + \sum^P_{j=1}\beta_ju_j\]
+
+Prediction with $\epsilon$-insensitive regression: Replace $\beta_j$ with $\sum^n_{i=1}\alpha_ix_{ij}$, such that prediction is
+$$\begin{aligned}
+\hat{y} &= \beta_0 + \sum^P_{j=1}u_j\left(\sum^n_{i=1}\alpha_ix_{ij}\right)\\
+        &= \beta_0 + \sum^n_{i=1}\alpha_i \left(\sum^P_{j=1}x_{ij}u_j\right)\\
+        &= \beta_0 + \sum^n_{i=1}\alpha_i K(\mathbf{x_i}, \mathbf{u})
+\end{aligned}$$
+
+where $K(\mathbf{x_i}, \mathbf{u})$ is referred to as the _kernel function_
+
+Noting that:
+
+* Number $\alpha$ parameters = number data points.  Cost parameter regularizes model to prevent over-parameterisation
+* Require _subset of_ training data points (the outliers for which $\alpha \neq 0$) to make new predictions.  Since the regression line is determined using these samples, they are called the __support vectors__.
+* Kernel function above was linear; can replace with dot product $\mathbf{x}^\prime \mathbf{u}$.  There are other types of kernel functions 
+$$\begin{aligned}
+    \text{linear} &= \mathbf{x}^\prime \mathbf{u}\\
+    \text{polynomial} &= (\phi(\mathbf{x}^\prime \mathbf{u}) + 1) ^\text{degree}\\
+    \text{radial basis function} &= \exp(-\sigma||\mathbf{x}- \mathbf{u}||^2\\
+    \text{hyperbolic tangent} &= \tanh(\phi({x}^\prime \mathbf{u}) + 1)\\
+\end{aligned}$$
+where $\phi$ and $sigma$ are scaling parameters.  Radial basis function shown to be effective but when regression line is truly linear, linear kernel function will be the better choice.
+
+Tuning parameters:
+
+* __Cost__ value; main tool to adjust complexity of model. Large cost $\rightarrow$ flexible model as effect of errors amplified.  Small cost $\rightarrow$  model will stiffen and become less likely to over-fit (but more likely to underfit) as contribution of squared parameters ($\sum^P_{j=1}\beta_j^2$) proportionally large in modified error function
+* Size funnel $\epsilon$, but suggestion is to keep if fixed and tune over other parameters.  
+* Kernel specific tuning parameters
+    * Polynomial kernel function:  \text{degree}
+    * Radial basis function: scale parameter $\sigma$; but can calculate computationally using 10th and 90th percentile of $||x - x^\prime||^2$ as a range for $\sigma$ and use the midpoint of the percentiles..
+    
+Predictors enter model as sum of cross products and so differences in predictor scales can affect model.  Recommendation: centre and scale predictors prior to building SVM model.  
+
+## $K$-Nearest Neighbours
+
+* Predicted response = summary statistic(response of the $K$ nearest neighbours in the training data set).
+* For summary statistics can use mean or median
+* Nearest neighbours = f(distance definition):
+    * Euclidean distance = straight line distance
+    \[\left(\sum^P_{j = 1}(x_{aj}-x_{bj})^2\right)^P\]
+    where $\mathbf{x_a}$ and $\mathbf{x_b}$ are two individual samples
+    * Minkowski distance = generalisation of Euclidean distance 
+     \[\left(\sum^P_{j = 1}|x_{aj}-x_{bj}|^2\right)^P\]
+        * $q = 1$: Manhattan = city block, common for samples with binary predictors
+        * $q = 2$ Euclidean
+    * Tanimoto - computational chemistry problems when molecules described using binary fingerprints
+    * Hamming
+    * Cosine
+    
+As $K$NN depends on distance, predictor scale has big impact on samples.  Data with predictors on different scales will generate distances weighted towards predictors with the largest scales.  Recommendation: Centre and scale prior to performing $K$NN
+
+
+**Missing values**:  Makes it impossible to compute distance between samples.  Options:
+
+* Exclude samples or predictors with missing values
+* Impute missing data using naive estimators such as mean of the predictor, or nearest neighbour using only predictors with complete information
+
+Steps:
+
+* Pre-process data
+* Select distance metric
+* Find optimal number of neighbours = tuning parameter
+    * Resampling
+    
+Limitations:
+
+* Computational time; to predict sample distances between sample and all other samples needs to be computed.  Computation time increases with $n$ because training data must be loaded into memory and new sample and all training samples must be computed.  Replace original data with less memory-intensive representation that describes locations, e.g. $k-d$ tree ($k$-dimensional tree), which orthogonally partitions predictor space using tree approach. Once tree grown, distances for new sample only computed for training observations in tree close to sample.  Provides significant computational improvement when $n$ >> $p$.
+* Disconnect between local structure and predictive ability (i.e. when irrelevant or noisy predictors are in the neighbourhood of the new sample).  To overcome:
+    * Remove irrelevant, noise-laden predictors
+    * Weight neighbour's contribution based on distance to new sample
+
+
+# Chapter 8: Regression Trees and Rule-Based Models
+
+* Tree-based model = $\geq$ 1 nested _if-then_ statements
+* Rule-based model = simplified tree-based model in which samples may be covered by multiple rules?
+
+Strengths:
+
+* Highly interpretable
+* Easy to implement
+* Can handle many types of predictors (sparse, skewed, continuous, categorical,etc) without need to pre-process
+* No requirement to specify form of predictor's relationship to response (such as in linear regression)
+* Implicitly handles missing data
+* Implicitly conducts feature selection
+
+Weaknesses:
+
+* Model instability; slight changes in data can drastically change tree/rule structure and therefore interpretation
+* Less-than-optimal predictive performance as models define rectangular regions that may not adequately define the relationship between predictors and the response
+
+To overcome weaknesses, ensembles used which combine many trees (or rule-based) models into one.  
+
+## Basic Regression Trees
+
+partition data into smaller groups that are more homogeneous with respect to response, by determining:
+
+* Predictor to split on and value of split
+* Depth /complexity of tree
+* Prediction equation in terminal nodes
+
+Techniques for constructing regression trees:
+
+* CART (classification and regression tree)
+
+**CART method**:
+
+* Start with entire data set $S$
+* Tree growing step: Search each distinct value of very predictor to find predictor and split value that partitions the data into two groups $S_1$ and $S_2# such that overall sums of squares are minimised:
+    \[\text{SSE} =  \sum_{i \in S_1}(y_i - \bar{y}_1)^2 + \sum_{i \in S_2}(y_i - \bar{y}_2)^2\]
+where $\bar{y}_i$ is average of training set outcome within group $S_i$.  Recursively partition the $S_1$ and $S_2$ based on this formula, until number of samples in splits falls below some threshold (e.g. 20 samples)
+* Pruning step: Fully grown tree may be large and likely over-fit training set.  Pruning methods:
+    * Cost-complexity tuning: Penalise error rate using size of tree using a __complexity parameter__ $c_p$.  For given value of $c_p$ find lowest penalised error rate 
+    \[\text{SSE}_C_p = \text{SSE} + c_p \times (\text{# Terminal Nodes})\]
+    
+
+
+Splitting continuous predictors: Order data
+Splitting binary predictors: Only one possible split point
+Splitting categorical predictors: Options:
+    * Decompose categorical predictors into set of binary dummy variables (one vs all split)
+    * Allow the model to determine how to split the values
+
+
+## Regression Tree Models
+## Rule-Based Models
+## Bagged Trees
+## Random Forests
+## Boosting
+## Cubist
+
+# Chapter 11: Measuring Performance in Classification Models
+
+# Chapter 12: Discriminant Analysis and Other Linear Classification Models
+
+# Chapter 13: Nonlinear Classification Models
+
+# Chapter 14: Classification Trees and Rule-Based Models
+
+---------
+# Chapter 16: Remedies for Severe Class Imbalance
+
+Overview:
+
+* Impact of class imbalance on performance measures
+* Methodologies for post-processing model predictions
+* Predictive models that can mitigate issue during training
+
+## Case Study: Predicting Caravan Policy Ownership
+
+TODO: Read PDF.
+
+* Imbalanced; only 6% purchased policies
+* 85 Predictors; see [here](https://rdrr.io/rforge/DWD/man/ticdata.html) for more details
+    * Customer subtype: 39 unique values; though many comprise < 5% of customers
+    * Demographic factors; religion, education level, social class, income + 38 others
+    * Product ownership information; number (or contribution)  to policies
+* Many categorical predictors had $\geq$ 10 levels
+* Count-based predicted fairly sparse (few non-zero values)
+* Stratified random sampling (strata $\equiv$ response variable), with rate of customers with caravan policies ~6% in each.
+    * Training set ($n = 6877$) to estimate model parameters and tune model
+    * Evaluation set ($n = 983$) to develop post-processing techniques, e.g. probability cut-offs
+    * Customer set ($n = 1962$) for final model evaluation
+
+## Effect of Class Imbalance
+
+Models:
+
+* Random forest.  1000 trees in forest tuned over 5 values of $m_\text{try}$ parameter with optimal value of $m_\text{try} = 126$ 
+* Flexible discriminant analysis (MARS hinge functions) (FDA): Used first-degree features; tuned over 25 values for the number of retained terms.  Resampling process determined that 13 model terms appropriate.
+* Logistic regression.  Simple additive model (no interactions or non-linear terms) with reduced predictor set (many near-zero variance predictors removed so that model resulted in a stable solution)
+
+Model tuning:
+
+* 10-fold cross-validation, each holdout sample with ~ 687 customers to provide reasonable estimates of uncertainty
+
+Performance metrics:
+
+* Overall accuracy
+* Kappa
+* AUROC (used to choose optimal model)
+* Sensitivity
+* Specificity
+
+Findings:
+
+* Models only predicted 13/59 customer would purchase.  Had good specificity (since almost every customer predicted no insurance), but poor sensitivity
+* 82% of customers had predicted probability of $\leq$ 10% of having insurance
+* Lift plots: How many individuals would need to be contacted in order to capture a specific percent of those who might purchase the policy, i.e. to find 60% of those with policies, around 30% of the population would need to be sampled
+* ROC curves did not differentiate the models
+* when classes are balanced, lift and ROC curves are not so similar
+
+Strategies for overcoming class imbalances:
+ 
+* **Model Tuning**: Tune model to maximise accuracy of minority class(es)
+* **Aternative Cutoffs**: Examine ROC to select cut-offs to:
+    * Achieve targets for sensitivity/specificity (if given)
+    * Minimise distance between ROC curve and perfect model (100% Sensitivity and Specificity, i.e. top LH corner)
+    * Maximise Youden's $J$ index model, which measures the proportion of correctly predicted samples for both event and non-event groups
+
+Note that it is important, especially for small sample sizes, to use an independent data set to derive the cut-off.  If use:
+
+* Training set  $\rightarrow$ large optimistic bias in the class probabilities $\rightarrow$ inaccurate assessments of the sensitivity and specificity. 
+* Test set $\rightarrow$ lose unbiased source to judge model performance.  
+
+Alternative cut-offs does not impact overall predictive effectiveness of the model, but rather impacts the trade-ff between the two types of errors.
+
+* **Adjusting Prior Probabilities**: Priors that reflect natural class imbalance will bias predictions to majority class; better to use balanced priors, or balanced training set (e.g. in naive Bayes and discriminant analysis classifiers).  However, the new class probabilities are unlikely to change the rankings or AUROC; gain this is just impacting the the trade-off between sensitivity and specificity
+
+* **Unequal Case Weights**: Can increase weights, e.g., in logistic regression, boosting and cart tree models, for samples in the minority classes; effectively upsampling (or duplicating data points) within the minority class(es)  (therefore related to sampling methods) 
+
+* **Sampling Methods**: Select training set sample to have roughly equal event rates during initial data collection; so that model doesn't have to deal with imbalance.  Will however require that test set sampled to be more consistent with "real life", to obtain true estimates of future performance.  Post-hoc sampling approaches:
+    * Down-sampling: Reduce number of samples to improve class balance.  Methods:
+        * Randomly sample majority classes
+        * Bootstrap sample  so that classes are balanced in the bootstrap sample.  Advantage is that can be ran many times to obtain an estimate of variation about the down-sampling.
+    * Up-sampling: simulates or imputes additional data points. Majority class only appears once; minority class are sampled with replacement.
+    * Synthetic minority over-sampling technique (SMOTE): Uses up- and down-sampling.
+    * Uses three operational parameters; (1) amount of up=sampling, (2) amount of down-champing, and (3) number of neighbours used to impute new cases.  
+    * To up-sample the minority class, SMOTE synthesises new data points based on its KNNs.  
+    * Down-sampling based on random sampling
+
+**Warning re: Sampling Methods:** When using modified versions of the training set, resampled estimates of model performance can become biased, i.e., if data up-sampled, resampling procedures likely to have same sample in he cases that are used to build the model as well as the holdout set, leading to optimistic results.  Despite this, resampling methods can be effective at tuning the models.
+
+**Findings re: Sampling Methods**: Sampling approaches have benefit of enabling better trade-offs between sensitivity and specificity.
+
+
+* **Cost-Sensitivty Training**:  instead of optimising accuracy/impurity, can instead optimise cost or loss function that deferentially weights specific types of errors.  By assigning higher cost to misrepresented true cases (false negatives) may bias model to under-represented class.  This method has the potential to make true improvements to classifier, rather than simply altering the cut-off to make trade-offs between sensitivity and specificity.  
+
+    * With SVM, can specify costs for specific classes.  In current implementation will not be able to perform ROC curve, instead use Kappa, sensitivity or specificity.  TODO check: apply cost to class not specific type of error.
+    * Many classification trees (CART and C5.0) can also incorporate differential costs.
+ 
+ 
+ TODO: READ CH. 14   
+    $\text{Pr(misclassification)} = Pr[2|1]\pi_1 + Pr[1|2]\pi_2$
+where
+* $pi_i$ = prior probability of sample being in class $i$
+* $Pr[j|i] = probability of mistakenly predicting a class $i$ as class $j$.
+
+Use $p_i$ as estimate of $Pr[j|i]$ 
+
+For given sample, classify into class 1 if  \frac{p_1}{p_2} > \frac{\pi}{}
+
+```{r loadTicdata}
+load("../../static/datasets/ticdata.rda")
+head(ticdata)
+```
+
+```{r formatTicdata}
+recodeLevels <- function(x)
+{
+    x <- as.numeric(x)
+    ## Add zeros to the text version:
+    x <- gsub(" ", "0",format(as.numeric(x)))
+    factor(x)
+}
+
+## Find which columns are regular factors or ordered factors
+isOrdered <- unlist(lapply(ticdata, is.ordered))
+isFactor <- unlist(lapply(ticdata, is.factor))
+convertCols <- names(isOrdered)[isOrdered | isFactor]
+
+```
 
 
 

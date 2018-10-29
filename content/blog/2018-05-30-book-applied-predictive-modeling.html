@@ -2579,11 +2579,465 @@ g(u) = \frac{1}{1 + e^{-u}}\end{aligned}
 <li>Number of hidden units.</li>
 </ul>
 <p>Since regression coefficients are being summed, should be centred and scaled prior to modelling (such that on same scale)</p>
+<p>Neural network models may differ to the single-layer feed forward NN represented here; e.g. can have:</p>
+<ul>
+<li>More than one layer of hidden units</li>
+<li>Loops in both directions</li>
+<li>Bayesian approaches</li>
+</ul>
+<p>Limitations</p>
+<ul>
+<li>Parameter estimates are locally optimal (unlikely to be a global optimum)
+<ul>
+<li>To overcome, use <strong>model averaging</strong>, i.e., create several models with different starting values and average the results to produce a more stable prediction</li>
+<li>Adversely affected by high correlation among predictor variables (since use gradients to optimise the model parameters). To overcome use the following techniques which have the added advantage of fewer model terms thus improving computational time:
+<ul>
+<li>Pre-filter predictors to remove predictors that are associated with high correlations.</li>
+<li>Use a feature extraction technique, i.e., principal component analysis prior to modelling to eliminate correlations.</li>
+</ul></li>
+</ul></li>
+</ul>
 <p><strong>Self-organisation maps</strong></p>
 <ul>
 <li>Similar model to NN</li>
 <li>Can be used as unsupervised, exploratory technique or in supervised fashion for prediction</li>
 </ul>
+</div>
+<div id="multivariate-adaptive-regression-splines-mars" class="section level2">
+<h2>Multivariate Adaptive Regression Splines (MARS)</h2>
+<ul>
+<li>Uses surrogate (instead of original) features</li>
+<li>Surrogate features:
+<ul>
+<li>Contrasted version of a predictor</li>
+<li>Usually a function of one or two predictors</li>
+</ul></li>
+<li><p>For each original predictor, have left-hand and right-hand surrogate features which are essentially piecewise linear and operate on isolated portion of original data. The cutpoint / spline is determined by considering each data point as a candidate; that which achieves the minimum error is used. New features described by a hinge function: <span class="math display">\[h(x) = \begin{cases} x \; x &gt; 0 \\
+                    0 \; x \leq 0
+                    \end{cases}\]</span> A <strong>pair</strong> of hinge functions can be written as:</p></li>
+<li><span class="math inline">\(h(x-a)\)</span> which is non-zero when <span class="math inline">\(x&gt;a\)</span>, and</li>
+<li><p><span class="math inline">\(h(a - x)\)</span> which is non-zero when <span class="math inline">\(x &lt; a\)</span></p></li>
+</ul>
+<p>Model Building Strategy:</p>
+<ul>
+<li>Similar to forward stepwise linear regression, but instead of using original inputs, can use hinge functions, so model has form: <span class="math display">\[f(X) = \beta_0 + \sum^M_{i=1}\beta_m h_m(x)\]</span></li>
+<li>Given a choice for <span class="math inline">\(h_m\)</span>, coefficients <span class="math inline">\(\beta_m\)</span> estimating by minimising RSS (i.e. by standard linear regression), but how to choose <span class="math inline">\(h_m\)</span>?</li>
+</ul>
+<p>The collection of basis functions is <span class="math display">\[C = {(X_j-t)+, (t - X_j)+}, t \in {x_{ij},x_{2j}, \ldots x_{Nj}}, j = 1, 2, \ldots, p. \]</span> If all input values distinct then there are <span class="math inline">\(2Np\)</span> basis functions. The basis function from the collection that produces the largest decrease in training error is selected. The process is continued until model set contains some preset maximum number of terms.<br />
+* Typically a backward deletion procedure is applied. The term whose removal causes the smallest increase in residual squared error is deleted to produce an estimated best model for each number of terms <span class="math inline">\(\lambda\)</span>.</p>
+<ul>
+<li>Iteratively look for next set of features that yield best model fit</li>
+<li>Consider each data point for predictor as candidate cut point by creating linear regression model with candidate features and calculate corresponding model error.</li>
+</ul>
+<p>Note that MARS can select a predictor more than once during the iterations.<br />
+see <a href="http://uc-r.github.io/mars" class="uri">http://uc-r.github.io/mars</a></p>
+<p>MARS can also build models where features involve multiple predictors at once.</p>
+<ul>
+<li>Second-degree MARS model: Conduct same search of single term and after creating initial pair of features, instigate another search to create new cuts to couple with each of the original features, e.g. to include terms <span class="math inline">\(A\)</span>, <span class="math inline">\(A \times B\)</span>, <span class="math inline">\(A \times C\)</span></li>
+</ul>
+<p>Tuning parameters:</p>
+<ul>
+<li>Degree of features</li>
+<li>Number of retained terms
+<ul>
+<li>Can be automatically determined using default pruning procedure (GCV). Evaluates individual model. Since it does not reflect uncertainty from feature selection, suffers from selection bias.<br />
+</li>
+<li>Set by user</li>
+<li>Determined using external resampling technique (e.g. cross-validation). Exposed to variation in entire model building process, including feature selection.</li>
+</ul></li>
+</ul>
+<p>Advantages:</p>
+<ul>
+<li>Model automatically conducts feature selection therefore potentially things predictor set using same algorithm used to build model. Feature selection routine has a direct connection to functional performance.</li>
+<li>Interpretability. Each hinge function responsible for specific region.
+<ul>
+<li>When model is additive (one-degree), contribution of each predictor can be isolated without need to consider others.<br />
+</li>
+<li>When model is non-additive, (e.g. 2-degree and 2 predictors, 3 out 4 regions will be zero) can isolate interaction.</li>
+</ul></li>
+<li>Requires little pre-processing. Data transformations and filtering of predictors not required; * a zero variance predictor will never be chosen for a split since it offers no possible predictive information.
+<ul>
+<li>Correlated predictors do not drastically impact model performance but can complicate model interpretation.</li>
+</ul></li>
+</ul>
+<p>Variable Model Importance: To understand how predictors affect model</p>
+<ul>
+<li>Track reduction in RMSE (GCV stat) when adding feature to model (and attribute to original feature)</li>
+</ul>
+<p>Interpreting additive model: Can original predictor and predicted response value when all others are held constant at their mean level. The additive nature of the model allows each predictor to be viewed in isolation. Changing the values of the other predictor variables will not alter the shape of the profile, only the location on the <span class="math inline">\(y\)</span>-axis where the profile starts.</p>
+</div>
+<div id="support-vector-machines" class="section level2">
+<h2>Support Vector Machines</h2>
+<ul>
+<li>Originally developed for classification models</li>
+<li>Used for robust regression; to minimize effect of outliers</li>
+<li>Many types; here <span class="math inline">\(\epsilon\)</span>-insensitive regression</li>
+<li>Recall: regression aim to minimize SSE, but can be influenced by just one observation falling far from data trend.</li>
+<li>With influential observations, consider alternative minimisation metrics:
+<ul>
+<li>Huber function; squared residuals when small and absolute residuals when large</li>
+</ul></li>
+<li>SVM for regression function <span class="math inline">\(\sim\)</span> Huber function; for given threshold (<span class="math inline">\(\epsilon\)</span>)
+<ul>
+<li>Data points with residuals within threshold do not contribute to regression fit <span class="math inline">\(\rightarrow\)</span> Samples that the model fits well have <em>no</em> effect on regression equation. With large <span class="math inline">\(\epsilon\)</span> only outliers define regression line</li>
+<li>Data points with absolute difference &gt; <span class="math inline">\(\epsilon\)</span> contribute linear-scale amount; i.e. squared residuals not used.</li>
+<li>Aim: to choose regression coefficients that minimise: <span class="math display">\[\text{Cost}\sum^n_{i=1}L_e(y_i - \hat{y}_i) + \sigma^P_{j=1}\beta_j^2,\]</span> where <span class="math inline">\(L_e(\centerdot)\)</span> is the <span class="math inline">\(\epsilon\)</span>-insensitive function and the <em>cost</em> parameter is used to penalise large residuals (unlike weight decay in neural networks it is attached to residuals and not parameters)</li>
+</ul></li>
+</ul>
+<p>Prediction with simple linear regression for new sample <span class="math inline">\(u\)</span>: <span class="math display">\[\hat{y} = \beta_0 + \sum^P_{j=1}\beta_ju_j\]</span></p>
+<p>Prediction with <span class="math inline">\(\epsilon\)</span>-insensitive regression: Replace <span class="math inline">\(\beta_j\)</span> with <span class="math inline">\(\sum^n_{i=1}\alpha_ix_{ij}\)</span>, such that prediction is <span class="math display">\[\begin{aligned}
+\hat{y} &amp;= \beta_0 + \sum^P_{j=1}u_j\left(\sum^n_{i=1}\alpha_ix_{ij}\right)\\
+        &amp;= \beta_0 + \sum^n_{i=1}\alpha_i \left(\sum^P_{j=1}x_{ij}u_j\right)\\
+        &amp;= \beta_0 + \sum^n_{i=1}\alpha_i K(\mathbf{x_i}, \mathbf{u})
+\end{aligned}\]</span></p>
+<p>where <span class="math inline">\(K(\mathbf{x_i}, \mathbf{u})\)</span> is referred to as the <em>kernel function</em></p>
+<p>Noting that:</p>
+<ul>
+<li>Number <span class="math inline">\(\alpha\)</span> parameters = number data points. Cost parameter regularizes model to prevent over-parameterisation</li>
+<li>Require <em>subset of</em> training data points (the outliers for which <span class="math inline">\(\alpha \neq 0\)</span>) to make new predictions. Since the regression line is determined using these samples, they are called the <strong>support vectors</strong>.</li>
+<li>Kernel function above was linear; can replace with dot product <span class="math inline">\(\mathbf{x}^\prime \mathbf{u}\)</span>. There are other types of kernel functions <span class="math display">\[\begin{aligned}
+\text{linear} &amp;= \mathbf{x}^\prime \mathbf{u}\\
+\text{polynomial} &amp;= (\phi(\mathbf{x}^\prime \mathbf{u}) + 1) ^\text{degree}\\
+\text{radial basis function} &amp;= \exp(-\sigma||\mathbf{x}- \mathbf{u}||^2\\
+\text{hyperbolic tangent} &amp;= \tanh(\phi({x}^\prime \mathbf{u}) + 1)\\
+\end{aligned}\]</span> where <span class="math inline">\(\phi\)</span> and <span class="math inline">\(sigma\)</span> are scaling parameters. Radial basis function shown to be effective but when regression line is truly linear, linear kernel function will be the better choice.</li>
+</ul>
+<p>Tuning parameters:</p>
+<ul>
+<li><strong>Cost</strong> value; main tool to adjust complexity of model. Large cost <span class="math inline">\(\rightarrow\)</span> flexible model as effect of errors amplified. Small cost <span class="math inline">\(\rightarrow\)</span> model will stiffen and become less likely to over-fit (but more likely to underfit) as contribution of squared parameters (<span class="math inline">\(\sum^P_{j=1}\beta_j^2\)</span>) proportionally large in modified error function</li>
+<li>Size funnel <span class="math inline">\(\epsilon\)</span>, but suggestion is to keep if fixed and tune over other parameters.<br />
+</li>
+<li>Kernel specific tuning parameters
+<ul>
+<li>Polynomial kernel function: </li>
+<li>Radial basis function: scale parameter <span class="math inline">\(\sigma\)</span>; but can calculate computationally using 10th and 90th percentile of <span class="math inline">\(||x - x^\prime||^2\)</span> as a range for <span class="math inline">\(\sigma\)</span> and use the midpoint of the percentiles..</li>
+</ul></li>
+</ul>
+<p>Predictors enter model as sum of cross products and so differences in predictor scales can affect model. Recommendation: centre and scale predictors prior to building SVM model.</p>
+</div>
+<div id="k-nearest-neighbours" class="section level2">
+<h2><span class="math inline">\(K\)</span>-Nearest Neighbours</h2>
+<ul>
+<li>Predicted response = summary statistic(response of the <span class="math inline">\(K\)</span> nearest neighbours in the training data set).</li>
+<li>For summary statistics can use mean or median</li>
+<li>Nearest neighbours = f(distance definition):
+<ul>
+<li>Euclidean distance = straight line distance <span class="math display">\[\left(\sum^P_{j = 1}(x_{aj}-x_{bj})^2\right)^P\]</span> where <span class="math inline">\(\mathbf{x_a}\)</span> and <span class="math inline">\(\mathbf{x_b}\)</span> are two individual samples</li>
+<li>Minkowski distance = generalisation of Euclidean distance <span class="math display">\[\left(\sum^P_{j = 1}|x_{aj}-x_{bj}|^2\right)^P\]</span>
+<ul>
+<li><span class="math inline">\(q = 1\)</span>: Manhattan = city block, common for samples with binary predictors</li>
+<li><span class="math inline">\(q = 2\)</span> Euclidean</li>
+</ul></li>
+<li>Tanimoto - computational chemistry problems when molecules described using binary fingerprints</li>
+<li>Hamming</li>
+<li>Cosine</li>
+</ul></li>
+</ul>
+<p>As <span class="math inline">\(K\)</span>NN depends on distance, predictor scale has big impact on samples. Data with predictors on different scales will generate distances weighted towards predictors with the largest scales. Recommendation: Centre and scale prior to performing <span class="math inline">\(K\)</span>NN</p>
+<p><strong>Missing values</strong>: Makes it impossible to compute distance between samples. Options:</p>
+<ul>
+<li>Exclude samples or predictors with missing values</li>
+<li>Impute missing data using naive estimators such as mean of the predictor, or nearest neighbour using only predictors with complete information</li>
+</ul>
+<p>Steps:</p>
+<ul>
+<li>Pre-process data</li>
+<li>Select distance metric</li>
+<li>Find optimal number of neighbours = tuning parameter
+<ul>
+<li>Resampling</li>
+</ul></li>
+</ul>
+<p>Limitations:</p>
+<ul>
+<li>Computational time; to predict sample distances between sample and all other samples needs to be computed. Computation time increases with <span class="math inline">\(n\)</span> because training data must be loaded into memory and new sample and all training samples must be computed. Replace original data with less memory-intensive representation that describes locations, e.g. <span class="math inline">\(k-d\)</span> tree (<span class="math inline">\(k\)</span>-dimensional tree), which orthogonally partitions predictor space using tree approach. Once tree grown, distances for new sample only computed for training observations in tree close to sample. Provides significant computational improvement when <span class="math inline">\(n\)</span> &gt;&gt; <span class="math inline">\(p\)</span>.</li>
+<li>Disconnect between local structure and predictive ability (i.e. when irrelevant or noisy predictors are in the neighbourhood of the new sample). To overcome:
+<ul>
+<li>Remove irrelevant, noise-laden predictors</li>
+<li>Weight neighbour’s contribution based on distance to new sample</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="chapter-8-regression-trees-and-rule-based-models" class="section level1">
+<h1>Chapter 8: Regression Trees and Rule-Based Models</h1>
+<ul>
+<li>Tree-based model = <span class="math inline">\(\geq\)</span> 1 nested <em>if-then</em> statements</li>
+<li>Rule-based model = simplified tree-based model in which samples may be covered by multiple rules?</li>
+</ul>
+<p>Strengths:</p>
+<ul>
+<li>Highly interpretable</li>
+<li>Easy to implement</li>
+<li>Can handle many types of predictors (sparse, skewed, continuous, categorical,etc) without need to pre-process</li>
+<li>No requirement to specify form of predictor’s relationship to response (such as in linear regression)</li>
+<li>Implicitly handles missing data</li>
+<li>Implicitly conducts feature selection</li>
+</ul>
+<p>Weaknesses:</p>
+<ul>
+<li>Model instability; slight changes in data can drastically change tree/rule structure and therefore interpretation</li>
+<li>Less-than-optimal predictive performance as models define rectangular regions that may not adequately define the relationship between predictors and the response</li>
+</ul>
+<p>To overcome weaknesses, ensembles used which combine many trees (or rule-based) models into one.</p>
+<div id="basic-regression-trees" class="section level2">
+<h2>Basic Regression Trees</h2>
+<p>partition data into smaller groups that are more homogeneous with respect to response, by determining:</p>
+<ul>
+<li>Predictor to split on and value of split</li>
+<li>Depth /complexity of tree</li>
+<li>Prediction equation in terminal nodes</li>
+</ul>
+<p>Techniques for constructing regression trees:</p>
+<ul>
+<li>CART (classification and regression tree)</li>
+</ul>
+<p><strong>CART method</strong>:</p>
+<ul>
+<li>Start with entire data set <span class="math inline">\(S\)</span></li>
+<li>Tree growing step: Search each distinct value of very predictor to find predictor and split value that partitions the data into two groups <span class="math inline">\(S_1\)</span> and $S_2# such that overall sums of squares are minimised: <span class="math display">\[\text{SSE} =  \sum_{i \in S_1}(y_i - \bar{y}_1)^2 + \sum_{i \in S_2}(y_i - \bar{y}_2)^2\]</span> where <span class="math inline">\(\bar{y}_i\)</span> is average of training set outcome within group <span class="math inline">\(S_i\)</span>. Recursively partition the <span class="math inline">\(S_1\)</span> and <span class="math inline">\(S_2\)</span> based on this formula, until number of samples in splits falls below some threshold (e.g. 20 samples)</li>
+<li>Pruning step: Fully grown tree may be large and likely over-fit training set. Pruning methods:
+<ul>
+<li>Cost-complexity tuning: Penalise error rate using size of tree using a <strong>complexity parameter</strong> <span class="math inline">\(c_p\)</span>. For given value of <span class="math inline">\(c_p\)</span> find lowest penalised error rate <span class="math display">\[\text{SSE}_C_p = \text{SSE} + c_p \times (\text{# Terminal Nodes})\]</span></li>
+</ul></li>
+</ul>
+<p>Splitting continuous predictors: Order data Splitting binary predictors: Only one possible split point Splitting categorical predictors: Options: * Decompose categorical predictors into set of binary dummy variables (one vs all split) * Allow the model to determine how to split the values</p>
+</div>
+<div id="regression-tree-models" class="section level2">
+<h2>Regression Tree Models</h2>
+</div>
+<div id="rule-based-models" class="section level2">
+<h2>Rule-Based Models</h2>
+</div>
+<div id="bagged-trees" class="section level2">
+<h2>Bagged Trees</h2>
+</div>
+<div id="random-forests" class="section level2">
+<h2>Random Forests</h2>
+</div>
+<div id="boosting" class="section level2">
+<h2>Boosting</h2>
+</div>
+<div id="cubist" class="section level2">
+<h2>Cubist</h2>
+</div>
+</div>
+<div id="chapter-11-measuring-performance-in-classification-models" class="section level1">
+<h1>Chapter 11: Measuring Performance in Classification Models</h1>
+</div>
+<div id="chapter-12-discriminant-analysis-and-other-linear-classification-models" class="section level1">
+<h1>Chapter 12: Discriminant Analysis and Other Linear Classification Models</h1>
+</div>
+<div id="chapter-13-nonlinear-classification-models" class="section level1">
+<h1>Chapter 13: Nonlinear Classification Models</h1>
+</div>
+<div id="chapter-14-classification-trees-and-rule-based-models" class="section level1">
+<h1>Chapter 14: Classification Trees and Rule-Based Models</h1>
+<hr />
+</div>
+<div id="chapter-16-remedies-for-severe-class-imbalance" class="section level1">
+<h1>Chapter 16: Remedies for Severe Class Imbalance</h1>
+<p>Overview:</p>
+<ul>
+<li>Impact of class imbalance on performance measures</li>
+<li>Methodologies for post-processing model predictions</li>
+<li>Predictive models that can mitigate issue during training</li>
+</ul>
+<div id="case-study-predicting-caravan-policy-ownership" class="section level2">
+<h2>Case Study: Predicting Caravan Policy Ownership</h2>
+<p>TODO: Read PDF.</p>
+<ul>
+<li>Imbalanced; only 6% purchased policies</li>
+<li>85 Predictors; see <a href="https://rdrr.io/rforge/DWD/man/ticdata.html">here</a> for more details
+<ul>
+<li>Customer subtype: 39 unique values; though many comprise &lt; 5% of customers</li>
+<li>Demographic factors; religion, education level, social class, income + 38 others</li>
+<li>Product ownership information; number (or contribution) to policies</li>
+</ul></li>
+<li>Many categorical predictors had <span class="math inline">\(\geq\)</span> 10 levels</li>
+<li>Count-based predicted fairly sparse (few non-zero values)</li>
+<li>Stratified random sampling (strata <span class="math inline">\(\equiv\)</span> response variable), with rate of customers with caravan policies ~6% in each.
+<ul>
+<li>Training set (<span class="math inline">\(n = 6877\)</span>) to estimate model parameters and tune model</li>
+<li>Evaluation set (<span class="math inline">\(n = 983\)</span>) to develop post-processing techniques, e.g. probability cut-offs</li>
+<li>Customer set (<span class="math inline">\(n = 1962\)</span>) for final model evaluation</li>
+</ul></li>
+</ul>
+</div>
+<div id="effect-of-class-imbalance" class="section level2">
+<h2>Effect of Class Imbalance</h2>
+<p>Models:</p>
+<ul>
+<li>Random forest. 1000 trees in forest tuned over 5 values of <span class="math inline">\(m_\text{try}\)</span> parameter with optimal value of <span class="math inline">\(m_\text{try} = 126\)</span></li>
+<li>Flexible discriminant analysis (MARS hinge functions) (FDA): Used first-degree features; tuned over 25 values for the number of retained terms. Resampling process determined that 13 model terms appropriate.</li>
+<li>Logistic regression. Simple additive model (no interactions or non-linear terms) with reduced predictor set (many near-zero variance predictors removed so that model resulted in a stable solution)</li>
+</ul>
+<p>Model tuning:</p>
+<ul>
+<li>10-fold cross-validation, each holdout sample with ~ 687 customers to provide reasonable estimates of uncertainty</li>
+</ul>
+<p>Performance metrics:</p>
+<ul>
+<li>Overall accuracy</li>
+<li>Kappa</li>
+<li>AUROC (used to choose optimal model)</li>
+<li>Sensitivity</li>
+<li>Specificity</li>
+</ul>
+<p>Findings:</p>
+<ul>
+<li>Models only predicted 13/59 customer would purchase. Had good specificity (since almost every customer predicted no insurance), but poor sensitivity</li>
+<li>82% of customers had predicted probability of <span class="math inline">\(\leq\)</span> 10% of having insurance</li>
+<li>Lift plots: How many individuals would need to be contacted in order to capture a specific percent of those who might purchase the policy, i.e. to find 60% of those with policies, around 30% of the population would need to be sampled</li>
+<li>ROC curves did not differentiate the models</li>
+<li>when classes are balanced, lift and ROC curves are not so similar</li>
+</ul>
+<p>Strategies for overcoming class imbalances:</p>
+<ul>
+<li><strong>Model Tuning</strong>: Tune model to maximise accuracy of minority class(es)</li>
+<li><strong>Aternative Cutoffs</strong>: Examine ROC to select cut-offs to:
+<ul>
+<li>Achieve targets for sensitivity/specificity (if given)</li>
+<li>Minimise distance between ROC curve and perfect model (100% Sensitivity and Specificity, i.e. top LH corner)</li>
+<li>Maximise Youden’s <span class="math inline">\(J\)</span> index model, which measures the proportion of correctly predicted samples for both event and non-event groups</li>
+</ul></li>
+</ul>
+<p>Note that it is important, especially for small sample sizes, to use an independent data set to derive the cut-off. If use:</p>
+<ul>
+<li>Training set <span class="math inline">\(\rightarrow\)</span> large optimistic bias in the class probabilities <span class="math inline">\(\rightarrow\)</span> inaccurate assessments of the sensitivity and specificity.</li>
+<li>Test set <span class="math inline">\(\rightarrow\)</span> lose unbiased source to judge model performance.</li>
+</ul>
+<p>Alternative cut-offs does not impact overall predictive effectiveness of the model, but rather impacts the trade-ff between the two types of errors.</p>
+<ul>
+<li><p><strong>Adjusting Prior Probabilities</strong>: Priors that reflect natural class imbalance will bias predictions to majority class; better to use balanced priors, or balanced training set (e.g. in naive Bayes and discriminant analysis classifiers). However, the new class probabilities are unlikely to change the rankings or AUROC; gain this is just impacting the the trade-off between sensitivity and specificity</p></li>
+<li><p><strong>Unequal Case Weights</strong>: Can increase weights, e.g., in logistic regression, boosting and cart tree models, for samples in the minority classes; effectively upsampling (or duplicating data points) within the minority class(es) (therefore related to sampling methods)</p></li>
+<li><strong>Sampling Methods</strong>: Select training set sample to have roughly equal event rates during initial data collection; so that model doesn’t have to deal with imbalance. Will however require that test set sampled to be more consistent with “real life”, to obtain true estimates of future performance. Post-hoc sampling approaches:
+<ul>
+<li>Down-sampling: Reduce number of samples to improve class balance. Methods:
+<ul>
+<li>Randomly sample majority classes</li>
+<li>Bootstrap sample so that classes are balanced in the bootstrap sample. Advantage is that can be ran many times to obtain an estimate of variation about the down-sampling.</li>
+</ul></li>
+<li>Up-sampling: simulates or imputes additional data points. Majority class only appears once; minority class are sampled with replacement.</li>
+<li>Synthetic minority over-sampling technique (SMOTE): Uses up- and down-sampling.</li>
+<li>Uses three operational parameters; (1) amount of up=sampling, (2) amount of down-champing, and (3) number of neighbours used to impute new cases.<br />
+</li>
+<li>To up-sample the minority class, SMOTE synthesises new data points based on its KNNs.<br />
+</li>
+<li>Down-sampling based on random sampling</li>
+</ul></li>
+</ul>
+<p><strong>Warning re: Sampling Methods:</strong> When using modified versions of the training set, resampled estimates of model performance can become biased, i.e., if data up-sampled, resampling procedures likely to have same sample in he cases that are used to build the model as well as the holdout set, leading to optimistic results. Despite this, resampling methods can be effective at tuning the models.</p>
+<p><strong>Findings re: Sampling Methods</strong>: Sampling approaches have benefit of enabling better trade-offs between sensitivity and specificity.</p>
+<ul>
+<li><p><strong>Cost-Sensitivty Training</strong>: instead of optimising accuracy/impurity, can instead optimise cost or loss function that deferentially weights specific types of errors. By assigning higher cost to misrepresented true cases (false negatives) may bias model to under-represented class. This method has the potential to make true improvements to classifier, rather than simply altering the cut-off to make trade-offs between sensitivity and specificity.</p>
+<ul>
+<li>With SVM, can specify costs for specific classes. In current implementation will not be able to perform ROC curve, instead use Kappa, sensitivity or specificity. TODO check: apply cost to class not specific type of error.</li>
+<li>Many classification trees (CART and C5.0) can also incorporate differential costs.</li>
+</ul></li>
+</ul>
+<p>TODO: READ CH. 14<br />
+<span class="math inline">\(\text{Pr(misclassification)} = Pr[2|1]\pi_1 + Pr[1|2]\pi_2\)</span> where * <span class="math inline">\(pi_i\)</span> = prior probability of sample being in class <span class="math inline">\(i\)</span> * $Pr[j|i] = probability of mistakenly predicting a class <span class="math inline">\(i\)</span> as class <span class="math inline">\(j\)</span>.</p>
+<p>Use <span class="math inline">\(p_i\)</span> as estimate of <span class="math inline">\(Pr[j|i]\)</span></p>
+<p>For given sample, classify into class 1 if  &gt; </p>
+<pre class="r"><code>load(&quot;../../static/datasets/ticdata.rda&quot;)
+head(ticdata)</code></pre>
+<pre><code>##                        STYPE MAANTHUI MGEMOMV MGEMLEEF
+## 1 Lower class large families        1       3    30-40
+## 2  Mixed small town dwellers        1       2    30-40
+## 3  Mixed small town dwellers        1       2    30-40
+## 4  Modern, complete families        1       3    40-50
+## 5         Large family farms        1       4    30-40
+## 6           Young and rising        1       2    20-30
+##                MOSHOOFD   MGODRK   MGODPR   MGODOV   MGODGE   MRELGE
+## 1 Family with grown ups       0% 50 - 62%  1 - 10% 24 - 36% 76 - 88%
+## 2 Family with grown ups  1 - 10% 37 - 49%  1 - 10% 37 - 49% 63 - 75%
+## 3 Family with grown ups       0% 37 - 49% 11 - 23% 37 - 49% 24 - 36%
+## 4        Average Family 11 - 23% 24 - 36% 11 - 23% 37 - 49% 50 - 62%
+## 5               Farmers  1 - 10% 37 - 49%  1 - 10% 37 - 49% 76 - 88%
+## 6           Living well       0% 50 - 62%       0% 50 - 62%       0%
+##     MRELSA   MRELOV MFALLEEN MFGEKIND MFWEKIND MOPLHOOG MOPLMIDD MOPLLAAG
+## 1       0% 11 - 23%  1 - 10% 11 - 23% 63 - 75%  1 - 10% 11 - 23% 76 - 88%
+## 2 11 - 23% 11 - 23%       0% 37 - 49% 50 - 62%       0% 50 - 62% 37 - 49%
+## 3 11 - 23% 37 - 49% 37 - 49% 37 - 49% 11 - 23%       0% 50 - 62% 37 - 49%
+## 4 11 - 23% 11 - 23% 11 - 23% 24 - 36% 37 - 49% 24 - 36% 37 - 49% 11 - 23%
+## 5  1 - 10% 11 - 23% 11 - 23% 37 - 49% 37 - 49% 50 - 62% 37 - 49%       0%
+## 6 63 - 75% 24 - 36% 24 - 36% 50 - 62% 11 - 23%       0% 50 - 62% 37 - 49%
+##   MBERHOOG MBERZELF MBERBOER MBERMIDD MBERARBG MBERARBO     MSKA    MSKB1
+## 1  1 - 10%       0%  1 - 10% 11 - 23% 50 - 62% 11 - 23%  1 - 10%  1 - 10%
+## 2       0%       0%       0% 50 - 62%       0% 37 - 49%       0% 11 - 23%
+## 3       0%       0%       0% 76 - 88%       0% 11 - 23%       0% 50 - 62%
+## 4 37 - 49%       0%       0% 24 - 36%  1 - 10% 11 - 23% 24 - 36% 11 - 23%
+## 5       0% 50 - 62% 37 - 49%       0%       0%       0%     100%       0%
+## 6 11 - 23%       0%       0% 37 - 49% 11 - 23% 11 - 23% 11 - 23% 11 - 23%
+##      MSKB2     MSKC     MSKD   MHHUUR   MHKOOP    MAUT1    MAUT2    MAUT0
+## 1 11 - 23% 63 - 75%  1 - 10%  1 - 10% 89 - 99% 89 - 99%       0%  1 - 10%
+## 2 24 - 36% 50 - 62%       0% 11 - 23% 76 - 88% 76 - 88%  1 - 10% 11 - 23%
+## 3       0% 37 - 49%       0% 76 - 88% 11 - 23% 76 - 88%       0% 11 - 23%
+## 4  1 - 10% 37 - 49%       0% 50 - 62% 37 - 49%     100%       0%       0%
+## 5       0%       0%       0% 37 - 49% 50 - 62% 63 - 75% 11 - 23%  1 - 10%
+## 6 11 - 23% 37 - 49% 11 - 23%     100%       0% 50 - 62% 24 - 36% 24 - 36%
+##    MZFONDS   MZPART  MINKM30 MINK3045 MINK4575 MINK7512 MINK123M  MINKGEM
+## 1 89 - 99%  1 - 10%       0% 37 - 49% 50 - 62%       0%       0% 37 - 49%
+## 2 63 - 75% 24 - 36% 11 - 23%       0% 50 - 62% 11 - 23%       0% 50 - 62%
+## 3     100%       0% 37 - 49% 50 - 62%       0%       0%       0% 24 - 36%
+## 4 76 - 88% 11 - 23%  1 - 10% 50 - 62% 24 - 36%       0%       0% 37 - 49%
+## 5 50 - 62% 37 - 49%       0%       0%     100%       0%       0% 63 - 75%
+## 6     100%       0% 50 - 62% 11 - 23% 24 - 36%       0%       0% 24 - 36%
+##   MKOOPKLA PWAPART PWABEDR PWALAND    PPERSAUT PBESAUT PMOTSCO AAUT
+## 1 24 - 36%     f 0     f 0     f 0 f 1000-4999     f 0     f 0  f 0
+## 2 37 - 49% f 50-99     f 0     f 0         f 0     f 0     f 0  f 0
+## 3 37 - 49% f 50-99     f 0     f 0 f 1000-4999     f 0     f 0  f 0
+## 4 37 - 49%     f 0     f 0     f 0 f 1000-4999     f 0     f 0  f 0
+## 5 24 - 36%     f 0     f 0     f 0         f 0     f 0     f 0  f 0
+## 6 24 - 36%     f 0     f 0     f 0 f 1000-4999     f 0     f 0  f 0
+##   PAANHANG PTRACTOR PWERKT PBROM PLEVEN PPERSONG PGEZONG PWAOREG
+## 1      f 0      f 0    f 0   f 0    f 0      f 0     f 0     f 0
+## 2      f 0      f 0    f 0   f 0    f 0      f 0     f 0     f 0
+## 3      f 0      f 0    f 0   f 0    f 0      f 0     f 0     f 0
+## 4      f 0      f 0    f 0   f 0    f 0      f 0     f 0     f 0
+## 5      f 0      f 0    f 0   f 0    f 0      f 0     f 0     f 0
+## 6      f 0      f 0    f 0   f 0    f 0      f 0     f 0     f 0
+##        PBRAND PZEILPL PPLEZIER PFIETS PINBOED PBYSTAND AWAPART AWABEDR
+## 1   f 500-999     f 0      f 0    f 0     f 0      f 0       0       0
+## 2     f 50-99     f 0      f 0    f 0     f 0      f 0       2       0
+## 3     f 50-99     f 0      f 0    f 0     f 0      f 0       1       0
+## 4     f 50-99     f 0      f 0    f 0     f 0      f 0       0       0
+## 5 f 1000-4999     f 0      f 0    f 0     f 0      f 0       0       0
+## 6         f 0     f 0      f 0    f 0     f 0      f 0       0       0
+##   AWALAND APERSAUT ABESAUT AMOTSCO AVRAAUT AAANHANG ATRACTOR AWERKT ABROM
+## 1       0        1       0       0       0        0        0      0     0
+## 2       0        0       0       0       0        0        0      0     0
+## 3       0        1       0       0       0        0        0      0     0
+## 4       0        1       0       0       0        0        0      0     0
+## 5       0        0       0       0       0        0        0      0     0
+## 6       0        1       0       0       0        0        0      0     0
+##   ALEVEN APERSONG AGEZONG AWAOREG ABRAND AZEILPL APLEZIER AFIETS AINBOED
+## 1      0        0       0       0      1       0        0      0       0
+## 2      0        0       0       0      1       0        0      0       0
+## 3      0        0       0       0      1       0        0      0       0
+## 4      0        0       0       0      1       0        0      0       0
+## 5      0        0       0       0      1       0        0      0       0
+## 6      0        0       0       0      0       0        0      0       0
+##   ABYSTAND     CARAVAN
+## 1        0 noinsurance
+## 2        0 noinsurance
+## 3        0 noinsurance
+## 4        0 noinsurance
+## 5        0 noinsurance
+## 6        0 noinsurance</code></pre>
+<pre class="r"><code>recodeLevels &lt;- function(x)
+{
+    x &lt;- as.numeric(x)
+    ## Add zeros to the text version:
+    x &lt;- gsub(&quot; &quot;, &quot;0&quot;,format(as.numeric(x)))
+    factor(x)
+}
+
+## Find which columns are regular factors or ordered factors
+isOrdered &lt;- unlist(lapply(ticdata, is.ordered))
+isFactor &lt;- unlist(lapply(ticdata, is.factor))
+convertCols &lt;- names(isOrdered)[isOrdered | isFactor]</code></pre>
 </div>
 </div>
 <div id="new-r-commands" class="section level1">

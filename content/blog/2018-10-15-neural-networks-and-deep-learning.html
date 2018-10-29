@@ -412,18 +412,18 @@ tic = time.time()
 c = np.dot(a,b)
 toc = time.time()
 print(c)</code></pre>
-<pre><code>## 250032.679165</code></pre>
+<pre><code>## 249880.348421</code></pre>
 <pre class="python"><code>print(&quot;Vectorised version:&quot; + str(1000*(toc-tic)) + &quot;ms&quot;)</code></pre>
-<pre><code>## Vectorised version:6.96301460266ms</code></pre>
+<pre><code>## Vectorised version:5.35988807678ms</code></pre>
 <pre class="python"><code>c = 0
 tic = time.time()
 for i in range(1000000):
     c += a[i]*b[i]
 toc = time.time()
 print(c)</code></pre>
-<pre><code>## 250032.679165</code></pre>
+<pre><code>## 249880.348421</code></pre>
 <pre class="python"><code>print(&quot;For loop:&quot; + str(1000*(toc-tic)) + &quot;ms&quot;)</code></pre>
-<pre><code>## For loop:1015.5069828ms</code></pre>
+<pre><code>## For loop:980.585098267ms</code></pre>
 <p>Non-vectorised version took about 300 times faster</p>
 <p>A lot of scaleable deep learning algorithms are don on a GPU (Graphics processing unit). Within Jupyter on CPU. Both GPU and CPU have parallelization instructions (SIMD = single instruction multiple data). Built-in functions such as np.function that don’t require a for loop are used, it enables Python to take better advantage of parallelism. GPU is very good at SIMD calculations, but CPU not bad either.</p>
 </div>
@@ -600,30 +600,30 @@ print(percentage)</code></pre>
 <pre class="python"><code>import numpy as np
 a = np.random.randn(5) # 5 random gaussian
 print(a)</code></pre>
-<pre><code>## [ 0.78414359  1.07858824  0.07983952 -1.93059726 -1.74108108]</code></pre>
+<pre><code>## [ 0.68933885  0.5932933  -2.17535322  3.22724748  1.56202546]</code></pre>
 <pre class="python"><code>print(a.shape) # rank 1 array, neither row nor column vector</code></pre>
 <pre><code>## (5,)</code></pre>
 <pre class="python"><code>print(a.T)     # looks the same as a</code></pre>
-<pre><code>## [ 0.78414359  1.07858824  0.07983952 -1.93059726 -1.74108108]</code></pre>
+<pre><code>## [ 0.68933885  0.5932933  -2.17535322  3.22724748  1.56202546]</code></pre>
 <pre class="python"><code>print(np.dot(a, a.T)) #would expect matrix, instead get a number
 # recommends not using data structures of rank 1 array.
 # instead commit to making it a row or column vector</code></pre>
-<pre><code>## 8.54317722473</code></pre>
+<pre><code>## 18.4143964439</code></pre>
 <pre class="python"><code>a = np.random.randn(5,1)
 print(a)</code></pre>
-<pre><code>## [[-0.88396813]
-##  [ 1.27800479]
-##  [-0.77295716]
-##  [ 0.08650741]
-##  [-0.57077476]]</code></pre>
+<pre><code>## [[ 2.34322432]
+##  [-1.44621003]
+##  [ 0.28039155]
+##  [-1.5423804 ]
+##  [-0.70134445]]</code></pre>
 <pre class="python"><code>print(a.T)</code></pre>
-<pre><code>## [[-0.88396813  1.27800479 -0.77295716  0.08650741 -0.57077476]]</code></pre>
+<pre><code>## [[ 2.34322432 -1.44621003  0.28039155 -1.5423804  -0.70134445]]</code></pre>
 <pre class="python"><code>print(np.dot(a, a.T))</code></pre>
-<pre><code>## [[ 0.78139966 -1.12971551  0.6832695  -0.07646979  0.5045467 ]
-##  [-1.12971551  1.63329625 -0.98784296  0.11055689 -0.72945288]
-##  [ 0.6832695  -0.98784296  0.59746277 -0.06686652  0.44118444]
-##  [-0.07646979  0.11055689 -0.06686652  0.00748353 -0.04937625]
-##  [ 0.5045467  -0.72945288  0.44118444 -0.04937625  0.32578382]]</code></pre>
+<pre><code>## [[ 5.49070022 -3.38879451  0.6570203  -3.61414327 -1.64340738]
+##  [-3.38879451  2.09152344 -0.40550507  2.230606    1.01429138]
+##  [ 0.6570203  -0.40550507  0.07861942 -0.43247043 -0.19665106]
+##  [-3.61414327  2.230606   -0.43247043  2.3789373   1.08173994]
+##  [-1.64340738  1.01429138 -0.19665106  1.08173994  0.49188404]]</code></pre>
 <p>Recommendations:</p>
 <ul>
 <li>Don’t use <em>rank 1 arrays</em>; instead use row or column vectors. If do end up with a rank 1 array can use <code>a = a.reshape((5,1))</code> to reshape<br />
@@ -649,5 +649,309 @@ print(a)</code></pre>
 <p>Ensure to try things out with frameworks like TensorFlow, Chainer, Theano, PyTorch etc; it’s very easy to get going and get something up and running very quickly. To get to practice yourself, right?</p>
 <p>Discusses article in <a href="https://mashable.com/2017/07/28/16-year-old-ai-genius/#0Htj4Vt2IiqO">Mashable</a> about a 16-year-old who is one of the leaders on Kaggle competitions. And it just said, he just went out and learned things, found things online, learned everything himself and never actually took any formal course per se.</p>
 <p>At present, deep reinforcement learning always starts from scratch, would be better if it could learn from the past.</p>
+</div>
+</div>
+<div id="week3" class="section level1">
+<h1>Shallow Neural Network</h1>
+<div id="neural-networks-overview" class="section level2">
+<h2>Neural Networks Overview</h2>
+<ul>
+<li>Logistic regression had one hidden layer; which calculates both <span class="math inline">\(z^{[1]}\)</span> and <span class="math inline">\(a^{[1]} = \sigma(z^{[1]})\)</span></li>
+<li>Neural networks can consider of more than one hidden layer</li>
+<li>Square brackets [] used to reference hidden layer</li>
+<li>Round brackets () used to reference training example</li>
+</ul>
+<div class="figure">
+<img src="/img/ShallowNN_ComputingOutput1.JPG" alt="NN Representation" />
+<p class="caption">NN Representation</p>
+</div>
+</div>
+<div id="neural-networks-representation" class="section level2">
+<h2>Neural Networks Representation</h2>
+<p>Example: Single hidden layer consists (<span class="math inline">\(\equiv\)</span> 2 layer neural network)</p>
+<ul>
+<li>Input layer, <span class="math inline">\(a^{[0]} = \mathbf{X} = {x_1, x_2, x_3}\)</span> within training set. Use <span class="math inline">\(a\)</span> for activation. Called layer 0 as not counted as not counted as an “official layer”.</li>
+<li>Hidden layer(s) generates activations. The first hidden layer, for example, with 4 nodes, is denoted <span class="math inline">\(a^{[1]} = \{a_1^{[1]}, a_2^{[1]}, a_3^{[1]}, a_{4}^{[1]}\}\)</span>. Called <strong>hidden</strong> as don’t see true values in training set. First hidden layer will have associated paramaters, for example when <span class="math inline">\(X \in \mathbb{R}^{1 \times 3}\)</span> and <span class="math inline">\(a^{[1]} \in \mathbb{R}^{4 \times 1}\)</span> then will have parameters
+<ul>
+<li><span class="math inline">\(w^{[1]} \in \mathbb{R}^{4 \times 3}\)</span></li>
+<li><span class="math inline">\(b^{[1]} \in \mathbb{R}^{4 \times 1}\)</span></li>
+</ul></li>
+<li>Output layer (<span class="math inline">\(y\)</span> within training set). With one hidden layer, this is referred to as a the second layer and have <span class="math inline">\(\hat{y} = a^{[2]}\)</span> In this example of the neural network with one hidden layer of 4 units, the parameters associated with the output layer are:
+<ul>
+<li><span class="math inline">\(w^{[2]} \in \mathbb{R}^{1 \times 4}\)</span></li>
+<li><span class="math inline">\(b^{[2]} \in \mathbb{R}^{1 \times 1}\)</span></li>
+</ul></li>
+</ul>
+</div>
+<div id="computing-a-neural-networks-output" class="section level2">
+<h2>Computing a Neural Network’s Output</h2>
+<ul>
+<li>Use matrix multiplication to calculate nodes each activation layer to avoid use of for loops</li>
+</ul>
+<div class="figure">
+<img src="/img/ShallowNN_ComputingOutput2.JPG" alt="NN Output Computation" />
+<p class="caption">NN Output Computation</p>
+</div>
+<ul>
+<li>For a 2 layer neural network will need just 4 equations:</li>
+</ul>
+<div class="figure">
+<img src="/img/ShallowNN_ComputingOutput3.JPG" alt="NN Output Computation" />
+<p class="caption">NN Output Computation</p>
+</div>
+</div>
+<div id="vectorizing-across-multiple-examples" class="section level2">
+<h2>Vectorizing across multiple examples</h2>
+<ul>
+<li>Last example, for one single training example</li>
+<li>This example, for <span class="math inline">\(m\)</span> training examples</li>
+<li>For each training example, <span class="math inline">\(i = 1 \ldots m\)</span>
+<ul>
+<li><span class="math inline">\(z^{[1](i)} = w^{[1]}x^{(i)} + b^{[1]}\)</span></li>
+<li><span class="math inline">\(a^{[1]} = \sigma(z^{[1](i)})\)</span></li>
+<li><span class="math inline">\(z^{[2](i)} = w^{[2]}a^{[1](i)} + b^{[2]}\)</span></li>
+<li><span class="math inline">\(a^{[2]} = \sigma(z^{[2]})\)</span></li>
+</ul></li>
+<li>But want to get rid of for loop and so stack <span class="math inline">\(x\)</span>,<span class="math inline">\(z\)</span> and <span class="math inline">\(a\)</span> vertically (in columns) such that
+<ul>
+<li><span class="math inline">\(Z^{[1]} = W^{[1]}X + b^{[1]}\)</span></li>
+<li><span class="math inline">\(A^{[1]} = \sigma(Z^{[1]})\)</span></li>
+<li><span class="math inline">\(Z^{[2]} = W^{[2]}A^{[1]} + b^{[2]}\)</span></li>
+<li><span class="math inline">\(A^{[2]} = \sigma(Z^{[2]})\)</span></li>
+</ul></li>
+<li><span class="math inline">\(X \in \mathbb{R}^{(n_x, m)}\)</span></li>
+<li>Horizontal index = index to training example</li>
+<li>Vertical index = index to node in neural network</li>
+</ul>
+</div>
+<div id="explanation-for-vectorized-implementation" class="section level2">
+<h2>Explanation for Vectorized Implementation</h2>
+<ul>
+<li>First training example, compute: <span class="math inline">\(z^{[1](1)} = w^{[1]}x^{(1)} + b^{[1]}\)</span></li>
+<li>Second training example, compute: <span class="math inline">\(z^{[1](2)} = w^{[1]}x^{(2)} + b^{[1]}\)</span></li>
+<li>Third training example, compute: <span class="math inline">\(z^{[1](3)} = w^{[1]}x^{(3)} + b^{[1]}\)</span></li>
+</ul>
+<p>Now ignore <span class="math inline">\(b\)</span> for now (i.e. assume 0), such that:</p>
+<ul>
+<li>First training example, compute: <span class="math inline">\(z^{[1](1)} = w^{[1]}x^{(1)}\)</span></li>
+<li>Second training example, compute: <span class="math inline">\(z^{[1](2)} = w^{[1]}x^{(2)}\)</span></li>
+<li>Third training example, compute: <span class="math inline">\(z^{[1](3)} = w^{[1]}x^{(3)}\)</span></li>
+</ul>
+<div class="figure">
+<img src="/img/ShallowNN_Vectorized_Implementation.JPG" alt="NN Output Computation" />
+<p class="caption">NN Output Computation</p>
+</div>
+<p>Note that <span class="math inline">\(W\)</span> is a matrix</p>
+<ul>
+<li><span class="math inline">\(w^{[1]} \in \mathbb{R}^{4 \times 3}\)</span></li>
+<li><span class="math inline">\(w^{[2]} \in \mathbb{R}^{1 \times 4}\)</span></li>
+</ul>
+<p>Makes use of Python broadcasting.</p>
+</div>
+<div id="activation-functions" class="section level2">
+<h2>Activation Functions</h2>
+<p>So far been using sigmoid function as activation function <span class="math display">\[a = \frac{1}{1 + e^{-z}}\]</span>, but this is not the best choice; there are other options available.</p>
+<p>In general case, replace <span class="math inline">\(\sigma(z^{[k]})\)</span> by <span class="math inline">\(g(z^{[1]})\)</span>.</p>
+<p>Other options:</p>
+<div id="hyperbolic-tangent-function-a-tanhz-fracez---e-zez-e-z" class="section level5">
+<h5>1. Hyperbolic Tangent function <span class="math display">\[a = \tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}\]</span></h5>
+<p>It is a shifted sigmoid function that goes from -1 to 1 instead of from 0 to 1. Crosses origin. Almost always works better. As means closer to zero (similar to centring data)</p>
+<p>Pretty much never uses sigmoid function; with <em>exception</em> for output layer in binary classification. as output <span class="math inline">\(y \in {0,1}\)</span>, i.e. <span class="math inline">\(0 \leq \hat{y} \leq 1\)</span>. So would use tanh function in hidden layer and sigmoid function activation in output layer.</p>
+<p>Downside: if <span class="math inline">\(z\)</span> is very small or very large then derivative becomes very small and so can slow down gradient descent (similar to sigmoid function)</p>
+</div>
+<div id="relu-rectified-linear-unit-function-a-max0-z" class="section level5">
+<h5>2. ReLU (rectified linear unit) function <span class="math display">\[a = \max(0, z)\]</span></h5>
+<pre><code>* If $z &gt; 0$ then derivative is positive
+* If $z &lt; 0$ then derivative is 0
+* If $z = 0$, then derivative not defined, but odds very small.  In practice, can pretend that either 0 or 1.</code></pre>
+<p>This is becoming increasingly the default choice for activation function.</p>
+<p>Advantage: Derivative is different from zero when <span class="math inline">\(z &gt; 0\)</span> and so does not slow down loading</p>
+<p>Disadvantage: Derivative is zero when <span class="math inline">\(z &lt; 0\)</span></p>
+</div>
+<div id="leaky-relu-a-max0.01z-z" class="section level5">
+<h5>3. Leaky ReLU <span class="math display">\[a = \max(0.01z, z)\]</span></h5>
+<ul>
+<li>Usually works better but not used as much in practice Andrew Ng usually uses</li>
+<li>Can use a training parameter instead of 0.01</li>
+</ul>
+</div>
+</div>
+<div id="why-you-need-non-linear-activation-functions" class="section level2">
+<h2>Why You Need Non-Linear Activation Functions</h2>
+<p>If you use a linear activation function (identity), then all you calculate is <span class="math display">\[\begin{aligned}
+    a^{[2]}  = z^{[2]} &amp; = w^{[2]}a^{[1]}x + b^{[2]} \\
+                        &amp; = w^{[2]}(w^{[1]}a^{[0]} + b^{[1]})x + b^{[2]} \\
+                        &amp; = (w^{[2]}w^{[1]})x + (w^{[2]} b^{[1]} + b^{[2]} ) \\ 
+                        &amp;= w^\prime x + b^\prime
+\end{aligned}\]</span></p>
+<p>So no matter how many layers, will just be computing a linear activtation function, so may as well not have any hidden layers.</p>
+<p>Linear hidden layer useless. <strong>Exception</strong> for output unit only of regression problem, i.e. when <span class="math inline">\(y \in \mathbb{R}\)</span>. But even then, if <span class="math inline">\(y &gt; 0\)</span> then probably better to use a ReLU function.</p>
+</div>
+<div id="derivatives-of-activation-functions" class="section level2">
+<h2>Derivatives of Activation Functions</h2>
+<p>Required for back-propagation of gradient descent.</p>
+<p>Sigmoid activation function: <span class="math display">\[\begin{aligned}
+    g(z) &amp;= \frac{1}{1 + e^{-z}} \\
+    \frac{d}{dz}g(z) &amp;= \frac{1}{1 + e^{-z}}(1 - \frac{1}{1 + e^{-z}}) \\
+    &amp;= g(z)\left(1 - g(z)\right) \\
+    &amp;= a\left(1 - a\right)
+\end{aligned}\]</span></p>
+<p>Values: * If <span class="math inline">\(z = 10, g(z) \approx 1. g^\prime(z) \approx 1(1-1) \approx 0\)</span> * If <span class="math inline">\(z = -10, g(z) \approx 0. g^\prime(z) \approx 0(1-0) \approx 0\)</span> * If <span class="math inline">\(z = 0, g(z) = 0.5. g^\prime(z) = 0.5(1-0.5) = 0.25\)</span></p>
+<p>Tanh activation function <span class="math display">\[\begin{aligned}
+    g(z) &amp;= \tanh(z) \\
+    \frac{d}{dz}g(z) &amp;= \frac{e^z - e^{-z}}{e^z + e^{-z}}\\
+    &amp;= 1 - \left(\tanh(z)\right)^2 \\
+    &amp;= 1 - a^2
+\end{aligned}\]</span></p>
+<p>Values:</p>
+<ul>
+<li>If <span class="math inline">\(z = 10, g(z) \approx 1. g^\prime(z) \approx 1-1^2 \approx 0\)</span></li>
+<li>If <span class="math inline">\(z = -10, g(z) \approx -1. g^\prime(z) \approx 1-(-1)^2 \approx 0\)</span></li>
+<li>If <span class="math inline">\(z = 0, g(z) = 0. g^\prime(z) = 1-0 = 1\)</span></li>
+</ul>
+<p>ReLU <span class="math display">\[\begin{aligned}
+    g(z) &amp;= \max(0, z) \\
+    g^\prime(z) &amp;= \begin{cases} 0 &amp;\text{if $z &lt; 0$}\\
+                                1 &amp; \text{if $z &gt; 0$}\end{cases}
+\end{aligned}\]</span> Gradient not technically defined at <span class="math inline">\(z = 0\)</span> but can set to 1.</p>
+<p>Leaky ReLU <span class="math display">\[\begin{aligned}
+    g(z) &amp;= \max(0.01z, z) \\
+    g^\prime(z) &amp;= \begin{cases} 0.01 &amp;\text{if $z &lt; 0$}\\
+                                1 &amp; \text{if $z \geq 0$}\end{cases}
+\end{aligned}\]</span> Gradient not technically defined at <span class="math inline">\(z = 0\)</span> but can set to 1.</p>
+</div>
+<div id="gradient-descent-for-neural-networks" class="section level2">
+<h2>Gradient descent for Neural Networks</h2>
+<p>Parameters for single hidden layer:</p>
+<ul>
+<li><span class="math inline">\(w^{[1]} \in \mathbb{R}^{(n^{[1]},n^{[0]})}\)</span></li>
+<li><span class="math inline">\(b^{[1]} \in \mathbb{R}^{(n^{[1]},1)}\)</span></li>
+<li><span class="math inline">\(w^{[2]} \in \mathbb{R}^{((n^{[2]},n^{[1]}))}\)</span></li>
+<li><span class="math inline">\(b^{[2]} \in \mathbb{R}^{(n^{[2]}, 1)}\)</span></li>
+</ul>
+<p>where</p>
+<ul>
+<li><span class="math inline">\(n_x = n^{[0]}\)</span> is the number of input parametesr</li>
+<li><span class="math inline">\(n^{[1]}\)</span> is the number of units in the single hidden layer</li>
+<li><span class="math inline">\(n^{[2]} = 1\)</span> is the output unit</li>
+</ul>
+<p>Assuming binary classification, loss function is<span class="math display">\[J(w^{[1]}, b^{[1]}, w^{[2]}, b^{[2]}) = \frac{1}{m}\sum^n_{i=1}\mathcal{L}(\hat{y}, y)\]</span></p>
+<p>To train parameters, need gradient descent. After initialising parameters <em>randomly</em> (important not to set all to zero),</p>
+<p>Repeat {</p>
+<ul>
+<li>Compute prediction (<span class="math inline">\(\hat{y}^{(i)}, i = 1, \ldots, m\)</span>)</li>
+<li>Compute derivate <span class="math inline">\(dW^{[1]} = \frac{dJ}{dw^{[1]}}\)</span>, <span class="math inline">\(db^{[1]} = \frac{dJ}{db^{[1]}}\)</span>, <span class="math inline">\(\ldots\)</span></li>
+<li>Update phase</li>
+</ul>
+<p><span class="math display">\[\begin{aligned}
+        w^{[1]} &amp;:= W^{[1]} - \alpha dW^{[1]}\\
+        b^{[1]} &amp;:= b^{[1]} - \alpha db^{[1]}\\
+        \vdots\\
+\end{aligned}\]</span><br />
+}</p>
+<p>Formulas for computing partial derivatives.</p>
+<p>Forward propagation: <span class="math display">\[\begin{aligned}
+    Z^{[1]} &amp;= W^{[1]}X + b^{[1]}\\
+    A^{[1]} &amp;= g^{[1]}(Z^{[1]})\\
+    Z^{[2]} &amp;= W^{[2]}A^{[1]} + b^{[2]}\\
+    A^{[2]} &amp;= g^{[2]}(Z^{[2]})
+\end{aligned}\]</span></p>
+<p>Back propagation <span class="math display">\[\begin{aligned}
+    dZ^{[2]} &amp;= A^{[2]} - Y \\
+    dW^{[2]} &amp;= \frac{1}{m} dZ^{[2]}A^{[1]T}\\
+    db^{[2]} &amp;= \frac{1}{m}\text{np.sum($dZ^{[2]}$, axis = 1, keepdens = True}\\
+    dZ^{[1]} &amp;=  W^{[2]T}dZ^{[2]} *  g^{[1]\prime}(Z^{[1]})
+\end{aligned}\]</span></p>
+</div>
+<div id="backpropagation-intuition" class="section level2">
+<h2>Backpropagation Intuition</h2>
+<div class="figure">
+<img src="/img/DLS_ComputationGraphLR.png" alt="Computation Graph" />
+<p class="caption">Computation Graph</p>
+</div>
+<p>Logistic Regression <span class="math display">\[\begin{aligned} 
+ \text{da} =    \frac{d\mathcal{L}(a,y)}{da} &amp;= \frac{d \left[-\left(y \log (a) + (1-y)\log(1-a)\right)\right]}{da}\\
+                    &amp;= -\frac{y}{a} + \frac{1-y}{1-a} \\
+   \text{dz} =   \frac{d\mathcal{L}(a,y)}{dz} &amp;= \frac{d\mathcal{L}}{da}\frac{da}{dz} \\
+                    &amp;= \text{da} \frac{d}{dz}g(z) \\
+                    &amp;= \text{da} \; g^\prime(z)\\
+ \text{dw} = \frac{d\mathcal{L}(a,y)}{dw} 
+                        &amp;=\frac{d\mathcal{L}(a,y)}{dz} \frac{dz}{dw}\\
+                        &amp;= \text{dz} \; \frac{d}{dw}(w*x + b)\\
+                        &amp;= \text{dz} \;  x\\
+            \text{db}  \frac{d\mathcal{L}(a,y)}{db} &amp;= \frac{d\mathcal{L}(a,y)}{dz} \frac{dz}{db}\\
+            &amp;= \text{dz} \frac{d}{db}(w*x + b) \\
+            &amp;= \text{dz}
+\end{aligned}\]</span></p>
+Neural Network
+<span class="math display">\[\begin{aligned} 
+    \text{dz}^{[2]} &amp; =   a^{[2]} - y\\
+    \text{dw}^{[2]} &amp;=\frac{d\mathcal{L}}{dz^{[2]}} \frac{dz^{[2]}}{dw^{[2]}}\\
+                    &amp;= \text{dz}^{[2]} \; \frac{d}{dw^{[2]}}(W^{[2]}*a^{[1]} + b^{[2]})\\
+                    &amp;= \text{dz}^{[2]} \;  a^{[1]}\\
+    \text{db}^{[2]} &amp;= \frac{d\mathcal{L}}{dz^{[2]}} \frac{dz^{[2]}}{db^{[2]}}\\
+                    &amp;= \text{dz}^{[2]} \frac{d}{db^{[2]}}(W^{[2]}*x + b^{[2]}) \\
+                    &amp;= \text{dz}^{[2]} \\
+            
+    \text{dz}^{[1]}  &amp;= \frac{d\mathcal{L}}{dz^{[2]}}\frac{dz^{[2]}}{dz^{[1]}} \\
+                    &amp;= \text{dz}^{[2]} \; \frac{d}{dz^{[1]}}\left(W^{[2]}a^{[1]} + b^{[2]}\right)\\
+                    &amp;= \text{dz}^{[2]} \; \frac{d}{dz^{[1]}}\left(W^{[2]}g^{[1]}(z^{[1]}) + b^{[2]}\right)\\
+                    &amp;= \text{dz}^{[2]} \; \left(W^{[2]}g^{[1]\prime}(z^{[1]})\right)\\
+                    &amp;= w^{[2]T} dz^{[2]} * g^{[1]\prime}(z^{[1]})\\
+    \text{dw}^{[1]} &amp;=\frac{d\mathcal{L}}{dz^{[1]}} \frac{dz^{[1]}}{dw^{[1]}}\\
+                    &amp;= \text{dz}^{[1]} \; \frac{d}{dw^{[1]}}(w^{[1]}*x + b^{[1]})\\
+                    &amp;= \text{dz}^{[1]} \;  x^T\\
+    \text{db}^{[1]}  &amp;= \frac{d\mathcal{L}}{dz^{[1]}} \frac{dz^{[1]}}{db^{[1]}}\\
+                    &amp;= \text{dz}^{[1]} \frac{d}{db^{[1]}}(w^{[1]}*x + b^{[1]}) \\
+            &amp;= \text{dz}^{[1]}
+\end{aligned}\]</span>
+<p><span class="math display">\[\begin{aligned}
+    dZ^{[2]} &amp;= A^{[2]} - Y \\
+    dW^{[2]} &amp;= \frac{1}{m} dZ^{[2]}A^{[1]T}\\
+    db^{[2]} &amp;= \frac{1}{m}\text{np.sum($dZ^{[2]}$, axis = 1, keepdens = True}\\
+    dZ^{[1]} &amp;=  W^{[2]T}dZ^{[2]} *  g^{[1]\prime}(Z^{[1]})\\
+    dW^{[1]} &amp;= \frac{1}{m} dZ^{[1]}X^{T}\\
+    db^{[1]} &amp;= \frac{1}{m}\text{np.sum($dZ^{[1]}$, axis = 1, keepdens = True}
+\end{aligned}\]</span></p>
+<p>See alternative explanations of backpropagation refer to:</p>
+<ul>
+<li><a href="https://google-developers.appspot.com/machine-learning/crash-course/backprop-scroll/" class="uri">https://google-developers.appspot.com/machine-learning/crash-course/backprop-scroll/</a></li>
+<li><a href="http://colah.github.io/posts/2015-08-Backprop/" class="uri">http://colah.github.io/posts/2015-08-Backprop/</a></li>
+</ul>
+</div>
+<div id="random-initialisation" class="section level2">
+<h2>Random Initialisation</h2>
+<ul>
+<li>Logistic regression can initialise weights to zero</li>
+<li>Neural network, if initialise weights to zero, gradient descent will not work. Initialising bias (<span class="math inline">\(b\)</span>) to zero is okay.</li>
+<li>If weights and bias are zero, then
+<ul>
+<li><span class="math inline">\(a_1^{[1]} = a_2^{[1]}\)</span></li>
+<li><span class="math inline">\(dz_1^{[1]} = dz_2^{[1]}\)</span></li>
+<li>The first row will always equal the second row. This is called the symmetry breaking problem.</li>
+<li>Then may as well just have one unit</li>
+<li>Proof can be performed via induction</li>
+</ul></li>
+<li>Solution, e.g. for 1-layer network with 2 units in hidden layer:
+<ul>
+<li>Set <span class="math inline">\(w^{[1]}\)</span> = np.random.randn((2,2)) * 0.01</li>
+<li>Set <span class="math inline">\(b^{[1]}\)</span> = np.zero((2,1))</li>
+<li>Set <span class="math inline">\(w^{[1]}\)</span> = np.random.randn((1,2)) * 0.01</li>
+<li>Set <span class="math inline">\(b^{[2]}\)</span> = 0</li>
+</ul></li>
+</ul>
+<p>Use 0.01 as want to avoid large values of z (which will happen if have large w) <span class="math display">\[\begin{aligned}
+    z^{[1]} &amp;= W^{[1]}x + b^{[1]}\\
+    a^{[1]} &amp;= g^{[1]}(z^{[1]})
+\end{aligned}\]</span><br />
+Less of issue if not using sigmoid or tanh activation functions</p>
+<p>For deep neural networks may be a better option than 0.01.</p>
+</div>
+<div id="hero-of-deep-learning-ian-goodfellow" class="section level2">
+<h2>Hero of Deep Learning: Ian Goodfellow</h2>
+<ul>
+<li>Wrote first textbook on modern version of deep learning</li>
+<li>GAN = generative algorithm</li>
+</ul>
 </div>
 </div>

@@ -10,7 +10,7 @@ banner: "img/banners/learning_forwards.jpg"
 
 # Topics
 
-- [ ] R caret package (via book Applied Predictive Modelling)
+- [x] R caret package (via book Applied Predictive Modelling)
 - [ ] Time Series
 - [ ] Cluster Analysis
 - [ ] Survival Analysis
