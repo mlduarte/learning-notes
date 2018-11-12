@@ -5,7 +5,7 @@ date: '2018-10-15'
 slug: neural-networks-and-deep-learning
 categories: []
 tags: []
-banner: img/banners/NNandDL.png
+banner: "img/banners/NNandDL.png""
 ---
 
 ```{r init, message=FALSE, warning=FALSE, echo = FALSE}
@@ -123,15 +123,18 @@ Refer to _notation guide_ if you forget!
         * $\sigma$ is the sigmoid function, which cross the vertical axis at 0.5. 
         \[\sigma(z) = \frac{1}{1 + e^{-z}}\]
         
-```{r sigmoid_function, fig.height=3, fig.width=6}
+
+        
+ ```{r sigmoid_function, fig.height=3, fig.width=6}
 data.frame(z = seq(-10, 10, .001)) %>%
     mutate(sigmoid = 1/(1 + exp(-z))) %>%
     ggplot(aes(z, sigmoid)) + 
     geom_line()
 ```
-        
-        
+
 Recall exponential function will be close to 0 for large negative values and approach infinity for large positive values.
+
+
 ```{r exp_function, fig.height=3, fig.width=6}
 data.frame(x = seq(-1, 1, .01)) %>%
     mutate(y = exp(x)) %>%
@@ -139,7 +142,6 @@ data.frame(x = seq(-1, 1, .01)) %>%
     geom_line() + 
     labs(y = "exp(x)")
 ```   
-
 Aim of logistic regression: Learn parameters $w$ and $b$ so that $\hat{y}$ is a good estimate of chance of $y$ being 1 or 0.
 
 Note: In this course, treat W and B separately, where B corresponds to an intercept term.
@@ -148,6 +150,8 @@ Note: In this course, treat W and B separately, where B corresponds to an interc
 ## Logistic Regression Cost Function
 
 First, recall log function:
+
+
 ```{r log_function, fig.height=3, fig.width=6}
 data.frame(x = seq(0,1,0.001)) %>%
     mutate(y = log(x)) %>%
@@ -173,6 +177,8 @@ if $y=1$, $\mathcal{L}(\hat{y}, y) = - \log \hat{y}$  to make loss function smal
 * want $\log \hat{y}$ large (because of negative), therefore
 * want $\hat{y}$ large
         
+
+
 ```{r cost_term1, fig.height=3, fig.width=6}
 data.frame(yhat = seq(0,1,0.001)) %>%
     mutate(cost = -log(yhat)) %>%
@@ -180,13 +186,14 @@ data.frame(yhat = seq(0,1,0.001)) %>%
     geom_line() + 
     xlab(TeX("$\\hat{y}$")) + 
     ylab(TeX("$-\\log \\;\\hat{y}$"))
-```
-   
+```   
 if $y=0$, $\mathcal{L}(\hat{y}, y) = -\log(1-\hat{y})$
 
 * Want $\log (1-\hat{y})$ (because of negative) large, therefore
 * Want $\hat{y}$ small
  
+  
+
 ```{r cost_term2, fig.height=3, fig.width=6}
 data.frame(yhat = seq(0,1,0.001)) %>%
     mutate(cost = -log(1-yhat)) %>%
@@ -194,7 +201,7 @@ data.frame(yhat = seq(0,1,0.001)) %>%
     geom_line() + 
     xlab(TeX("$\\hat{y}$")) + 
     ylab(TeX("$-\\log \\;(1-\\hat{y})$"))
-```  
+```
 
 **Cost function**:
 \[J(w,b) = \frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) = -\frac{1}{m}\sum^m_{i=1}\left[y^{(i)} \log \hat{y}^{(i)} + (1-y^{(i)})\log(1-\hat{y}^{(i)})\right]\]

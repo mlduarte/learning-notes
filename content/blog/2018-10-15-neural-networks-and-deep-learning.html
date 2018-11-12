@@ -167,19 +167,15 @@ banner: img/banners/NNandDL.png
 </ul></li>
 </ul></li>
 </ul>
-<pre class="r"><code>data.frame(z = seq(-10, 10, .001)) %&gt;%
-    mutate(sigmoid = 1/(1 + exp(-z))) %&gt;%
-    ggplot(aes(z, sigmoid)) + 
-    geom_line()</code></pre>
-<p><img src="2018-10-15-neural-networks-and-deep-learning_files/figure-html/sigmoid_function-1.png" width="576" /></p>
+<p><code>r  data.frame(z = seq(-10, 10, .001)) %&gt;%     mutate(sigmoid = 1/(1 + exp(-z))) %&gt;%     ggplot(aes(z, sigmoid)) +      geom_line()</code></p>
+<p><img src="/blog/2018-10-15-neural-networks-and-deep-learning_files/figure-html/sigmoid_function-1.png" width="576" /></p>
 <p>Recall exponential function will be close to 0 for large negative values and approach infinity for large positive values.</p>
 <pre class="r"><code>data.frame(x = seq(-1, 1, .01)) %&gt;%
     mutate(y = exp(x)) %&gt;%
     ggplot(aes(x, y)) + 
     geom_line() + 
     labs(y = &quot;exp(x)&quot;)</code></pre>
-<p><img src="2018-10-15-neural-networks-and-deep-learning_files/figure-html/exp_function-1.png" width="576" /></p>
-<p>Aim of logistic regression: Learn parameters <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> so that <span class="math inline">\(\hat{y}\)</span> is a good estimate of chance of <span class="math inline">\(y\)</span> being 1 or 0.</p>
+<p><img src="/blog/2018-10-15-neural-networks-and-deep-learning_files/figure-html/exp_function-1.png" width="576" /> Aim of logistic regression: Learn parameters <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> so that <span class="math inline">\(\hat{y}\)</span> is a good estimate of chance of <span class="math inline">\(y\)</span> being 1 or 0.</p>
 <p>Note: In this course, treat W and B separately, where B corresponds to an intercept term.</p>
 </div>
 <div id="logistic-regression-cost-function" class="section level2">
@@ -190,8 +186,7 @@ banner: img/banners/NNandDL.png
     ggplot(aes(x,y)) + 
     geom_line() + 
     labs(y = &quot;y = log(x)&quot;)</code></pre>
-<p><img src="2018-10-15-neural-networks-and-deep-learning_files/figure-html/log_function-1.png" width="576" /></p>
-<p>Recall logistic regression model: <span class="math inline">\(\hat{y} = \sigma(w^Tx + b)\)</span> where <span class="math inline">\(\sigma(z) = \frac{1}{1 + e^{-z}}\)</span></p>
+<p><img src="/blog/2018-10-15-neural-networks-and-deep-learning_files/figure-html/log_function-1.png" width="576" /> Recall logistic regression model: <span class="math inline">\(\hat{y} = \sigma(w^Tx + b)\)</span> where <span class="math inline">\(\sigma(z) = \frac{1}{1 + e^{-z}}\)</span></p>
 <p>Given <span class="math inline">\({(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), \ldots, (x^{(m)}, y^{(m)})}\)</span>, want <span class="math inline">\(\hat{y}^{(i)} = y^{(i)}\)</span>.</p>
 <p>Noting that <span class="math inline">\(z^{(i)} = w^Tx^{(i)} + b\)</span></p>
 <p><strong>Loss (error) function</strong>:</p>
@@ -211,8 +206,7 @@ banner: img/banners/NNandDL.png
     geom_line() + 
     xlab(TeX(&quot;$\\hat{y}$&quot;)) + 
     ylab(TeX(&quot;$-\\log \\;\\hat{y}$&quot;))</code></pre>
-<p><img src="2018-10-15-neural-networks-and-deep-learning_files/figure-html/cost_term1-1.png" width="576" /></p>
-<p>if <span class="math inline">\(y=0\)</span>, <span class="math inline">\(\mathcal{L}(\hat{y}, y) = -\log(1-\hat{y})\)</span></p>
+<p><img src="/blog/2018-10-15-neural-networks-and-deep-learning_files/figure-html/cost_term1-1.png" width="576" /> if <span class="math inline">\(y=0\)</span>, <span class="math inline">\(\mathcal{L}(\hat{y}, y) = -\log(1-\hat{y})\)</span></p>
 <ul>
 <li>Want <span class="math inline">\(\log (1-\hat{y})\)</span> (because of negative) large, therefore</li>
 <li>Want <span class="math inline">\(\hat{y}\)</span> small</li>
@@ -223,8 +217,7 @@ banner: img/banners/NNandDL.png
     geom_line() + 
     xlab(TeX(&quot;$\\hat{y}$&quot;)) + 
     ylab(TeX(&quot;$-\\log \\;(1-\\hat{y})$&quot;))</code></pre>
-<p><img src="2018-10-15-neural-networks-and-deep-learning_files/figure-html/cost_term2-1.png" width="576" /></p>
-<p><strong>Cost function</strong>: <span class="math display">\[J(w,b) = \frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) = -\frac{1}{m}\sum^m_{i=1}\left[y^{(i)} \log \hat{y}^{(i)} + (1-y^{(i)})\log(1-\hat{y}^{(i)})\right]\]</span></p>
+<p><img src="/blog/2018-10-15-neural-networks-and-deep-learning_files/figure-html/cost_term3-1.png" width="576" /> <strong>Cost function</strong>: <span class="math display">\[J(w,b) = \frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) = -\frac{1}{m}\sum^m_{i=1}\left[y^{(i)} \log \hat{y}^{(i)} + (1-y^{(i)})\log(1-\hat{y}^{(i)})\right]\]</span></p>
 <p>Loss function applied to just a single training example. Cost function is cost of parameters. In training logistic regression, want to find <span class="math inline">\(W\)</span> and <span class="math inline">\(B\)</span> to minimize overall cost function <span class="math inline">\(J\)</span>.</p>
 <p>Logistic regression can be seen as a very very small neural network.</p>
 </div>
@@ -412,18 +405,18 @@ tic = time.time()
 c = np.dot(a,b)
 toc = time.time()
 print(c)</code></pre>
-<pre><code>## 250266.078991</code></pre>
+<pre><code>## 250158.706524</code></pre>
 <pre class="python"><code>print(&quot;Vectorised version:&quot; + str(1000*(toc-tic)) + &quot;ms&quot;)</code></pre>
-<pre><code>## Vectorised version:6.74796104431ms</code></pre>
+<pre><code>## Vectorised version:5.27000427246ms</code></pre>
 <pre class="python"><code>c = 0
 tic = time.time()
 for i in range(1000000):
     c += a[i]*b[i]
 toc = time.time()
 print(c)</code></pre>
-<pre><code>## 250266.078991</code></pre>
+<pre><code>## 250158.706524</code></pre>
 <pre class="python"><code>print(&quot;For loop:&quot; + str(1000*(toc-tic)) + &quot;ms&quot;)</code></pre>
-<pre><code>## For loop:1057.51013756ms</code></pre>
+<pre><code>## For loop:1019.9379921ms</code></pre>
 <p>Non-vectorised version took about 300 times faster</p>
 <p>A lot of scaleable deep learning algorithms are don on a GPU (Graphics processing unit). Within Jupyter on CPU. Both GPU and CPU have parallelization instructions (SIMD = single instruction multiple data). Built-in functions such as np.function that don’t require a for loop are used, it enables Python to take better advantage of parallelism. GPU is very good at SIMD calculations, but CPU not bad either.</p>
 </div>
@@ -593,30 +586,30 @@ print(percentage)</code></pre>
 <pre class="python"><code>import numpy as np
 a = np.random.randn(5) # 5 random gaussian
 print(a)</code></pre>
-<pre><code>## [ 0.09624311  1.82722385 -0.19231779  1.30837775  0.3149347 ]</code></pre>
+<pre><code>## [ 0.78474051 -0.23094408 -1.29761443 -0.10440377  0.23619943]</code></pre>
 <pre class="python"><code>print(a.shape) # rank 1 array, neither row nor column vector</code></pre>
 <pre><code>## (5,)</code></pre>
 <pre class="python"><code>print(a.T)     # looks the same as a</code></pre>
-<pre><code>## [ 0.09624311  1.82722385 -0.19231779  1.30837775  0.3149347 ]</code></pre>
+<pre><code>## [ 0.78474051 -0.23094408 -1.29761443 -0.10440377  0.23619943]</code></pre>
 <pre class="python"><code>print(np.dot(a, a.T)) #would expect matrix, instead get a number
 # recommends not using data structures of rank 1 array.
 # instead commit to making it a row or column vector</code></pre>
-<pre><code>## 5.19603208665</code></pre>
+<pre><code>## 2.41964637051</code></pre>
 <pre class="python"><code>a = np.random.randn(5,1)
 print(a)</code></pre>
-<pre><code>## [[-1.80363512]
-##  [ 0.94439678]
-##  [ 0.66172055]
-##  [ 1.64177879]
-##  [-0.24487378]]</code></pre>
+<pre><code>## [[ 0.45825887]
+##  [ 0.94827267]
+##  [-1.34783674]
+##  [ 0.6905544 ]
+##  [ 0.06597721]]</code></pre>
 <pre class="python"><code>print(a.T)</code></pre>
-<pre><code>## [[-1.80363512  0.94439678  0.66172055  1.64177879 -0.24487378]]</code></pre>
+<pre><code>## [[ 0.45825887  0.94827267 -1.34783674  0.6905544   0.06597721]]</code></pre>
 <pre class="python"><code>print(np.dot(a, a.T))</code></pre>
-<pre><code>## [[ 3.25309963 -1.7033472  -1.19350242 -2.96116988  0.44166294]
-##  [-1.7033472   0.89188528  0.62492676  1.5504906  -0.23125801]
-##  [-1.19350242  0.62492676  0.43787409  1.08639877 -0.16203801]
-##  [-2.96116988  1.5504906   1.08639877  2.6954376  -0.40202857]
-##  [ 0.44166294 -0.23125801 -0.16203801 -0.40202857  0.05996317]]</code></pre>
+<pre><code>## [[ 0.21000119  0.43455436 -0.61765813  0.31645268  0.03023464]
+##  [ 0.43455436  0.89922106 -1.27811675  0.65483387  0.06256439]
+##  [-0.61765813 -1.27811675  1.81666387 -0.93075459 -0.08892651]
+##  [ 0.31645268  0.65483387 -0.93075459  0.47686538  0.04556086]
+##  [ 0.03023464  0.06256439 -0.08892651  0.04556086  0.00435299]]</code></pre>
 <p>Recommendations:</p>
 <ul>
 <li>Don’t use <em>rank 1 arrays</em>; instead use row or column vectors. If do end up with a rank 1 array can use <code>a = a.reshape((5,1))</code> to reshape<br />
