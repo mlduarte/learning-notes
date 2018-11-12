@@ -217,7 +217,7 @@ banner: img/banners/NNandDL.png
     geom_line() + 
     xlab(TeX(&quot;$\\hat{y}$&quot;)) + 
     ylab(TeX(&quot;$-\\log \\;(1-\\hat{y})$&quot;))</code></pre>
-<p><img src="/blog/2018-10-15-neural-networks-and-deep-learning_files/figure-html/cost_term3-1.png" width="576" /> <strong>Cost function</strong>: <span class="math display">\[J(w,b) = \frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) = -\frac{1}{m}\sum^m_{i=1}\left[y^{(i)} \log \hat{y}^{(i)} + (1-y^{(i)})\log(1-\hat{y}^{(i)})\right]\]</span></p>
+<p><img src="/blog/2018-10-15-neural-networks-and-deep-learning_files/figure-html/cost_term2-1.png" width="576" /> <strong>Cost function</strong>: <span class="math display">\[J(w,b) = \frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) = -\frac{1}{m}\sum^m_{i=1}\left[y^{(i)} \log \hat{y}^{(i)} + (1-y^{(i)})\log(1-\hat{y}^{(i)})\right]\]</span></p>
 <p>Loss function applied to just a single training example. Cost function is cost of parameters. In training logistic regression, want to find <span class="math inline">\(W\)</span> and <span class="math inline">\(B\)</span> to minimize overall cost function <span class="math inline">\(J\)</span>.</p>
 <p>Logistic regression can be seen as a very very small neural network.</p>
 </div>
