@@ -99,13 +99,13 @@ banner: img/banners/NNandDL.png
 <h2>Why is Deep Learning taking off?</h2>
 <p>Basic technical ideas have been around for decades. Main drivers for rise of deep learning:</p>
 <ul>
-<li><p>Amount of data (computer, sensors, cell phones, etc) <img src="/img/DLS_DrivenByScale.png" alt="NN_eg" /> Note that <span class="math inline">\(m\)</span> is used to denote the number of training examples.</p></li>
+<li><p>Amount of data (computer, sensors, cell phones, etc.) <img src="/img/DLS_DrivenByScale.png" alt="NN_eg" /> Note that <span class="math inline">\(m\)</span> is used to denote the number of training examples.</p></li>
 <li>Computation. Faster computation has helped increase the number of iterations through the Idea-Code-Experiment cycle as now can perform an iteration in 10 minutes / 1 day as opposed to a moth.</li>
 <li><p>Algorithms (to make computation faster). Huge breakthrough: Sigmoid function -&gt; ReLU function. Gradient descent on the sigmoid function is very slow on the extreme values</p></li>
 </ul>
 <p>Course resources:</p>
 <ul>
-<li>Discussion forum; questions technical questions, etc. Go to course home page. Otherwise at <a href="mailto:feedback@deeplearning.ai">feedback@deeplearning.ai</a></li>
+<li>Discussion forum; questions technical questions, etc.. Go to course home page. Otherwise at <a href="mailto:feedback@deeplearning.ai">feedback@deeplearning.ai</a></li>
 </ul>
 <p>Hero of Deep Learning: Geoffrey Hinton</p>
 <ul>
@@ -171,14 +171,14 @@ banner: img/banners/NNandDL.png
     mutate(sigmoid = 1/(1 + exp(-z))) %&gt;%
     ggplot(aes(z, sigmoid)) + 
     geom_line()</code></pre>
-<p><img src="/blog/2018-10-15-neural-networks-and-deep-learning_files/figure-html/sigmoid_function-1.png" width="576" /></p>
+<p><img src="2018-10-15-neural-networks-and-deep-learning_files/figure-html/sigmoid_function-1.png" width="576" /></p>
 <p>Recall exponential function will be close to 0 for large negative values and approach infinity for large positive values.</p>
 <pre class="r"><code>data.frame(x = seq(-1, 1, .01)) %&gt;%
     mutate(y = exp(x)) %&gt;%
     ggplot(aes(x, y)) + 
     geom_line() + 
     labs(y = &quot;exp(x)&quot;)</code></pre>
-<p><img src="/blog/2018-10-15-neural-networks-and-deep-learning_files/figure-html/exp_function-1.png" width="576" /></p>
+<p><img src="2018-10-15-neural-networks-and-deep-learning_files/figure-html/exp_function-1.png" width="576" /></p>
 <p>Aim of logistic regression: Learn parameters <span class="math inline">\(w\)</span> and <span class="math inline">\(b\)</span> so that <span class="math inline">\(\hat{y}\)</span> is a good estimate of chance of <span class="math inline">\(y\)</span> being 1 or 0.</p>
 <p>Note: In this course, treat W and B separately, where B corresponds to an intercept term.</p>
 </div>
@@ -190,7 +190,7 @@ banner: img/banners/NNandDL.png
     ggplot(aes(x,y)) + 
     geom_line() + 
     labs(y = &quot;y = log(x)&quot;)</code></pre>
-<p><img src="/blog/2018-10-15-neural-networks-and-deep-learning_files/figure-html/log_function-1.png" width="576" /></p>
+<p><img src="2018-10-15-neural-networks-and-deep-learning_files/figure-html/log_function-1.png" width="576" /></p>
 <p>Recall logistic regression model: <span class="math inline">\(\hat{y} = \sigma(w^Tx + b)\)</span> where <span class="math inline">\(\sigma(z) = \frac{1}{1 + e^{-z}}\)</span></p>
 <p>Given <span class="math inline">\({(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), \ldots, (x^{(m)}, y^{(m)})}\)</span>, want <span class="math inline">\(\hat{y}^{(i)} = y^{(i)}\)</span>.</p>
 <p>Noting that <span class="math inline">\(z^{(i)} = w^Tx^{(i)} + b\)</span></p>
@@ -211,7 +211,7 @@ banner: img/banners/NNandDL.png
     geom_line() + 
     xlab(TeX(&quot;$\\hat{y}$&quot;)) + 
     ylab(TeX(&quot;$-\\log \\;\\hat{y}$&quot;))</code></pre>
-<p><img src="/blog/2018-10-15-neural-networks-and-deep-learning_files/figure-html/cost_term1-1.png" width="576" /></p>
+<p><img src="2018-10-15-neural-networks-and-deep-learning_files/figure-html/cost_term1-1.png" width="576" /></p>
 <p>if <span class="math inline">\(y=0\)</span>, <span class="math inline">\(\mathcal{L}(\hat{y}, y) = -\log(1-\hat{y})\)</span></p>
 <ul>
 <li>Want <span class="math inline">\(\log (1-\hat{y})\)</span> (because of negative) large, therefore</li>
@@ -223,7 +223,7 @@ banner: img/banners/NNandDL.png
     geom_line() + 
     xlab(TeX(&quot;$\\hat{y}$&quot;)) + 
     ylab(TeX(&quot;$-\\log \\;(1-\\hat{y})$&quot;))</code></pre>
-<p><img src="/blog/2018-10-15-neural-networks-and-deep-learning_files/figure-html/cost_term2-1.png" width="576" /></p>
+<p><img src="2018-10-15-neural-networks-and-deep-learning_files/figure-html/cost_term2-1.png" width="576" /></p>
 <p><strong>Cost function</strong>: <span class="math display">\[J(w,b) = \frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) = -\frac{1}{m}\sum^m_{i=1}\left[y^{(i)} \log \hat{y}^{(i)} + (1-y^{(i)})\log(1-\hat{y}^{(i)})\right]\]</span></p>
 <p>Loss function applied to just a single training example. Cost function is cost of parameters. In training logistic regression, want to find <span class="math inline">\(W\)</span> and <span class="math inline">\(B\)</span> to minimize overall cost function <span class="math inline">\(J\)</span>.</p>
 <p>Logistic regression can be seen as a very very small neural network.</p>
@@ -412,18 +412,18 @@ tic = time.time()
 c = np.dot(a,b)
 toc = time.time()
 print(c)</code></pre>
-<pre><code>## 249880.348421</code></pre>
+<pre><code>## 250266.078991</code></pre>
 <pre class="python"><code>print(&quot;Vectorised version:&quot; + str(1000*(toc-tic)) + &quot;ms&quot;)</code></pre>
-<pre><code>## Vectorised version:5.35988807678ms</code></pre>
+<pre><code>## Vectorised version:6.74796104431ms</code></pre>
 <pre class="python"><code>c = 0
 tic = time.time()
 for i in range(1000000):
     c += a[i]*b[i]
 toc = time.time()
 print(c)</code></pre>
-<pre><code>## 249880.348421</code></pre>
+<pre><code>## 250266.078991</code></pre>
 <pre class="python"><code>print(&quot;For loop:&quot; + str(1000*(toc-tic)) + &quot;ms&quot;)</code></pre>
-<pre><code>## For loop:980.585098267ms</code></pre>
+<pre><code>## For loop:1057.51013756ms</code></pre>
 <p>Non-vectorised version took about 300 times faster</p>
 <p>A lot of scaleable deep learning algorithms are don on a GPU (Graphics processing unit). Within Jupyter on CPU. Both GPU and CPU have parallelization instructions (SIMD = single instruction multiple data). Built-in functions such as np.function that don’t require a for loop are used, it enables Python to take better advantage of parallelism. GPU is very good at SIMD calculations, but CPU not bad either.</p>
 </div>
@@ -441,16 +441,9 @@ print(c)</code></pre>
 </ul>
 <p>Example: Given <span class="math inline">\(v =\left[\begin{array}{c} v_1 \\ \cdots \\ v_n \\ \end{array} \right]\)</span>, need to apply exponenetial operation on every element, such that <span class="math inline">\(u = \left[\begin{array}{c} e^{v_1} \\ \cdots \\ e^{v_n} \\ \end{array} \right]\)</span></p>
 <ul>
-<li>Non-vectorised:</li>
+<li><p>Non-vectorised:</p></li>
+<li><p>Vectorised</p></li>
 </ul>
-<pre class="python"><code>u  = np.zeros((n,1))
-for i in range(n):
-    u[i] = math.exp(v[i])</code></pre>
-<ul>
-<li>Vectorised</li>
-</ul>
-<pre class="python"><code>import numpy as np
-u = np.exp(v)</code></pre>
 <p>Note that the <code>numpy</code> library has many vectorised functions, including:</p>
 <ul>
 <li>np.log(v)</li>
@@ -600,30 +593,30 @@ print(percentage)</code></pre>
 <pre class="python"><code>import numpy as np
 a = np.random.randn(5) # 5 random gaussian
 print(a)</code></pre>
-<pre><code>## [ 0.68933885  0.5932933  -2.17535322  3.22724748  1.56202546]</code></pre>
+<pre><code>## [ 0.09624311  1.82722385 -0.19231779  1.30837775  0.3149347 ]</code></pre>
 <pre class="python"><code>print(a.shape) # rank 1 array, neither row nor column vector</code></pre>
 <pre><code>## (5,)</code></pre>
 <pre class="python"><code>print(a.T)     # looks the same as a</code></pre>
-<pre><code>## [ 0.68933885  0.5932933  -2.17535322  3.22724748  1.56202546]</code></pre>
+<pre><code>## [ 0.09624311  1.82722385 -0.19231779  1.30837775  0.3149347 ]</code></pre>
 <pre class="python"><code>print(np.dot(a, a.T)) #would expect matrix, instead get a number
 # recommends not using data structures of rank 1 array.
 # instead commit to making it a row or column vector</code></pre>
-<pre><code>## 18.4143964439</code></pre>
+<pre><code>## 5.19603208665</code></pre>
 <pre class="python"><code>a = np.random.randn(5,1)
 print(a)</code></pre>
-<pre><code>## [[ 2.34322432]
-##  [-1.44621003]
-##  [ 0.28039155]
-##  [-1.5423804 ]
-##  [-0.70134445]]</code></pre>
+<pre><code>## [[-1.80363512]
+##  [ 0.94439678]
+##  [ 0.66172055]
+##  [ 1.64177879]
+##  [-0.24487378]]</code></pre>
 <pre class="python"><code>print(a.T)</code></pre>
-<pre><code>## [[ 2.34322432 -1.44621003  0.28039155 -1.5423804  -0.70134445]]</code></pre>
+<pre><code>## [[-1.80363512  0.94439678  0.66172055  1.64177879 -0.24487378]]</code></pre>
 <pre class="python"><code>print(np.dot(a, a.T))</code></pre>
-<pre><code>## [[ 5.49070022 -3.38879451  0.6570203  -3.61414327 -1.64340738]
-##  [-3.38879451  2.09152344 -0.40550507  2.230606    1.01429138]
-##  [ 0.6570203  -0.40550507  0.07861942 -0.43247043 -0.19665106]
-##  [-3.61414327  2.230606   -0.43247043  2.3789373   1.08173994]
-##  [-1.64340738  1.01429138 -0.19665106  1.08173994  0.49188404]]</code></pre>
+<pre><code>## [[ 3.25309963 -1.7033472  -1.19350242 -2.96116988  0.44166294]
+##  [-1.7033472   0.89188528  0.62492676  1.5504906  -0.23125801]
+##  [-1.19350242  0.62492676  0.43787409  1.08639877 -0.16203801]
+##  [-2.96116988  1.5504906   1.08639877  2.6954376  -0.40202857]
+##  [ 0.44166294 -0.23125801 -0.16203801 -0.40202857  0.05996317]]</code></pre>
 <p>Recommendations:</p>
 <ul>
 <li>Don’t use <em>rank 1 arrays</em>; instead use row or column vectors. If do end up with a rank 1 array can use <code>a = a.reshape((5,1))</code> to reshape<br />
@@ -646,7 +639,7 @@ print(a)</code></pre>
 <div id="hero-of-deep-learning-pieter-abbeel" class="section level2">
 <h2>Hero of Deep Learning: Pieter Abbeel</h2>
 <p>Deep reinforcement learning. Many more questions than in supervised learning. Where does the data come from? What actions you took early got you the reward later? Safety issues. Still need to solve longer horizon problems. Wants to run the reinforcement learning in the inner loop to try to improve it. See also Andrej Karpathy’s deep learning course which has videos online. Berkeley has a deep reinforcement learning course which has all of the lectures online.</p>
-<p>Ensure to try things out with frameworks like TensorFlow, Chainer, Theano, PyTorch etc; it’s very easy to get going and get something up and running very quickly. To get to practice yourself, right?</p>
+<p>Ensure to try things out with frameworks like TensorFlow, Chainer, Theano, PyTorch etc.; it’s very easy to get going and get something up and running very quickly. To get to practice yourself, right?</p>
 <p>Discusses article in <a href="https://mashable.com/2017/07/28/16-year-old-ai-genius/#0Htj4Vt2IiqO">Mashable</a> about a 16-year-old who is one of the leaders on Kaggle competitions. And it just said, he just went out and learned things, found things online, learned everything himself and never actually took any formal course per se.</p>
 <p>At present, deep reinforcement learning always starts from scratch, would be better if it could learn from the past.</p>
 </div>
@@ -671,7 +664,7 @@ print(a)</code></pre>
 <p>Example: Single hidden layer consists (<span class="math inline">\(\equiv\)</span> 2 layer neural network)</p>
 <ul>
 <li>Input layer, <span class="math inline">\(a^{[0]} = \mathbf{X} = {x_1, x_2, x_3}\)</span> within training set. Use <span class="math inline">\(a\)</span> for activation. Called layer 0 as not counted as not counted as an “official layer”.</li>
-<li>Hidden layer(s) generates activations. The first hidden layer, for example, with 4 nodes, is denoted <span class="math inline">\(a^{[1]} = \{a_1^{[1]}, a_2^{[1]}, a_3^{[1]}, a_{4}^{[1]}\}\)</span>. Called <strong>hidden</strong> as don’t see true values in training set. First hidden layer will have associated paramaters, for example when <span class="math inline">\(X \in \mathbb{R}^{1 \times 3}\)</span> and <span class="math inline">\(a^{[1]} \in \mathbb{R}^{4 \times 1}\)</span> then will have parameters
+<li>Hidden layer(s) generates activations. The first hidden layer, for example, with 4 nodes, is denoted <span class="math inline">\(a^{[1]} = \{a_1^{[1]}, a_2^{[1]}, a_3^{[1]}, a_{4}^{[1]}\}\)</span>. Called <strong>hidden</strong> as don’t see true values in training set. First hidden layer will have associated parameters, for example when <span class="math inline">\(X \in \mathbb{R}^{1 \times 3}\)</span> and <span class="math inline">\(a^{[1]} \in \mathbb{R}^{4 \times 1}\)</span> then will have parameters
 <ul>
 <li><span class="math inline">\(w^{[1]} \in \mathbb{R}^{4 \times 3}\)</span></li>
 <li><span class="math inline">\(b^{[1]} \in \mathbb{R}^{4 \times 1}\)</span></li>
@@ -784,7 +777,7 @@ print(a)</code></pre>
                         &amp; = (w^{[2]}w^{[1]})x + (w^{[2]} b^{[1]} + b^{[2]} ) \\ 
                         &amp;= w^\prime x + b^\prime
 \end{aligned}\]</span></p>
-<p>So no matter how many layers, will just be computing a linear activtation function, so may as well not have any hidden layers.</p>
+<p>So no matter how many layers, will just be computing a linear activation function, so may as well not have any hidden layers.</p>
 <p>Linear hidden layer useless. <strong>Exception</strong> for output unit only of regression problem, i.e. when <span class="math inline">\(y \in \mathbb{R}\)</span>. But even then, if <span class="math inline">\(y &gt; 0\)</span> then probably better to use a ReLU function.</p>
 </div>
 <div id="derivatives-of-activation-functions" class="section level2">
@@ -831,7 +824,7 @@ print(a)</code></pre>
 </ul>
 <p>where</p>
 <ul>
-<li><span class="math inline">\(n_x = n^{[0]}\)</span> is the number of input parametesr</li>
+<li><span class="math inline">\(n_x = n^{[0]}\)</span> is the number of input parameters</li>
 <li><span class="math inline">\(n^{[1]}\)</span> is the number of units in the single hidden layer</li>
 <li><span class="math inline">\(n^{[2]} = 1\)</span> is the output unit</li>
 </ul>
@@ -840,7 +833,7 @@ print(a)</code></pre>
 <p>Repeat {</p>
 <ul>
 <li>Compute prediction (<span class="math inline">\(\hat{y}^{(i)}, i = 1, \ldots, m\)</span>)</li>
-<li>Compute derivate <span class="math inline">\(dW^{[1]} = \frac{dJ}{dw^{[1]}}\)</span>, <span class="math inline">\(db^{[1]} = \frac{dJ}{db^{[1]}}\)</span>, <span class="math inline">\(\ldots\)</span></li>
+<li>Compute derivative <span class="math inline">\(dW^{[1]} = \frac{dJ}{dw^{[1]}}\)</span>, <span class="math inline">\(db^{[1]} = \frac{dJ}{db^{[1]}}\)</span>, <span class="math inline">\(\ldots\)</span></li>
 <li>Update phase</li>
 </ul>
 <p><span class="math display">\[\begin{aligned}
@@ -953,5 +946,125 @@ Less of issue if not using sigmoid or tanh activation functions</p>
 <li>Wrote first textbook on modern version of deep learning</li>
 <li>GAN = generative algorithm</li>
 </ul>
+</div>
+</div>
+<div id="week4" class="section level1">
+<h1>Deep Neural Network</h1>
+<div id="deep-l-layer-neural-network" class="section level2">
+<h2>Deep L-layer neural network</h2>
+<ul>
+<li>To assess quality of class probabilities</li>
+<li>Shows observed probability vs predicted class probability</li>
+<li>Method:
+<ul>
+<li>Obtain scores for test set using classification model</li>
+<li>Bin data into, e.g. 10, groups based on class probabilities</li>
+<li>For each bin, determine observed event rate</li>
+<li>Plot bin midpoint on x-axis and observed event rate on y-axis</li>
+<li>If points fall on 45<span class="math inline">\(^{\circ}\)</span> line then well-calibrated</li>
+</ul></li>
+<li>Can set layer as hyperparameter for tuning<br />
+</li>
+<li><span class="math inline">\(L\)</span>: Number of layers</li>
+<li><span class="math inline">\(n^{[\ell]}\)</span>: Number of units in layer <span class="math inline">\(\ell\)</span>. Recall that input layer is layer 0, but is not counted in number of layers.</li>
+<li><span class="math inline">\(a^{[\ell]} = g^{[\ell]}(z^{[\ell]})\)</span>: Activations in layer <span class="math inline">\(\ell\)</span></li>
+<li><span class="math inline">\(w^{[\ell]}\)</span>: Weights for computing values <span class="math inline">\(z^{[\ell]}\)</span></li>
+<li><span class="math inline">\(b^{[\ell]}\)</span>: Bias vector for layer <span class="math inline">\(\ell\)</span></li>
+<li><span class="math inline">\(X = a^z{[\ell]}\)</span> = input layer</li>
+<li><span class="math inline">\(a^{[L]} = \hat{y}\)</span> = output layer</li>
+</ul>
+</div>
+<div id="forward-propagation" class="section level2">
+<h2>Forward Propagation</h2>
+<div class="figure">
+<img src="/img/DeepNN_ForwardPropagation.JPG" alt="Deep NN Forward Propagation" />
+<p class="caption">Deep NN Forward Propagation</p>
+</div>
+</div>
+<div id="getting-your-matrix-dimensions-right" class="section level2">
+<h2>Getting your matrix dimensions right</h2>
+<ul>
+<li>Recall: <span class="math inline">\(z^{[1]} = a^{[0]} + b^{[1]}\)</span> of the first hidden layer has dimension (<span class="math inline">\(n^{[1]}\)</span>,1)</li>
+</ul>
+<p>Dimensions:</p>
+<ul>
+<li><span class="math inline">\(w^{[\ell]}: (n^{[\ell]}, n^{[\ell-1]})\)</span>. Same dimension for <span class="math inline">\(dw^{[\ell]}\)</span> in backpropagation.</li>
+<li><span class="math inline">\(b^{[\ell]}: (n^{[\ell]}, 1)\)</span>. Same dimension for <span class="math inline">\(db^{[\ell]}\)</span> in backpropagation.</li>
+<li>The activation <span class="math inline">\(a^{[\ell]} = g^{[\ell]}(z^{[\ell]})\)</span> has the same dimension as <span class="math inline">\(z^{[\ell]}\)</span></li>
+</ul>
+<p>For vectorisation</p>
+<ul>
+<li>Stack <span class="math inline">\(z\)</span> horizontally for each training example, so <span class="math inline">\(Z^{[\ell]}: (n^{[\ell]},m)\)</span></li>
+<li>Stack <span class="math inline">\(A\)</span> horizontally for each training example, so <span class="math inline">\(A^{[\ell-1]}: (n^{[\ell-1]},m)\)</span>.<br />
+</li>
+<li><span class="math inline">\(b\)</span> remains <span class="math inline">\((n^{[\ell]},1)\)</span> but with python broadcasting this becomes <span class="math inline">\((n^{[\ell]},m)\)</span></li>
+</ul>
+<p>In summary:</p>
+<ul>
+<li><span class="math inline">\(Z^{[\ell]}, A^{[\ell]}: (n^{[\ell]},m)\)</span>, but with <span class="math inline">\(\ell = 0, A^{[0]} = X: (n^{[0]},m)\)</span></li>
+<li>Similarly for backpropagation, <span class="math inline">\(dZ^{[\ell]}, dA^{[\ell]}: (n^{[\ell]},m)\)</span></li>
+</ul>
+</div>
+<div id="why-deep-representations" class="section level2">
+<h2>Why deep representations</h2>
+<p>Deep network</p>
+<ul>
+<li>Face recognition/detection (visualisation will make more sense with convolutional neural network (CNN))
+<ul>
+<li>First layer - where are the edges? (small edges of image)</li>
+<li>Second layer - detect eye, nose</li>
+<li>Later layer - detect (larger areas of image)</li>
+</ul></li>
+<li>Speech recognition
+<ul>
+<li>First layer - low level audio-waveform</li>
+<li>Second layer - basic units of sound, phoneme</li>
+<li>Third layer - Words</li>
+<li>Last layer - Sentences/ Phases</li>
+</ul></li>
+<li>Could be dangerous to make analogy between deep learning and how the human brain works</li>
+</ul>
+<p>Circuit theory and deep learning</p>
+<blockquote>
+<p>Informally, there are functions you can compute with a small L-layer deep nueral network that shallower networks require exponentially more hidden units to compute.</p>
+</blockquote>
+<p>Re-branding: Neural networks with many layers re-branded as “Deep Learning”.</p>
+<p>Usually starts with logistic regression and then tries 1-2 hidden layers and considers the number of hidden layers as a tuning parameters.</p>
+</div>
+<div id="building-blocks-of-deep-neural-networks" class="section level2">
+<h2>Building blocks of deep neural networks</h2>
+<ul>
+<li>Usually cache W and B for convenience.</li>
+</ul>
+<div class="figure">
+<img src="/img/DeepNN_BuildingBlockFlow.JPG" alt="Deep NN Forward Propagation" />
+<p class="caption">Deep NN Forward Propagation</p>
+</div>
+</div>
+<div id="forward-and-backward-propagation" class="section level2">
+<h2>Forward and Backward Propagation</h2>
+<p><img src="/img/DeepNN_FandBPropagation1.JPG" alt="Forward Propagation" /> <img src="/img/DeepNN_FandBPropagation2.JPG" alt="Back Propagation" /> <img src="/img/DeepNN_FandBPropagation3.JPG" alt="Forward and Back Propagation" /></p>
+</div>
+<div id="parameters-and-hyperparameters" class="section level2">
+<h2>Parameters and Hyperparameters</h2>
+<p>Parameters: <span class="math inline">\(W^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}, \ldots\)</span></p>
+<p>Hyperparameters: Control parameters (i.e. determine their values)</p>
+<ul>
+<li>Learning rate <span class="math inline">\(\alpha\)</span> (previously may have been sloppy and referred to as parameter)</li>
+<li>Number of iterations</li>
+<li>Number of hidden layers <span class="math inline">\(L\)</span></li>
+<li>Number of hidden units <span class="math inline">\(n^{[1]}, n^{[2]}, \dots\)</span></li>
+<li>Choice of activation function</li>
+<li><span class="math inline">\(\vdots\)</span></li>
+<li>Momentum</li>
+<li>Mini-batch size</li>
+<li>Regularization</li>
+</ul>
+<p>Empirical process: Idea <span class="math inline">\(\rightarrow\)</span> Code <span class="math inline">\(\rightarrow\)</span> Experiment <span class="math inline">\(\rightarrow\)</span> Idea <span class="math inline">\(\rightarrow\)</span> <span class="math inline">\(\ldots\)</span>. i.e. need to try a lot and see how it works</p>
+<p>Very difficult to know in advance the hyperparameters. Need to go around cycle and iterate. But in next course will discuss systematic way for trying out a range of values. Note that even if tune to best hyper-parameter today may change in a year or so for the same problem (could be CPU..)</p>
+</div>
+<div id="what-does-it-have-to-do-with-the-human-brain" class="section level2">
+<h2>What does it have to do with the human brain?</h2>
+<p>Not a whole lot… but analogy is made because of: <img src="/img/DeepNN_BrainAnalogy.JPG" alt="Brain Analogy" /></p>
 </div>
 </div>

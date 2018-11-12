@@ -57,7 +57,7 @@ Deep learning can be applied to both types of data;
 
 Basic technical ideas have been around for decades.  Main drivers for rise of deep learning:
 
-* Amount of data (computer, sensors, cell phones, etc)
+* Amount of data (computer, sensors, cell phones, etc.)
 ![NN_eg](/img/DLS_DrivenByScale.png)
 Note that $m$ is used to denote the number of training examples.
 
@@ -66,7 +66,7 @@ Note that $m$ is used to denote the number of training examples.
 
 Course resources:
 
-* Discussion forum; questions technical questions, etc.  Go to course home page.  Otherwise at feedback@deeplearning.ai
+* Discussion forum; questions technical questions, etc..  Go to course home page.  Otherwise at feedback@deeplearning.ai
 
 Hero of Deep Learning: Geoffrey Hinton
 
@@ -402,7 +402,7 @@ Calculation of  $z = w^T x + b$, for $w \in \mathbb{R}^{n_x}$, $x \in \mathbb{R}
 * Vectorised form of calculating in Python is as follows:  $z$ = np.dot($w$, $x$) + $b$.
 
 Code:
-```{python eval=TRUE, echo = TRUE, results = 'hold'}
+```{python python_vectorisation_timing, eval=TRUE, echo = TRUE, results = 'hold'}
 import numpy as np
 a =  np.array([1,2,3,4])
 print(a)
@@ -460,14 +460,14 @@ e^{v_n} \\
  
  
 * Non-vectorised:
-```{python eval=FALSE, echo = TRUE}
+```{python python_for_loop, eval=FALSE, include=FALSE, echo = TRUE}
 u  = np.zeros((n,1))
 for i in range(n):
     u[i] = math.exp(v[i])
 ```
         
 * Vectorised
-```{python eval=FALSE, echo = TRUE}
+```{python python_vectorisation, eval=FALSE, include=FALSE, echo = TRUE}
 import numpy as np
 u = np.exp(v)
 ```
@@ -646,7 +646,7 @@ Flexibility + broadcasting = strength and weakness
 * Strength: can get a lot of done with just one line of code
 * Weakness: with flexibility can add subtle bugs.  E.g. Column + row vector may give matrix, rather than perhaps wanted a column or row vector
 
-```{python}
+```{python python_vectors}
 import numpy as np
 a = np.random.randn(5) # 5 random gaussian
 print(a)
@@ -684,7 +684,7 @@ Recommendations:
 
 Deep reinforcement learning.  Many more questions than in supervised learning.  Where does the data come from?  What actions you took early got you the reward later?  Safety issues.  Still need to solve longer horizon problems.  Wants to run the reinforcement learning in the inner loop to try to improve it.  See also Andrej Karpathy's deep learning course which has videos online.  Berkeley has a deep reinforcement learning course which has all of the lectures online.
 
-Ensure to try things out with frameworks like TensorFlow, Chainer, Theano, PyTorch etc; it's very easy to get going and get something up and running very quickly. To get to practice yourself, right? 
+Ensure to try things out with frameworks like TensorFlow, Chainer, Theano, PyTorch etc.; it's very easy to get going and get something up and running very quickly. To get to practice yourself, right? 
 
 Discusses article in [Mashable](https://mashable.com/2017/07/28/16-year-old-ai-genius/#0Htj4Vt2IiqO) about a 16-year-old who is one of the leaders on Kaggle competitions. And it just said, he just went out and learned things, found things online, learned everything himself and never actually took any formal course per se. 
 
@@ -710,7 +710,7 @@ At present, deep reinforcement learning always starts from scratch, would be bet
 Example: Single hidden layer consists ($\equiv$ 2 layer neural network)
 
 * Input layer, $a^{[0]} = \mathbf{X} = {x_1, x_2, x_3}$  within training set.  Use $a$ for activation.  Called layer 0 as not counted as not counted as an "official layer".
-* Hidden layer(s) generates activations. The first hidden layer, for example, with 4 nodes, is denoted $a^{[1]} = \{a_1^{[1]}, a_2^{[1]}, a_3^{[1]},  a_{4}^{[1]}\}$.  Called __hidden__ as don't see true values in training set.  First hidden layer will have associated paramaters, for example when $X \in \mathbb{R}^{1 \times 3}$ and $a^{[1]} \in \mathbb{R}^{4 \times 1}$ then will have parameters
+* Hidden layer(s) generates activations. The first hidden layer, for example, with 4 nodes, is denoted $a^{[1]} = \{a_1^{[1]}, a_2^{[1]}, a_3^{[1]},  a_{4}^{[1]}\}$.  Called __hidden__ as don't see true values in training set.  First hidden layer will have associated parameters, for example when $X \in \mathbb{R}^{1 \times 3}$ and $a^{[1]} \in \mathbb{R}^{4 \times 1}$ then will have parameters
     * $w^{[1]} \in \mathbb{R}^{4 \times 3}$
     * $b^{[1]} \in \mathbb{R}^{4 \times 1}$ 
 * Output layer ($y$ within training set).  With one hidden layer, this is referred to as a the second layer and have  $\hat{y} = a^{[2]}$  In this example of the neural network with one hidden layer of 4 units, the parameters associated with the output layer are:
@@ -812,7 +812,7 @@ $$\begin{aligned}
                         &= w^\prime x + b^\prime
 \end{aligned}$$
 
-So no matter how many layers, will just be computing a linear activtation function, so may as well not have any hidden layers.
+So no matter how many layers, will just be computing a linear activation function, so may as well not have any hidden layers.
 
 Linear hidden layer useless.  __Exception__ for output unit only of regression problem, i.e. when $y \in \mathbb{R}$.  But even then, if $y > 0$ then probably better to use a ReLU function.
 
@@ -873,7 +873,7 @@ Parameters for single hidden layer:
 
 where
 
-* $n_x = n^{[0]}$ is the number of input parametesr
+* $n_x = n^{[0]}$ is the number of input parameters
 * $n^{[1]}$ is the number of units in the single hidden layer
 * $n^{[2]} = 1$ is the output unit
 
@@ -885,7 +885,7 @@ To train parameters, need gradient descent.  After initialising parameters _rand
 Repeat {
 
 * Compute prediction ($\hat{y}^{(i)}, i = 1, \ldots, m$)
-* Compute derivate $dW^{[1]} = \frac{dJ}{dw^{[1]}}$, $db^{[1]} = \frac{dJ}{db^{[1]}}$, $\ldots$
+* Compute derivative $dW^{[1]} = \frac{dJ}{dw^{[1]}}$, $db^{[1]} = \frac{dJ}{db^{[1]}}$, $\ldots$
 * Update phase 
 
 $$\begin{aligned}
@@ -1002,3 +1002,111 @@ For deep neural networks may be a better option than 0.01.
 
 * Wrote first textbook on modern version of deep learning
 * GAN = generative algorithm
+
+
+# Deep Neural Network {#week4}
+
+## Deep L-layer neural network
+* To assess quality of class probabilities
+* Shows observed probability vs predicted class probability
+* Method:
+    * Obtain scores for test set using classification model
+    * Bin data into, e.g. 10, groups based on class probabilities 
+    * For each bin, determine observed event rate
+    * Plot bin midpoint on x-axis and observed event rate on y-axis
+    * If points fall on 45$^{\circ}$ line then well-calibrated
+    
+    
+* Can set layer as hyperparameter for tuning    
+* $L$: Number of layers
+* $n^{[\ell]}$: Number of units in layer $\ell$. Recall that input layer is layer 0, but is not counted in number of layers.
+* $a^{[\ell]} = g^{[\ell]}(z^{[\ell]})$: Activations in layer $\ell$
+* $w^{[\ell]}$: Weights for computing values $z^{[\ell]}$
+* $b^{[\ell]}$: Bias vector for layer $\ell$ 
+* $X = a^z{[\ell]}$ = input layer
+* $a^{[L]} = \hat{y}$ = output layer 
+
+## Forward Propagation
+
+![Deep NN Forward Propagation](/img/DeepNN_ForwardPropagation.JPG)
+
+## Getting your matrix dimensions right
+
+* Recall: $z^{[1]} =  a^{[0]} + b^{[1]}$ of the first hidden layer  has dimension ($n^{[1]}$,1)
+
+Dimensions:
+
+* $w^{[\ell]}: (n^{[\ell]}, n^{[\ell-1]})$.  Same dimension for $dw^{[\ell]}$ in backpropagation.
+* $b^{[\ell]}: (n^{[\ell]}, 1)$.  Same dimension for $db^{[\ell]}$ in backpropagation.
+* The activation $a^{[\ell]} = g^{[\ell]}(z^{[\ell]})$ has the same dimension as $z^{[\ell]}$ 
+
+For vectorisation
+
+* Stack $z$ horizontally for each training example, so $Z^{[\ell]}: (n^{[\ell]},m)$
+* Stack $A$ horizontally for each training example, so $A^{[\ell-1]}: (n^{[\ell-1]},m)$.  
+* $b$ remains $(n^{[\ell]},1)$ but with python broadcasting this becomes $(n^{[\ell]},m)$
+
+In summary:
+
+* $Z^{[\ell]}, A^{[\ell]}: (n^{[\ell]},m)$, but with $\ell = 0, A^{[0]} = X: (n^{[0]},m)$
+* Similarly for backpropagation,  $dZ^{[\ell]}, dA^{[\ell]}: (n^{[\ell]},m)$
+
+ 
+## Why deep representations
+
+Deep network 
+
+* Face recognition/detection (visualisation will make more sense with convolutional neural network (CNN))
+    * First layer - where are the edges? (small edges of image)
+    * Second layer - detect eye, nose
+    * Later layer - detect (larger areas of image)
+* Speech recognition
+    * First layer - low level audio-waveform
+    * Second layer - basic units of sound, phoneme
+    * Third layer - Words
+    * Last layer - Sentences/  Phases
+* Could be dangerous to make analogy between deep learning and how the human brain works
+
+Circuit theory and deep learning
+
+> Informally, there are functions you can compute with a small L-layer deep nueral network that shallower networks  require exponentially more hidden units to compute.
+
+Re-branding: Neural networks with many layers re-branded as "Deep Learning".
+
+Usually starts with logistic regression and then tries 1-2 hidden layers and considers the number of hidden layers as a tuning parameters.
+
+## Building blocks of deep neural networks
+
+* Usually cache W and B for convenience.
+
+![Deep NN Forward Propagation](/img/DeepNN_BuildingBlockFlow.JPG)    
+
+## Forward and Backward Propagation
+![Forward Propagation](/img/DeepNN_FandBPropagation1.JPG)
+![Back Propagation](/img/DeepNN_FandBPropagation2.JPG)
+![Forward and Back Propagation](/img/DeepNN_FandBPropagation3.JPG)
+
+## Parameters and Hyperparameters
+
+Parameters: $W^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}, \ldots$
+
+Hyperparameters: Control parameters (i.e. determine their values)
+
+* Learning rate $\alpha$ (previously may have been sloppy and referred to as parameter)
+* Number of iterations
+* Number of hidden layers $L$
+* Number of hidden units $n^{[1]}, n^{[2]}, \dots$
+* Choice of activation function
+* $\vdots$
+* Momentum
+* Mini-batch size
+* Regularization
+
+Empirical process: Idea $\rightarrow$ Code $\rightarrow$ Experiment $\rightarrow$ Idea $\rightarrow$ $\ldots$.  i.e. need to try a lot and see how it works
+
+Very difficult to know in advance the hyperparameters.  Need to go around cycle and iterate.  But in next course will discuss systematic way for trying out a range of values.  Note that even if tune to best hyper-parameter today may change in a year or so for the same problem (could be CPU..)
+
+## What does it have to do with the human brain?
+
+Not a whole lot... but analogy is made because of:
+![Brain Analogy](/img/DeepNN_BrainAnalogy.JPG)
