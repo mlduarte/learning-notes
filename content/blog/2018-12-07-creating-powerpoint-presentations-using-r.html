@@ -1,0 +1,152 @@
+---
+title: Creating PowerPoint Presentations (using R)
+author: ''
+date: '2018-12-07'
+slug: creating-powerpoint-presentations-using-r
+categories: []
+tags: []
+---
+
+
+
+<p>The R package <a href="https://davidgohel.github.io/officer/index.html">officer</a> enables integration of R output and company PPT templates. Here I use the <a href="https://www.duarte.com/slidedocs/">slidedocs</a> <em>Modern Swiss</em> template created by Nancy Duarte to create this <a href="https://github.com/mlduarte/learning-notes/tree/master/static/PptCreatedUsingR.pptx">PPT File</a></p>
+<!--https://yihui.name/en/2018/07/embed-file/
+https://bookdown.org/yihui/blogdown/templates.html
+-->
+<p>The following packages are used:</p>
+<pre class="r"><code>library(officer)
+library(magrittr)
+library(knitr)
+library(ggplot2)
+library(flextable)</code></pre>
+<p>Use of the <code>officer</code> package requires knowledge of the slide layout name and master, in addition to placeholder types and indexes. To aid in this, the powerpoint file can be annotated using the following command:</p>
+<pre class="r"><code>annotate_base(path=&quot;../../static/Duarte_MSTemplate_Download.pptx&quot;, output_file = &quot;../../static/Annotated_Layout.pptx&quot;)</code></pre>
+<p>Creation of a new powerpoint file using a template is achieved as follows:</p>
+<pre class="r"><code>if(exists(&quot;my_pres&quot;, env = globalenv())) rm(list = &quot;my_pres&quot;, envir = globalenv())
+my_pres &lt;- read_pptx(&quot;../../static/Duarte_MSTemplate_Download.pptx&quot;)</code></pre>
+<p>The layouts available in the template are displayed using the <code>layout_summary</code> command:</p>
+<pre class="r"><code>layout_summary(my_pres)</code></pre>
+<pre><code>##               layout       master
+## 1         Cover Page Modern Swiss
+## 2     Chapter Header Modern Swiss
+## 3               Grid Modern Swiss
+## 4  Table of Contents Modern Swiss
+## 5                  1 Modern Swiss
+## 6           1 + half Modern Swiss
+## 7             1 Half Modern Swiss
+## 8                  2 Modern Swiss
+## 9             2 Half Modern Swiss
+## 10            3 Half Modern Swiss
+## 11        Title Only Modern Swiss</code></pre>
+<p>The properties for a given layout can be viewed using the <code>layout_properties</code> command:</p>
+<pre class="r"><code>layout_properties(x = my_pres, layout = &quot;1 + half&quot;, master = &quot;Modern Swiss&quot;) </code></pre>
+<pre><code>##     master_name     name  type id    ph_label     offx     offy       cx
+## 20 Modern Swiss 1 + half  body  3       Right 4.187531 0.750000 5.312469
+## 34 Modern Swiss 1 + half  body  5        Left 1.423077 3.750000 2.539102
+## 35 Modern Swiss 1 + half  body  7 Attribution 1.423077 7.006944 7.369627
+## 49 Modern Swiss 1 + half title  2       Title 0.500000 0.750000 3.479934
+##           cy
+## 20 6.0069444
+## 34 3.0069444
+## 35 0.4930556
+## 49 1.3429878</code></pre>
+<p>Content is added to the presentation, primarily through commands such as the following:</p>
+<ul>
+<li><code>add_slide(layout = &quot;Cover Page&quot;, master = &quot;Modern Swiss&quot;)</code></li>
+<li><code>ph_with_text(type = &quot;body&quot;, str = &quot;A first text&quot;, index = 1)</code></li>
+<li><code>ph_with_text(type = &quot;ftr&quot;, str = &quot;Slide footer&quot;)</code></li>
+<li><code>ph_with_img(type = &quot;body&quot;, index = 2, src = img.file, height = 1.06, width = 1.39 )</code></li>
+<li><code>ph_with_table(type = &quot;body&quot;, value = head(mtcars) )</code></li>
+</ul>
+<p>See the <a href="https://davidgohel.github.io/officer/articles/powerpoint.html">PowerPoint presentations generation</a> for more details and details of all <code>ph_with_*</code> and <code>ph_with_*_at</code> functions.</p>
+<p>Where there is more than one placeholder, an index must be provided. The placeholder types and indices can be determined using <code>layout_properties</code> as detailed above. Alternatively, open the template in PowerPoint, view the Slide Master and make the shapes Selection Pane visible.</p>
+<p>A word of caution, however, is if you resave your template the placeholder indices may changes. I therefore ensured that the placeholder names within the template were unique and created the following custom functions (which work on the current slide):</p>
+<pre class="r"><code># Get label index for use with ph_with_* functions when type is not unique in the slide layout
+get_label_index &lt;- function (x, label = NA, type = &quot;body&quot;, index = 1) 
+{
+    stopifnot(type %in% c(&quot;ctrTitle&quot;, &quot;subTitle&quot;, &quot;dt&quot;, &quot;ftr&quot;, 
+                          &quot;sldNum&quot;, &quot;title&quot;, &quot;body&quot;))
+    stopifnot(!is.na(label))
+    slide &lt;- x$slide$get_slide(x$cursor)
+    data &lt;- slide$get_xfrm()
+    layout &lt;- data[1, &quot;name&quot;]
+    master &lt;- data[1, &quot;master_name&quot;]
+    data &lt;- x$slideLayouts$get_xfrm_data()
+    data &lt;- data[data$name == layout &amp; data$master_name == master &amp; data$type == type, ]
+    which(data$ph_label == label)[index]
+}
+environment(get_label_index) &lt;- asNamespace(&#39;officer&#39;)
+
+# shortcut for text
+ph_by_label &lt;- function (x, str, type = &quot;body&quot;, label = NA, index = 1) 
+{
+    stopifnot(type %in% c(&quot;ctrTitle&quot;, &quot;subTitle&quot;, &quot;dt&quot;, &quot;ftr&quot;, 
+                          &quot;sldNum&quot;, &quot;title&quot;, &quot;body&quot;))
+    slide &lt;- x$slide$get_slide(x$cursor)
+    if (!is.na(label)){
+        data &lt;- slide$get_xfrm()
+        layout &lt;- data[1, &quot;name&quot;]
+        master &lt;- data[1, &quot;master_name&quot;]
+        data &lt;- x$slideLayouts$get_xfrm_data()
+        data &lt;- data[data$name == layout &amp; data$master_name == master &amp; data$type == type, ]
+        index &lt;- which(data$ph_label == label)[index]
+    } 
+    sh_pr_df &lt;- slide$get_xfrm(type = type, index = index)
+    sh_pr_df$str &lt;- str
+    xml_elt &lt;- do.call(pml_shape_str, sh_pr_df)
+    node &lt;- as_xml_document(xml_elt)
+    xml_add_child(xml_find_first(slide$get(), &quot;//p:spTree&quot;), 
+                  node)
+    slide$fortify_id()
+    x
+}
+environment(ph_by_label) &lt;- asNamespace(&#39;officer&#39;)</code></pre>
+<p>This complication is not required if no changes are to be made to the template.</p>
+<p>The title slide is added as follows:</p>
+<pre class="r"><code>#layout_properties(x = my_pres, layout = &quot;Cover Page&quot;, master = &quot;Modern Swiss&quot;) 
+my_pres %&lt;&gt;% add_slide(layout = &quot;Cover Page&quot;, master = &quot;Modern Swiss&quot;) 
+my_pres %&lt;&gt;% ph_with_text(type = &quot;ctrTitle&quot;, str = &quot;Created Using R!&quot;) %&gt;%
+    ph_by_label(type = &quot;body&quot;, label = &quot;LeftText&quot;, str = &quot;This is an example file creating using the Modern Swiss template by Nancy Duarte&quot;) %&gt;%
+    ph_by_label(type = &quot;body&quot;, label = &quot;CentreText&quot;, str = paste0(&quot;Generated &quot;, format(Sys.Date(), &quot;%d %B %Y&quot;))) %&gt;%
+    ph_by_label(type = &quot;body&quot;, label = &quot;RightText&quot;, str = &quot;Created by Do-Artie&quot;)</code></pre>
+<p>Note that prior to using <code>ph_by_label</code> the presentation is saved with the appropriate slide.</p>
+<p>A slide with text and a chart is added as follows:</p>
+<pre class="r"><code>#layout_properties(x = my_pres, layout = &quot;1 + half&quot;, master = &quot;Modern Swiss&quot;) 
+gg_plot &lt;- ggplot(data = iris ) +
+    geom_point(mapping = aes(Sepal.Length, Petal.Length), size = 3) +
+    theme_minimal()
+
+
+my_pres %&lt;&gt;% add_slide(layout = &quot;1 + half&quot;, master = &quot;Modern Swiss&quot;) 
+my_pres %&lt;&gt;% ph_with_text(type = &quot;title&quot;,str = &quot;Bullet points and charts&quot;) %&gt;% 
+    ph_with_ul(type =&quot;body&quot;, index = get_label_index(my_pres, label = &quot;Left&quot;), 
+               str_list = c(&quot;Steps&quot;, 
+                            &quot;Get Label Index&quot;, 
+                            &quot;Use ph_with_ul&quot;), level_list=c(3,5,5)) %&gt;%
+    ph_with_gg(type =&quot;body&quot;, index = get_label_index(my_pres, label = &quot;Right&quot;), value = gg_plot) </code></pre>
+<p>The use of the <a href="https://davidgohel.github.io/flextable/index.html">flextable</a> package allows for customisation of tables (noting that <code>ph_with_table</code> is simpler if additional formatting not required).</p>
+<pre class="r"><code>#layout_properties(x = my_pres, layout = &quot;1&quot;, master = &quot;Modern Swiss&quot;) 
+tab &lt;- regulartable(head(iris)) %&gt;%
+    set_header_labels(Sepal.Length = &quot;Length&quot;,
+        Sepal.Width = &quot;Width&quot;, Petal.Length = &quot;Length&quot;,
+    Petal.Width = &quot;Width&quot;) %&gt;%
+    add_header(Sepal.Length = &quot;Sepal&quot;, Petal.Length = &quot;Petal&quot;, Species = &quot;Species&quot;) %&gt;%
+        merge_at(i=1, j=1:2, part=&quot;header&quot;) %&gt;%
+        merge_at(i=1, j=3:4, part=&quot;header&quot;) %&gt;%
+        merge_at(i=1:2, j=5, part=&quot;header&quot;) %&gt;%
+        align(i = 1, j = 1:4, align = &quot;center&quot;, part = &quot;header&quot;)  %&gt;%
+        align(j = ~ Species, align = &quot;center&quot;, part = &quot;all&quot;) %&gt;%
+     merge_v(j = 5) %&gt;%
+     set_formatter(
+        Sepal.Length = function(x) sprintf(&quot;%.02f&quot;, x),
+        Sepal.Width = function(x) sprintf(&quot;%.04f&quot;, x)
+      )
+
+my_pres %&lt;&gt;% add_slide(layout = &quot;1&quot;, master = &quot;Modern Swiss&quot;) 
+my_pres %&lt;&gt;% ph_with_text(type = &quot;title&quot;,str = &quot;Formatted tables&quot;) %&gt;% 
+    ph_with_flextable(type = &quot;body&quot;, index = get_label_index(my_pres, label = &quot;Text&quot;),  value = tab) 
+
+rm(tab)   </code></pre>
+<p>Note that the widths of the columns can be adjusted using the <code>width</code> command and optimal widths ascertained using <code>dim_pretty()</code> can be used as a baseline. I found the <code>autofit()</code> command to be quite slow.</p>
+<p>Create powerpoint file:</p>
+<pre class="r"><code>print(my_pres, target = &quot;../../static/PptCreatedUsingR.pptx&quot;)</code></pre>

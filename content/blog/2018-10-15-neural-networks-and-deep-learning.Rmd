@@ -5,7 +5,7 @@ date: '2018-10-15'
 slug: neural-networks-and-deep-learning
 categories: []
 tags: []
-banner: "img/banners/NNandDL.png""
+banner: "img/banners/NNandDL.png"
 ---
 
 ```{r init, message=FALSE, warning=FALSE, echo = FALSE}
@@ -202,6 +202,7 @@ data.frame(yhat = seq(0,1,0.001)) %>%
     xlab(TeX("$\\hat{y}$")) + 
     ylab(TeX("$-\\log \\;(1-\\hat{y})$"))
 ```
+
 
 **Cost function**:
 \[J(w,b) = \frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) = -\frac{1}{m}\sum^m_{i=1}\left[y^{(i)} \log \hat{y}^{(i)} + (1-y^{(i)})\log(1-\hat{y}^{(i)})\right]\]
@@ -1013,6 +1014,8 @@ For deep neural networks may be a better option than 0.01.
 
 # Deep Neural Network {#week4}
 
+
+
 ## Deep L-layer neural network
 * To assess quality of class probabilities
 * Shows observed probability vs predicted class probability
@@ -1021,7 +1024,7 @@ For deep neural networks may be a better option than 0.01.
     * Bin data into, e.g. 10, groups based on class probabilities 
     * For each bin, determine observed event rate
     * Plot bin midpoint on x-axis and observed event rate on y-axis
-    * If points fall on 45$^{\circ}$ line then well-calibrated
+    * If points fall on 45$^{\circ}$ line then well-callibrated
     
     
 * Can set layer as hyperparameter for tuning    

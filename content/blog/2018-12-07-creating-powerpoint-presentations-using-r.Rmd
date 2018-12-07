@@ -1,0 +1,179 @@
+---
+title: Creating PowerPoint Presentations (using R)
+author: ''
+date: '2018-12-07'
+slug: creating-powerpoint-presentations-using-r
+categories: []
+tags: []
+---
+
+ 
+
+The R package [officer](https://davidgohel.github.io/officer/index.html) enables integration of R output and company PPT templates.   Here I use the [slidedocs](https://www.duarte.com/slidedocs/) _Modern Swiss_ template created by Nancy Duarte to create this <a href="https://github.com/mlduarte/learning-notes/tree/master/static/PptCreatedUsingR.pptx">PPT File</a>
+
+<!--https://yihui.name/en/2018/07/embed-file/
+https://bookdown.org/yihui/blogdown/templates.html
+-->
+
+The following packages are used: 
+```{r installPackages}
+library(officer)
+library(magrittr)
+library(knitr)
+library(ggplot2)
+library(flextable)
+```
+
+
+Use of the `officer` package requires knowledge of the slide layout name and master, in addition to placeholder types and indexes.  To aid in this, the powerpoint file can be annotated using the following command: 
+```{r annotatePptTemplate, eval=FALSE, echo=TRUE}
+annotate_base(path="../../static/Duarte_MSTemplate_Download.pptx", output_file = "../../static/Annotated_Layout.pptx")
+```
+
+
+Creation of a new powerpoint file using a template is achieved as follows:
+```{r load_presentation}
+if(exists("my_pres", env = globalenv())) rm(list = "my_pres", envir = globalenv())
+my_pres <- read_pptx("../../static/Duarte_MSTemplate_Download.pptx")
+```
+
+The layouts available in the template are displayed using the `layout_summary` command:
+```{r show_layouts}
+layout_summary(my_pres)
+```
+
+The properties for a given layout can be viewed using the `layout_properties` command:
+```{r show_layout_properties}
+layout_properties(x = my_pres, layout = "1 + half", master = "Modern Swiss") 
+```
+
+Content is added to the presentation, primarily through commands such as the following:
+
+* `add_slide(layout = "Cover Page", master = "Modern Swiss")`
+* `ph_with_text(type = "body", str = "A first text", index = 1)`
+* `ph_with_text(type = "ftr", str = "Slide footer")`
+* `ph_with_img(type = "body", index = 2, src = img.file, height = 1.06, width = 1.39 )`
+* `ph_with_table(type = "body", value = head(mtcars) )`
+
+See the [PowerPoint presentations generation](https://davidgohel.github.io/officer/articles/powerpoint.html)  for more details and details of all `ph_with_*` and `ph_with_*_at` functions.
+
+Where there is more than one placeholder, an index must be provided.  The placeholder types and indices can be determined using `layout_properties` as detailed above.  Alternatively, open the template in PowerPoint, view the Slide Master and make the shapes Selection Pane visible.  
+
+A word of caution, however, is if you resave your template the placeholder indices may changes.  I therefore ensured that the placeholder names within the template were unique and created the following custom functions (which work on the current slide):
+
+```{r define_custom_functions}
+# Get label index for use with ph_with_* functions when type is not unique in the slide layout
+get_label_index <- function (x, label = NA, type = "body", index = 1) 
+{
+    stopifnot(type %in% c("ctrTitle", "subTitle", "dt", "ftr", 
+                          "sldNum", "title", "body"))
+    stopifnot(!is.na(label))
+    slide <- x$slide$get_slide(x$cursor)
+    data <- slide$get_xfrm()
+    layout <- data[1, "name"]
+    master <- data[1, "master_name"]
+    data <- x$slideLayouts$get_xfrm_data()
+    data <- data[data$name == layout & data$master_name == master & data$type == type, ]
+    which(data$ph_label == label)[index]
+}
+environment(get_label_index) <- asNamespace('officer')
+
+# shortcut for text
+ph_by_label <- function (x, str, type = "body", label = NA, index = 1) 
+{
+    stopifnot(type %in% c("ctrTitle", "subTitle", "dt", "ftr", 
+                          "sldNum", "title", "body"))
+    slide <- x$slide$get_slide(x$cursor)
+    if (!is.na(label)){
+        data <- slide$get_xfrm()
+        layout <- data[1, "name"]
+        master <- data[1, "master_name"]
+        data <- x$slideLayouts$get_xfrm_data()
+        data <- data[data$name == layout & data$master_name == master & data$type == type, ]
+        index <- which(data$ph_label == label)[index]
+    } 
+    sh_pr_df <- slide$get_xfrm(type = type, index = index)
+    sh_pr_df$str <- str
+    xml_elt <- do.call(pml_shape_str, sh_pr_df)
+    node <- as_xml_document(xml_elt)
+    xml_add_child(xml_find_first(slide$get(), "//p:spTree"), 
+                  node)
+    slide$fortify_id()
+    x
+}
+environment(ph_by_label) <- asNamespace('officer')
+```
+This complication is not required if no changes are to be made to the template.
+
+
+The title slide is added as follows:
+
+```{r add_title_slide}
+#layout_properties(x = my_pres, layout = "Cover Page", master = "Modern Swiss") 
+my_pres %<>% add_slide(layout = "Cover Page", master = "Modern Swiss") 
+my_pres %<>% ph_with_text(type = "ctrTitle", str = "Created Using R!") %>%
+    ph_by_label(type = "body", label = "LeftText", str = "This is an example file creating using the Modern Swiss template by Nancy Duarte") %>%
+    ph_by_label(type = "body", label = "CentreText", str = paste0("Generated ", format(Sys.Date(), "%d %B %Y"))) %>%
+    ph_by_label(type = "body", label = "RightText", str = "Created by Do-Artie")
+```
+
+Note that prior to using `ph_by_label` the presentation is saved with the appropriate slide.
+
+A slide with text and a chart is added as follows:
+```{r add_mixed_slide}
+#layout_properties(x = my_pres, layout = "1 + half", master = "Modern Swiss") 
+gg_plot <- ggplot(data = iris ) +
+    geom_point(mapping = aes(Sepal.Length, Petal.Length), size = 3) +
+    theme_minimal()
+
+
+my_pres %<>% add_slide(layout = "1 + half", master = "Modern Swiss") 
+my_pres %<>% ph_with_text(type = "title",str = "Bullet points and charts") %>% 
+    ph_with_ul(type ="body", index = get_label_index(my_pres, label = "Left"), 
+               str_list = c("Steps", 
+                            "Get Label Index", 
+                            "Use ph_with_ul"), level_list=c(3,5,5)) %>%
+    ph_with_gg(type ="body", index = get_label_index(my_pres, label = "Right"), value = gg_plot) 
+ 
+```
+
+
+The use of the [flextable](https://davidgohel.github.io/flextable/index.html) package allows for customisation of tables (noting that `ph_with_table` is simpler if additional formatting not required).  
+
+```{r add_flextable}
+#layout_properties(x = my_pres, layout = "1", master = "Modern Swiss") 
+tab <- regulartable(head(iris)) %>%
+    set_header_labels(Sepal.Length = "Length",
+        Sepal.Width = "Width", Petal.Length = "Length",
+    Petal.Width = "Width") %>%
+    add_header(Sepal.Length = "Sepal", Petal.Length = "Petal", Species = "Species") %>%
+        merge_at(i=1, j=1:2, part="header") %>%
+        merge_at(i=1, j=3:4, part="header") %>%
+        merge_at(i=1:2, j=5, part="header") %>%
+        align(i = 1, j = 1:4, align = "center", part = "header")  %>%
+        align(j = ~ Species, align = "center", part = "all") %>%
+     merge_v(j = 5) %>%
+     set_formatter(
+        Sepal.Length = function(x) sprintf("%.02f", x),
+        Sepal.Width = function(x) sprintf("%.04f", x)
+      )
+
+my_pres %<>% add_slide(layout = "1", master = "Modern Swiss") 
+my_pres %<>% ph_with_text(type = "title",str = "Formatted tables") %>% 
+    ph_with_flextable(type = "body", index = get_label_index(my_pres, label = "Text"),  value = tab) 
+
+rm(tab)   
+    
+```
+
+Note that the widths of the columns can be adjusted using the `width` command and optimal widths ascertained using `dim_pretty()` can be used as a baseline.  I found the  `autofit()` command to be quite slow.
+
+Create powerpoint file:
+```{r echo = TRUE, results = 'hide'}
+print(my_pres, target = "../../static/PptCreatedUsingR.pptx")
+```
+
+
+
+
+

@@ -34,12 +34,7 @@ banner: "img/banners/learning_forwards.jpg"
     + **Programming Language**: R
     + **Time to Complete**: Not listed    
     
-* **[Neural Networks and Deep Learning (Course 1 Deep Learning Specialisation)](https://www.coursera.org/learn/neural-networks-deep-learning)** by Coursera
-    + **Cost**: Free to audit
-    + **Topics**: Neural networks
-    + **Programming Language**: Python
-    + **Time to Complete**: 4 weeks of study, 3-6 hours a week  
-    
+
 * **[Improving Deep Neural Networks: Hyperparameter tuning, Regularization and Optimization (Course 2 Deep Learning Specialisation)](https://www.coursera.org/learn/deep-neural-network)** by Coursera
     + **Cost**: Free to audit
     + **Topics**: Initialization, L2 and dropout regularization, Batch normalization, gradient checking.
