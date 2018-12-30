@@ -17,23 +17,37 @@ Note: Quizzes and notebooks have not been uploaded to GitHub in order to comply 
     * Week 2 - Neural networks basics   
         * [Study notes](/blog/2018/10/15/2018-10-15-neural-networks-and-deep-learning#week2)
         * [Quiz](/coursera/deep learning/quiz/NN_and_DL2.html)
-        * [Notebook: Python basics with numpy (.html)](/coursera/deep learning/notebooks/Python+Basics+With+Numpy+v3.html) [.ipynb](/coursera/deep learning/notebooks/Python+Basics+With+Numpy+v3.ipynb)
-        * [Notebook: Logistic regression with a neural network mindset (.ipynb)](/coursera/deep learning/notebooks/Python+Basics+With+Numpy+v3.ipynb)
+        * [Notebook: Python basics with numpy (.html)](/coursera/deep learning/notebooks/01 Python Basics with Numpy/Python+Basics+With+Numpy+v3.html) [.ipynb](/coursera/deep learning/notebooks/01 Python Basics with Numpy/Python+Basics+With+Numpy+v3.ipynb)
+        * [Notebook: Logistic regression with a neural network mindset (.html)](/coursera/deep learning/notebooks/02 Logistic Regression with a Neural Network Mindset/Python+Basics+With+Numpy+v3.html)        
+        [(.ipynb)](/coursera/deep learning/notebooks/02 Logistic Regression with a Neural Network Mindset/Python+Basics+With+Numpy+v3.ipynb)
     * Week 3 - Shallow Neural Networks
         * [Study notes](/blog/2018/10/15/2018-10-15-neural-networks-and-deep-learning#week3)
         * [Quiz](/coursera/deep learning/quiz/NN_and_DL3.html)
-        * [Notebook: Planar data classification with a hidden layer (.html)](/coursera/deep learning/notebooks/Planar+data+classification+with+one+hidden+layer+v5.html) [.ipynb](/coursera/deep learning/notebooks/Planar+data+classification+with+one+hidden+layer+v5.ipynb)
+        * [Notebook: Planar data classification with a hidden layer (.html)](/coursera/deep learning/notebooks/03 Planar data classification with one hidden layer/Planar+data+classification+with+one+hidden+layer+v5.html) [.ipynb](/coursera/deep learning/notebooks/03 Planar data classification with one hidden layer/Planar+data+classification+with+one+hidden+layer+v5.ipynb)
     * Week 4 - Deep Neural Networks
         * [Study Notes](/blog/2018/10/15/2018-10-15-neural-networks-and-deep-learning#week4)
         * [Quiz](/coursera/deep learning/quiz/NN_and_DL4.html)
-        * [Notebook: Building your deep learning network: Step by step (.html)](/coursera/deep learning/notebooks/Building+your+Deep+Neural+Network+-+Step+by+Step+v8.html) [.ipynb](/coursera/deep learning/notebooks/Building+your+Deep+Neural+Network+-+Step+by+Step+v8.ipynb)
-        * [Notebook: Deep neural network application (.html)](/coursera/deep learning/notebooks/Deep+Neural+Network+-+Application+v8.html) [.ipynb](/coursera/deep learning/notebooks/Deep+Neural+Network+-+Application+v8.ipynb)
+        * [Notebook: Building your deep learning network: Step by step (.html)](/coursera/deep learning/notebooks/04 Building your Deep Neural Network Step by Step/Building+your+Deep+Neural+Network+-+Step+by+Step.html) [.ipynb](/coursera/deep learning/notebooks/04 Building your Deep Neural Network Step by Step/Building+your+Deep+Neural+Network+-+Step+by+Step.ipynb)
+        * [Notebook: Deep neural network application (.html)](/coursera/deep learning/notebooks/05 Deep Neural Network Application/Deep+Neural+Network+-+Application.html) [.ipynb](/coursera/deep learning/notebooks/05 Deep Neural Network Application/Deep+Neural+Network+-+Application.ipynb)
         
 * Course 2: Improving deep neural networks: Hyperparameter tuning, regularisation and optimisation
     * Week 1: Practical aspects of deep learning
-        * Study notes
+        * [Study notes](/blog/2018/12/07/2018-12-07-improving-deep-learning-networks#week1)
+        * [Quiz](/coursera/deep learning/quiz/ImprovingDNN1.html)
+        * [Notebook: Initialisation (.html)](/coursera/deep learning/notebooks/06 Initialisation/Initialization.html) [.ipynb](/coursera/deep learning/notebooks/06 Initialisation/Initialization.ipynb)
+        * [Notebook: Regularisation (.html)](/coursera/deep learning/notebooks/07 Regularisation/Regularization.html) [.ipynb](/coursera/deep learning/notebooks/07 Regularisation/Regularization.ipynb)
+        * [Notebook: Gradient Checking (.html)](/coursera/deep learning/notebooks/08 Gradient Checking/Gradient+Checking.html) [.ipynb](/coursera/deep learning/notebooks/08 Gradient Checking/Gradient+Checking.ipynb)
+        
     * Week 2: Optimisation algorithms
+        * [Study notes](/blog/2018/12/07/2018-12-07-improving-deep-learning-networks#week2)
+        * [Quiz](/coursera/deep learning/quiz/ImprovingDNN2.html)
+        * Notebook: Optimisation
+        
     * Week 3: Hyperparameter tuning, batch normalisation and programming frameworks
+        * [Study notes](/blog/2018/12/07/2018-12-07-improving-deep-learning-networks#week3)
+        * Quiz
+        * Notebook: Tensorflow
+           
     
 * Course 3: Structuring machine learning projects
 

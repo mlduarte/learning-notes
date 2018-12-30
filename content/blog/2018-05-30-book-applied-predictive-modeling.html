@@ -14,6 +14,7 @@ banner: img/banners/kuhn.png
 
 
 
+<p><a href="#preprocessing">Preprocessing</a> <a href="#tuning">Over-Fitting and Model Tuning</a></p>
 <div id="overview" class="section level1">
 <h1>Overview</h1>
 <p>This post includes my notes and reproduction of examples of <strong>Part I: General Strategies</strong> of the book <a href="http://appliedpredictivemodeling.com">Applied Predictive Modeling</a> (2013), by Max Kuhn and Kjell Johnson</p>
@@ -59,7 +60,7 @@ banner: img/banners/kuhn.png
 </div>
 </div>
 <div id="data-pre-processing" class="section level1">
-<h1>Data Pre-Processing</h1>
+<h1>Data Pre-Processing <a id = preprocessing ></a></h1>
 <ul>
 <li>Addition, deletion or transformation of <strong>training set</strong> data</li>
 <li>Can make or break model’s predictive ability</li>
@@ -1192,7 +1193,7 @@ corrInfo(gaMat) </code></pre>
 </div>
 </div>
 <div id="chapter-4-over-fitting-and-model-tuning" class="section level1">
-<h1>Chapter 4: Over-Fitting and Model Tuning</h1>
+<h1>Chapter 4: Over-Fitting and Model Tuning <a id="tuning"></a></h1>
 <p>Aim: Strategies to avoid overfitting so that model can predict new samples with similar degree of accuracy as for training data. Will use model tuning (of model parameters) to maximise model performance. Traditionally, training set to build and tune model and test set to estimate performance. Modern approach is to split data into multiple training and test data sets.</p>
 <div id="the-problem-of-over-fitting" class="section level2">
 <h2>The Problem of Over-Fitting</h2>

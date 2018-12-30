@@ -12,6 +12,9 @@ tags:
 banner: img/banners/kuhn.png
 ---
 
+[Preprocessing](#preprocessing)
+[Over-Fitting and Model Tuning](#tuning)
+
 # Overview
 This post includes my notes and reproduction of examples of **Part I: General Strategies** of the book [Applied Predictive Modeling](http://appliedpredictivemodeling.com) (2013), by Max Kuhn and Kjell Johnson
 
@@ -130,7 +133,7 @@ Themes
 * Evaluating several models: There is no single model that will always do better than another.
 * Model selection: Involves choosing between models and selecting tuning parameters (within model)
 
-# Data Pre-Processing
+# Data Pre-Processing <a id = preprocessing ></a>
 
 * Addition, deletion or transformation of **training set** data
 * Can make or break model's predictive ability
@@ -1212,7 +1215,7 @@ corrInfo(gaMat)
 The main difference between these results is that the greedy approach of `findCorrelation` is much more conservative than the techniques found in the `subselect` package. 
 
 
-# Chapter 4: Over-Fitting and Model Tuning
+# Chapter 4: Over-Fitting and Model Tuning <a id="tuning"></a>
 
 Aim: Strategies to avoid overfitting so that model can predict new samples with similar degree of accuracy as for training data.  Will use model tuning (of model parameters) to maximise model performance.  Traditionally, training set to build and tune model and test set to estimate performance.  Modern approach is to split data into multiple training and test data sets.
 
