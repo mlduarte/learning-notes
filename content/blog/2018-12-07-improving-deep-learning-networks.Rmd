@@ -11,6 +11,10 @@ banner: img/banners/improvingDNN.png
 ```{r init, message=FALSE, warning=FALSE, echo = FALSE}
 library(tidyverse)
 library(knitr)
+library(reticulate)
+library(ggplot2)
+library(gridExtra)
+use_condaenv("tensorflow_env")
 ```
 
 # Practical aspects of deep learning {#week1}
@@ -475,14 +479,14 @@ Guideline:
 ## Exponentially (moving) weighted averages
 
 Initialise $v_0 = 0$
-Set \[v_t = \beta v_{t-1} + (1-\beta) x_t\]
+Set \[v_t = \beta v_{t-1} + (1-\beta) \theta_t\]
 
-$v_t$ approximately averages over $\frac{1}{1-\beta}$ values of $X$
+$v_t$ approximately averages over $\frac{1}{1-\beta}$ values of $\theta$
 
 $$\begin{aligned}
-\beta = 0.9 &:\approx 10    \; X \text{ values}\\
-\beta = 0.98 &:\approx 50   \;X \text{ values}\\
-\beta = 0.5 &:\approx 2     \;X \text{ values}
+\beta = 0.9 &:\approx 10    \; \theta \text{ values}\\
+\beta = 0.98 &:\approx 50   \;\theta \text{ values}\\
+\beta = 0.5 &:\approx 2     \;\theta \text{ values}
 \end{aligned}$$
 
 
@@ -490,17 +494,17 @@ $$\begin{aligned}
 
 Given;
 $$\begin{aligned}
-v_{100} &= 0.9 v_{99} + 0.1x_{100}\\
-v_{99} &= 0.9 v_{98} + 0.1x_{99}\\
-v_{98} &= 0.9 v_{97} + 0.1x_{98}
+v_{100} &= 0.9 v_{99} + 0.1\theta_{100}\\
+v_{99} &= 0.9 v_{98} + 0.1\theta_{99}\\
+v_{98} &= 0.9 v_{97} + 0.1\theta_{98}
 \end{aligned}$$
 
 have that 
 $$\begin{aligned}
-v_{100} &=  0.1x_{100} + 0.9 v_{99}\\
-        &=  0.1x_{100} + 0.9 (0.1x_{99} + 0.9 v_{98}) \\
-        &=  0.1x_{100} + 0.9 \left(0.1x_{99} + 0.9 [0.1x_{98} + 0.9 v_{97}]\right) \\
-        &=  0.1x_{100} + 0.1\times0.9 x_{99} + 0.1\times 0.9^2 x_{98} + 0.1\times 0.9^3 x_{97} + \ldots
+v_{100} &=  0.1\theta_{100} + 0.9 v_{99}\\
+        &=  0.1\theta_{100} + 0.9 (0.1\theta_{99} + 0.9 v_{98}) \\
+        &=  0.1\theta_{100} + 0.9 \left(0.1\theta_{99} + 0.9 [0.1\theta_{98} + 0.9 v_{97}]\right) \\
+        &=  0.1\theta_{100} + 0.1\times0.9 \theta_{99} + 0.1\times 0.9^2 \theta_{98} + 0.1\times 0.9^3 \theta_{97} + \ldots
         \end{aligned}$$
         
 Note that all coefficients add up to almost 1, which is why this is an exponentially weighted average (bias correction)
@@ -520,7 +524,8 @@ data.frame(beta = c(0.9, 0.98, 0.5)) %>%
 ```
 
 In the following image, 
-* **Yellow*: $\beta = 0.5$
+
+* **Yellow**: $\beta = 0.5$
 * **Red**: $\beta = 0.9$
 * **Green**: $\beta = 0.98$
 
@@ -548,10 +553,11 @@ dat %>%
     kable(col.names = c("$\\beta$", "Avg Over", "$1/e$"))
 
 ```
-With $\beta = 0.9$, after 10 $x$ values, weight of $x_{i-11}$ decays to less than a third of the current value.
+With $\beta = 0.9$, after 10 $\theta$ values, weight of $\theta_{i-11}$ decays to less than a third of the current value.
 
 
 Implementation:
+
 * Initialise $v = 0$
 * Repeat to get next $\theta_t$: \[v_\theta := \beta v_\theta + (1-\beta) \theta_t\]
 
@@ -574,7 +580,7 @@ $$\begin{aligned}
 \end{aligned}$$
 So both $v_1$ and $v_2$ are less than the average $\theta$.
 
-TO correct for bias use \[\frac{v_t}{1-\beta^t}\]
+To correct for bias use \[\frac{v_t}{1-\beta^t}\]
 Noting that at $t=2$, $1-\beta^t = (1-0.98^2) = 0.0396$, so that \[\frac{v_t}{1-\beta^t} = \frac{0.0196 \theta_1 + 0.02 \theta_2}{0.0396},\]
 i.e. the weights in the numerator add up to the denominator and so this is a weighted average.
 
@@ -593,8 +599,8 @@ Gradient descent with momentum:
 Algorithm: On iteration $t$:
 
 * Compute $dW$, $db$ on current mini-batch
-* $v_{dW} = \beta v_{dW} + (1-beta) dW$,
-* $v_{db} = \beta v_{db} + (1-beta) db$,
+* $v_{dW} = \beta v_{dW} + (1-\beta) dW$,
+* $v_{db} = \beta v_{db} + (1-\beta) db$,
 * $w := w - \alpha v_{dW}$, $b := b - \alpha v_{db}$
     
 So have two hyperparameters: $\alpha$, $\beta$.  In practice $\beta = 0.9$ works pretty well.
@@ -612,7 +618,8 @@ Note that in the literature they scale $\alpha$ by $1-\beta$, such that $\alpha^
 This initial formulation is preferred by Andrew Ng; this is because in the latter formulation, tuning Beta will impact scaling of $v\times dW$ and $v \times db$ and so you may need to return the learning rate alpha.
 
 In the following image, 
-* **Blue*: Gradient descent
+
+* **Blue**: Gradient descent
 * **Red**: Gradient descent with momentum
 
 ![Betas](/img/ImprovingDNN/momentum.png)
@@ -625,8 +632,8 @@ Root mean square prop can also speed up gradient descent by dampening oscillatio
 On iteration $t$:
 
 * Compute $dW$, $db$ on current mini-batch
-* $S_{dW} = \beta_2 S_{dW} + (1-beta_2) dW^2$ (using element-wise squaring),
-* $S_{db} = \beta_2 S_{db} + (1-beta_2) db ^2$,
+* $S_{dW} = \beta_2 S_{dW} + (1-\beta_2) dW^2$ (using element-wise squaring),
+* $S_{db} = \beta_2 S_{db} + (1-\beta_2) db ^2$,
 * $w := w - \alpha \frac{dW}{\sqrt{s_{dW}}}$, $b := b - \alpha \frac{db}{\sqrt{s_{db}}}$
 
 May therefore be able to use a larger learning rate $\alpha$
@@ -639,11 +646,11 @@ Adam = Momentum + RMSprop
 
 Algorithm:
 
-* $v_{dW} = 0$, $S_{dW} = 0$, $v_{db} = 0$, $S_{db} = 0 
+* $v_{dW} = 0$, $S_{dW} = 0$, $v_{db} = 0$, $S_{db} = 0$ 
 * On iteration $t$:
     * Compute $dW$, $db$ using current mini-batch
-    * $v_{dW} = \beta_1 v_{dW} + (1-beta_1) dW$, $v_{db} = \beta_1 v_{db} + (1-beta_1) db$ (momentum)
-    *  $S_{dW} = \beta_2 S_{dW} + (1-beta_2) dW^2$, $S_{db} = \beta_2 S_{db} + (1-beta_2) db ^2$ (RMSprop)
+    * $v_{dW} = \beta_1 v_{dW} + (1-\beta_1) dW$, $v_{db} = \beta_1 v_{db} + (1-\beta_1) db$ (momentum)
+    *  $S_{dW} = \beta_2 S_{dW} + (1-\beta_2) dW^2$, $S_{db} = \beta_2 S_{db} + (1-\beta_2) db ^2$ (RMSprop)
     * Corrections: 
         * $v_{dw}^\text{corrected} = v_{dw}/(1-\beta_1^t)$
         * $v_{db}^\text{corrected} = v_{db}/(1-\beta_1^t)$
@@ -657,8 +664,8 @@ Hyperparameters:
 
 * $\alpha$ - learning rate.  needs to be tuned
 * $\beta_1$ - momentum moving average of $dw$ and $db$ (first moment, mean of the derivatives).  Typically 0.9. 
-* $\beta_2$ - moving weighted average of $dw^2$ and $db^2$ (second moment)
-* $\varepsilon$ - doesn't matter too much; doesn't affect performance much at all
+* $\beta_2$ - moving weighted average of $dw^2$ and $db^2$ (second moment). Typically 0.999.
+* $\varepsilon$ - Numerical stability adjustment.  Doesn't matter too much; doesn't affect performance much at all. Typically $10^{-8}$
 
 Usually use default values for $\beta_1$, $\beta_2$ and $\varepsilon$
 
@@ -693,32 +700,425 @@ This does help but is lower down Andrew Ng's list on things to try.
 
 ## The problem of local optima
 
-* people used to worry about optimisation algorithm getting stuck at local optima
+* People used to worry about optimisation algorithm getting stuck at local optima
 * In, e.g. 20000, dimension space would require all 20,000 to be convex / concave which is unlikely.  
 * So intuition about low-dimension spaces doesn't transfer to high-dimensional spaces
 * So, in deep learning, local optima isn't a problem, but a plateau is a problem as they can really slow down learning
-* momentum, rmsProp or ADam can really help learning algorithm.
+* momentum, rmsProp or adam can really help learning algorithm.
 * Because network is solving optimisation problems over such high dimensional spaces, no-one has great intuition about what these spaces really look like.  
 
 # Hyperparameter tuning, Batch Normalization and Programming Frameworks {#week3}
 
 ## Hyperparameter Tuning
-## Tuning process
-## Using and approriate scale to pick hyperparameters
-## Hyperparameters tuning in practice: Pandas vs. Caviar
+### Tuning process
+
+Hyperparameters
+
+* Most important to tune:
+    * Learning rate $\alpha$ 
+* Secondary importance
+    * Number of hidden units
+    * Mini-batch size
+    * momentum parameter, $\beta$, if using momentum ($\sim 0.9$)
+* Of third-most importance
+    * decay rate, if using learning rate decay
+    * Number of layers
+* Pretty much never tuned:
+    * Adam parameters (first and second moments and numerical stability adjustment), $\beta_1$ = 0.9, $\beta_2$ = 0.999 and $\varepsilon$ = $10^{-8}$, if using adam
+
+How to select set of values to explore:
+
+* Grid Search
+    * Shallow learning (dinosaur era) - a grid was explored, e.g. $2 \times 2$ when looking at 2 hyperparameters.
+    * Works well with small number of hyperparameters
+* Random Sampling
+    * More efficient deep learning when have many more hyperparameters to tune
+    * Pick points at random from grid (2 parameters), cube, ....
+    * Allows lot more values to be tested
+* Coarse to fine
+    * May zoom into small region of hyperparameter values to sample more densely in area that seemed to work well
+
+### Using and approriate scale to pick hyperparameters
+
+* Doesn't mean you sample uniformly at random
+* Example, if trying to tune
+    * Number of hidden units, $n^{[l]} = 50, \ldots, 100$ - makes sense to sample uniformly at random
+    * Number of layers, $L = 2, ldots, 4$.  May sample uniformly at random, or over grid for values 2, 3, and 4
+    * Learning rate, $\alpha = 0.0001, \ldots, 1$
+        * With uniformly at random, `r scales::percent(round(0.1 - 0.001/(1-0.0001),2))` of sampled values would be between 0.001 and 0.1 and `r scales::percent(round(1 - .1/(1-0.0001),2))` would be between 0.1 and 1
+        * By sampling the log scale, would get
+            * 25% between 0.0001 and 0.001
+            * 25% between 0.001 and 0.01
+            * 25% between 0.01 and 0.1
+            * 25% between 0.1 and 1
     
+Implementation of random sampling the log scale:
+
+* If want to sample between $10^a$ and $10^b$
+* Sample $r$ between $a$ and $b$
+* Set $\alpha = 10^r$
+
+Example: to sample log scale of 0.0001 to 1
+
+* Find that $a = \log_{10} 0.0001$ = `r log10(0.0001)` and  $b = \log_{10} 1$ = `r log10(1)`
+* Sample $r$ between -4 and 0
+* Set $\alpha$ to $10^{r}$
+
+```{r sample_log_scale_r, message=FALSE, warning=FALSE, results='hold', fig.show='hold'}
+x <- 0.0001
+y <- 1
+
+a <- log10(x)
+b <- log10(y)
+r <- runif(a,b, n = 1000)
+alpha <- 10^r
+
+p1 <- ggplot2::ggplot(as.data.frame(alpha)) + 
+    geom_histogram(aes(alpha)) + 
+    ggtitle("linear scale")
+p2 <- ggplot2::ggplot(as.data.frame(alpha)) + 
+    geom_histogram(aes(alpha)) + 
+    scale_x_continuous(trans = "log10") + 
+    ggtitle("logarithmic scale")
+grid.arrange(p1, p2, nrow = 1)
+rm(p1, p2)
+```
+```{python sample_log_scale_python}
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+x = 0.0001
+y = 1
+r = np.random.uniform(x, y, size = 1000)
+alpha = 10**r
+
+df = pd.DataFrame(alpha, columns = ['alpha'])
+
+```
+
+
+
+
+
+
+```{r plot_py_log_sample, message=FALSE, warning=FALSE, results='hold', fig.show='hold'}
+library(ggplot2)
+library(gridExtra)
+p1 <- ggplot2::ggplot(py$df) + 
+    geom_histogram(aes(alpha)) + 
+    labs(x = expression(alpha), y = "# Samples") +
+    ggtitle("linear scale")
+p2 <- ggplot2::ggplot(py$df) + 
+    geom_histogram(aes(alpha)) + 
+    scale_x_continuous(trans = "log10") + 
+    labs(x = expression(alpha), y = "# Samples") +
+    ggtitle("logarithmic scale")
+grid.arrange(p1, p2, nrow = 1)
+rm(p1, p2)
+```
+
+
+Hyperparameters for exponentially weighted averages
+
+Consider appropriate that $\beta$ takes values $0.9, \ldots, 0.999$, where 0.9 = last 10 days and 0.999 = last 1000 values.  Randomly sampling on linear scale doesn't make sense.  Instead explore range of values if $1-\beta$ which ranges from 0.1 and 0.001 over a logarithmic scale to explore more densely when $1-\beta$ close to 0 ($\beta$ close to 1)
+
+* When beta goes from 0.9000 to 0.9005 has little impact
+* When beta goes from 0.9990 to 0.9995 has large impact
+
+```{r sample_ewa_log_scale_r, message=FALSE, warning=FALSE, results='hold', fig.show='hold'}
+x <- 1 - 0.999
+y <- 1 - 0.9
+
+a <- log10(x)
+b <- log10(y)
+r <- runif(a,b, n = 1000)
+beta <- 1 - 10^r
+
+ggplot2::ggplot(as.data.frame(beta)) + 
+geom_histogram(aes(beta)) + 
+labs(x = expression(1-beta), y = "# Samples")
+rm(x, y, a, b, r, beta)
+```
+<!-- beta = 1-10^r, where r in -3, -1.  -3 = 10^-3-->
+
+### Hyperparameters tuning in practice: Pandas vs. Caviar
+
+* Tips on organising search process
+* Intuition about hyperparameter setting might not transfer between application areas (NLP, vision, speech, ads, logistics), however cross-fertilisation is common
+* Intuitions get stale; i.e as data gradually changes or servers get upgraded.  Recommends to retest/re-evaluate once every few months.
+* Schools of thought for searching:
+1. babysit one model (Panda)
+* Huge dataset, not many computational resources (CPU/GPU)
+* Watch one model and patiently nudge learning rate up or down as training model, e.g. if model training takes many day, may change hyperparameter on daily basis based on learning curve to date
+2. Train many models in parallel (Caviar)
+* Each model has different set of hyperparameter values
+* Choose model based on best curve
+
 ## Batch Normalisation
 ### Normalising activations in a network
+
+* Sergey Loffe and Christian Szegedy
+* Makes hyperparameter search problem easier and NN more robust
+* Recall that normalising input features of logistic regression can speed up learning (i.e. subtract mean and divide by variance), transforming learning problem contours from elongated to round
+* In deeper mode have input parameters but also activations, how about normalising any hidden layer, e.g. $a^{[2]} = g(z^{[2]})$ so as to speed up training of $w^{[3]}$ and $b^{[3]}$.  Although, note that it is more common practice to normalise $z^{[2]}$, rather than it's activated value.  This is the premise of batch normalisation
+* Given hidden layer value $z^{[l](1)}, \ldots, z^{[\ell](m)}$, compute:
+    $$\begin{aligned}
+\mu &= \frac{1}{m}\sum_{i}z^{[\ell](i)} \\
+\sigma^2 &= \frac{1}{m} \sum_{i} (z^{[\ell](i)} - \mu)^2\\
+z^{[\ell](i)}_\text{norm} &= \frac{z^{[\ell](i)} - \mu}{\sqrt{\sigma^2 + \varepsilon}}\\
+\tilde{z}^{[\ell](i)} &= \gamma z^{[\ell](i)}_\text{norm} + \beta,
+\end{aligned}$$ where $\gamma$ and $\beta$ are learnable parameters
+
+* Note that $\tilde{z}^{[\ell](i)} = z^{[\ell](i)}$ for $\gamma = \sqrt{\sigma^2 + \varepsilon}$ and $\beta = \mu$.
+* Use $\tilde{z}^{[\ell](i)}$ as unlikely want mean 0 and variance 1 for sigmoid activation function, this way can adjust mean and variance.
+* So hidden units have standardised mean and variance
+
 ### Fitting Batch Norm into a neural network
-## Why does Batch Norm work?
-## Batch Norm at test time
+
+\[X \xrightarrow{W^{[1]}, b^{[1]}}  Z^{[1]} \xrightarrow[\text{Batch Norm (BN)}]{\beta^{[1]}, \gamma^{[1]}} \rightarrow \tilde{Z}^{[i]} \rightarrow  g^{[1]}(\tilde{Z}^{[1]}) = a^{[1]}
+  \xrightarrow{W^{[2]}, b^{[2]}}  Z^{[2]} \xrightarrow[\text{BN}]{\beta^{[2]}, \gamma^{[2]}} \tilde{Z}^{[2]} \rightarrow a^{[2]} \rightarrow \ldots\]
+
+Parameters:
+    
+* $W^{[1]}, b^{[1]}, \ldots, W^{[L]}, b^{[L]}$
+* $\beta^{[1]}, \gamma^{[1]}, \ldots, \beta^{[L]}, \gamma^{[L]}$
+    
+Learn parameters applying either gradient descent or any optimisation you want (Adam, RMS prop, momentum), e.g., 
+
+* Compute gradients, $d\beta^{[\ell]}$
+* Update parameters, $\beta^{[\ell]} := \beta^{[\ell]} - \alpha d\beta^{[\ell]}$
+    
+In reality, implementing batch norm using a programming framework is often a one-liner (and hides implementation details), e.g. in TensorFlow `tf.nn.batch-normalisation`
+
+To date, discussing in context of batch gradient descent, but in practice applied to mini-batch.
+
+* Take first minibatch, $X^{\{1\}}$ and apply transformations:
+    $$\begin{aligned}
+& X^{\{1\}} \xrightarrow{W^{[1]}, b^{[1]}}  Z^{[1]} \xrightarrow[\text{BN}]{\beta^{[1]}, \gamma^{[1]}} \rightarrow \tilde{Z}^{[1]} \rightarrow  g^{[1]}(\tilde{Z}^{[1]}) = a^{[1]}
+\xrightarrow{W^{[2]}, b^{[2]}}  Z^{[2]} \xrightarrow[\text{BN}]{\beta^{[2]}, \gamma^{[2]}} \tilde{Z}^{[2]} \rightarrow  \ldots\\
+& X^{\{2\}} \rightarrow \ldots \\
+& x^{\{\}} \rightarrow \ldots
+\end{aligned}$$
+    
+* In second minibatch, normalise based on data in just that mini-batch.
+
+
+Previously, said that parameters were $W^{[\ell]}, b^{[\ell]},\beta^{[\ell]}, \gamma^{[\ell]}$
+    
+* In batch norm, any constant you add, i.e., $b^{[\ell]}$ will get subtracted out in batch norm (when zero-ing out mean) and so this parameter is useless, this parameter is essentially replaced by $\beta^{[\ell]}$ which controls the shift / bias terms.
+
+Implementing gradient descent (with mini-batch)
+
+* for $t = 1\ldots \text{num MiniBatches}$
+    * Compute forward prop on $X^{\{t\}}$
+    * In each hidden layer, use BN to replace $z^{[\ell]}$ with  $\tilde{z}^{[\ell]}$
+    * Use backprop to compute   $dW^{[\ell]}, d\beta^{[\ell]}, d\gamma^{[\ell]}$  
+    * Update parameters:
+        * $W^{[\ell]} := W^{[\ell]} - \alpha dW^{[\ell]}$
+        * $\beta^{[\ell]} := \beta^{[\ell]} - \alpha d\beta^{[\ell]}$
+        * $\gamma^{[\ell]} := \gamma^{[\ell]} - \alpha d\gamma^{[\ell]}$
+    
+Noting that this also works with momentum, RMSprop or Adam, in addition to gradient descent (as detailed here)
+This is how you would implement from scratch, although not required if using programming framework such as TensorFlow
+
+
+### Why does Batch Norm work?
+
+* Doing similar thing to normalising features (but for hidden units instead of input features)
+* Makes weights more robust to changes to weights in earlier layers of the neural network
+    * Covariate shift: If have learned $X \rightarrow Y$, when distribution of $X$ changes, need to re-learn $f(X) \rightarrow Y$
+    * Parameters in preceding hidden layers changing all the time and so subjecting subsequent layers to the problem of covariate shift.  
+    * Batch norm ensures that no matter how the inputs of a layer change, the mean and variance of the parameters of that layer will remain the same.  It therefore limits the amount to which updating parameters in earlier layers impacts subsequent layers, i.e., it causes input values to be more stable, so later layers have more firm ground to stand on.  Batch norm therefore weakens coupling between earlier and later layers; each layer can learn more independently and therefore speed up learning.  
+* Batch norm also has a slight regularisation effect on the mini-batches
+    * With batch-norm, each mini-batch is scaled by the mean/variance computed on just that mini-batch.  As the mean/variance will differ across mini-batches, batch norm is therefore adding noise to each layer's activations $z^{[\ell]}$.  So similar to dropout it adds some noise to each hidden layer's activations (recall dropout takes hidden unit and multiplies it by zero or one by some probability, whereas batch-norm adds noise by scaling). 
+    * By adding noise to hidden layers, it forces downstream hidden units not to rely too much on any one hidden unit.  
+    * Note, however, that noise added by batch norm is very slight and so should not be used for regularisation purposes but rather as a way to normalise hidden unit values and speed up learning.
+
+
+
+### Batch Norm at test time
+
+During training, batch norm processes one mini-batch at a time, 
+$$\begin{aligned}
+\mu &=\frac{1}{m}\sum_{i}z^{(i)}\\
+\sigma^2 &= \frac{1}{m} \sum_{i} (z^{(i)} - \mu)^2\\
+z^{(i)}_\text{norm} &= \frac{z^{(i)} - \mu}{\sqrt{\sigma^2 + \varepsilon}}\\
+\tilde{z}^{(i)} &= \gamma z^{(i)}_\text{norm} + \beta
+\end{aligned}$$
+    
+where $m$ = number of examples in mini-batch.
+
+So during training, use the examples within the mini-batch to estimate $\mu$ and $\sigma^2$ within that mini-batch.
+
+At test time, may only have one example and may not be possible (or make sense) to estimate a mean and variance.
+
+Instead, use a running mean and variance during training.  Generally use exponentially weighted values to give more weight to later mini-batches.  
+
+
+
+
 
 ## Multi-class classification
 ### Softmax Regression
+
+* To date, using binary classification (cat vs non-cat)
+* With multiple possible classes (koala, cat, dog, chick), use generalisation of logistic regression called Softmax regression
+* Use $C$ = Number of classes, e.g. $C=4$, in which case index classes as $(0, \ldots, 3)
+* $n^{[L]} = C$ and $\hat{y} \in \mathbb{R}^{(4, 1)}$ and values of $\hat{y}$ sum to one.
+* Each value in $y$ gives the probability a given classes
+* For Softmax layer (final layer $L$)
+\[ z^{[\ell]} = w^{[\ell]}a^{[\ell-1]}+ b^{[\ell]}\]
+
+Activation function for layer $L$
+$$\begin{aligned}
+t_j &= e^{z^{[j]}}\\
+\hat{y} = a^{[j]} &= \frac{t_j}{\sum^C_j=1 t_j}
+\end{aligned}$$
+
+For example, with $Z^{[L]} = \begin{bmatrix}
+5 \\
+2 \\
+-1 \\
+3
+\end{bmatrix}$
+ have that 
+```{r softmax_layer}
+z <- c(5, 2, -1, 3)
+t <- exp(z)
+t
+
+z <- t / sum(t)
+z
+
+sum(z)
+```
+
+Previously, activation function took a single real number as input and output a single real number.  Now take in a vector of size $C$ and output vector of size $C$.
+
+Softmax examples with two input classes, decision boundaries are linear with no hidden layer
+![Softmax Classification with no hidden layer](/img/ImprovingDNN/softmax_nohidden.png)
+
+
+
 ### Training a softmax classifier
 
+* Note that **Hardmax** takes a vector $Z$ and places an element of 1 in the most probable, every other element has value 0.
+* Softmax regression generalises logistic regression to $C$ classes
+* If $C = 2$ then softmax reduces to logistic regression.
+* Target output is \[y =  \begin{bmatrix}
+0 \\
+1 \\
+0 \\
+0
+\end{bmatrix}\]
+    noting that $y_1 = y_3 = y_4 = 0$.  Example have output is \[a^{L} = \hat{y} =  \begin{bmatrix}
+0.3 \\
+0.2 \\
+0.1 \\
+0.4
+\end{bmatrix}\]
+* Loss function is 
+\[\matchcal{L}(\hat{y}, y) = -\sum^4_{j = 1} y_j \log \hat{y}_j\]
+For given example this is $-\log \hat{y}_2$.  To minimise loss, want to make $\hat{y}_2$, which is a probability, as large as possible.  This is equivalent to MLE.  
+
+Cost on entire training set:
+    \[J(w^{[1]}, b^{[1]}, \ldots) = \frac{1}{m} \sum^m_{i = 1}\matchcal{L}(\hat{y}^{(i)}, y^{(i)}) \]
+
+Noting that 
+$$\begin{aligned}
+Y &= [y^{(1)} y^{(2)}, \ldots, y^{(m)}] \\
+& = \begin{bmatrix}
+0 & 0 & 1 &\\
+1 & 0 & 0 & \\
+0 & 1 & 9 & \ldots\\
+& & \vdots & 
+    \end{bmatrix} \\
+& \in \mathbb{R}^{C, m} \\
+\hat{Y} ^= [\hat{y}^{(1)}, \hat{y}^{(2)}, \ldots, \hat{y}^{(m)}]
+& \in \mathbb{R}^{C, m} 
+\end{aligned}$$
+
+Gradient descent with softmax
+
+* Forward prop: $z^{[L]} \rightarrow a^{[L]} = \hat{y} \rightarrow \matchcal{L}(\hat{y}, y)$
+    * Backprop: $dz^{[L]} == \hat{y} - y$
+    
 ## Introduction to programming frameworks
 ### Deep learning frameworks
-### Tensorflow
+    
+* As you implement large models or more complex models (e.g. CNNs or recurring neural networks), it is not practical to implement from scratch.
+* e.g., whilst you understand how to do matrix multiplication, it is unlikely you will implement yourself.
+* Similarly, as a numerical linear algebra library will make you more efficient for large matrix multiplication, a programming framework will make you more efficient as you develop machine learning applications.
+
+Frameworks:
+    
+* Caffe/Caffe2
+* CNTK
+* DL4J
+* Keras
+* Lasagne
+* mxnet
+* PaddlePaddle
+* TensorFlow
+* Theano
+* Torch
+
+When choosing amongst frameworks, consider
+
+* Ease of programming (development and deployment)
+* Running speed
+* Truly open (open source with good governance) (some companies may maintain single corporation control and then close off what was open source)
+
+### TensorFlow
+
+* TensorFlow is one of the many great deep learning programming frameworks
+* Motivating problem: minimise cost function \[J(w) = w^2 - 10w + 25,\] which, using algebra, you see you can minimised at $w = 5$
+    
+    ```{python tensorflow_example}
+import numpy as np
+import tensorflow as tf
+
+coefficients = np.array([[1], [-10], [25]])
+
+w = tf.Variable(0, dtype = tf.float32)
+x = tf.placeholder(tf.float32, [3, 1])
+
+#cost = tf.add(w**2, tf.multiply(-10., w), 25)
+#cost = w**2 - 10*w + 25
+cost = x[0][0]*w**2 + x[1][0]*w + x[2][0]
+train = tf.train.GradientDescentOptimizer(0.01).minimize(cost)
+init = tf.global_variables_initializer()
+session = tf.Session()
+session.run(init)
+print(session.run(w))
+
+for i in range(1000):
+  session.run(train, feed_dict = {x:coefficients})
+print(session.run(w))
+```
 
 
+Note:
+
+* Trying to optimise $w$ so declare as variable
+* Just had to define a cost function 
+* Framework will work out derivatives, and how to minimise cost
+* Placeholder used to define data that will be defined later
+* feed_dict useful for mini-batches
+* cost equation allows TensorFlow to calculate a computation graph
+
+
+Can replace 
+```{python python_session_vn1, eval = FALSE, echo = TRUE}
+session = tf.Session()
+session.run(init)
+print(session.run(w))
+```
+
+with 
+```{python python_session_vn2, eval = FALSE, echo = TRUE}
+with tf.Session() as session:
+    session.run(init)
+print(session.run(w))
+```

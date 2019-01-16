@@ -41,7 +41,7 @@ Note: Quizzes and notebooks have not been uploaded to GitHub in order to comply 
     * Week 2: Optimisation algorithms
         * [Study notes](/blog/2018/12/07/2018-12-07-improving-deep-learning-networks#week2)
         * [Quiz](/coursera/deep learning/quiz/ImprovingDNN2.html)
-        * Notebook: Optimisation
+        * [Notebook: Optimisation (.html)](/coursera/deep learning/notebooks/09 Optimization/Optimization+Methods.html) [.ipynb](/coursera/deep learning/notebooks/09 Optimization/Optimization+Methods.ipynb)
         
     * Week 3: Hyperparameter tuning, batch normalisation and programming frameworks
         * [Study notes](/blog/2018/12/07/2018-12-07-improving-deep-learning-networks#week3)
@@ -50,7 +50,17 @@ Note: Quizzes and notebooks have not been uploaded to GitHub in order to comply 
            
     
 * Course 3: Structuring machine learning projects
+    * Week 1: Machine learning strategy (1)
+    * Week 2: Machine learning strategy (2)
 
 * Course 4: Convolutional neural networks
+    * Week 1: Foundations of Convolutional Neural Networks
+    * Week 2: Deep convolutional models: Case studies
+    * Week 3: Objecct detection
+    * Week 4: Special applications: Face recognition and neural style transfer
 
 * Course 5: Sequence models
+    * Week 1: Recurrent neural networks
+    * Week 2: Natural language processing and word embeddings
+    * Week 3: Sequence odels and attention mechanism
+    

@@ -5,6 +5,7 @@ date: '2018-12-07'
 slug: creating-powerpoint-presentations-using-r
 categories: []
 tags: []
+banner: img/banners/r_and_ppt.png
 ---
 
  
