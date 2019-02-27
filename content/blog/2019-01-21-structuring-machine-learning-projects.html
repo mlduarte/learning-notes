@@ -1,0 +1,543 @@
+---
+title: Structuring Machine Learning Projects
+author: ''
+date: '2019-01-21'
+slug: structuring-machine-learning-projects
+categories: []
+tags: []
+banner: img/banners/structuringMLprojects.PNG
+---
+
+
+
+<div id="week1" class="section level1">
+<h1>ML Strategy (1)</h1>
+<div id="introduction-to-ml-strategy" class="section level2">
+<h2>Introduction to ML strategy</h2>
+<div id="why-ml-strategy" class="section level3">
+<h3>Why ML strategy</h3>
+<p>So many ideas/options on how to improve a deep learning project, e.g.</p>
+<ul>
+<li>collect more data, collect more diverse training set, train algorithm longer, try Adam instead of gradient descent, try bigger/smaller network, try dropout, add <span class="math inline">\(L_2\)</span> regularisation, change network architecture (activation functions, # hidden units, …), …</li>
+</ul>
+<p>But you could spend six months on one idea only to realise that it barely improved the performance. This course will teach ways of analysing a machine learning problem to point in direction of most promising things to try.</p>
+<p>What you can do with deep learning is different to what you can do with ML.</p>
+</div>
+<div id="orthogonalization" class="section level3">
+<h3>Orthogonalization</h3>
+<p>So many things to try, change (including hyperparameters to tune). Need to be clear about what to tune in order to achieve one affect.</p>
+<p>Orthogonalisation: One “knob” does one thing, and not a bit of this, that and whatever else. Orthogonal = 90degrees.</p>
+<p>Chain of assumptions in ML:</p>
+<ul>
+<li>Fit training set well con cost function (perhaps so that similar to human-level performance). If not doing well, you want one “knob” to do well, e.g.
+<ul>
+<li>Train bigger network</li>
+<li>Better optimisation, e.g. Adam</li>
+<li>Tends <strong>not</strong> to use early stopping as it is not orthogonal as it both affects how you fit the training set (less well) and dev set performance (improves it)</li>
+</ul></li>
+<li>Fit dev set well on cost function, you want another “knob” (or distinct set of knobs) to try, e.g.,
+<ul>
+<li>Regularisation</li>
+<li>Bigger training set</li>
+</ul></li>
+<li>Fit test set well on cost function; knob examples:
+<ul>
+<li>Bigger dev set (has probably over-tuned on )</li>
+</ul></li>
+<li>Performs well in real world, e.g.
+<ul>
+<li>Change dev set or cost function</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="setting-up-your-goal" class="section level2">
+<h2>Setting up your goal</h2>
+<div id="single-number-evaluation-metric" class="section level3">
+<h3>Single number evaluation metric</h3>
+<ul>
+<li>Single real number evaluation metric allows you to quickly tell if things are working well or not.</li>
+<li>Recall applied machine learning is empirical; repeat loop many times</li>
+<li>May wish to evaluate performance using precision and recall:
+<ul>
+<li>95% precision: if classifier says something is a cat then there is 95% probability it is</li>
+<li>95% recall: Of all images that really are cats, 95% were correctly recognised (as cats)</li>
+</ul></li>
+<li>However there is a trade-off between precision and recall; obviously we want both, however when comparing classifiers, one will be better at precision and one will be better at recall, making it difficult to pick on.</li>
+<li>Recommends instead using a new evaluation metric, the F1 Score = harmonic mean of precision, P, and recall , R.<br />
+<span class="math display">\[F_1 = \frac{2}{\frac{1}{P} + \frac{1}{R}}\]</span></li>
+<li>Having a dev set and single number evaluation metric will speed up the iterations of machine learning.</li>
+<li>As another example, if looking at how well classifier does in different markets or geographies, better to take the average; instead of looking at accuracy for China, Australia, Colombia, .., use the average of all geographies instead</li>
+</ul>
+</div>
+<div id="satisficing-and-optimising-metric" class="section level3">
+<h3>Satisficing and optimising metric</h3>
+<p>Assume interested in both:</p>
+<ul>
+<li>Accuracy</li>
+<li>Running Time</li>
+</ul>
+<p>Could combine both into overall evaluation metric, e.g. using a weighted sum, but this may seem a little artificial. Can instead maximise accuracy (optimiser) subject to running time <span class="math inline">\(\leq\)</span> 100 ms (satisficing)</p>
+<p>In general, may have 1 optimising and N-1 satificing (given N metrics)</p>
+<p>Consider Wakewords / Trigger words, e.g., Alexa, OK Google, …</p>
+<p>Might consider accuracy as optimising metric and # false positives / 24 hours as satisficing metric.</p>
+</div>
+<div id="traindevtest-distributions" class="section level3">
+<h3>Train/dev/test distributions</h3>
+<p>The way you set up these data sets can slow down, rather than speed up, team progress</p>
+<p>Data Sets</p>
+<ul>
+<li>Dev = development = hold out = cross validation set</li>
+<li>Ensure dev and test sets are from same distribution, examples:
+<ul>
+<li>When working with many regions, it is not recommended to use 4 regions for dev and 4 for test (as data for regions in test set may differ for those in dev set). Instead recommended to take all randomly shuffled data into dev and test set so both have data from all 8 regions</li>
+<li>Dev set: Loan approvals for medium income zip codes. Aim: Given an input X about loan, can you predict whether or not they repay. When tested on data from low income zip codes, model did not do good as model was shooting at the incorrect target.</li>
+</ul></li>
+<li>They way you choose your training set will affect how well you can actually hit your target</li>
+</ul>
+</div>
+<div id="size-of-the-dev-and-test-sets" class="section level3">
+<h3>Size of the dev and test sets</h3>
+<p>Old way was reasonable when data sets were smaller (i.e., 100 - 10,000 training examples):</p>
+<ul>
+<li>70% train; 30% test</li>
+<li>60% train, 20% dev, 20% test</li>
+</ul>
+<p>But given 1,000,000,000 examples, then more reasonable to use</p>
+<ul>
+<li>98% training</li>
+<li>1% for each dev and test (DNT)</li>
+</ul>
+<p>Dev set: Purpose is to compare different algorithms</p>
+<p>Test set: After finish developing system, test set helps you evaluate how good final system is. Needs to be big enough to give high confidence in overall performance of your system. Therefore need the number of examples required to give you confidence in the system, which may be 10,000 examples or 100,000</p>
+</div>
+<div id="when-to-change-devtest-sets-and-metrics" class="section level3">
+<h3>When to change dev/test sets and metrics</h3>
+<p>Metric is like placing a target. Sometimes might wish to change. E.g., Might with to use classification error on cat classifier in order to who cat lovers images of cats, but the best classifier in terms of classification error is showing more pornographic images. In this case, you should change your metric to</p>
+<p><span class="math display">\[\frac{1}{m_\text{dev}}\sum_{i = 1}^{m_\text{dev}} I y_\text{pred}^{(i)}  \neq y_\text{pred}^{(i)} \]</span></p>
+<p>Instead use <span class="math display">\[w^{(i)} = \begin{cases} 1 &amp; \text{if $x(i)$ is non-porn}\\
+                         10  &amp; \text{if $x(i)$ is porn} \end{cases}\]</span></p>
+<p>Orthogonalisation:</p>
+<ul>
+<li>First define a metric to evaluate classifiers (place target)</li>
+<li>Worry separately about how to do well on this metric (aim; shoot at target accurately)</li>
+</ul>
+<p>In above example, may wish to modify cost function from <span class="math display">\[J = \frac{1}{\sum m}\sum_i^m  \mathcal{L}(\hat{y}^{(i)}, y^{(i)})\]</span> to</p>
+<p><span class="math display">\[J = \frac{1}{\sum w^{(i)}}\sum_i^m w^{(i)} \mathcal{L}(\hat{y}^{(i)}, y^{(i)})\]</span> As an other example, you may train cat classification on professional photos, but in mobile app, end users upload blurry pictures. Could be a good time to change dev test set so data better reflects data you actually need to do well on.</p>
+<p>An evaluation metric and dev set allows you to quickly determine which algorithm is better.</p>
+</div>
+</div>
+<div id="comparing-to-human-level-performance" class="section level2">
+<h2>Comparing to human-level performance</h2>
+<ul>
+<li>Feasible for algorithm to compete with human-level performance</li>
+<li>Workflow of designing and building a machine learning system is more efficient when try to do something humans can do.</li>
+<li>Often it is quite quick to achieve human-level performance but then progress slows down. Eventually it will reach a plateau (bayes optimal error); no matter what you do, you cannot better the ML algorithm. Some images may be so blurry, impossible for anyone or anything to tell whether or not there is a cat in that picture.</li>
+<li>Progress slows-down once human-level performance met due to:
+<ul>
+<li>Human level performance is almost optimal</li>
+<li>When performance is worse, you can:
+<ul>
+<li>get labelled data from humans</li>
+<li>gain insight from manual error analysis: why did a person get this right?</li>
+<li>better analysis of bias / variance (to be discussed later)</li>
+</ul></li>
+</ul></li>
+</ul>
+<div class="figure">
+<img src="/img/structuringMLprojects/progress_over_timepng" alt="Progress as a function of time" />
+<p class="caption">Progress as a function of time</p>
+</div>
+<div id="why-human-level-performance" class="section level3">
+<h3>Why human-level performance</h3>
+</div>
+<div id="avoidable-bias" class="section level3">
+<h3>Avoidable bias</h3>
+<p>Aim to do well on training set, but sometimes don’t want to do to well.</p>
+<p>Given following —————-| ———— |———— Humans: | 1.1% | 7.5% Training Error | 8% | 8% Dev Error | 10% | 10% Knobs: | Focus on bias |Focus on variance (regularisation)</p>
+<p>Consider human-level error as a proxy for Bayes (optimal) error.</p>
+<p>Depending on what human-level error is (<span class="math inline">\(\approx\)</span> Bayes error) / what is thought to be achievable will impact whether you decide to reduce bias or otherwise reduce variance.</p>
+<p>Define avoidable bias = Bayes error - training error Variance = dev error - training error</p>
+</div>
+<div id="understanding-human-level-performance" class="section level3">
+<h3>Understanding human-level performance</h3>
+<ul>
+<li>Gives way of estimating Bayes error, assuming human does quite well</li>
+<li>In classifying a medical image, is human-level error that of a typical human, typical doctor, experienced doctor or team of experienced doctors. As human level performance is used as a proxy for Bayes error, then should use the team of experienced doctors.</li>
+</ul>
+<p>However if goal is to surpass a single human, then that could be appropriate, but if goal is the proxy for Bayes error, then should use team of experienced doctors.</p>
+<p>Your measure for human level performance will impact measure for avoidable bias, and may impact whether you first focus on decreasing variance or decreasing bias.</p>
+<p>Note that sometimes Bayes error is non-zero and no matter how much you try you will not get perfection.</p>
+</div>
+<div id="surpassing-human-level-performance" class="section level3">
+<h3>Surpassing human-level performance</h3>
+<p>Team of humans | 0.5% | 0.5% One human | 1% | 1% Training error |0.6% | 3% Dev error |0.8% | 0.4% Avoidable bias |0.1% | -0.2% Variance |0.2% | 0.1% Knob | Decrease variance | ?</p>
+<p>Have you over-fitted, or is Bayes error much lower? Not enough information to know whether to focus on reducing bias or reducing variance.</p>
+<p>In many examples, machines now do better than humans. E.g. with structured data to:</p>
+<ul>
+<li>Predict whether someone will click on online advertising</li>
+<li>Make product (movie/book) recommendations</li>
+<li>Predict transit time to drive from A to B</li>
+<li>Predict whether someone will repay a loan</li>
+</ul>
+<p>Characteristics of these: * Structural data * Not natural perception * Lots of data</p>
+<p>Humans tend to be better at natural perception tasks (i.e. computer vision, speech recognition, natural language)</p>
+<p>Although computers have surpassed human level performance in some speech recognition and image recognition tasks.</p>
+</div>
+<div id="improving-your-model-performance" class="section level3">
+<h3>Improving your model performance</h3>
+<p>Two fundamental assumptions of supervised learning:</p>
+<ul>
+<li>You can fit the training set pretty well (i.e. can achieve low avoidable bias)</li>
+<li>The training set performance generalises pretty well to the dev / test set (i.e. variance is not too bad)</li>
+</ul>
+<p>Reducing (avoidable) bias and variance</p>
+<ul>
+<li>Gauge avoidable bias (using difference between training error and human-level error)</li>
+<li>Gauge variance (using difference between dev error and training error)</li>
+<li>To reduce avoidable bias:
+<ul>
+<li>Train bigger model</li>
+<li>Train longer / better optimisation algorithm (momentum, RMSprop, Adam)</li>
+<li>Use better NN architecture or hyperparameters search (Change activation function, number of layers / hidden units (= bigger model), use other model architecture (recurrent NN, convolutional NN)</li>
+</ul></li>
+<li>To reduce variance:
+<ul>
+<li>More data (this can help you to generalise better)</li>
+<li>Regularisation (L2, dropout, data augmentation)</li>
+<li>NN architecture / hyperparameters search</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="week2" class="section level1">
+<h1>ML Strategy (2)</h1>
+<div id="error-analysis" class="section level2">
+<h2>Error analysis</h2>
+<ul>
+<li>Manually examining mistakes that algorithm is making can give insights about what to do next</li>
+</ul>
+<div id="carrying-out-error-analysis" class="section level3">
+<h3>Carrying out error analysis</h3>
+<p>E.g. if saying lots of dogs are cats, then you could:</p>
+<ul>
+<li>get ~1000 mislabelled dev set examples</li>
+<li>Count how many are dogs. if 5% then probably (with current error of 10%, best accuracy would go to 9.5%) wouldn’t be worth you to:
+<ul>
+<li>Collect more dog pictures</li>
+<li>Design features specific to dogs</li>
+<li>… Evaluate multiple ideas in parallel; ideas for cat detection:</li>
+</ul></li>
+<li>Fix pictures of dogs being recognised as cats</li>
+<li>Fix great cats (lions, panthers, etc.) being misrecognised</li>
+<li>Improve performance on blurry images</li>
+</ul>
+<p>Recommends to set up spreadsheet as follows to show potential improvement as ceiling in terms of how much you can improve performance</p>
+<p>Image |Dog | Great Cats | Blurry | Instagram filter | Comments 1 | Y | | | |Pitbull 2 | | | Y | | 3 | | Y | Y | |Rainy day at zoo % of total| 8%| 43%| 61%| 12%|</p>
+</div>
+<div id="cleaning-up-incorrectly-labeled-data" class="section level3">
+<h3>Cleaning up incorrectly labeled data</h3>
+<p>Remember data includes input <span class="math inline">\(X\)</span> and output <span class="math inline">\(Y\)</span>, is it worth while to fix up incorrectly labelled data (i.e. incorrect by labeller)?</p>
+<p>Notes: Use mislabelled for error by ML, incorrectly labelled by labeller</p>
+<ul>
+<li>DL algorithms are quite robust to <strong>random</strong> errors in training set; so probably okay to leave as long as total data set high and % errors are not to high</li>
+<li>DL algorithms less robust to systematic errors; e.g if all white dogs incorrectly labelled as cats, then DL algorithm would learn this</li>
+</ul>
+<p>In error analysis, could also count those that are incorrectly labelled and the % of errors due to incorrect labels.</p>
+<p>Is it worth relabelling dev set?</p>
+<p>Look at:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Example 1</th>
+<th>Example 2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>* Overall dev set error</td>
+<td>10%</td>
+<td>2%</td>
+</tr>
+<tr class="even">
+<td>* Errors due to incorrect labels</td>
+<td>0.6%</td>
+<td>0.6%</td>
+</tr>
+<tr class="odd">
+<td>* Errors due to other causes</td>
+<td>9.4%</td>
+<td>1.4%</td>
+</tr>
+<tr class="even">
+<td>Conclusion</td>
+<td>Prob. not worth it</td>
+<td>Could be a good idea</td>
+</tr>
+</tbody>
+</table>
+<p>Remember that goal of dev set is to help you select between two classifiers A &amp; B, but if you don’t trust your dev set then best to fix incorrect labels in dev set</p>
+<p>If decide to manually re-examine labels in dev set; recommendations</p>
+<ul>
+<li>Apply process to both dev and test at same time to ensure from the same distribution</li>
+<li>You should also examine labels on which the algorithm matched as it may have incorrectly predicted a wrong label (difficult with high accuracy as many more examples)</li>
+<li>Train and dev/test data may now come from slightly different distributions (less important to correct in training dataset as learning algorithms are more robust)</li>
+</ul>
+</div>
+<div id="build-your-first-system-quickly-then-iterate" class="section level3">
+<h3>Build your first system quickly, then iterate</h3>
+<p>Options to make more robust to</p>
+<ul>
+<li>Noisy background (café, car noise)</li>
+<li>Accented speech</li>
+<li>Far from microphone</li>
+<li>Young children’s speech</li>
+<li>Stuttering (uh, oh, um … )</li>
+<li><span class="math inline">\(\ldots\)</span></li>
+</ul>
+<p>May be 50 different directions; each would make better, but which do you focus on?</p>
+<p>When starting on new system, build system</p>
+<ul>
+<li>Set up dev/test set and metric (where to place target)</li>
+<li>Build initial system quickly and start to see how well doing</li>
+<li>Use bias/variance analysis and error analysis to prioritise next steps, this may indicate need to focus on far from microphone issues</li>
+</ul>
+<p>Guideline: Build first system quickly, then iterate</p>
+<p>Advice applies less strongly if working in an area with significant prior experience or there is a significant body of academic literature.<br />
+May exist large academic literature on face recognition then might be okay to build more complex system from get-go building on body of academic literature.</p>
+</div>
+</div>
+<div id="mismatched-training-and-devtest-set" class="section level2">
+<h2>Mismatched training and dev/test set</h2>
+<p>Deep learning algorithms have huge hunger for training data, and so may teams are using training data that comes from different distribution from dev and test data.</p>
+<div id="training-and-testing-on-different-distributions" class="section level3">
+<h3>Training and testing on different distributions</h3>
+<p>Example data sources:</p>
+<ul>
+<li>Data from mobile app (what you care about) (e.g. 10,000 )</li>
+<li>Data from webpages (e.g. 200,000)</li>
+</ul>
+<p>Care that final system does well with mobile app.</p>
+<p>Option 1: Take 210,000 and randomly shuffle into train (205K), dev (2.5K) and test (2.5K) set. Big disadvantage is that 2381/2500 of dev/test sets will be from web and only 119 mobile app. This is not the recommended option as telling to aim from wrong target Option 2: Training (200K web + 5K app), train (2.5K app), dev (2.5K): Aiming target where you want it to be (dev). Disadvantage: Training different from dev and test but will look at techniques later for this.</p>
+<p>Example: Speech activated rear-view mirror</p>
+<p>Training (500K composed of following)</p>
+<ul>
+<li>Purchased data</li>
+<li>Smart speaker control</li>
+<li>Voice keyboard</li>
+</ul>
+<p>Dev/test: what you care about (20K, 10K in each.. Could also consider putting 10K into training and using just 5K in each dev and test sets)</p>
+<ul>
+<li>Speech activated rear-view mirror</li>
+</ul>
+</div>
+<div id="bias-and-variance-with-mismatched-data-distributions" class="section level3">
+<h3>Bias and variance with mismatched data distributions</h3>
+<p>Should you always use all the data you have?</p>
+<p>Estimating bias and variance helps you prioritise what to work on next. But how you analyse should change when training set comes from a different distribution than dev/test sets</p>
+<p>With training error of 1% and 10% error would assume high variance, i.e. that algorithm not generalising well from training set. But with different distributions for training and dev and no longer draw this conclusion. Going from training to dev, have two things changing:</p>
+<p>1 New examples 2. New distribution of data</p>
+<p>Solution: Consider carving out a new data set; the training-dev set. Same distribution as training set, but not used for training. Training and training-dev set have the same distribution and so can carry out error analysis look at training error, training-dev set error and dev set error.</p>
+<p>Example:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Type:</th>
+<th>Eg. 1</th>
+<th>Eg. 2</th>
+<th>Eg. 3</th>
+<th>Eg. 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Human</td>
+<td>0%</td>
+<td>0%</td>
+<td>0%</td>
+<td>0%</td>
+</tr>
+<tr class="even">
+<td>Training</td>
+<td>1 %</td>
+<td>1%</td>
+<td>10%</td>
+<td>10%</td>
+</tr>
+<tr class="odd">
+<td>Training-dev</td>
+<td>9%</td>
+<td>1.5%</td>
+<td>11%</td>
+<td>11%</td>
+</tr>
+<tr class="even">
+<td>Dev</td>
+<td>10%</td>
+<td>10%</td>
+<td>12%</td>
+<td>20%</td>
+</tr>
+<tr class="odd">
+<td>Conclusion</td>
+<td>Variance</td>
+<td>Data mismatch</td>
+<td>Bias</td>
+<td>Bias &amp; data mismatch</td>
+</tr>
+</tbody>
+</table>
+<p>Key quantities to look at:</p>
+<ul>
+<li>Human level</li>
+<li>Training set error</li>
+<li>Training-dev set error</li>
+<li>Dev error</li>
+</ul>
+<p>Avoidable Bias = Training set error - Human level Variance = training-dev - training Data mismatch = dev - training-dev Degree of overfitting to dev set = test - dev (shouldn’t been looking, but if do then prob need larger dev set)</p>
+<p>More general formulation</p>
+<pre><code>                                | General speech recognition | Rearview mirror speech data</code></pre>
+<p>———————– | —————————| ————————— Human level | “Human level” (4%) | Can also look here: 6% Error on examples NN trained on | “Training error” (7%) | … and here, e.g., 6% Error on examples NN not trained on | “Training-dev error” (10%) | “Dev/Test Error” (6%)</p>
+<p>Have discussed how to address avoidable bias and variance, but how to address data mismatch? not many things to try, but a few …</p>
+</div>
+<div id="addressing-data-mismatch" class="section level3">
+<h3>Addressing data mismatch</h3>
+<ul>
+<li>Carry out manual error analysis to understand difference between training and dev set (technically shouldn’t look at test set to avoid overfitting), e.g. maybe don’t have much audio of people in noisy cars</li>
+<li>Make training data more similar; or collect more data similar to dev/test sets
+<ul>
+<li>Artificial data synthesis:
+<ul>
+<li>Add audio (“The quick brown fox jumps over the lazy dog”, which is a short sentence with every letter of the alphabet) + car-noise to get synthesized in-car audio with noise. Beware with 10,000 hours of data with 1 hour with car noise then may overfit to 1 hour of car noise</li>
+<li>Use computer graphics to synthesis pictures of cars. But again, if synthesise just a small set of all cars then again may overfit. e.g. synthesising 20 cars will likely lead to overfitting as much many more car types than 20.</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="learning-from-multiple-tasks" class="section level2">
+<h2>Learning from multiple tasks</h2>
+<p>Knowledge from one task and apply to separate task, e.g. learning to recognise cats and then use the NN to read x-rays, i.e. transfer what is learnt (adapt)</p>
+<div id="transfer-learning" class="section level3">
+<h3>Transfer learning</h3>
+<p>Having trained NN on image recognition task (with weights, layers, parameters), to transfer (adapt a NN) to a new task, swap in new data set <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>. As a minimum, delete all weights feeding into the output layer and initialise randomly (pre-tuning) then retrain on the one last layer at the output layer. With a larger dataset you can retrain all parameters in the NN (fine-tuning).</p>
+<p>In addition to swapping output layers may wish to append a few extra final layers.</p>
+<p>Example 1: Image recognition <span class="math inline">\(\rightarrow\)</span> radiology diagnosis Low-level features such as detecting edges, detecting curves, detecting positive objects might help ML algorithm do better in radiology diagnosis. Might have learned enough about what parts of different images look like and therefore help learn radiology diagnosis faster or with less data.</p>
+<p>Example 2: Speech recognition <span class="math inline">\(\rightarrow\)</span> wakeword/triggerword detection (, i.e the words to wake up speech control devices“OK Google”, “Hey Siri”, “Minikit”). With speech recognition have already learnt a lot about what human voices sounds like, what are components of human speech and this can be helpful for wake word detector.</p>
+<p>When to use transfer learning, <span class="math inline">\(A \rightarrow B\)</span></p>
+<ul>
+<li><p>When task A and B have same input <span class="math inline">\(X\)</span> (e.g., images)</p></li>
+<li><p>Lot of data for problem transferring from (A) and less data for problem transferring to (B); transfer learning would not make sense if the oppose is true (as to do well on radiology diagnosis, having radiology images is much more valuable)</p></li>
+<li><p>Low level features from A could be helpful for task B.</p></li>
+</ul>
+</div>
+<div id="multi-task-learning" class="section level3">
+<h3>Multi-task learning</h3>
+<p>As opposed to transfer learning (Sequential), multi-task learning tries to learn from multiple tasks at the same time (simultaneous)</p>
+<p>Example: simplified autonomous driving example</p>
+<p>Assume need to just detect 1. pedestrians, 2. other cars, 3. stop signs, 4. traffic lights then <span class="math inline">\(y\)</span> has 4 labels, i.e. <span class="math inline">\(y(i)\)</span> is a <span class="math inline">\(4 \times 1\)</span> vector</p>
+<p>Training set examples as a whole, output is <span class="math inline">\((4, m)\)</span>: <span class="math inline">\(Y = \left[\begin{array}{cccc} \mid &amp; \mid &amp; &amp; \mid \\ y^{(1)} &amp; y^{(2)} &amp; \cdots &amp; y^{(m)}\\ \mid &amp; \mid &amp; &amp; \mid \\ \end{array} \right]\)</span></p>
+<p>For each example:</p>
+<ul>
+<li>Is there a pedestrian (1/0)</li>
+<li>Is there a car?</li>
+<li>Is there a stop sign?</li>
+<li>Is there a traffic light?</li>
+</ul>
+<p>Loss: <span class="math display">\[\hat{y}^{(i))} = \frac{1}{m}\sum^m_{i=1}\sum^{4}_{j=1} \mathcal{L}(\hat{y}_j^{(i)}, y_j^{(i)})\]</span></p>
+<p>Now summing over <span class="math inline">\(j\)</span> from 1 to 4.</p>
+<p>Unlike softmax regression, not assigning a single label to each example; i.e. here one image can have multiple labels (= multi-task learning)</p>
+<p>Could have also trained four neural networks, but training one neural networks to do four things can result in better performance as earlier features will be shared between different types of objects.</p>
+<p>Note that some examples may be fully labelled and others only partially labelled. In situations when some images only look at a subset of the objects, then sum only over values of <span class="math inline">\(j\)</span> with a 0 or 1 label.</p>
+<p>Multi-task learning make sense when:</p>
+<ul>
+<li>Training on a set of tasks that could benefit from having shared lower-level features</li>
+<li>Usually: Amount of data you have for each task is quite similar.
+<ul>
+<li>Multi-task often has more objects/tasks (transfer only 2)</li>
+<li>When focusing on one task, then the aggregate of all other tasks needs to be large (so similar to transfer learning)</li>
+</ul></li>
+<li>Can train a big enough neural network to do well on all the tasks (alternative is to train a NN for each task, i.e. one NN for stop sign, one for traffic light detection, one for pedestrian and one for car)</li>
+</ul>
+<p>In practice, multi-task learning is used much less than transfer learning (with exception of computer vision)</p>
+<p>Summary: When train 1 NN to do many tasks and can lead to better performance than separate NNs for each task.</p>
+</div>
+</div>
+<div id="end-to-end-learning" class="section level2">
+<h2>End-to-end learning</h2>
+<div id="what-is-end-to-end-deep-learning" class="section level3">
+<h3>What is end-to-end deep learning?</h3>
+<ul>
+<li><p>Some learning systems require multiple stages of processing; end-to-end learning takes multiple stages and replaces with just one single NN</p></li>
+<li>Example: Speech recognition
+<ul>
+<li>steps
+<ul>
+<li>Input: Audio clip</li>
+<li>Apply MFCC algorithm to extract features</li>
+<li>Apply ML algorithm to find phonemes in audio clip (i. Tu, Ah)</li>
+<li>String together phonemes to form individual words</li>
+<li>String words to form transcripts of audio clip</li>
+<li>Output: Transcript of audio clip</li>
+</ul></li>
+<li>Now can use ML to go straight from audio to transcript, which made obsolete the intermediate components</li>
+<li>End-end learning requires a lot of data (10K-100K of data), whereas traditional process works well with less data (e.g. 3K of data). With medium scale data set, may go from Audio clip <span class="math inline">\(\rightarrow\)</span> phonemes <span class="math inline">\(\rightarrow\)</span> transcript</li>
+</ul></li>
+<li>Example: Face recognition (to replace id cards)
+<ul>
+<li>Not best to use image captured by security camera as person can approach turnstile from lots of different directions and may be closer and further than that captured by camera</li>
+<li>Two-step approach actually works best
+<ol style="list-style-type: decimal">
+<li>Detect where is person’s face</li>
+<li>Zoom into part of image with face and crop so centred; feed face to another NN (input is actually 2 images to tell whether two are the same person, i.e. is person one of your 10K employees?)</li>
+</ol></li>
+<li>Two-step works better as
+<ul>
+<li>Have a lot of labelled data for face detection so can build NN to do well</li>
+<li>Lot of data for task 2 (face recognition) as well</li>
+<li>Less data for end-to-end learning problem</li>
+</ul></li>
+</ul></li>
+<li>Example: Machine translation
+<ul>
+<li>Steps: English <span class="math inline">\(\rightarrow\)</span> text analysis <span class="math inline">\(\rightarrow\)</span> <span class="math inline">\(\ldots\)</span> <span class="math inline">\(\rightarrow\)</span> French</li>
+<li>Today, many examples of <span class="math inline">\((X,Y)\)</span> = (English, French) and so end-to-end works well</li>
+</ul></li>
+<li>Example: Estimating child’s age based on hand xray; used by paediatrician to determine if child is growing normally or abnormally
+<ul>
+<li>Multi-task approach, Image <span class="math inline">\(\rightarrow\)</span> bones <span class="math inline">\(\rightarrow\)</span> age
+<ul>
+<li>Where is each bone segment?</li>
+<li>Compare to lookup table to estimate child’s age</li>
+</ul></li>
+<li>Currently insufficient data for end-to-end learning, Image <span class="math inline">\(\rightarrow\)</span> age, to work well</li>
+</ul></li>
+<li><p>Example: Autonomous driving example:</p>
+<ul>
+<li>Multi-step
+<ul>
+<li>Take image (radar, lidar) of what’s in front of your car</li>
+<li>Detect where things are in the image (cars, pedestrians, etc.) (deep learning)</li>
+<li>Plan route for next several seconds (motion planning, from robotics)</li>
+<li>Execute plan using steering and acceleration (control algorithm)</li>
+</ul></li>
+<li>End-to-end learning not promising at present ### Whether to use end-to-end deep learning</li>
+</ul></li>
+</ul>
+<p>Summary * End to end learning can simplify system and not require you to build so many hand-designed individual components * … but doesn’t always work well</p>
+<p>Benefits</p>
+<ul>
+<li>Lets the data speak, rather than being forced to reflect human preconceptions (e.g may not wish for learning algorithm to think in terms of phonemes, which are a linguistic artefact)</li>
+<li>Less hand-designing of components needed</li>
+</ul>
+<p>Disadvantages</p>
+<ul>
+<li>May require large amount of data <span class="math inline">\((x,y)\)</span> (may instead be easier to find a lot of data for subtasks)</li>
+<li>Excludes potentially useful hand-designed components (with little data, hand-designed components can allow one to inject knowledge about problem); i.e. hand design components can be a double edged sword</li>
+</ul>
+<p>Key question: Do you have sufficient data to learn a function of the complexity needed to may <span class="math inline">\(x\)</span> to <span class="math inline">\(y\)</span>?</p>
+</div>
+</div>
+</div>

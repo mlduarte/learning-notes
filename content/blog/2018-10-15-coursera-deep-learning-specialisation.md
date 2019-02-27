@@ -45,22 +45,27 @@ Note: Quizzes and notebooks have not been uploaded to GitHub in order to comply 
         
     * Week 3: Hyperparameter tuning, batch normalisation and programming frameworks
         * [Study notes](/blog/2018/12/07/2018-12-07-improving-deep-learning-networks#week3)
-        * Quiz
-        * Notebook: Tensorflow
+        * [Quiz](/coursera/deep learning/quiz/ImprovingDNN3.html)
+        * [Notebook: Tensorflow (.html)](/coursera/deep learning/notebooks/10 Tensorflow Tutorial/Tensorflow+Tutorial.html) [.ipynb](/coursera/deep learning/notebooks/10 Tensorflow Tutorial/Tensorflow+Tutorial.ipynb)
            
     
 * Course 3: Structuring machine learning projects
     * Week 1: Machine learning strategy (1)
+        * [Study notes](/blog/2019/01/21/2019-01-21-structuring-machine-learning-projects#week1)
+        * [Quiz](/coursera/deep learning/quiz/StructuringML1.html)
+      
     * Week 2: Machine learning strategy (2)
+        * [Study notes](/blog/2019/01/21/2019-01-21-structuring-machine-learning-projects#week2)
+        * [Quiz](/coursera/deep learning/quiz/StructuringML2.html)
 
 * Course 4: Convolutional neural networks
     * Week 1: Foundations of Convolutional Neural Networks
     * Week 2: Deep convolutional models: Case studies
-    * Week 3: Objecct detection
+    * Week 3: Object detection
     * Week 4: Special applications: Face recognition and neural style transfer
 
 * Course 5: Sequence models
     * Week 1: Recurrent neural networks
     * Week 2: Natural language processing and word embeddings
-    * Week 3: Sequence odels and attention mechanism
+    * Week 3: Sequence models and attention mechanism
     

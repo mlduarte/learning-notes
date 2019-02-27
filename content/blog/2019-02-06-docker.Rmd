@@ -1,0 +1,80 @@
+---
+title: Docker
+author: ''
+date: '2019-02-06'
+slug: docker
+categories: []
+tags: []
+---
+
+## Orientation
+https://docs.docker.com/get-started/
+
+* Image = executable package with everythng needed to run a model - programming language, libraries, model
+* Container = result of running an image = runtime instance of image = what image is in membery when executed.  
+
+Commands:
+```{bash, eval = FALSE}
+docker --version
+docker info
+docker run hello-world
+
+## List docker images
+docker image ls
+
+## List docker containers
+docker container ls --all
+
+docker run -u $(id -u):$(id -g) args
+docker run -it -p 8888:8888 tensorflow/tensorflow:latest-py3-jupyter
+```
+
+## Containers
+https://docs.docker.com/get-started/part2/
+New development environment
+1. Grab a portable Python runtime as an image
+2. Build base python image (defined by a Dockerfile) alongside app code
+
+Dockerfile - defines environment inside container
+ * virtualiases interfaces and disk drives
+ * Requires ports mapped to outside world
+ * Requires specification of what is inside container's environment
+ 
+On Mac, used Visual Studio Code; otherwise with TextEdit came across errors such as listed here:
+https://stackoverflow.com/questions/23669037/error-on-rtf1-ansi-when-compiling-c-program
+
+See @Andrew Medico
+
+```{bash, eval = FALSE}
+docker run -p 4000:80 friendlyhello
+docker run -d -p 4000:80 friendlyhello
+docker container ls
+docker container stop b0a5e4f57cda
+```
+
+
+### Share image
+
+![Image > Repository > Registry](/img/docker/img_repo_reg.png)
+Tag image so image will upload to desired destination.  
+
+```{r, eval = FALSE}
+
+# Tag the image: docker tag image username/repository:tag
+docker tag friendlyhello mldqld/get-started:part2
+docker image ls
+
+# Publish image, update to repository: docker push username/repository:tag
+docker push mldqld/get-started:part2
+```
+ 
+You will now see on Docker Hub: https://cloud.docker.com/u/mldqld/repository/docker/mldqld/get-started
+
+
+You can now pull and run on local lmachine; if image isn't available locally it will pull from repository
+
+```{bash, eval = FALSE}
+docker run -p 4000:80 mldqld/get-started:part2
+```
+
+

@@ -1,0 +1,56 @@
+---
+title: Docker
+author: ''
+date: '2019-02-06'
+slug: docker
+categories: []
+tags: []
+---
+
+
+
+<div id="orientation" class="section level2">
+<h2>Orientation</h2>
+<p><a href="https://docs.docker.com/get-started/" class="uri">https://docs.docker.com/get-started/</a></p>
+<ul>
+<li>Image = executable package with everythng needed to run a model - programming language, libraries, model</li>
+<li>Container = result of running an image = runtime instance of image = what image is in membery when executed.</li>
+</ul>
+<p>Commands:</p>
+<pre class="bash"><code>docker --version
+docker info
+docker run hello-world
+
+## List docker images
+docker image ls
+
+## List docker containers
+docker container ls --all
+
+docker run -u $(id -u):$(id -g) args
+docker run -it -p 8888:8888 tensorflow/tensorflow:latest-py3-jupyter</code></pre>
+</div>
+<div id="containers" class="section level2">
+<h2>Containers</h2>
+<p><a href="https://docs.docker.com/get-started/part2/" class="uri">https://docs.docker.com/get-started/part2/</a> New development environment 1. Grab a portable Python runtime as an image 2. Build base python image (defined by a Dockerfile) alongside app code</p>
+<p>Dockerfile - defines environment inside container * virtualiases interfaces and disk drives * Requires ports mapped to outside world * Requires specification of what is inside container’s environment</p>
+<p>On Mac, used Visual Studio Code; otherwise with TextEdit came across errors such as listed here: <a href="https://stackoverflow.com/questions/23669037/error-on-rtf1-ansi-when-compiling-c-program" class="uri">https://stackoverflow.com/questions/23669037/error-on-rtf1-ansi-when-compiling-c-program</a></p>
+<p>See <span class="citation">@Andrew</span> Medico</p>
+<pre class="bash"><code>docker run -p 4000:80 friendlyhello
+docker run -d -p 4000:80 friendlyhello
+docker container ls
+docker container stop b0a5e4f57cda</code></pre>
+<div id="share-image" class="section level3">
+<h3>Share image</h3>
+<p><img src="/img/docker/img_repo_reg.png" alt="Image &gt; Repository &gt; Registry" /> Tag image so image will upload to desired destination.</p>
+<pre class="r"><code># Tag the image: docker tag image username/repository:tag
+docker tag friendlyhello mldqld/get-started:part2
+docker image ls
+
+# Publish image, update to repository: docker push username/repository:tag
+docker push mldqld/get-started:part2</code></pre>
+<p>You will now see on Docker Hub: <a href="https://cloud.docker.com/u/mldqld/repository/docker/mldqld/get-started" class="uri">https://cloud.docker.com/u/mldqld/repository/docker/mldqld/get-started</a></p>
+<p>You can now pull and run on local lmachine; if image isn’t available locally it will pull from repository</p>
+<pre class="bash"><code>docker run -p 4000:80 mldqld/get-started:part2</code></pre>
+</div>
+</div>
