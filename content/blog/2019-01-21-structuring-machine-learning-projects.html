@@ -154,7 +154,38 @@ banner: img/banners/structuringMLprojects.PNG
 <div id="avoidable-bias" class="section level3">
 <h3>Avoidable bias</h3>
 <p>Aim to do well on training set, but sometimes don’t want to do to well.</p>
-<p>Given following —————-| ———— |———— Humans: | 1.1% | 7.5% Training Error | 8% | 8% Dev Error | 10% | 10% Knobs: | Focus on bias |Focus on variance (regularisation)</p>
+<p>Given following</p>
+<table>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Example 1</th>
+<th>Example 2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Humans:</td>
+<td>1.1%</td>
+<td>7.5%</td>
+</tr>
+<tr class="even">
+<td>Training Error</td>
+<td>8%</td>
+<td>8%</td>
+</tr>
+<tr class="odd">
+<td>Dev Error</td>
+<td>10%</td>
+<td>10%</td>
+</tr>
+<tr class="even">
+<td>Knobs:</td>
+<td>Focus on bias</td>
+<td>Focus on variance (regularisation)</td>
+</tr>
+</tbody>
+</table>
 <p>Consider human-level error as a proxy for Bayes (optimal) error.</p>
 <p>Depending on what human-level error is (<span class="math inline">\(\approx\)</span> Bayes error) / what is thought to be achievable will impact whether you decide to reduce bias or otherwise reduce variance.</p>
 <p>Define avoidable bias = Bayes error - training error Variance = dev error - training error</p>
@@ -171,7 +202,52 @@ banner: img/banners/structuringMLprojects.PNG
 </div>
 <div id="surpassing-human-level-performance" class="section level3">
 <h3>Surpassing human-level performance</h3>
-<p>Team of humans | 0.5% | 0.5% One human | 1% | 1% Training error |0.6% | 3% Dev error |0.8% | 0.4% Avoidable bias |0.1% | -0.2% Variance |0.2% | 0.1% Knob | Decrease variance | ?</p>
+<table>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>Example 1</th>
+<th>Example 2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Team of humans</td>
+<td>0.5%</td>
+<td>0.5%</td>
+</tr>
+<tr class="even">
+<td>One human</td>
+<td>1%</td>
+<td>1%</td>
+</tr>
+<tr class="odd">
+<td>Training error</td>
+<td>0.6%</td>
+<td>3%</td>
+</tr>
+<tr class="even">
+<td>Dev error</td>
+<td>0.8%</td>
+<td>0.4%</td>
+</tr>
+<tr class="odd">
+<td>Avoidable bias</td>
+<td>0.1%</td>
+<td>-0.2%</td>
+</tr>
+<tr class="even">
+<td>Variance</td>
+<td>0.2%</td>
+<td>0.1%</td>
+</tr>
+<tr class="odd">
+<td>Knob</td>
+<td>Decrease variance</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
 <p>Have you over-fitted, or is Bayes error much lower? Not enough information to know whether to focus on reducing bias or reducing variance.</p>
 <p>In many examples, machines now do better than humans. E.g. with structured data to:</p>
 <ul>
@@ -180,7 +256,12 @@ banner: img/banners/structuringMLprojects.PNG
 <li>Predict transit time to drive from A to B</li>
 <li>Predict whether someone will repay a loan</li>
 </ul>
-<p>Characteristics of these: * Structural data * Not natural perception * Lots of data</p>
+<p>Characteristics of these:</p>
+<ul>
+<li>Structural data</li>
+<li>Not natural perception</li>
+<li>Lots of data</li>
+</ul>
 <p>Humans tend to be better at natural perception tasks (i.e. computer vision, speech recognition, natural language)</p>
 <p>Although computers have surpassed human level performance in some speech recognition and image recognition tasks.</p>
 </div>
@@ -234,7 +315,52 @@ banner: img/banners/structuringMLprojects.PNG
 <li>Improve performance on blurry images</li>
 </ul>
 <p>Recommends to set up spreadsheet as follows to show potential improvement as ceiling in terms of how much you can improve performance</p>
-<p>Image |Dog | Great Cats | Blurry | Instagram filter | Comments 1 | Y | | | |Pitbull 2 | | | Y | | 3 | | Y | Y | |Rainy day at zoo % of total| 8%| 43%| 61%| 12%|</p>
+<table>
+<thead>
+<tr class="header">
+<th>Image</th>
+<th>Dog</th>
+<th>Great Cats</th>
+<th>Blurry</th>
+<th>Instagram filter</th>
+<th>Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Y</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Pitbull</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td></td>
+<td></td>
+<td>Y</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td></td>
+<td>Y</td>
+<td>Y</td>
+<td></td>
+<td>Rainy day at zoo</td>
+</tr>
+<tr class="even">
+<td>% of total</td>
+<td>8%</td>
+<td>43%</td>
+<td>61%</td>
+<td>12%</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="cleaning-up-incorrectly-labeled-data" class="section level3">
 <h3>Cleaning up incorrectly labeled data</h3>
@@ -257,17 +383,17 @@ banner: img/banners/structuringMLprojects.PNG
 </thead>
 <tbody>
 <tr class="odd">
-<td>* Overall dev set error</td>
+<td>Overall dev set error</td>
 <td>10%</td>
 <td>2%</td>
 </tr>
 <tr class="even">
-<td>* Errors due to incorrect labels</td>
+<td>Errors due to incorrect labels</td>
 <td>0.6%</td>
 <td>0.6%</td>
 </tr>
 <tr class="odd">
-<td>* Errors due to other causes</td>
+<td>Errors due to other causes</td>
 <td>9.4%</td>
 <td>1.4%</td>
 </tr>
@@ -394,12 +520,44 @@ May exist large academic literature on face recognition then might be okay to bu
 <li>Human level</li>
 <li>Training set error</li>
 <li>Training-dev set error</li>
-<li>Dev error</li>
+<li><p>Dev error</p></li>
+<li>Avoidable Bias = Training set error - Human level</li>
+<li>Variance = training-dev - training</li>
+<li>Data mismatch = dev - training-dev</li>
+<li><p>Degree of overfitting to dev set = test - dev (shouldn’t been * looking, but if do then prob need larger dev set)</p></li>
 </ul>
-<p>Avoidable Bias = Training set error - Human level Variance = training-dev - training Data mismatch = dev - training-dev Degree of overfitting to dev set = test - dev (shouldn’t been looking, but if do then prob need larger dev set)</p>
 <p>More general formulation</p>
-<pre><code>                                | General speech recognition | Rearview mirror speech data</code></pre>
-<p>———————– | —————————| ————————— Human level | “Human level” (4%) | Can also look here: 6% Error on examples NN trained on | “Training error” (7%) | … and here, e.g., 6% Error on examples NN not trained on | “Training-dev error” (10%) | “Dev/Test Error” (6%)</p>
+<table style="width:100%;">
+<colgroup>
+<col width="30%" />
+<col width="35%" />
+<col width="35%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>General speech recognition</th>
+<th>Rearview mirror speech data</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Human level</td>
+<td>“Human level” (4%)</td>
+<td>Can also look here: 6%</td>
+</tr>
+<tr class="even">
+<td>Error on examples NN trained on</td>
+<td>“Training error” (7%)</td>
+<td>… and here, e.g., 6%</td>
+</tr>
+<tr class="odd">
+<td>Error on examples NN not trained on</td>
+<td>“Training-dev error” (10%)</td>
+<td>“Dev/Test Error” (6%)</td>
+</tr>
+</tbody>
+</table>
 <p>Have discussed how to address avoidable bias and variance, but how to address data mismatch? not many things to try, but a few …</p>
 </div>
 <div id="addressing-data-mismatch" class="section level3">
@@ -526,7 +684,11 @@ May exist large academic literature on face recognition then might be okay to bu
 <li>End-to-end learning not promising at present ### Whether to use end-to-end deep learning</li>
 </ul></li>
 </ul>
-<p>Summary * End to end learning can simplify system and not require you to build so many hand-designed individual components * … but doesn’t always work well</p>
+<p>Summary</p>
+<ul>
+<li>End to end learning can simplify system and not require you to build so many hand-designed individual components</li>
+<li>… but doesn’t always work well</li>
+</ul>
 <p>Benefits</p>
 <ul>
 <li>Lets the data speak, rather than being forced to reflect human preconceptions (e.g may not wish for learning algorithm to think in terms of phonemes, which are a linguistic artefact)</li>

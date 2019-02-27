@@ -145,7 +145,9 @@ An evaluation metric and dev set allows you to quickly determine which algorithm
 Aim to do well on training set, but sometimes don't want to do to well.
 
 Given following
-----------------| ------------ |------------
+
+Error    | Example 1 | Example 2
+--------------------------------| -------------------- |--------------------
 Humans:         | 1.1%              | 7.5%
 Training Error | 8%                 | 8%
 Dev Error       | 10%               | 10%
@@ -174,6 +176,8 @@ Note that sometimes Bayes error is non-zero and no matter how much you try you w
 
 ### Surpassing human-level performance
 
+Source    |Example 1 | Example 2 
+---------------------------------------------| ----------------------------| -------
 Team of humans  | 0.5%  | 0.5%
 One human       | 1%    | 1%
 Training error   |0.6%   | 3%
@@ -192,6 +196,7 @@ In many examples, machines now do better than humans. E.g. with structured data 
 * Predict whether someone will repay a loan
 
 Characteristics of these:
+
 * Structural data
 * Not natural perception
 * Lots of data
@@ -244,6 +249,7 @@ Evaluate multiple ideas in parallel; ideas for cat detection:
 Recommends to set up spreadsheet as follows to show potential improvement as ceiling in terms of how much you can  improve performance
 
 Image   |Dog | Great Cats   | Blurry | Instagram filter | Comments
+--------|----|--------------|--------|------------------|----------
 1       | Y |               |           |               |Pitbull
 2       |   |               |   Y    |                  |
 3       |   |           Y   |   Y    |                  |Rainy day at zoo
@@ -266,10 +272,10 @@ Is it worth relabelling dev set?
 Look at:
 
 Error                       | Example 1| Example 2
-----------------------------| ---------|----------
-* Overall dev set error      |  10% | 2%
-* Errors due to incorrect labels|0.6% |  0.6%
-* Errors due to other causes|9.4% | 1.4%
+--------------------------------------| -----------------|---------------
+Overall dev set error      |  10% | 2%
+Errors due to incorrect labels|0.6% |  0.6%
+Errors due to other causes|9.4% | 1.4%
 Conclusion                 | Prob. not worth it | Could be a good idea
 
 Remember that goal of dev set is to help you select between two classifiers A & B, but if you don't trust your dev set then best to fix incorrect labels in dev set
@@ -350,7 +356,7 @@ Solution: Consider carving out a new data set; the training-dev set.  Same distr
 Example:
 
 Type:           | Eg. 1 | Eg. 2 | Eg. 3 | Eg. 4
----------------| -----| --------|-----| ----
+-----------------------| --------------| -------------|------------| ----------
 Human           | 0%    | 0%    | 0% | 0% | 4%
 Training        | 1 %   | 1%    |10% | 10% | 7%
 Training-dev    |9%     | 1.5%  |11% | 11% | 10%
@@ -364,14 +370,14 @@ Key quantities to look at:
 * Training-dev set error
 * Dev error
 
-Avoidable Bias = Training set error - Human level
-Variance = training-dev - training
-Data mismatch = dev - training-dev
-Degree of overfitting to dev set = test - dev (shouldn't been looking, but if do then prob need larger dev set)
+* Avoidable Bias = Training set error - Human level
+* Variance = training-dev - training
+* Data mismatch = dev - training-dev
+* Degree of overfitting to dev set = test - dev (shouldn't been * looking, but if do then prob need larger dev set)
 
 More general formulation
 
-                                    | General speech recognition | Rearview mirror speech data
+Error                              | General speech recognition | Rearview mirror speech data
 -----------------------             | ---------------------------| ---------------------------
 Human level                         | "Human level" (4%)        | Can also look here: 6% 
 Error on examples NN trained on     | "Training error" (7%)     | ... and here, e.g., 6%
@@ -504,6 +510,7 @@ Summary: When train 1 NN to do many tasks and can lead to better performance tha
     ### Whether to use end-to-end deep learning
     
 Summary
+
 * End to end learning can simplify system and not require you to build so many hand-designed individual components
 * ... but doesn't always work well
 
