@@ -3,8 +3,10 @@ title: Neural Networks and Deep Learning
 author: ''
 date: '2018-10-15'
 slug: neural-networks-and-deep-learning
-categories: []
-tags: []
+categories: [Study-Notes]
+tags: 
+- Coursera
+- Study-Notes
 banner: "img/banners/NNandDL.png"
 ---
 

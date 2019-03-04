@@ -3,8 +3,10 @@ title: Improving Deep Learning Networks
 author: ''
 date: '2018-12-07'
 slug: improving-deep-learning-networks
-categories: []
-tags: []
+categories: [Study-Notes]
+tags: 
+- Coursera
+- Study-Notes
 banner: img/banners/improvingDNN.png
 ---
 
@@ -18,8 +20,8 @@ banner: img/banners/improvingDNN.png
 <h3>Train/Dev/Test Sets</h3>
 <p>Decisions to make</p>
 <ul>
-<li>No. of layers</li>
-<li>No. of hidden units</li>
+<li>No. of layers</li>
+<li>No. of hidden units</li>
 <li>Learning rates</li>
 <li>Activation functions</li>
 </ul>
@@ -44,31 +46,27 @@ banner: img/banners/improvingDNN.png
 </ul>
 <p>Guideline: Ensure dev and test sets come from same distribution. Okay to get training set from different sources</p>
 <p>It might be okay not to have a test set. (Goal: unbiased estimate for final)</p>
-<p>Otherwise, train on training set. Eval on dev set and try to get to good model, but will no longer have unbiased estimate of performance.
-Usually people say have train/test but what are really referring to is a train/dev set.</p>
+<p>Otherwise, train on training set. Eval on dev set and try to get to good model, but will no longer have unbiased estimate of performance. Usually people say have train/test but what are really referring to is a train/dev set.</p>
 </div>
 <div id="biasvariance" class="section level3">
 <h3>Bias/Variance</h3>
-<p>Bias/Variance - easy to learn. difficult to master. Important
-Less discussion in deep learning era. Less trade-off in deep learning era.</p>
-<p>High bias = underfitting
-High variance = overfitting</p>
+<p>Bias/Variance - easy to learn. difficult to master. Important Less discussion in deep learning era. Less trade-off in deep learning era.</p>
+<p>High bias = underfitting High variance = overfitting</p>
 <p>High dimensional problems - difficult to plot decision boundary</p>
 <p>Key Metrics:</p>
 <ul>
 <li>Train set error</li>
 <li>Dev set error</li>
 </ul>
-<p>If train set error &lt; dev set error then <strong>high variance</strong> (overfitting)
-If train set error <span class="math inline">\(\approx\)</span> dev set error and train set error high then <strong>high bias</strong></p>
+<p>If train set error &lt; dev set error then <strong>high variance</strong> (overfitting) If train set error <span class="math inline">\(\approx\)</span> dev set error and train set error high then <strong>high bias</strong></p>
 <p>Example when considering classification of image as cat:</p>
-<table style="width:100%;">
+<table style="width:88%;">
 <colgroup>
-<col width="17%" />
-<col width="20%" />
-<col width="20%" />
-<col width="20%" />
-<col width="20%" />
+<col width="15%" />
+<col width="18%" />
+<col width="18%" />
+<col width="18%" />
+<col width="18%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -127,8 +125,7 @@ If train set error <span class="math inline">\(\approx\)</span> dev set error an
 <h4>Logistic regression</h4>
 <p>Aim <span class="math inline">\(\min\limits_{w, b} J(w,b)\)</span> where <span class="math inline">\(w \in \mathbb{R}^{n_x}, b \in \mathbb{R}\)</span>.</p>
 <p><span class="math display">\[J(w,b) = \frac{1}{m} \sum^{m}_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) + \frac{\lambda}{2m}\sum_{j=1}^{n_x}||w^{[j]}||_2^2\]</span></p>
-<p><span class="math inline">\(L_2\)</span> regularisation: <span class="math display">\[\frac{\lambda}{2m}\sum_{j=1}^{n_x}||w||_2^2\]</span>
-<span class="math inline">\(L_1\)</span> regularisation: <span class="math display">\[\frac{\lambda}{2m}\sum_{j=1}^{n_x}|w|_j\]</span></p>
+<p><span class="math inline">\(L_2\)</span> regularisation: <span class="math display">\[\frac{\lambda}{2m}\sum_{j=1}^{n_x}||w||_2^2\]</span> <span class="math inline">\(L_1\)</span> regularisation: <span class="math display">\[\frac{\lambda}{2m}\sum_{j=1}^{n_x}|w|_j\]</span></p>
 <p><span class="math inline">\(\lambda\)</span> is a hyperparameter.</p>
 <ul>
 <li>reserved word in Python (use instead <em>lambd</em>)</li>
@@ -156,10 +153,8 @@ If train set error <span class="math inline">\(\approx\)</span> dev set error an
 <h3>Why regularisation reduces overfitting</h3>
 <p>Attempt 1 at Explanation.</p>
 <p>With large <span class="math inline">\(\lambda\)</span>, will set weights to zero to zero out a lot hidden units (approaches logistic regression). Although in reality, none are set to zero, but many almost zero. Hopefully intermediate <span class="math inline">\(\lambda\)</span> that gets to “just right”</p>
-<p>Attempt 2 at Explanation :
-If z is quite small, <span class="math inline">\(\tanh(z)\)</span> is almost linear. So by increasing <span class="math inline">\(\lambda\)</span> will decrease <span class="math inline">\(w^{[l]}\)</span>. As <span class="math inline">\(z^{[l]} = w^{[l]}a^{[l-1]} + b^{[l]}\)</span> then <span class="math inline">\(z^{[l]}\)</span> will be small Every layer will be roughly linear and so network is just linear network and even deep network will be linear.</p>
-<p>Implementation Tip:
-Recall: <span class="math inline">\(J(\centerdot) = \frac{1}{m}\sum\limits_{i=1}^m \mathcal{L}(\hat{y}^{(i)}, y^{(i)}) + \frac{\lambda}{2m}\sum\limits_{l=1}^{L}||w^{[l]}||^2_F\)</span></p>
+<p>Attempt 2 at Explanation : If z is quite small, <span class="math inline">\(\tanh(z)\)</span> is almost linear. So by increasing <span class="math inline">\(\lambda\)</span> will decrease <span class="math inline">\(w^{[l]}\)</span>. As <span class="math inline">\(z^{[l]} = w^{[l]}a^{[l-1]} + b^{[l]}\)</span> then <span class="math inline">\(z^{[l]}\)</span> will be small Every layer will be roughly linear and so network is just linear network and even deep network will be linear.</p>
+<p>Implementation Tip: Recall: <span class="math inline">\(J(\centerdot) = \frac{1}{m}\sum\limits_{i=1}^m \mathcal{L}(\hat{y}^{(i)}, y^{(i)}) + \frac{\lambda}{2m}\sum\limits_{l=1}^{L}||w^{[l]}||^2_F\)</span></p>
 <p>Need to plot the new definition of <span class="math inline">\(J\)</span> which includes the regularisation parameter, otherwise will not see <span class="math inline">\(J\)</span> monotonically decreasing.</p>
 </div>
 <div id="dropout-regularisation" class="section level3">
@@ -228,19 +223,15 @@ z^{[2]} &amp;= w a^{[1]} + b^{[2]}\\
 <li>Image detection
 <ul>
 <li>Flipping training set horizontally (when using computer vision)</li>
-<li>Take random crops (rotate, zoom)
-You wouldn’t flip vertically!
-These don’t add so much extra info as would a new (independent) picture<br />
+<li>Take random crops (rotate, zoom) You wouldn’t flip vertically! These don’t add so much extra info as would a new (independent) picture<br />
 </li>
 </ul></li>
 <li>Optical character recognition can impose random rotations and distortions</li>
 </ul></li>
-<li>Early stopping. As run gradient descent usually plot training error or cost function <span class="math inline">\(J\)</span> against number of iterations. Should decrease with number of iterations. Also plot dev set error; this usually decreases then increases. Stop at inversion. Andrew Ng sometimes uses but disadvantage is that it
-takes away from orthogonalisation (i.e. the following two tasks/problems get coupled together; whereas with orthogonality keep as two separate tasks)
+<li>Early stopping. As run gradient descent usually plot training error or cost function <span class="math inline">\(J\)</span> against number of iterations. Should decrease with number of iterations. Also plot dev set error; this usually decreases then increases. Stop at inversion. Andrew Ng sometimes uses but disadvantage is that it takes away from orthogonalisation (i.e. the following two tasks/problems get coupled together; whereas with orthogonality keep as two separate tasks)
 <ol style="list-style-type: decimal">
 <li>Optimise cost function <span class="math inline">\(J\)</span> via gradient descent, momentum, adam, etc.</li>
-<li>Not overfit via regularisation, more data, etc.
-So early stopping means you are not doing optimisation of cost function very well. Andrew Ng prefers L2 regularisation (although may need to try many values which is more computationally expensive, but on the plus side), Early stopping works similar to L2 regularisation, at earlier iterations <span class="math inline">\(w \approx 0\)</span> whereas for larger iterations, <span class="math inline">\(w\)</span> large.</li>
+<li>Not overfit via regularisation, more data, etc. So early stopping means you are not doing optimisation of cost function very well. Andrew Ng prefers L2 regularisation (although may need to try many values which is more computationally expensive, but on the plus side), Early stopping works similar to L2 regularisation, at earlier iterations <span class="math inline">\(w \approx 0\)</span> whereas for larger iterations, <span class="math inline">\(w\)</span> large.</li>
 </ol></li>
 </ul>
 <p>Note that regularization hurts training set performance! This is because it limits the ability of the network to overfit to the training set. But since it ultimately gives better test accuracy, it is helping your system.</p>
@@ -292,10 +283,8 @@ So early stopping means you are not doing optimisation of cost function very wel
 1.5 &amp; 0 \\
   0 &amp; 1.5   
  \end{array}\right]^{L-1}X\]</span></p>
-<p>So if weights are just larger than identity then activations increase exponentially.
-Conversely, if weights are just a smaller than identity then activations increase exponentially.</p>
-<p>Similar argument can be used to show that gradients also increase/decrease exponentially.
-With deep learning matrix (i.e. a 152 layer network), then this can cause problems for gradient descent.</p>
+<p>So if weights are just larger than identity then activations increase exponentially. Conversely, if weights are just a smaller than identity then activations increase exponentially.</p>
+<p>Similar argument can be used to show that gradients also increase/decrease exponentially. With deep learning matrix (i.e. a 152 layer network), then this can cause problems for gradient descent.</p>
 </div>
 <div id="weight-initialisation-for-deep-networks" class="section level3">
 <h3>Weight initialisation for deep networks</h3>
@@ -323,10 +312,9 @@ With deep learning matrix (i.e. a 152 layer network), then this can cause probl
 </ul></li>
 <li>Check gradient by using two sides of <span class="math inline">\(epsilon\)</span></li>
 <li>Gradient, <span class="math inline">\(g(\theta) \approx \frac{\Delta\text{y}}{\Delta\text{x}} = \frac{f(\theta + \epsilon) - f(\theta - \epsilon)}{2 \epsilon}\)</span></li>
-<li>With <span class="math inline">\(f(\theta) = \theta^3\)</span> and <span class="math inline">\(\theta\)</span> = 1
-<span class="math display">\[\begin{aligned}
-  g(\theta) &amp;= f&#39;(\theta) = 3\theta = 3 \\
-  g(\theta) &amp;\approx \frac{1.01^3 - 0.99^3}{0.02} = 3.0001
+<li>With <span class="math inline">\(f(\theta) = \theta^3\)</span> and <span class="math inline">\(\theta\)</span> = 1 <span class="math display">\[\begin{aligned}
+g(\theta) &amp;= f&#39;(\theta) = 3\theta = 3 \\
+g(\theta) &amp;\approx \frac{1.01^3 - 0.99^3}{0.02} = 3.0001
 \end{aligned}\]</span></li>
 </ul>
 <p>Note (Calculus), approximation error of derivative is <span class="math inline">\(O(\epsilon^2)\)</span>. If instead used one-sided difference <span class="math inline">\(g(\theta) \approx \frac{f(\theta + \epsilon) - f(\theta)}{\epsilon}\)</span> then approximation error is greater at <span class="math inline">\(O(\epsilon)\)</span>.</p>
@@ -334,10 +322,7 @@ With deep learning matrix (i.e. a 152 layer network), then this can cause probl
 <div id="gradient-checking-grad-check" class="section level3">
 <h3>Gradient checking (Grad check)</h3>
 <p>Gradient checking will help verify and debug implementation of backpropagation and save LOTS of time.</p>
-<p>Steps:
-1. Take all parameters <span class="math inline">\(W^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}, \ldots, W^{[L]}, b^{[L]}\)</span> and reshape into big vector <span class="math inline">\(\theta\)</span>, so that cost function is a function of <span class="math inline">\(\theta\)</span>, <span class="math inline">\(J(\theta)\)</span>
-2. Take all derivatives, <span class="math inline">\(dW^{[1]}, db^{[1]}, dW^{[2]}, db^{[2]}, \ldots, dW^{[L]}, db^{[L]}\)</span> and reshape into big vector <span class="math inline">\(d\theta\)</span> which is the same dimension as <span class="math inline">\(\theta\)</span>
-3. Is <span class="math inline">\(d\theta\)</span> the gradient, or slope of cost function <span class="math inline">\(J(\theta)\)</span>?</p>
+<p>Steps: 1. Take all parameters <span class="math inline">\(W^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}, \ldots, W^{[L]}, b^{[L]}\)</span> and reshape into big vector <span class="math inline">\(\theta\)</span>, so that cost function is a function of <span class="math inline">\(\theta\)</span>, <span class="math inline">\(J(\theta)\)</span> 2. Take all derivatives, <span class="math inline">\(dW^{[1]}, db^{[1]}, dW^{[2]}, db^{[2]}, \ldots, dW^{[L]}, db^{[L]}\)</span> and reshape into big vector <span class="math inline">\(d\theta\)</span> which is the same dimension as <span class="math inline">\(\theta\)</span> 3. Is <span class="math inline">\(d\theta\)</span> the gradient, or slope of cost function <span class="math inline">\(J(\theta)\)</span>?</p>
 <p>To implement grad check:</p>
 <p>for each <span class="math inline">\(i\)</span>:</p>
 <p><span class="math display">\[\begin{aligned}
@@ -346,8 +331,7 @@ With deep learning matrix (i.e. a 152 layer network), then this can cause probl
         J(\theta_1, \theta_2, \ldots, \theta_{i - \epsilon}, \ldots)}{2\epsilon}\\
         &amp;\approx d\theta^{[i]} ?
 \end{aligned}\]</span></p>
-<p>Uses Euclidean distances (square root of sum of squares) to calculate difference between two vectors:
-<span class="math display">\[\frac{||d\theta_\text{approx} - d\theta||_2}{||d\theta_\text{approx}||_2 + ||d\theta||_2}\]</span></p>
+<p>Uses Euclidean distances (square root of sum of squares) to calculate difference between two vectors: <span class="math display">\[\frac{||d\theta_\text{approx} - d\theta||_2}{||d\theta_\text{approx}||_2 + ||d\theta||_2}\]</span></p>
 <p>With <span class="math inline">\(\epsilon = 10^{-7}\)</span>, if Euclidean distance <span class="math inline">\(\approx\)</span></p>
 <ul>
 <li><span class="math inline">\(10^{-7}\)</span> then great!<br />
@@ -384,8 +368,7 @@ Y &amp;= y^{(1)} y^{(2)} y^{(3)} \ldots, y  \in \mathbb{R}^{1\times m}
 <p>Will need to train entire training set before take a little step of gradient descent, and then you need to train the entire training step again before taking another step.</p>
 <p>Instead, split up training set into mini-batches (baby training set), e.g. with 1000 examples each.</p>
 <p>Denote mini-batch <span class="math inline">\(t\)</span> by <span class="math inline">\(X^{\{t\}}, Y^{\{t\}}\)</span>,</p>
-<p>where <span class="math display">\[X^{\{1\}}= [x^{(1)} x^{(2)} x^{(3)} \ldots x^{(1000)}], \ \ X^{\{1\}} \in \mathbb{R}^{n_x \times 1000}\]</span>, and
-<span class="math display">\[Y^{\{1\}}= [y^{(1)} y^{(2)} y^{(3)} \ldots y^{(1000)}], \ \ y^{\{1\}} \in \mathbb{R}^{1 \times 1000}\]</span></p>
+<p>where <span class="math display">\[X^{\{1\}}= [x^{(1)} x^{(2)} x^{(3)} \ldots x^{(1000)}], \ \ X^{\{1\}} \in \mathbb{R}^{n_x \times 1000}\]</span>, and <span class="math display">\[Y^{\{1\}}= [y^{(1)} y^{(2)} y^{(3)} \ldots y^{(1000)}], \ \ y^{\{1\}} \in \mathbb{R}^{1 \times 1000}\]</span></p>
 <p>So recall:</p>
 <ul>
 <li>[]: layer index</li>
@@ -396,19 +379,16 @@ Y &amp;= y^{(1)} y^{(2)} y^{(3)} \ldots, y  \in \mathbb{R}^{1\times m}
 <p>Mini-batch gradient descent algorithm:</p>
 <p>for <span class="math inline">\(t = 1, \ldots, 5000\)</span> (the number of mini-batches)</p>
 <ul>
-<li><p>Forward prop on <span class="math inline">\(X^{\{t\}}\)</span>, using vectorisation implementation that processes 1000 examples at a time
-<span class="math display">\[\begin{aligned}
-  Z^{[1]} &amp;= W^{[1]}X^{\{t\}} + b^{[1]}\\
-  A^{[1]} &amp;= g^{[1]}(Z^{[1]})\\
-  \vdots\\
-  A^{[l]} &amp;= g^{[2]}(Z^{[2]})
+<li><p>Forward prop on <span class="math inline">\(X^{\{t\}}\)</span>, using vectorisation implementation that processes 1000 examples at a time <span class="math display">\[\begin{aligned}
+Z^{[1]} &amp;= W^{[1]}X^{\{t\}} + b^{[1]}\\
+A^{[1]} &amp;= g^{[1]}(Z^{[1]})\\
+\vdots\\
+A^{[l]} &amp;= g^{[2]}(Z^{[2]})
 \end{aligned}\]</span></p></li>
-<li><p>Compute cost function
-<span class="math display">\[J^{\{t\}} = \frac{1}{1000}  \sum^{1000}_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) + \frac{\lambda}{2 \centerdot 1000}\sum_{l=1}^{L}||w^{[l]}||_F^2\]</span></p></li>
-<li><p>Backprop to compute gradients w.r.t. <span class="math inline">\(J^{t}\)</span>, using (<span class="math inline">\(X^{\{t\}}\)</span>, <span class="math inline">\(Y^{\{t\}}\)</span>)
-<span class="math display">\[\begin{aligned}
-  w^{[l]} := w^{[l]} - \alpha dw^{[l]} \\
-  b^{[l]} := b^{[l]} - \alpha db^{[l]} 
+<li><p>Compute cost function <span class="math display">\[J^{\{t\}} = \frac{1}{1000}  \sum^{1000}_{i=1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) + \frac{\lambda}{2 \centerdot 1000}\sum_{l=1}^{L}||w^{[l]}||_F^2\]</span></p></li>
+<li><p>Backprop to compute gradients w.r.t. <span class="math inline">\(J^{t}\)</span>, using (<span class="math inline">\(X^{\{t\}}\)</span>, <span class="math inline">\(Y^{\{t\}}\)</span>) <span class="math display">\[\begin{aligned}
+w^{[l]} := w^{[l]} - \alpha dw^{[l]} \\
+b^{[l]} := b^{[l]} - \alpha db^{[l]} 
 \end{aligned}\]</span></p></li>
 </ul>
 <p><strong>1 epoch</strong>: Going through the 5000 mini-batches (meaning have gone through 5,000,000 training examples); this means you have done 5000 gradient descents. If you had used batch gradient descent you would have only done a single gradient descent with a single pass through the training set.</p>
@@ -453,8 +433,7 @@ Y &amp;= y^{(1)} y^{(2)} y^{(3)} \ldots, y  \in \mathbb{R}^{1\times m}
 </div>
 <div id="exponentially-moving-weighted-averages" class="section level2">
 <h2>Exponentially (moving) weighted averages</h2>
-<p>Initialise <span class="math inline">\(v_0 = 0\)</span>
-Set <span class="math display">\[v_t = \beta v_{t-1} + (1-\beta) \theta_t\]</span></p>
+<p>Initialise <span class="math inline">\(v_0 = 0\)</span> Set <span class="math display">\[v_t = \beta v_{t-1} + (1-\beta) \theta_t\]</span></p>
 <p><span class="math inline">\(v_t\)</span> approximately averages over <span class="math inline">\(\frac{1}{1-\beta}\)</span> values of <span class="math inline">\(\theta\)</span></p>
 <p><span class="math display">\[\begin{aligned}
 \beta = 0.9 &amp;:\approx 10    \; \theta \text{ values}\\
@@ -464,14 +443,12 @@ Set <span class="math display">\[v_t = \beta v_{t-1} + (1-\beta) \theta_t\]</spa
 </div>
 <div id="understanding-exponentially-weighted-averages" class="section level2">
 <h2>Understanding exponentially weighted averages</h2>
-<p>Given;
-<span class="math display">\[\begin{aligned}
+<p>Given; <span class="math display">\[\begin{aligned}
 v_{100} &amp;= 0.9 v_{99} + 0.1\theta_{100}\\
 v_{99} &amp;= 0.9 v_{98} + 0.1\theta_{99}\\
 v_{98} &amp;= 0.9 v_{97} + 0.1\theta_{98}
 \end{aligned}\]</span></p>
-<p>have that
-<span class="math display">\[\begin{aligned}
+<p>have that <span class="math display">\[\begin{aligned}
 v_{100} &amp;=  0.1\theta_{100} + 0.9 v_{99}\\
         &amp;=  0.1\theta_{100} + 0.9 (0.1\theta_{99} + 0.9 v_{98}) \\
         &amp;=  0.1\theta_{100} + 0.9 \left(0.1\theta_{99} + 0.9 [0.1\theta_{98} + 0.9 v_{97}]\right) \\
@@ -555,8 +532,7 @@ dat %&gt;%
 <div id="bias-correction-in-exponentially-weighted-averages" class="section level2">
 <h2>Bias correction in exponentially weighted averages</h2>
 <p>Bias correction can make computation of averages more accurate; this is correcting bias from initialisation.</p>
-<p>For example with <span class="math inline">\(\beta = 0.98\)</span> and <span class="math inline">\(\theta_1 = 40\)</span>
-<span class="math display">\[\begin{aligned}
+<p>For example with <span class="math inline">\(\beta = 0.98\)</span> and <span class="math inline">\(\theta_1 = 40\)</span> <span class="math display">\[\begin{aligned}
     v_t &amp;= \beta v_{t-1} + (1-\beta)\theta_t \\
     v_0 &amp;= 0 \\
     v_1 &amp;= 0.98 v_0 + 0.2 \theta_1 \\
@@ -564,11 +540,8 @@ dat %&gt;%
     v_2 &amp;= 0.98 v_1 + 0.02 \theta_2 \\
         &amp;= 0.98 \times 0.02 \times \theta_1 + 0.02 \theta_2 \\
         &amp;= 0.0196 \theta_1 + 0.02 \theta_2
-\end{aligned}\]</span>
-So both <span class="math inline">\(v_1\)</span> and <span class="math inline">\(v_2\)</span> are less than the average <span class="math inline">\(\theta\)</span>.</p>
-<p>To correct for bias use <span class="math display">\[\frac{v_t}{1-\beta^t}\]</span>
-Noting that at <span class="math inline">\(t=2\)</span>, <span class="math inline">\(1-\beta^t = (1-0.98^2) = 0.0396\)</span>, so that <span class="math display">\[\frac{v_t}{1-\beta^t} = \frac{0.0196 \theta_1 + 0.02 \theta_2}{0.0396},\]</span>
-i.e. the weights in the numerator add up to the denominator and so this is a weighted average.</p>
+\end{aligned}\]</span> So both <span class="math inline">\(v_1\)</span> and <span class="math inline">\(v_2\)</span> are less than the average <span class="math inline">\(\theta\)</span>.</p>
+<p>To correct for bias use <span class="math display">\[\frac{v_t}{1-\beta^t}\]</span> Noting that at <span class="math inline">\(t=2\)</span>, <span class="math inline">\(1-\beta^t = (1-0.98^2) = 0.0396\)</span>, so that <span class="math display">\[\frac{v_t}{1-\beta^t} = \frac{0.0196 \theta_1 + 0.02 \theta_2}{0.0396},\]</span> i.e. the weights in the numerator add up to the denominator and so this is a weighted average.</p>
 <p>When <span class="math inline">\(t\)</span> is large enough, the bias correction has no effect.</p>
 <p>In machine learning, for exponentially weighted averages, most people don’t worry about bias correction as just wait initial period.</p>
 </div>
@@ -586,8 +559,7 @@ i.e. the weights in the numerator add up to the denominator and so this is a we
 <li><span class="math inline">\(v_{db} = \beta v_{db} + (1-\beta) db\)</span>,</li>
 <li><span class="math inline">\(w := w - \alpha v_{dW}\)</span>, <span class="math inline">\(b := b - \alpha v_{db}\)</span></li>
 </ul>
-<p>So have two hyperparameters: <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\beta\)</span>. In practice <span class="math inline">\(\beta = 0.9\)</span> works pretty well.
-in practice, people don’t use bias correction because after 10 iterations, fixed.</p>
+<p>So have two hyperparameters: <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\beta\)</span>. In practice <span class="math inline">\(\beta = 0.9\)</span> works pretty well. in practice, people don’t use bias correction because after 10 iterations, fixed.</p>
 <p><span class="math inline">\(v_{dW}\)</span> is initialised to a vector of zeros with the same dimension as <span class="math inline">\(dW\)</span> and <span class="math inline">\(w\)</span>. Similarly, <span class="math inline">\(v_{db}\)</span> is initialised to a vector of zeros with the same dimension as <span class="math inline">\(db\)</span> and <span class="math inline">\(b\)</span></p>
 <p>Note that in the literature they scale <span class="math inline">\(\alpha\)</span> by <span class="math inline">\(1-\beta\)</span>, such that <span class="math inline">\(\alpha^\star = \frac{\alpha}{1-\beta}\)</span> and do following:</p>
 <ul>
@@ -835,8 +807,7 @@ ggplot2::ggplot(as.data.frame(beta)) +
 geom_histogram(aes(beta)) + 
 labs(x = expression(1-beta), y = &quot;# Samples&quot;)
 rm(x, y, a, b, r, beta)</code></pre>
-<p><img src="/blog/2018-12-07-improving-deep-learning-networks_files/figure-html/sample_ewa_log_scale_r-1.png" width="672" />
-<!-- beta = 1-10^r, where r in -3, -1.  -3 = 10^-3--></p>
+<p><img src="/blog/2018-12-07-improving-deep-learning-networks_files/figure-html/sample_ewa_log_scale_r-1.png" width="672" /> <!-- beta = 1-10^r, where r in -3, -1.  -3 = 10^-3--></p>
 </div>
 <div id="hyperparameters-tuning-in-practice-pandas-vs.caviar" class="section level3">
 <h3>Hyperparameters tuning in practice: Pandas vs. Caviar</h3>
@@ -871,8 +842,7 @@ rm(x, y, a, b, r, beta)</code></pre>
 <li>Makes hyperparameter search problem easier and NN more robust</li>
 <li>Recall that normalising input features of logistic regression can speed up learning (i.e. subtract mean and divide by variance), transforming learning problem contours from elongated to round</li>
 <li>In deeper mode have input parameters but also activations, how about normalising any hidden layer, e.g. <span class="math inline">\(a^{[2]} = g(z^{[2]})\)</span> so as to speed up training of <span class="math inline">\(w^{[3]}\)</span> and <span class="math inline">\(b^{[3]}\)</span>. Although, note that it is more common practice to normalise <span class="math inline">\(z^{[2]}\)</span>, rather than it’s activated value. This is the premise of batch normalisation</li>
-<li><p>Given hidden layer value <span class="math inline">\(z^{[l](1)}, \ldots, z^{[\ell](m)}\)</span>, compute:
-<span class="math display">\[\begin{aligned}
+<li><p>Given hidden layer value <span class="math inline">\(z^{[l](1)}, \ldots, z^{[\ell](m)}\)</span>, compute: <span class="math display">\[\begin{aligned}
 \mu &amp;= \frac{1}{m}\sum_{i}z^{[\ell](i)} \\
 \sigma^2 &amp;= \frac{1}{m} \sum_{i} (z^{[\ell](i)} - \mu)^2\\
 z^{[\ell](i)}_\text{norm} &amp;= \frac{z^{[\ell](i)} - \mu}{\sqrt{\sigma^2 + \varepsilon}}\\
@@ -900,8 +870,7 @@ z^{[\ell](i)}_\text{norm} &amp;= \frac{z^{[\ell](i)} - \mu}{\sqrt{\sigma^2 + \va
 <p>In reality, implementing batch norm using a programming framework is often a one-liner (and hides implementation details), e.g. in TensorFlow <code>tf.nn.batch-normalisation</code></p>
 <p>To date, discussing in context of batch gradient descent, but in practice applied to mini-batch.</p>
 <ul>
-<li><p>Take first minibatch, <span class="math inline">\(X^{\{1\}}\)</span> and apply transformations:
-<span class="math display">\[\begin{aligned}
+<li><p>Take first minibatch, <span class="math inline">\(X^{\{1\}}\)</span> and apply transformations: <span class="math display">\[\begin{aligned}
 &amp; X^{\{1\}} \xrightarrow{W^{[1]}, b^{[1]}}  Z^{[1]} \xrightarrow[\text{BN}]{\beta^{[1]}, \gamma^{[1]}} \rightarrow \tilde{Z}^{[1]} \rightarrow  g^{[1]}(\tilde{Z}^{[1]}) = a^{[1]}
 \xrightarrow{W^{[2]}, b^{[2]}}  Z^{[2]} \xrightarrow[\text{BN}]{\beta^{[2]}, \gamma^{[2]}} \tilde{Z}^{[2]} \rightarrow  \ldots\\
 &amp; X^{\{2\}} \rightarrow \ldots \\
@@ -929,8 +898,7 @@ z^{[\ell](i)}_\text{norm} &amp;= \frac{z^{[\ell](i)} - \mu}{\sqrt{\sigma^2 + \va
 </ul></li>
 </ul></li>
 </ul>
-<p>Noting that this also works with momentum, RMSprop or Adam, in addition to gradient descent (as detailed here)
-This is how you would implement from scratch, although not required if using programming framework such as TensorFlow</p>
+<p>Noting that this also works with momentum, RMSprop or Adam, in addition to gradient descent (as detailed here) This is how you would implement from scratch, although not required if using programming framework such as TensorFlow</p>
 </div>
 <div id="why-does-batch-norm-work" class="section level3">
 <h3>Why does Batch Norm work?</h3>
@@ -955,8 +923,7 @@ This is how you would implement from scratch, although not required if using pro
 </div>
 <div id="batch-norm-at-test-time" class="section level3">
 <h3>Batch Norm at test time</h3>
-<p>During training, batch norm processes one mini-batch at a time,
-<span class="math display">\[\begin{aligned}
+<p>During training, batch norm processes one mini-batch at a time, <span class="math display">\[\begin{aligned}
 \mu &amp;=\frac{1}{m}\sum_{i}z^{(i)}\\
 \sigma^2 &amp;= \frac{1}{m} \sum_{i} (z^{(i)} - \mu)^2\\
 z^{(i)}_\text{norm} &amp;= \frac{z^{(i)} - \mu}{\sqrt{\sigma^2 + \varepsilon}}\\
@@ -978,16 +945,13 @@ z^{(i)}_\text{norm} &amp;= \frac{z^{(i)} - \mu}{\sqrt{\sigma^2 + \varepsilon}}\\
 <li>Use <span class="math inline">\(C\)</span> = Number of classes, e.g. <span class="math inline">\(C=4\)</span>, in which case index classes as $(0, , 3)</li>
 <li><span class="math inline">\(n^{[L]} = C\)</span> and <span class="math inline">\(\hat{y} \in \mathbb{R}^{(4, 1)}\)</span> and values of <span class="math inline">\(\hat{y}\)</span> sum to one.</li>
 <li>Each value in <span class="math inline">\(y\)</span> gives the probability a given classes</li>
-<li>For Softmax layer (final layer <span class="math inline">\(L\)</span>)
-<span class="math display">\[ z^{[\ell]} = w^{[\ell]}a^{[\ell-1]}+ b^{[\ell]}\]</span></li>
+<li>For Softmax layer (final layer <span class="math inline">\(L\)</span>) <span class="math display">\[ z^{[\ell]} = w^{[\ell]}a^{[\ell-1]}+ b^{[\ell]}\]</span></li>
 </ul>
-<p>Activation function for layer <span class="math inline">\(L\)</span>
-<span class="math display">\[\begin{aligned}
+<p>Activation function for layer <span class="math inline">\(L\)</span> <span class="math display">\[\begin{aligned}
 t_j &amp;= e^{z^{[j]}}\\
 \hat{y} = a^{[j]} &amp;= \frac{t_j}{\sum^C_j=1 t_j}
 \end{aligned}\]</span></p>
-<p>For example, with <span class="math inline">\(Z^{[L]} = \begin{bmatrix} 5 \\ 2 \\ -1 \\ 3 \end{bmatrix}\)</span>
-have that</p>
+<p>For example, with <span class="math inline">\(Z^{[L]} = \begin{bmatrix} 5 \\ 2 \\ -1 \\ 3 \end{bmatrix}\)</span> have that</p>
 <pre class="r"><code>z &lt;- c(5, 2, -1, 3)
 t &lt;- exp(z)
 t</code></pre>
@@ -998,8 +962,7 @@ z</code></pre>
 <pre class="r"><code>sum(z)</code></pre>
 <pre><code>## [1] 1</code></pre>
 <p>Previously, activation function took a single real number as input and output a single real number. Now take in a vector of size <span class="math inline">\(C\)</span> and output vector of size <span class="math inline">\(C\)</span>.</p>
-<p>Softmax examples with two input classes, decision boundaries are linear with no hidden layer
-<img src="/img/ImprovingDNN/softmax_nohidden.png" alt="Softmax Classification with no hidden layer" /></p>
+<p>Softmax examples with two input classes, decision boundaries are linear with no hidden layer <img src="/img/ImprovingDNN/softmax_nohidden.png" alt="Softmax Classification with no hidden layer" /></p>
 </div>
 <div id="training-a-softmax-classifier" class="section level3">
 <h3>Training a softmax classifier</h3>
@@ -1012,21 +975,16 @@ z</code></pre>
 1 \\
 0 \\
 0
-\end{bmatrix}\]</span>
-noting that <span class="math inline">\(y_1 = y_3 = y_4 = 0\)</span>. Example have output is <span class="math display">\[a^{L} = \hat{y} =  \begin{bmatrix}
+\end{bmatrix}\]</span> noting that <span class="math inline">\(y_1 = y_3 = y_4 = 0\)</span>. Example have output is <span class="math display">\[a^{L} = \hat{y} =  \begin{bmatrix}
 0.3 \\
 0.2 \\
 0.1 \\
 0.4
 \end{bmatrix}\]</span></li>
-<li>Loss function is
-<span class="math display">\[\matchcal{L}(\hat{y}, y) = -\sum^4_{j = 1} y_j \log \hat{y}_j\]</span>
-For given example this is <span class="math inline">\(-\log \hat{y}_2\)</span>. To minimise loss, want to make <span class="math inline">\(\hat{y}_2\)</span>, which is a probability, as large as possible. This is equivalent to MLE.</li>
+<li>Loss function is <span class="math display">\[\mathcal{L}(\hat{y}, y) = -\sum^4_{j = 1} y_j \log \hat{y}_j\]</span> For given example this is <span class="math inline">\(-\log \hat{y}_2\)</span>. To minimise loss, want to make <span class="math inline">\(\hat{y}_2\)</span>, which is a probability, as large as possible. This is equivalent to MLE.</li>
 </ul>
-<p>Cost on entire training set:
-<span class="math display">\[J(w^{[1]}, b^{[1]}, \ldots) = \frac{1}{m} \sum^m_{i = 1}\matchcal{L}(\hat{y}^{(i)}, y^{(i)}) \]</span></p>
-<p>Noting that
-<span class="math display">\[\begin{aligned}
+<p>Cost on entire training set: <span class="math display">\[J(w^{[1]}, b^{[1]}, \ldots) = \frac{1}{m} \sum^m_{i = 1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) \]</span></p>
+<p>Noting that <span class="math display">\[\begin{aligned}
 Y &amp;= [y^{(1)} y^{(2)}, \ldots, y^{(m)}] \\
 &amp; = \begin{bmatrix}
 0 &amp; 0 &amp; 1 &amp;\\
@@ -1040,7 +998,7 @@ Y &amp;= [y^{(1)} y^{(2)}, \ldots, y^{(m)}] \\
 \end{aligned}\]</span></p>
 <p>Gradient descent with softmax</p>
 <ul>
-<li>Forward prop: <span class="math inline">\(z^{[L]} \rightarrow a^{[L]} = \hat{y} \rightarrow \matchcal{L}(\hat{y}, y)\)</span>
+<li>Forward prop: <span class="math inline">\(z^{[L]} \rightarrow a^{[L]} = \hat{y} \rightarrow \mathcal{L}(\hat{y}, y)\)</span>
 <ul>
 <li>Backprop: <span class="math inline">\(dz^{[L]} == \hat{y} - y\)</span></li>
 </ul></li>

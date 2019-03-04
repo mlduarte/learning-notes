@@ -3,8 +3,10 @@ title: Neural Networks and Deep Learning
 author: ''
 date: '2018-10-15'
 slug: neural-networks-and-deep-learning
-categories: []
-tags: []
+categories: [Study-Notes]
+tags: 
+- Coursera
+- Study-Notes
 banner: "img/banners/NNandDL.png"
 ---
 
@@ -412,18 +414,18 @@ tic = time.time()
 c = np.dot(a,b)
 toc = time.time()
 print(c)</code></pre>
-<pre><code>## 249950.661597</code></pre>
+<pre><code>## 249981.171292</code></pre>
 <pre class="python"><code>print(&quot;Vectorised version:&quot; + str(1000*(toc-tic)) + &quot;ms&quot;)</code></pre>
-<pre><code>## Vectorised version:47.1458435059ms</code></pre>
+<pre><code>## Vectorised version:6.3419342041ms</code></pre>
 <pre class="python"><code>c = 0
 tic = time.time()
 for i in range(1000000):
     c += a[i]*b[i]
 toc = time.time()
 print(c)</code></pre>
-<pre><code>## 249950.661597</code></pre>
+<pre><code>## 249981.171292</code></pre>
 <pre class="python"><code>print(&quot;For loop:&quot; + str(1000*(toc-tic)) + &quot;ms&quot;)</code></pre>
-<pre><code>## For loop:1059.86809731ms</code></pre>
+<pre><code>## For loop:987.958908081ms</code></pre>
 <p>Non-vectorised version took about 300 times faster</p>
 <p>A lot of scaleable deep learning algorithms are don on a GPU (Graphics processing unit). Within Jupyter on CPU. Both GPU and CPU have parallelization instructions (SIMD = single instruction multiple data). Built-in functions such as np.function that don’t require a for loop are used, it enables Python to take better advantage of parallelism. GPU is very good at SIMD calculations, but CPU not bad either.</p>
 </div>
@@ -593,30 +595,30 @@ print(percentage)</code></pre>
 <pre class="python"><code>import numpy as np
 a = np.random.randn(5) # 5 random gaussian
 print(a)</code></pre>
-<pre><code>## [ 1.83421088 -0.75616574  0.11970407  0.78375634  0.56641044]</code></pre>
+<pre><code>## [ 0.88406853 -2.29468901  0.3021332   0.06252298 -0.56449153]</code></pre>
 <pre class="python"><code>print(a.shape) # rank 1 array, neither row nor column vector</code></pre>
 <pre><code>## (5,)</code></pre>
 <pre class="python"><code>print(a.T)     # looks the same as a</code></pre>
-<pre><code>## [ 1.83421088 -0.75616574  0.11970407  0.78375634  0.56641044]</code></pre>
+<pre><code>## [ 0.88406853 -2.29468901  0.3021332   0.06252298 -0.56449153]</code></pre>
 <pre class="python"><code>print(np.dot(a, a.T)) #would expect matrix, instead get a number
 # recommends not using data structures of rank 1 array.
 # instead commit to making it a row or column vector</code></pre>
-<pre><code>## 4.88554002142</code></pre>
+<pre><code>## 6.46101911586</code></pre>
 <pre class="python"><code>a = np.random.randn(5,1)
 print(a)</code></pre>
-<pre><code>## [[-0.09493094]
-##  [-1.32232905]
-##  [ 1.96543444]
-##  [ 0.07560972]
-##  [-0.61500381]]</code></pre>
+<pre><code>## [[ 0.34177734]
+##  [ 0.55374698]
+##  [ 1.19810342]
+##  [ 0.52943107]
+##  [-0.5317612 ]]</code></pre>
 <pre class="python"><code>print(a.T)</code></pre>
-<pre><code>## [[-0.09493094 -1.32232905  1.96543444  0.07560972 -0.61500381]]</code></pre>
+<pre><code>## [[ 0.34177734  0.55374698  1.19810342  0.52943107 -0.5317612 ]]</code></pre>
 <pre class="python"><code>print(np.dot(a, a.T))</code></pre>
-<pre><code>## [[ 0.00901188  0.12552995 -0.18658055 -0.0071777   0.05838289]
-##  [ 0.12552995  1.74855412 -2.59895106 -0.09998093  0.8132374 ]
-##  [-0.18658055 -2.59895106  3.86293256  0.14860595 -1.20874967]
-##  [-0.0071777  -0.09998093  0.14860595  0.00571683 -0.04650027]
-##  [ 0.05838289  0.8132374  -1.20874967 -0.04650027  0.37822969]]</code></pre>
+<pre><code>## [[ 0.11681175  0.18925817  0.4094846   0.18094754 -0.18174393]
+##  [ 0.18925817  0.30663572  0.66344615  0.29317086 -0.29446116]
+##  [ 0.4094846   0.66344615  1.43545181  0.63431318 -0.63710492]
+##  [ 0.18094754  0.29317086  0.63431318  0.28029726 -0.2815309 ]
+##  [-0.18174393 -0.29446116 -0.63710492 -0.2815309   0.28276998]]</code></pre>
 <p>Recommendations:</p>
 <ul>
 <li>Don’t use <em>rank 1 arrays</em>; instead use row or column vectors. If do end up with a rank 1 array can use <code>a = a.reshape((5,1))</code> to reshape<br />

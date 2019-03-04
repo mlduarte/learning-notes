@@ -3,7 +3,7 @@ title: Docker
 author: ''
 date: '2019-02-06'
 slug: docker
-categories: []
+categories: [Method]
 tags: []
 banner: "img/banners/docker.jpg"
 ---
@@ -57,6 +57,7 @@ docker container stop b0a5e4f57cda
 ### Share image
 
 ![Image > Repository > Registry](/img/docker/img_repo_reg.png)
+
 Tag image so image will upload to desired destination.  
 
 ```{r, eval = FALSE}
@@ -72,7 +73,7 @@ docker push mldqld/get-started:part2
 You will now see on Docker Hub: https://cloud.docker.com/u/mldqld/repository/docker/mldqld/get-started
 
 
-You can now pull and run on local lmachine; if image isn't available locally it will pull from repository
+You can now pull and run on local machine; if image isn't available locally it will pull from repository
 
 ```{bash, eval = FALSE}
 docker run -p 4000:80 mldqld/get-started:part2

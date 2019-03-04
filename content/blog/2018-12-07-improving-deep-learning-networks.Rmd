@@ -3,8 +3,10 @@ title: Improving Deep Learning Networks
 author: ''
 date: '2018-12-07'
 slug: improving-deep-learning-networks
-categories: []
-tags: []
+categories: [Study-Notes]
+tags: 
+- Coursera
+- Study-Notes
 banner: img/banners/improvingDNN.png
 ---
 
@@ -14,7 +16,7 @@ library(knitr)
 library(reticulate)
 library(ggplot2)
 library(gridExtra)
-use_condaenv("tensorflow_env")
+use_condaenv("tensorflow")
 ```
 
 # Practical aspects of deep learning {#week1}

@@ -3,7 +3,7 @@ title: Docker
 author: ''
 date: '2019-02-06'
 slug: docker
-categories: []
+categories: [Method]
 tags: []
 banner: "img/banners/docker.jpg"
 ---
@@ -43,7 +43,11 @@ docker container ls
 docker container stop b0a5e4f57cda</code></pre>
 <div id="share-image" class="section level3">
 <h3>Share image</h3>
-<p><img src="/img/docker/img_repo_reg.png" alt="Image &gt; Repository &gt; Registry" /> Tag image so image will upload to desired destination.</p>
+<div class="figure">
+<img src="/img/docker/img_repo_reg.png" alt="Image &gt; Repository &gt; Registry" />
+<p class="caption">Image &gt; Repository &gt; Registry</p>
+</div>
+<p>Tag image so image will upload to desired destination.</p>
 <pre class="r"><code># Tag the image: docker tag image username/repository:tag
 docker tag friendlyhello mldqld/get-started:part2
 docker image ls
@@ -51,7 +55,7 @@ docker image ls
 # Publish image, update to repository: docker push username/repository:tag
 docker push mldqld/get-started:part2</code></pre>
 <p>You will now see on Docker Hub: <a href="https://cloud.docker.com/u/mldqld/repository/docker/mldqld/get-started" class="uri">https://cloud.docker.com/u/mldqld/repository/docker/mldqld/get-started</a></p>
-<p>You can now pull and run on local lmachine; if image isn’t available locally it will pull from repository</p>
+<p>You can now pull and run on local machine; if image isn’t available locally it will pull from repository</p>
 <pre class="bash"><code>docker run -p 4000:80 mldqld/get-started:part2</code></pre>
 </div>
 </div>
