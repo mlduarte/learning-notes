@@ -5,7 +5,7 @@ date: '2019-03-04'
 slug: sequence-models
 categories: []
 tags: []
-banner: "img/banners/sequenceNN.png"
+banner: img/banners/sequenceNN.png
 ---
 
 # Recurrent Neural Networks {#week1}

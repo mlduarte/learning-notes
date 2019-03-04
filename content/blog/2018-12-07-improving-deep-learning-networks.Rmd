@@ -1019,11 +1019,11 @@ Softmax examples with two input classes, decision boundaries are linear with no 
 0.4
 \end{bmatrix}\]
 * Loss function is 
-\[\matchcal{L}(\hat{y}, y) = -\sum^4_{j = 1} y_j \log \hat{y}_j\]
+\[\mathcal{L}(\hat{y}, y) = -\sum^4_{j = 1} y_j \log \hat{y}_j\]
 For given example this is $-\log \hat{y}_2$.  To minimise loss, want to make $\hat{y}_2$, which is a probability, as large as possible.  This is equivalent to MLE.  
 
 Cost on entire training set:
-    \[J(w^{[1]}, b^{[1]}, \ldots) = \frac{1}{m} \sum^m_{i = 1}\matchcal{L}(\hat{y}^{(i)}, y^{(i)}) \]
+    \[J(w^{[1]}, b^{[1]}, \ldots) = \frac{1}{m} \sum^m_{i = 1}\mathcal{L}(\hat{y}^{(i)}, y^{(i)}) \]
 
 Noting that 
 $$\begin{aligned}
@@ -1041,7 +1041,7 @@ Y &= [y^{(1)} y^{(2)}, \ldots, y^{(m)}] \\
 
 Gradient descent with softmax
 
-* Forward prop: $z^{[L]} \rightarrow a^{[L]} = \hat{y} \rightarrow \matchcal{L}(\hat{y}, y)$
+* Forward prop: $z^{[L]} \rightarrow a^{[L]} = \hat{y} \rightarrow \mathcal{L}(\hat{y}, y)$
     * Backprop: $dz^{[L]} == \hat{y} - y$
     
 ## Introduction to programming frameworks
