@@ -125,7 +125,7 @@ Refer to _notation guide_ if you forget!
         
 
         
- ```{r sigmoid_function, fig.height=3, fig.width=6}
+```{r sigmoid_function, fig.height=3, fig.width=6}
 data.frame(z = seq(-10, 10, .001)) %>%
     mutate(sigmoid = 1/(1 + exp(-z))) %>%
     ggplot(aes(z, sigmoid)) + 
@@ -141,7 +141,8 @@ data.frame(x = seq(-1, 1, .01)) %>%
     ggplot(aes(x, y)) + 
     geom_line() + 
     labs(y = "exp(x)")
-```   
+``` 
+
 Aim of logistic regression: Learn parameters $w$ and $b$ so that $\hat{y}$ is a good estimate of chance of $y$ being 1 or 0.
 
 Note: In this course, treat W and B separately, where B corresponds to an intercept term.
@@ -187,6 +188,7 @@ data.frame(yhat = seq(0,1,0.001)) %>%
     xlab(TeX("$\\hat{y}$")) + 
     ylab(TeX("$-\\log \\;\\hat{y}$"))
 ```   
+
 if $y=0$, $\mathcal{L}(\hat{y}, y) = -\log(1-\hat{y})$
 
 * Want $\log (1-\hat{y})$ (because of negative) large, therefore

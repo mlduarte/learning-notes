@@ -249,7 +249,7 @@ y</code></pre>
   ggtitle(&quot;Economy class passengers: Melbourne-Sydney&quot;) +
   xlab(&quot;Year&quot;) +
   ylab(&quot;Thousands&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/autoplot_melsyd-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/autoplot_melsyd-1.png" width="576" /></p>
 <p>Features that will need to be considered:</p>
 <ul>
 <li>Period in 1989 with no passengers (industrial dispute)</li>
@@ -264,7 +264,7 @@ y</code></pre>
   ggtitle(&quot;Antidiabetic drug sales&quot;) +
   ylab(&quot;$ million&quot;) +
   xlab(&quot;Year&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/autoplot_a10-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/autoplot_a10-1.png" width="576" /></p>
 <p>Features:</p>
 <ul>
 <li>Seasonality</li>
@@ -280,7 +280,7 @@ autoplot(a10.annual)  +
     geom_point() + 
   ylab(&quot;$ million&quot;) +
   xlab(&quot;Year&quot;) </code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/autoplot_a10_annual-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/autoplot_a10_annual-1.png" width="576" /></p>
 </div>
 <div id="time-series-patterns" class="section level2">
 <h2>Time series patterns</h2>
@@ -299,12 +299,12 @@ autoplot(a10.annual)  +
 <pre class="r"><code>ggseasonplot(a10, year.labels=TRUE, year.labels.left=TRUE) +
   ylab(&quot;$ million&quot;) +
   ggtitle(&quot;Seasonal plot: antidiabetic drug sales&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/a10_seasonplot-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/a10_seasonplot-1.png" width="576" /></p>
 <p>Polar seasonal plot makes the time series axis circular rather than horizontal</p>
 <pre class="r"><code>ggseasonplot(a10, polar=TRUE) +
   ylab(&quot;$ million&quot;) +
   ggtitle(&quot;Polar seasonal plot: antidiabetic drug sales&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/a10_polarseasonalplot-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/a10_polarseasonalplot-1.png" width="576" /></p>
 </div>
 <div id="seasonal-subseries-plots" class="section level2">
 <h2>Seasonal subseries plots</h2>
@@ -316,7 +316,7 @@ autoplot(a10.annual)  +
 <pre class="r"><code>ggsubseriesplot(a10) +
   ylab(&quot;$ million&quot;) +
   ggtitle(&quot;Seasonal subseries plot: antidiabetic drug sales&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/a10_subseriesplot-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/a10_subseriesplot-1.png" width="576" /></p>
 </div>
 <div id="scatterplots" class="section level2">
 <h2>Scatterplots</h2>
@@ -324,11 +324,11 @@ autoplot(a10.annual)  +
 <pre class="r"><code>autoplot(elecdemand[,c(&quot;Demand&quot;,&quot;Temperature&quot;)], facets=TRUE) +
   xlab(&quot;Year: 2014&quot;) + ylab(&quot;&quot;) +
   ggtitle(&quot;Half-hourly electricity demand: Victoria, Australia&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdemand_auto-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdemand_auto-1.png" width="576" /></p>
 <p>The relationship between temperature and electrical demand is as follows:</p>
 <pre class="r"><code>qplot(Temperature, Demand, data=as.data.frame(elecdemand)) +
   ylab(&quot;Demand (GW)&quot;) + xlab(&quot;Temperature (Celsius)&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdemand_qplot-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdemand_qplot-1.png" width="576" /></p>
 <div id="correlation" class="section level3">
 <h3>Correlation</h3>
 <p>The correlation coefficient, <span class="math display">\[r = \frac{\sum(x_t - \bar{x})(y_t - \bar{y})}{\sqrt{\sum(x_t - \bar{x})^2}\sqrt{\sum(y_t - \bar{y})^2}},\]</span> which lies between <span class="math inline">\(\pm\)</span> 1 measures the strength of <strong>linear</strong> relationship, and so can sometimes be misleading. See for example Anscombe’s Quartet in which each of the four date sets have a correlation coefficient of 0.82. Anscombe’s Quartet is a good illustration of why not to solely rely on correlation values.</p>
@@ -339,12 +339,12 @@ select(anscombe, y1:y4) %&gt;% gather(variable, Y) %&gt;% select(-variable))
     ggplot(dat) + 
     geom_point(aes(X, Y)) + 
     facet_wrap(~ variable)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/anscombes_quartet-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/anscombes_quartet-1.png" width="576" /></p>
 </div>
 <div id="scatterplot-matrices" class="section level3">
 <h3>Scatterplot matrices</h3>
 <pre class="r"><code>GGally::ggpairs(as.data.frame(visnights[,1:5]))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/visnights_ggpairs-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/visnights_ggpairs-1.png" width="576" /></p>
 </div>
 </div>
 <div id="lag-plots" class="section level2">
@@ -359,7 +359,7 @@ select(anscombe, y1:y4) %&gt;% gather(variable, Y) %&gt;% select(-variable))
 <p>Quarterly beer data:</p>
 <pre class="r"><code>beer2 &lt;- window(ausbeer, start=1992)
 gglagplot(beer2)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/ausbeer_lagplot-1.png" width="672" /> Here:</p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/ausbeer_lagplot-1.png" width="576" /> Here:</p>
 <ul>
 <li>Strong positive relationship at lags 4 and 8 (strong quarterly seasonality)</li>
 <li>Negative relationship for lags 2 and 6 because peaks (Q4) plotted against troughs (Q2)</li>
@@ -377,7 +377,7 @@ gglagplot(beer2)</code></pre>
 </ul>
 <p>A correllogram plot is used to show the autocorrelation function (ACF) by plotting the autocorrelation coefficients.</p>
 <pre class="r"><code>ggAcf(beer2)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/beer2_acf-1.png" width="672" /> Features:</p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/beer2_acf-1.png" width="576" /> Features:</p>
 <ul>
 <li><span class="math inline">\(r_4\)</span> is higher than for other lags; peaks four quarters apart, troughs 2 quarters apart</li>
 <li><span class="math inline">\(r_2\)</span> more negative than for other lags because troughs tend to be 2 quarters behind beaks</li>
@@ -390,9 +390,9 @@ gglagplot(beer2)</code></pre>
 <p>When data are trended and seasonal: Combination of effects is seen, e.g. monthly Australian electricity demand:</p>
 <pre class="r"><code>aelec &lt;- window(elec, start=1980)
 autoplot(aelec) + xlab(&quot;Year&quot;) + ylab(&quot;GWh&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elec_auto-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elec_auto-1.png" width="576" /></p>
 <pre class="r"><code>ggAcf(aelec, lag=48)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elect_acf-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elect_acf-1.png" width="576" /></p>
 <p>Features:</p>
 <ul>
 <li>Trend - The slow decrease in the ACF as the lags increase</li>
@@ -406,9 +406,9 @@ autoplot(aelec) + xlab(&quot;Year&quot;) + ylab(&quot;GWh&quot;)</code></pre>
 <pre class="r"><code>set.seed(30)
 y &lt;- ts(rnorm(50))
 autoplot(y) + ggtitle(&quot;White noise&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/wn_auto-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/wn_auto-1.png" width="576" /></p>
 <pre class="r"><code>ggAcf(y)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/wn_acf-1.png" width="672" /> White noise ACF features:</p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/wn_acf-1.png" width="576" /> White noise ACF features:</p>
 <ul>
 <li>each autocorrelation ~ 0</li>
 <li>Expect 95% of spikes in ACF to lie within <span class="math inline">\(\pm 2 / \sqrt{T}\)</span>. If <span class="math inline">\(\geq\)</span> one large spikes outside bounds, or if substantially more than 5% of spikes are outside of these bounds then series is probably not white noise.</li>
@@ -462,7 +462,7 @@ autoplot(beer2) +
   ggtitle(&quot;Forecasts for quarterly beer production&quot;) +
   xlab(&quot;Year&quot;) + ylab(&quot;Megalitres&quot;) +
   guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/beer_simple_forecasts-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/beer_simple_forecasts-1.png" width="576" /></p>
 <pre class="r"><code>autoplot(goog200) +
   autolayer(meanf(goog200, h=40),
     series=&quot;Mean&quot;, PI=FALSE) +
@@ -473,7 +473,7 @@ autoplot(beer2) +
   ggtitle(&quot;Google stock (daily ending 6 Dec 2013)&quot;) +
   xlab(&quot;Day&quot;) + ylab(&quot;Closing Price (US$)&quot;) +
   guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/ggog200_simple_forecasts-1.png" width="672" /> Simple methods may:</p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/ggog200_simple_forecasts-1.png" width="576" /> Simple methods may:</p>
 <ul>
 <li>Be best forecasting method available</li>
 <li>Serve as a benchmark for other methods</li>
@@ -491,7 +491,7 @@ autoplot(beer2) +
   autoplot(dframe, facet=TRUE) +
     xlab(&quot;Years&quot;) + ylab(&quot;Pounds&quot;) +
     ggtitle(&quot;Milk production per cow&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/cal_adj-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/cal_adj-1.png" width="576" /></p>
 </div>
 <div id="population-adjustments" class="section level3">
 <h3>Population adjustments</h3>
@@ -545,7 +545,7 @@ autoplot(beer2) +
 <pre class="r"><code>p1 &lt;- autoplot(elec)
 p2 &lt;- autoplot(BoxCox(elec, BoxCox.lambda(elec)))
 grid.arrange(p1, p2)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elec_boxcox-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elec_boxcox-1.png" width="576" /></p>
 <pre class="r"><code>rm(p1, p2)</code></pre>
 <p>To back-transform the forecasts on the original scale <span class="math display">\[y_t = \begin{cases} \exp(w_t) &amp; \text{if } \lambda = 0 \\
             (\lambda w_t + 1)^{1/\lambda} &amp;\text{otherwise}\end{cases}\]</span></p>
@@ -577,7 +577,7 @@ autoplot(eggs) +
   autolayer(fc, series=&quot;Simple back transformation&quot;) +
   autolayer(fc2, series=&quot;Bias adjusted&quot;, PI=FALSE) +
   guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/egg_bias_adj_fo-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/egg_bias_adj_fo-1.png" width="576" /></p>
 <pre class="r"><code>rm(fc, fc2)</code></pre>
 </div>
 </div>
@@ -623,14 +623,14 @@ autoplot(eggs) +
 <pre class="r"><code>res &lt;- residuals(naive(goog200))
 autoplot(res) + xlab(&quot;Day&quot;) + ylab(&quot;&quot;) +
   ggtitle(&quot;Residuals from naïve method&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_res_TS-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_res_TS-1.png" width="576" /></p>
 <p>Histogram of residuals; right tail a little long for normal distribution</p>
 <pre class="r"><code>gghistogram(res) +
   ggtitle(&quot;Histogram of Residuals&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_res_Hist-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_res_Hist-1.png" width="576" /></p>
 <p>ACF of residuals; lack of correlation suggests forecasts are good</p>
 <pre class="r"><code>ggAcf(res) + ggtitle(&quot;ACF of residuals&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_res_acf-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_res_acf-1.png" width="576" /></p>
 <p>Summary: forecasts appear to account for all information. Forecasts will probably be quite good but prediction intervals assuming a normal distribution may be inaccurate.</p>
 <ul>
 <li>Mean of residuals close to zero</li>
@@ -681,7 +681,7 @@ Box.test(res,lag=10, fitdf=0, type=&quot;Lj&quot;)</code></pre>
 ## X-squared = 11.031, df = 10, p-value = 0.3551</code></pre>
 <p>The function <code>checkresiduals()</code> can be used to complete all components of residual checking (i.e. to create the time plot, ACF, histogram and perform the Ljung-Box test)</p>
 <pre class="r"><code>checkresiduals(naive(goog200))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_checkres-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_checkres-1.png" width="576" /></p>
 <pre><code>## 
 ##  Ljung-Box test
 ## 
@@ -789,7 +789,7 @@ autoplot(window(ausbeer, start=1992)) +
   xlab(&quot;Year&quot;) + ylab(&quot;Megalitres&quot;) +
   ggtitle(&quot;Forecasts for quarterly beer production&quot;) +
   guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/beer_forecasts-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/beer_forecasts-1.png" width="576" /></p>
 <pre class="r"><code>beer3 &lt;- window(ausbeer, start=2008)
 
 cbind(Method = c(&quot;Mean&quot;, &quot;Naive&quot;, &quot;Seasonal Naive&quot;), as.data.frame(rbind(
@@ -851,7 +851,7 @@ autoplot(subset(goog, end = 240)) +
   xlab(&quot;Day&quot;) + ylab(&quot;Closing Price (US$)&quot;) +
   ggtitle(&quot;Google stock price (daily ending 6 Dec 13)&quot;) +
   guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_forecasts-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_forecasts-1.png" width="576" /></p>
 <pre class="r"><code>googtest &lt;- window(goog, start=201, end=240)
 cbind(Method = c(&quot;Mean&quot;, &quot;Naive&quot;, &quot;Drift&quot;), as.data.frame(rbind(
     accuracy(googfc1, googtest)[2,], 
@@ -943,7 +943,7 @@ mse &lt;- colMeans(e^2, na.rm = T)
 # Plot the MSE values against the forecast horizon
 data.frame(h = 1:8, MSE = mse) %&gt;%
   ggplot(aes(x = h, y = MSE)) + geom_point()</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_tscv_multi-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/goog200_tscv_multi-1.png" width="576" /></p>
 </div>
 </div>
 <div id="prediction-intervals" class="section level2">
@@ -1216,7 +1216,7 @@ autoplot(elecsales, series=&quot;Data&quot;) +
   ggtitle(&quot;Annual electricity sales: South Australia&quot;) +
   scale_colour_manual(values=c(&quot;Data&quot;=&quot;grey50&quot;,&quot;5-MA&quot;=&quot;red&quot;),
                       breaks=c(&quot;Data&quot;,&quot;5-MA&quot;))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecsales_5ma_plot-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecsales_5ma_plot-1.png" width="576" /></p>
 <p>The order changes the smoothness of the trend-cycle estimate (larger order = smoother curve). Customer is to use odd order (e.g., 3, 5, 7, …) so that they are symmetric about time <span class="math inline">\(t\)</span>.</p>
 </div>
 </div>
@@ -1275,7 +1275,7 @@ autoplot(elecequip, series = &quot;Data&quot;) +
     ggtitle(&quot;Electrical equipment manufacturing (Euro area)&quot;) +
     scale_colour_manual(values=c(&quot;Data&quot;=&quot;grey&quot;,&quot;2x12-MA&quot;=&quot;red&quot;),
                       breaks=c(&quot;Data&quot;,&quot;12-MA&quot;))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_12ma-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_12ma-1.png" width="576" /></p>
 </div>
 <div id="weighted-moving-averages" class="section level3">
 <h3>Weighted moving averages</h3>
@@ -1370,7 +1370,7 @@ autoplot(elecequip, series = &quot;Data&quot;) +
     xlab(&quot;Year&quot;) +
   ggtitle(&quot;Classical multiplicative decomposition
     of electrical equipment index&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_decomp-1.png" width="672" /> Features:</p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_decomp-1.png" width="576" /> Features:</p>
 <ul>
 <li>Evidence of “leakage” of trend-cycle component into remainder component in 2009</li>
 </ul>
@@ -1409,7 +1409,7 @@ autoplot(elecequip, series = &quot;Data&quot;) +
 <pre class="r"><code>elecequip %&gt;% seasonal::seas(x11=&quot;&quot;) -&gt; fit
 autoplot(fit) +
   ggtitle(&quot;X11 decomposition of electrical equipment index&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_x11-1.png" width="672" /> Features:</p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_x11-1.png" width="576" /> Features:</p>
 <ul>
 <li>Captured sudden fall in data in early 2009 (better than STL and classical decomposition)</li>
 <li>Unusual observation at end of 2009 more clearly seen in the remainder.</li>
@@ -1422,10 +1422,10 @@ autoplot(fit) +
   ggtitle(&quot;Electrical equipment manufacturing (Euro area)&quot;) +
   scale_colour_manual(values=c(&quot;gray&quot;,&quot;blue&quot;,&quot;red&quot;),
              breaks=c(&quot;Data&quot;,&quot;Seasonally Adjusted&quot;,&quot;Trend&quot;))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_x11_components-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_x11_components-1.png" width="576" /></p>
 <p>Seasonal sub-series plots to see how seasonal component is changing over time:</p>
 <pre class="r"><code>fit %&gt;% seasonal() %&gt;% ggsubseriesplot() + ylab(&quot;Seasonal&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_x11_seasonal_subplots-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_x11_seasonal_subplots-1.png" width="576" /></p>
 <p>Features: Only small changes over time.</p>
 </div>
 <div id="seats-decomposition" class="section level2">
@@ -1441,7 +1441,7 @@ autoplot(fit) +
 elecequip %&gt;% seas() %&gt;%
 autoplot() +
   ggtitle(&quot;SEATS decomposition of electrical equipment index&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_seats-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_seats-1.png" width="576" /></p>
 </div>
 <div id="stl-decomposition" class="section level2">
 <h2>STL decomposition</h2>
@@ -1479,7 +1479,7 @@ autoplot() +
 <pre class="r"><code>elecequip %&gt;%
   stl(t.window=13, s.window=&quot;periodic&quot;, robust=TRUE) %&gt;%
   autoplot()</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/autoelec_stl_adj-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/autoelec_stl_adj-1.png" width="576" /></p>
 </div>
 <div id="measuring-strength-of-trend-and-seasonality" class="section level2">
 <h2>Measuring strength of trend and seasonality</h2>
@@ -1530,7 +1530,7 @@ fit %&gt;%
     forecast(method=&quot;naive&quot;) %&gt;%
     autoplot() + 
     ylab(&quot;New orders index&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_stl_forecast-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_stl_forecast-1.png" width="576" /></p>
 </div>
 </div>
 <div id="exponential-smoothing" class="section level1">
@@ -1624,7 +1624,7 @@ round(accuracy(fc),2)</code></pre>
 <pre class="r"><code>autoplot(fc) + 
   autolayer(fitted(fc), series=&quot;Fitted&quot;) +
   ylab(&quot;Oil (millions of tonnes)&quot;) + xlab(&quot;Year&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/ses_oil_plot-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/ses_oil_plot-1.png" width="576" /></p>
 <p>Given the large prediciton interval, it would be misleading to dispaly only the point forecasts.</p>
 </div>
 </div>
@@ -1727,13 +1727,13 @@ autoplot(air) +
   ggtitle(&quot;Forecasts from Holt&#39;s method&quot;) + xlab(&quot;Year&quot;) +
   ylab(&quot;Air passengers in Australia (millions)&quot;) +
   guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/damped_air-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/damped_air-1.png" width="576" /></p>
 </div>
 <div id="example-sheep-in-asia" class="section level3">
 <h3>Example: Sheep in Asia</h3>
 <pre class="r"><code>autoplot(livestock) +
   xlab(&quot;Year&quot;) + ylab(&quot;Livestock, sheep in Asia (millions)&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/livestock-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/livestock-1.png" width="576" /></p>
 <p>Time series cross-validation of one-step forecast accuracy using simple exponential smoothing, Holt’s linear trend method and damped trend method shows that damped trend method is best.</p>
 <pre class="r"><code>e1 &lt;- tsCV(livestock, ses, h=1)
 e2 &lt;- tsCV(livestock, holt, h=1)
@@ -1774,7 +1774,7 @@ fc[[&quot;model&quot;]]</code></pre>
 </ul>
 <pre class="r"><code>autoplot(fc) +
   xlab(&quot;Year&quot;) + ylab(&quot;Livestock, sheep in Asia (millions)&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/livestock_damped_plot-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/livestock_damped_plot-1.png" width="576" /></p>
 </div>
 </div>
 <div id="holt-winters-seasonal-method" class="section level2">
@@ -1827,7 +1827,7 @@ autoplot(aust) +
   ylab(&quot;Visitor nights (millions)&quot;) +
   ggtitle(&quot;International visitors nights in Australia&quot;) +
   guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_hw-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_hw-1.png" width="576" /></p>
 <p>In additive model, note that seasonal components for 4 quarters ~ 1.</p>
 <pre class="r"><code>data.frame(Qtr = as.numeric(time(fit1$x))) %&gt;%
     mutate(Time = row_number(Qtr),
@@ -1934,7 +1934,7 @@ p2 &lt;- filter(p, Model == &quot;Multiplicative&quot;) %&gt;%
     facet_grid(Component~Model, scales = &quot;free&quot;)
 
 grid.arrange(p1, p2, nrow = 1)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_hw_components-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_hw_components-1.png" width="576" /></p>
 <p>The small value of the seasonal component (<span class="math inline">\(\gamma\)</span> = 0.002) for the multiplicative model means that the seasonal component hardly changes over time. The small value of the trend component (<span class="math inline">\(\beta^*\)</span> = 10^{-4}) for the additive model means the slope component hardly changes over time. The increasing size of the seasonal component for the additive model suggests that the model is less appropriate than the multiplicative model.</p>
 </div>
 <div id="holt-winters-damped-method" class="section level3">
@@ -1949,7 +1949,7 @@ grid.arrange(p1, p2, nrow = 1)</code></pre>
 autoplot(hyndsight) +
   autolayer(fc, series=&quot;HW multi damped&quot;, PI=FALSE)+
   guides(colour=guide_legend(title=&quot;Daily forecasts&quot;))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/hyndsight_hw-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/hyndsight_hw-1.png" width="576" /></p>
 </div>
 </div>
 <div id="a-taxonomy-of-exponential-smoothing-methods" class="section level2">
@@ -2423,12 +2423,12 @@ summary(fit)</code></pre>
 \end{aligned}\]</span></p>
 <p>Components:</p>
 <pre class="r"><code>autoplot(fit)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_ets_autoplot-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_ets_autoplot-1.png" width="576" /></p>
 <p>Residuals (note, if type = “response”, then the fitted values are computed for the h-step forecasts, otherwise the detault is type = ‘innovation’ in which the regular residuals are used.)</p>
 <pre class="r"><code>cbind(&#39;Residuals&#39; = residuals(fit),
       &#39;Forecast errors&#39; = residuals(fit,type=&#39;response&#39;)) %&gt;%
   autoplot(facet=TRUE) + xlab(&quot;Year&quot;) + ylab(&quot;&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_ets_resid-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_ets_resid-1.png" width="576" /></p>
 <p>Note:</p>
 <ul>
 <li>Level: estimate of the local mean or level of the data generating process</li>
@@ -2444,7 +2444,7 @@ summary(fit)</code></pre>
 <pre class="r"><code>fit %&gt;% forecast(h = 8) %&gt;%
     autoplot() +
   ylab(&quot;International visitor night in Australia (millions)&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_ets_forecast-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austourists_ets_forecast-1.png" width="576" /></p>
 <p>Forecast variance expressions provided in book.</p>
 </div>
 </div>
@@ -2526,7 +2526,7 @@ y_t^{\prime \prime} &amp;= y_t^{\prime} - y_{t-1}^{\prime \prime}\\
   autoplot(facets=TRUE) +
     xlab(&quot;Year&quot;) + ylab(&quot;&quot;) +
     ggtitle(&quot;Antidiabetic drug sales&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/a10_differencing-1.png" width="672" /> It may sometimes be necessary to take first differences of seasonal differences, e.g.;</p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/a10_differencing-1.png" width="576" /> It may sometimes be necessary to take first differences of seasonal differences, e.g.;</p>
 <pre class="r"><code>cbind(&quot;Billion kWh&quot; = usmelec,
       &quot;Logs&quot; = log(usmelec),
       &quot;Seasonally\n differenced logs&quot; = diff(log(usmelec),12),
@@ -2534,7 +2534,7 @@ y_t^{\prime \prime} &amp;= y_t^{\prime} - y_{t-1}^{\prime \prime}\\
   autoplot(facets=TRUE) +
     xlab(&quot;Year&quot;) + ylab(&quot;&quot;) +
     ggtitle(&quot;Monthly US net electricity generation&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/usmelec_differences-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/usmelec_differences-1.png" width="576" /></p>
 <p>Formal tests for differencing exist, but can be subjective as to which differeing to apply.</p>
 <p>Whilst it makes no difference whether to apply seasonal or first difference first, if stat has a strong seasonal pattern, recommend to do first as it may be all that is required.</p>
 </div>
@@ -2743,7 +2743,7 @@ y_t^\prime - \phi_1 y_{t-1}^\prime - \ldots - \phi_p y_{t-p}^\prime &amp;= c + \
 <pre class="r"><code>autoplot(uschange[,&quot;Consumption&quot;]) +
   xlab(&quot;Year&quot;) + 
     ylab(&quot;Quarterly percentage change&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_autoplot-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_autoplot-1.png" width="576" /></p>
 <pre class="r"><code>(fit &lt;- auto.arima(uschange[,&quot;Consumption&quot;]))</code></pre>
 <pre><code>## Series: uschange[, &quot;Consumption&quot;] 
 ## ARIMA(2,0,2) with non-zero mean 
@@ -2759,7 +2759,7 @@ y_t^\prime - \phi_1 y_{t-1}^\prime - \ldots - \phi_p y_{t-p}^\prime &amp;= c + \
 <p>where <span class="math inline">\(c = 0.746 (1 - 1.391 - -0.581 ) = 0.142\)</span> and <span class="math inline">\(\epsilon_t\)</span> is white noise with standard deviation of 0.593 = <span class="math inline">\(\sqrt{0.351}\)</span>.</p>
 <p>Forecasts for 10 quarters:</p>
 <pre class="r"><code>fit %&gt;% forecast(h = 10) %&gt;% autoplot(include = 80) +  ylab(&quot;Quarterly % change in US Expenditure Consumption&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_arima_forecast-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_arima_forecast-1.png" width="576" /></p>
 <div id="understanding-arima-models" class="section level3">
 <h3>Understanding ARIMA models</h3>
 <ul>
@@ -2940,7 +2940,7 @@ autoplot(eeadj)</code></pre>
 <p><strong>Step 2</strong> Based on plot, doesn’t appear necessary to do Box-Cox transformation</p>
 <p><strong>Step 3</strong> Data clearly not stationary, therefore difference. First differenced data appears stationary.</p>
 <pre class="r"><code>eeadj %&gt;% diff() %&gt;% ggtsdisplay(main=&quot;&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_step3-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_step3-1.png" width="576" /></p>
 <p><strong>Step 4</strong> ACF and PACF suggest ARIMA(3,1,0) process as: * ACF <strong>sinusoidal</strong> * Significant spike at lag 3 in PACF but none beyond lag 3 (with few exceptions at much later lags)</p>
 <p><strong>Step 5</strong> Try chosen ARIMA(3,1,0) model and then variations to compare AICc:</p>
 <pre class="r"><code>fit1 &lt;- Arima(eeadj, order=c(3,1,0))
@@ -2980,7 +2980,7 @@ data.frame(model = c(&quot;orig&quot;, &quot;p + 1&quot;, &quot;p-1&quot;, &quot
 <p><strong>Step 6</strong> ACF plot of residual shows no significant lags; portmanteau test returns large <span class="math inline">\(p\)</span> value and therefore accept null hypothesis that residuals are white noise.</p>
 <pre class="r"><code>fit &lt;- Arima(eeadj, order=c(3,1,1))
 checkresiduals(fit)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_step6-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_step6-1.png" width="576" /></p>
 <pre><code>## 
 ##  Ljung-Box test
 ## 
@@ -2990,7 +2990,7 @@ checkresiduals(fit)</code></pre>
 ## Model df: 4.   Total lags used: 24</code></pre>
 <p><strong>Step 7</strong> Forecast from chosen model</p>
 <pre class="r"><code>autoplot(forecast(fit))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_step7-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecequip_step7-1.png" width="576" /></p>
 </div>
 <div id="understanding-constants-in-r" class="section level3">
 <h3>Understanding constants in R</h3>
@@ -3060,12 +3060,12 @@ checkresiduals(fit)</code></pre>
 <li>First take seasonal difference (before considering other non-stationarity)</li>
 </ul>
 <pre class="r"><code>euretail %&gt;% diff(lag=4) %&gt;% ggtsdisplay()</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_seasdiff-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_seasdiff-1.png" width="576" /></p>
 <ul>
 <li>Still non-stationarity exists, therefore take difference</li>
 </ul>
 <pre class="r"><code>euretail %&gt;% diff(lag=4) %&gt;% diff() %&gt;% ggtsdisplay()</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_seasdiff_diff-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_seasdiff_diff-1.png" width="576" /></p>
 <ul>
 <li>Now need to find ARIMA model based on ACF and PACF:
 <ul>
@@ -3080,7 +3080,7 @@ fit1$aicc</code></pre>
 <pre class="r"><code>fit2$aicc</code></pre>
 <pre><code>## [1] 77.00764</code></pre>
 <pre class="r"><code>fit1 %&gt;% residuals() %&gt;% ggtsdisplay()</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_ma1-1.png" width="672" /> Given there exists significant lag at 2 and almost at 3, consider other models:</p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_ma1-1.png" width="576" /> Given there exists significant lag at 2 and almost at 3, consider other models:</p>
 <pre class="r"><code>euretail %&gt;%  Arima(order = c(0, 1, 2), seasonal = c(0, 1, 1)) -&gt; fit3
 euretail %&gt;%  Arima(order = c(0, 1, 3), seasonal = c(0, 1, 1)) -&gt; fit4
 fit1$aicc</code></pre>
@@ -3090,7 +3090,7 @@ fit1$aicc</code></pre>
 <pre class="r"><code>fit4$aicc</code></pre>
 <pre><code>## [1] 68.39031</code></pre>
 <pre class="r"><code>fit4 %&gt;% checkresiduals()</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_ma2-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_ma2-1.png" width="576" /></p>
 <pre><code>## 
 ##  Ljung-Box test
 ## 
@@ -3100,7 +3100,7 @@ fit1$aicc</code></pre>
 ## Model df: 4.   Total lags used: 8</code></pre>
 <p>As all spikes are within significance limits and residuals appear to be white noise, can use model for forecasting (next three years):</p>
 <pre class="r"><code>fit4 %&gt;% forecast(h=12) %&gt;% autoplot()</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_forecast-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/euretail_forecast-1.png" width="576" /></p>
 <ul>
 <li>Forecasts follow recent trend in data</li>
 <li>Large and rapidly increasing prediction intervals show could increase or decrease at any time (i.e. while point forecast trend downward, prediction interval allows data to trend upwards during forecast period.)</li>
@@ -3132,12 +3132,12 @@ fit1$aicc</code></pre>
 <pre class="r"><code>lh02 &lt;- log(h02)
 cbind(&quot;H02 sales (million scripts)&quot; = h02, &quot;Log H02 sales&quot;=lh02) %&gt;%
   autoplot(facets=TRUE) + xlab(&quot;Year&quot;) + ylab(&quot;&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/h02_data-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/h02_data-1.png" width="576" /></p>
 <p>Seasonally differenced data:</p>
 <pre class="r"><code>lh02 %&gt;% diff(lag=12) %&gt;%
   ggtsdisplay(xlab=&quot;Year&quot;,
     main=&quot;Seasonally differenced H02 scripts&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/h02_season_diff-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/h02_season_diff-1.png" width="576" /></p>
 <p>Initial model to try: ARIMA(3,0,0)(2,1,0)[12]</p>
 <ul>
 <li>Seasonal lag in PACF at 12, 24, .. -&gt; Seasonal AR(2)</li>
@@ -3177,7 +3177,7 @@ res %&gt;% select(model, aicc)</code></pre>
 ## sigma^2 estimated as 0.004278:  log likelihood=250.04
 ## AIC=-486.08   AICc=-485.48   BIC=-463.28</code></pre>
 <pre class="r"><code>checkresiduals(fit, lag = 36)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/h02_arima_best-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/h02_arima_best-1.png" width="576" /></p>
 <pre><code>## 
 ##  Ljung-Box test
 ## 
@@ -3229,7 +3229,7 @@ select(res, model, rmse)</code></pre>
 <li>No model pass all residuals test, in practice use best model could find, even if it could not pass all tests</li>
 </ul>
 <pre class="r"><code>res %&gt;% filter(model == &quot;ARIMA(3,0,1)(0,1,2)[12]&quot;) %&gt;% select(pred) %&gt;% pull() %&gt;% first() %&gt;% autoplot(PI = FALSE) +  ylab(&quot;H02 sales (million scripts)&quot;) + xlab(&quot;Year&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/h02_arima_forecast_test-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/h02_arima_forecast_test-1.png" width="576" /></p>
 </div>
 <div id="arima-vs-ets" class="section level2">
 <h2>ARIMA vs ETS</h2>
@@ -3309,7 +3309,7 @@ tribble(~model, ~func,
 ## 1 fets   &lt;fn&gt;   &lt;S3: ts&gt;  7.86
 ## 2 farima &lt;fn&gt;   &lt;S3: ts&gt;  9.62</code></pre>
 <pre class="r"><code>air %&gt;% ets() %&gt;% forecast() %&gt;% autoplot()</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/air_multimodel-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/air_multimodel-1.png" width="576" /></p>
 <p><strong>Example</strong>: Comparing auto.arima() and ets() on seasonal data</p>
 <pre class="r"><code>require(fpp2); require(forecast); require(tidyverse)
 # Consider the qcement data beginning in 1988
@@ -3350,7 +3350,7 @@ res %&gt;% unnest(test, train, .preserve = func) %&gt;%
 <p>See that ARIMA fits training data slightly better, but ETS model providers more accurate forecasts on test set.</p>
 <pre class="r"><code># Generate forecasts from an ETS model
 cement %&gt;% ets() %&gt;% forecast(h=12) %&gt;% autoplot()</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/qcement_ets-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/qcement_ets-1.png" width="576" /></p>
 </div>
 </div>
 <div id="dynamic-regression-models" class="section level1">
@@ -3405,7 +3405,7 @@ y_t = \beta_0 + \beta_1 x_{1,t}^\prime + \ldots + \beta_{k,t}^\prime + \eta_t^\p
 <pre class="r"><code>autoplot(uschange[,1:2], facets=TRUE) +
   xlab(&quot;Year&quot;) + ylab(&quot;&quot;) +
   ggtitle(&quot;Quarterly changes in US consumption  and personal income&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_regarima_data-1.png" width="672" /> No need for any differencing as already stationary.</p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_regarima_data-1.png" width="576" /> No need for any differencing as already stationary.</p>
 <pre class="r"><code>(fit &lt;- auto.arima(uschange[,&quot;Consumption&quot;], xreg=uschange[,&quot;Income&quot;]))</code></pre>
 <pre><code>## Series: uschange[, &quot;Consumption&quot;] 
 ## Regression with ARIMA(1,0,2) errors 
@@ -3427,10 +3427,10 @@ y_t  = 0.599 + 0.203 x_{t} + \eta_t \\
 <pre class="r"><code>cbind(&quot;Regression Errors&quot; = residuals(fit, type=&quot;regression&quot;),
       &quot;ARIMA errors&quot; = residuals(fit, type=&quot;innovation&quot;)) %&gt;%
   autoplot(facets=TRUE)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_regarima_residuals-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_regarima_residuals-1.png" width="576" /></p>
 <p>Check ARIMA errors for white noise series:</p>
 <pre class="r"><code>checkresiduals(fit)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_regarima_arima_residuals-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/uschange_regarima_arima_residuals-1.png" width="576" /></p>
 <pre><code>## 
 ##  Ljung-Box test
 ## 
@@ -3455,15 +3455,15 @@ y_t  = 0.599 + 0.203 x_{t} + \eta_t \\
 fcast &lt;- forecast(fit, xreg=rep(mean(uschange[,2]),8))
 
 autoplot(fcast) + xlab(&quot;Year&quot;) +  ylab(&quot;Percentage change&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/us_regarima_forecast-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/us_regarima_forecast-1.png" width="576" /></p>
 <p>Prediction interval now smaller than with ARIMA model only; i.e. income change explains some of the variation</p>
 <p><strong>Note</strong> Prediction intervals of regression models (with/without ARIMA errors) do not take into account uncertainty in the forecasts of the predictors; prediction interval therefore condition on estimated future values of predictor variables</p>
 <p><strong>Example</strong>: Forecasting electricity demand</p>
 <pre class="r"><code>ggplot(data.frame(elecdaily)) + 
     geom_point(aes(Temperature, Demand))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elec_temp_demand-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elec_temp_demand-1.png" width="576" /></p>
 <pre class="r"><code>autoplot(elecdaily[, c(&quot;Demand&quot;, &quot;Temperature&quot;)], facets = TRUE) + ylab(&quot;&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elec_temp_demand-2.png" width="672" /> U-Shape suggests quadratic regression model.</p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elec_temp_demand-2.png" width="576" /> U-Shape suggests quadratic regression model.</p>
 <pre class="r"><code>xreg &lt;- cbind(MaxTemp = elecdaily[, &quot;Temperature&quot;],
               MaxTempSq = elecdaily[, &quot;Temperature&quot;]^2,
               Workday = elecdaily[, &quot;WorkDay&quot;])
@@ -3471,7 +3471,7 @@ autoplot(fcast) + xlab(&quot;Year&quot;) +  ylab(&quot;Percentage change&quot;)<
 fit &lt;- auto.arima(elecdaily[, &quot;Demand&quot;], xreg = xreg)
 
 checkresiduals(fit)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdaily_xreg-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdaily_xreg-1.png" width="576" /></p>
 <pre><code>## 
 ##  Ljung-Box test
 ## 
@@ -3490,7 +3490,7 @@ checkresiduals(fit)</code></pre>
 
 #?autoplot.forecast
 autoplot(fcast, PI = FALSE) + ylab(&quot;Electricity demand (GW)&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdaily_xreg_forecast-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdaily_xreg_forecast-1.png" width="576" /></p>
 </div>
 <div id="stochastic-and-deterministic-trends" class="section level2">
 <h2>Stochastic and deterministic trends</h2>
@@ -3578,7 +3578,7 @@ autoplot(austa) +
   ggtitle(&quot;Forecasts from trend models&quot;) +
   xlab(&quot;Year&quot;) + ylab(&quot;Visitors to Australia (millions)&quot;) +
   guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austa_regtrend_forecast-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/austa_regtrend_forecast-1.png" width="576" /></p>
 </div>
 <div id="dynamic-harmonic-regression" class="section level2">
 <h2>Dynamic harmonic regression</h2>
@@ -3649,7 +3649,7 @@ for (i in seq(6)) {
     ylab(&quot;&quot;) + ylim(1.5,4.7)
 }
 gridExtra::grid.arrange( plots[[1]],plots[[2]],plots[[3]], plots[[4]],plots[[5]],plots[[6]], nrow=3)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/auscafe_harmonic-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/auscafe_harmonic-1.png" width="576" /></p>
 </div>
 <div id="lagged-predictors" class="section level2">
 <h2>Lagged predictors</h2>
@@ -3667,7 +3667,7 @@ gridExtra::grid.arrange( plots[[1]],plots[[2]],plots[[3]], plots[[4]],plots[[5]]
 <pre class="r"><code>autoplot(insurance, facets=TRUE) +
   xlab(&quot;Year&quot;) + ylab(&quot;&quot;) +
   ggtitle(&quot;Insurance advertising and quotations&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/insurance_data-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/insurance_data-1.png" width="576" /></p>
 <ul>
 <li>Data (lag 0) is for Jan 2002 until April 2005.</li>
 <li>Lag 1 will be from Dec 2002</li>
@@ -3720,7 +3720,7 @@ y_t  &amp;= 2.039 + 1.256 x_{t} + 0.162 x_{t-1} + \eta_t \\
                     AdLag1 = c(Advert[40,1], rep(8,19))))
 
 autoplot(fc8) + ylab(&quot;Quotes&quot;) +  ggtitle(&quot;Forecast quotes with future advertising set to 8&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/insurance_lag_forecast-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/insurance_lag_forecast-1.png" width="576" /></p>
 <pre class="r"><code>rm(Advert, fit, fc8)</code></pre>
 </div>
 </div>
@@ -3795,14 +3795,14 @@ p2 &lt;- autoplot(window(calls, end=4)) +
   scale_x_continuous(minor_breaks = seq(1,4,by=0.2))
 
 gridExtra::grid.arrange(p1,p2)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/call_view-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/call_view-1.png" width="576" /></p>
 <pre class="r"><code>rm(p1, p2)</code></pre>
 <p>Decomposition using STL with multiple seasonal periods model; note that trend and weekly seasonality explain much less of the variation than daily seasonality.</p>
 <pre class="r"><code>calls %&gt;% mstl() %&gt;% autoplot() + xlab(&quot;Week&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/calls_decompose_mstl-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/calls_decompose_mstl-1.png" width="576" /></p>
 <p>Forecast using decomposition:</p>
 <pre class="r"><code>calls %&gt;% stlf() %&gt;% autoplot() + xlab(&quot;Week&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/calls_decompose_forecast-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/calls_decompose_forecast-1.png" width="576" /></p>
 <p>Dynamic harmonic regression with multiple seasonal periods, using log transformation to ensure forecasts and prediction intervals remain positive:</p>
 <p>TODO: Understand why 10,10 chosen for fourier.</p>
 <p>This model is EXTREMELY slow….</p>
@@ -3825,7 +3825,7 @@ p2 &lt;- elecdemand %&gt;%
     ylab(&quot;Demand (GW)&quot;)
 
 gridExtra::grid.arrange(p1, p2, nrow = 1)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdemand_view2-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/elecdemand_view2-1.png" width="576" /></p>
 <pre class="r"><code>rm(p1, p2)</code></pre>
 <p>Model: Regression with piecewise linear function of termperature (with knot at 18 degrees) and harmonic regression terms to allow for daily seasonal pattern</p>
 <p>TODO: Understand this after reviewing regression chapter.</p>
@@ -3873,7 +3873,7 @@ autoplot(debitcards) +
   autolayer(bootseries, colour=TRUE) +
   autolayer(debitcards, colour=FALSE) +
   ylab(&quot;Bootstrapped series&quot;) + guides(colour=&quot;none&quot;)</code></pre>
-<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/bootseries-1.png" width="672" /></p>
+<p><img src="/blog/2018-08-20-book-forecasting-principles_files/figure-html/bootseries-1.png" width="576" /></p>
 <p>Method of using bootstrapped samples to obtain better idea of forecast accuracy and prediction interval:</p>
 <ul>
 <li>Fit model to each series; model will likely be the same but parameters will likely differ</li>
