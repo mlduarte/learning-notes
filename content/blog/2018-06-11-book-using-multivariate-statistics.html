@@ -1241,9 +1241,10 @@ kable(tab, digits = 2)</code></pre>
 <pre class="r"><code>ts &lt;- ts(df$quality)
 ts_diff &lt;- diff(ts)
 acf(ts_diff, lag.max = 16)</code></pre>
-<p><img src="/blog/2018-06-11-book-using-multivariate-statistics_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="/blog/2018-06-11-book-using-multivariate-statistics_files/figure-html/ts_diff_pacf-1.png" width="672" /></p>
 <pre class="r"><code>pacf(ts_diff)</code></pre>
-<p><img src="/blog/2018-06-11-book-using-multivariate-statistics_files/figure-html/unnamed-chunk-1-2.png" width="672" /> Note that lag 0 is shown; whereas SAS/SPSS start with lag 1. Here is there is spike in the ACF at lag 1 and the PACF trends towards 0, so this is probably an ARIMA(0, 0, 1) model, although because it has been differenced it is ARIMA(0, 1, 1). The series has both trend and memory for the preceding random shock. If this time series is about the quality of computes in a manufacturing process then we would say that teh quality is generally increasing, however the quality is one week is influenced by random events in the manufacturing process.</p>
+<p><img src="/blog/2018-06-11-book-using-multivariate-statistics_files/figure-html/ts_diff_pacf-2.png" width="672" /></p>
+<p>Note that lag 0 is shown; whereas SAS/SPSS start with lag 1. Here is there is spike in the ACF at lag 1 and the PACF trends towards 0, so this is probably an ARIMA(0, 0, 1) model, although because it has been differenced it is ARIMA(0, 1, 1). The series has both trend and memory for the preceding random shock. If this time series is about the quality of computes in a manufacturing process then we would say that teh quality is generally increasing, however the quality is one week is influenced by random events in the manufacturing process.</p>
 </div>
 </div>
 <div id="estimating-model-parameters" class="section level3">

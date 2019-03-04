@@ -714,6 +714,7 @@ Models:
 
 1. Observation = f(random shock) only: $Y_t = a_t$ where $a_t$ is random shock with constant mean and variance.  This means that observations also have constant mean and variance.
 2. Observation = f(previous observation + random shock): $Y_t = \theta_0(Y_{t-1}) + a_t$.    Here, the slope is defined by the mean of the first difference, `r round(mean(df$q1, na.rm = TRUE),2)`.  The following plot shows that differerencing has removed the trend.
+
 ```{r ts_plot_diff1, message=FALSE, warning=FALSE}
 ggplot(df, aes(week, q1)) + 
     geom_line() + 
@@ -794,12 +795,13 @@ Autoregressive (AR) Process ($p$) | Moving Average (MA) Process ($q$) | Mixed AR
 * $p$ = Number of spikes on PACF                            | * $q$ = Number of spikes on ACF                   | * $p$ and $q$ not evident; start with 1   | 
 
 
-```{r}
+```{r ts_diff_pacf}
 ts <- ts(df$quality)
 ts_diff <- diff(ts)
 acf(ts_diff, lag.max = 16)
 pacf(ts_diff)
 ```
+
 Note that lag 0 is shown; whereas SAS/SPSS start with lag 1.  Here is there is spike in the ACF at lag 1 and the PACF trends towards 0, so this is probably an ARIMA(0, 0, 1) model, although because it has been differenced it is ARIMA(0, 1, 1).  The series has both trend and memory for the preceding random shock.  If this time series is about the quality of computes in a manufacturing process then we would say that teh quality is generally increasing, however the quality is one week is influenced by random events in the manufacturing process.
 
 ### Estimating Model Parameters 

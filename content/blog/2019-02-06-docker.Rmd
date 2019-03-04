@@ -5,6 +5,7 @@ date: '2019-02-06'
 slug: docker
 categories: []
 tags: []
+banner: "img/banners/docker.jpg"
 ---
 
 ## Orientation
