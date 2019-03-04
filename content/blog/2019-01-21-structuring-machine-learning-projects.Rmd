@@ -137,7 +137,7 @@ An evaluation metric and dev set allows you to quickly determine which algorithm
         * gain insight from manual error analysis: why did a person get this right?
         * better analysis of bias / variance (to be discussed later)
 
-![Progress as a function of time](/img/structuringMLprojects/progress_over_timepng)
+![Progress as a function of time](/img/structuringMLprojects/progress_over_time.png)
 
 ### Why human-level performance
 ### Avoidable bias

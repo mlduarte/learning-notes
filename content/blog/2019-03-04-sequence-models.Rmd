@@ -1,0 +1,191 @@
+---
+title: Sequence Models
+author: ''
+date: '2019-03-04'
+slug: sequence-models
+categories: []
+tags: []
+---
+
+# Recurrent Neural Networks {#week1}
+
+## Why sequence models
+
+* Speech recognition
+    * Input: Audio clip (sequence)
+    * Output: Sequence of words (sequence)
+* Music generation
+    * Input: e.g. Genre to generate
+    * Output: Music (sequence)
+* Sentiment classification
+    * Input: Phrase (sequence)
+    * Output: Stars
+* DNA sequence analysis
+    * Input: DNA sequence
+    * Output: Which part of sequence corresponds to a protein
+* Machine translation
+    * Input: sentence, e.g. in french
+    * Output: same sentence in different language
+* Video activity recognition
+    * Input: Sequence of video frames
+    * Output: Activity
+* Name entity recognition, which can be used to find people's names, companies names, times, locations, countries, currency names, etc in different types of text
+    * Input: Sentence
+    * Output: List of names in sentence
+    
+* Supervised learning examples
+* Can have both X and Y as sequences (which may or may not have the same length), or either X or either Y as sequence only.
+
+## Notation
+
+Motivating example: Named entity recognition,
+
+* $x$: Harry Potter and Hermoine Granger invented a new spell
+* $y$: For each part of input word, is it part of a person's name?  (more sophisticated alternatives: Start/stop for names)
+
+* $x^{<t>}$: index to position into input sequence, e.g. $x^{<2>}$ in above example, would be Potter as it is the second word in the sequence.
+* $x^{(i)<t>}$: input sequence position $t$ of $i^{\text{th}}$ training example
+* $y^{<t>}$: index to position into output sequence, e.g. $y^{<2>}$ in above example, would be 1 as Potter is part of a name
+* $y^{(i)<t>}$: output sequence position $t$ of $i^{\text{th}}$ training example
+* $T_x$: length of input sequence, e.g. 9 in above example
+* $T_y$: length of output sequence, e.g. 9 in above example
+* $T_x^{(i)}$: length of input sequence in $i^{\text{th}}$ training example
+* $T_y^{(i)}$: length of output sequence in $i^{\text{th}}$ training example
+
+
+How to represent individual words in a sentence?
+
+* Start with a vocabulary / dictionary
+
+$\begin{bmatrix} \text{a} \\ \vdots \\ \text{and} \\ \text{harry} \\ \vdots \\ \text{zulu} \end{bmatrix}$
+
+* Number each word in vobulary sequentially, e.g. with 10,000 words in dictionary (quite small); 30-50K more common.  100K not uncommon.  Internet companies: 1Million
+Word | Index
+----------| -----
+a   | 1
+aaron | 2
+$\vdots$ | $\dots$
+and | 367
+$\vdots$ | $\dots$
+harry | 4,075
+$\vdots$ | $\dots$
+potter | 6,830
+$\vdots$ | $\dots$
+zulu | 10,000
+
+
+Use one-hot representations:
+
+* $x^{1}$ would be a 10,000 length vector of zeros, with exception of the value 1 at index 4075 (_Harry_)
+* $x^{2}$ would be a 10,000 length vector of zeros, with exception of the value 1 at index 6830 (_Potter_)
+* $x^{7}$ would be a 10,000 length vector of zeros, with exception of the value 1 at index 1 (_a_)
+
+So each $x^{<t>}$ is a 10,000 (vocabulary size) one-hot vector (one-hot = only one is on, and zero everywhere else)
+Use <UNK> if come across a word not in vocabulary
+
+## Recurrent Neural Network Model
+
+Why couldn't you use a standard neural network?
+
+Problems:
+
+* Inputs and and output can be different lengths in different examples.  (not a good idea to pad, zero pad inputs to consider inputs up to a maximum length)
+* Doesn't share features learned across different positions of text, so that Harry learned as a name in position 1 would generalise to other parts
+* As standard model, would need weights for 100,000 $\times$ maximum number of words 
+
+Recurrent Neural Networks
+
+* Assume read from left to right
+* When reads second word, it takes information from what computed for first word, and so on
+![Recurrent Neural Network](/img/recurrentNN/RNN.png)  
+* Alternative representation, where square is one-step
+![Recurrent Neural Network (De-Rowed)](/img/recurrentNN/RNN_derowed.png)  
+* Parameters, $W_{ax}$, $W_{ay}$  and $W_{aa}$, for each time step are shared
+![RNN Parameters](/img/recurrentNN/RNN_with_params.png)  
+* Weakness: Only uses information that is earlier in the sequences, e.g. cannot determine "Teddy" is a name with only first word in the following sentences; need the later words: "Teddy Roosevelt was a great President" and "Teddy bears are on sale!".  Will look at bidrectional RNN (BRNN) later in course.
+
+![Recurrent Neural Network](/img/recurrentNN/RNN.png)  
+Forward propagation (unidirectional RNN)
+
+* Start with initial activations, $a^{<0>}$ of zeros
+* Activation at time step 1: generally use tanh (most common) or ReLU activation.  Other ways of preventing vanishing gradient problem
+    \[a^{<1>} = g(W_{aa} a^{<0>} + W_{ax} x^{<1>} + b_a)\]
+* Prediction at time set 1; 
+    * binary classification: sigmoid activation function
+    * k-way: softmax
+\[\hat{y}^{<i>} =  g(W_{ya} a^{<1>} + b_y)\]
+* More generally, at time $t$:
+$$\begin{aligned}
+    a^{<t>}         &= g(W_{aa} a^{<t-1>} + W_{ax} x^{<t>} + b_a) \\
+    \hat{y}^{<t>}   &=  g(W_{ya} a^{<t>} + b_y)
+\end{aligned}$$
+
+Can simplify as:
+$$\begin{aligned}
+    a^{<t>}         &= g(W_{a} [a^{<t-1>}, x^{<t>}] + b_a) \\
+    \hat{y}^{<t>}   &=  g(W_{ya} a^{<t>} + b_y)
+\end{aligned}$$
+
+where $$\begin{aligned}
+    W_a &= [W_{aa} | W_{ax}] \\
+    [a^{<t-1>}, x^{<t>}] &= \begin{bmatrix} a^{<t-1>} \\ x^{<t>} \end{bmatrix} 
+\end{aligned}$$
+ 
+Example: If $a$ 100-dimensional and $x$ 10,000-dimensional, then
+
+* $W_{aa}$ would be 100 $\times$ 100
+* $W_{ax}$ would be 100 $times$ 10,000
+* $W_a$ would be 100 $times$ 10,100
+* $a^{<t-1>}$ would be 100 $times$ 1
+* $x^{<t>}$ would be $10,000 $\times$ 1
+
+Note: 
+
+* $b_a$: bias
+* $W_\text{xy}$ Multiply by some $y$-like quantity to compute some $x$-like quantity
+
+
+## Backpropagation through time
+
+* Programming framework would automatically take care of backpropagation
+* Given inputs $x^{<1>}, x^{<2>}, \ldots, x^{<T_x>}$, initial activation $a_0$ and parameters $W_a$ and $b_a$, calculate activations $a^{<1>}, a^{<2>}, \ldots, a^{<T_x>}$
+* Given parameters $W_y$, $b_y$ and activations, can calculate predictions $\hat{y}^{<1>}, \hat{y}^{<2>}, \ldots, \hat{y}^{<T_x>}$
+* To perform back-propagation, require loss function, standard logistic regression loss function (aka cross-entropy loss)
+    \[\mathcal{L}(\hat{y}^{<t>}, y^{<t>}) = -y^{<t>} \log \hat{y}^{<t>}  - (1 - y^{<t>}) \log (1 - \hat{y}^{<t>})\]
+![Backpropagation Through Time](/img/recurrentNN/BackpropThruTime.png)    
+
+## Different types of RNNs
+## Language model and sequence generation
+## Sampling novel sequences
+## Vanishing gradients with RNNs
+## Gated Recurrent Unit (GRU)
+## Long Short Term Memory (LSTM)
+## Bidirectional RNN
+## Deep RNNs
+
+
+# Natural Language Processing and Word Embeddings {#week2}
+## Word Representation
+## Using word embeddings
+## Properties of word embeddings
+## Embedding matrix
+## Learning word embeddings
+## Word2Vec
+## Negative Sampling
+## GloVe word vectors
+## Sentiment Classification
+## Debiasing word embeddings
+
+
+# Sequence Models & Attention Mechanism {#week3}
+## Basic Models
+## Picking the most likely sentence
+## Beam Search
+## Refinements to Beam Search
+## Error analysis in beam search
+## Bleu Score (optional)
+## Attention Model Intuition
+## Attention Model
+## Speech recognition
+## Trigger Word Detection
+## Conclusion and thank you

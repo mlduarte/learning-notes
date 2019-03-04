@@ -1,0 +1,246 @@
+---
+title: Sequence Models
+author: ''
+date: '2019-03-04'
+slug: sequence-models
+categories: []
+tags: []
+---
+
+
+
+<div id="week1" class="section level1">
+<h1>Recurrent Neural Networks</h1>
+<div id="why-sequence-models" class="section level2">
+<h2>Why sequence models</h2>
+<ul>
+<li>Speech recognition
+<ul>
+<li>Input: Audio clip (sequence)</li>
+<li>Output: Sequence of words (sequence)</li>
+</ul></li>
+<li>Music generation
+<ul>
+<li>Input: e.g. Genre to generate</li>
+<li>Output: Music (sequence)</li>
+</ul></li>
+<li>Sentiment classification
+<ul>
+<li>Input: Phrase (sequence)</li>
+<li>Output: Stars</li>
+</ul></li>
+<li>DNA sequence analysis
+<ul>
+<li>Input: DNA sequence</li>
+<li>Output: Which part of sequence corresponds to a protein</li>
+</ul></li>
+<li>Machine translation
+<ul>
+<li>Input: sentence, e.g. in french</li>
+<li>Output: same sentence in different language</li>
+</ul></li>
+<li>Video activity recognition
+<ul>
+<li>Input: Sequence of video frames</li>
+<li>Output: Activity</li>
+</ul></li>
+<li>Name entity recognition, which can be used to find people’s names, companies names, times, locations, countries, currency names, etc in different types of text
+<ul>
+<li>Input: Sentence</li>
+<li>Output: List of names in sentence</li>
+</ul></li>
+<li>Supervised learning examples</li>
+<li>Can have both X and Y as sequences (which may or may not have the same length), or either X or either Y as sequence only.</li>
+</ul>
+</div>
+<div id="notation" class="section level2">
+<h2>Notation</h2>
+<p>Motivating example: Named entity recognition,</p>
+<ul>
+<li><span class="math inline">\(x\)</span>: Harry Potter and Hermoine Granger invented a new spell</li>
+<li><p><span class="math inline">\(y\)</span>: For each part of input word, is it part of a person’s name? (more sophisticated alternatives: Start/stop for names)</p></li>
+<li><span class="math inline">\(x^{&lt;t&gt;}\)</span>: index to position into input sequence, e.g. <span class="math inline">\(x^{&lt;2&gt;}\)</span> in above example, would be Potter as it is the second word in the sequence.</li>
+<li><span class="math inline">\(x^{(i)&lt;t&gt;}\)</span>: input sequence position <span class="math inline">\(t\)</span> of <span class="math inline">\(i^{\text{th}}\)</span> training example</li>
+<li><span class="math inline">\(y^{&lt;t&gt;}\)</span>: index to position into output sequence, e.g. <span class="math inline">\(y^{&lt;2&gt;}\)</span> in above example, would be 1 as Potter is part of a name</li>
+<li><span class="math inline">\(y^{(i)&lt;t&gt;}\)</span>: output sequence position <span class="math inline">\(t\)</span> of <span class="math inline">\(i^{\text{th}}\)</span> training example</li>
+<li><span class="math inline">\(T_x\)</span>: length of input sequence, e.g. 9 in above example</li>
+<li><span class="math inline">\(T_y\)</span>: length of output sequence, e.g. 9 in above example</li>
+<li><span class="math inline">\(T_x^{(i)}\)</span>: length of input sequence in <span class="math inline">\(i^{\text{th}}\)</span> training example</li>
+<li><p><span class="math inline">\(T_y^{(i)}\)</span>: length of output sequence in <span class="math inline">\(i^{\text{th}}\)</span> training example</p></li>
+</ul>
+<p>How to represent individual words in a sentence?</p>
+<ul>
+<li>Start with a vocabulary / dictionary</li>
+</ul>
+<p><span class="math inline">\(\begin{bmatrix} \text{a} \\ \vdots \\ \text{and} \\ \text{harry} \\ \vdots \\ \text{zulu} \end{bmatrix}\)</span></p>
+<ul>
+<li>Number each word in vobulary sequentially, e.g. with 10,000 words in dictionary (quite small); 30-50K more common. 100K not uncommon. Internet companies: 1Million Word | Index ———-| —– a | 1 aaron | 2 <span class="math inline">\(\vdots\)</span> | <span class="math inline">\(\dots\)</span> and | 367 <span class="math inline">\(\vdots\)</span> | <span class="math inline">\(\dots\)</span> harry | 4,075 <span class="math inline">\(\vdots\)</span> | <span class="math inline">\(\dots\)</span> potter | 6,830 <span class="math inline">\(\vdots\)</span> | <span class="math inline">\(\dots\)</span> zulu | 10,000</li>
+</ul>
+<p>Use one-hot representations:</p>
+<ul>
+<li><span class="math inline">\(x^{1}\)</span> would be a 10,000 length vector of zeros, with exception of the value 1 at index 4075 (<em>Harry</em>)</li>
+<li><span class="math inline">\(x^{2}\)</span> would be a 10,000 length vector of zeros, with exception of the value 1 at index 6830 (<em>Potter</em>)</li>
+<li><span class="math inline">\(x^{7}\)</span> would be a 10,000 length vector of zeros, with exception of the value 1 at index 1 (<em>a</em>)</li>
+</ul>
+<p>So each <span class="math inline">\(x^{&lt;t&gt;}\)</span> is a 10,000 (vocabulary size) one-hot vector (one-hot = only one is on, and zero everywhere else) Use <UNK> if come across a word not in vocabulary</p>
+</div>
+<div id="recurrent-neural-network-model" class="section level2">
+<h2>Recurrent Neural Network Model</h2>
+<p>Why couldn’t you use a standard neural network?</p>
+<p>Problems:</p>
+<ul>
+<li>Inputs and and output can be different lengths in different examples. (not a good idea to pad, zero pad inputs to consider inputs up to a maximum length)</li>
+<li>Doesn’t share features learned across different positions of text, so that Harry learned as a name in position 1 would generalise to other parts</li>
+<li>As standard model, would need weights for 100,000 <span class="math inline">\(\times\)</span> maximum number of words</li>
+</ul>
+<p>Recurrent Neural Networks</p>
+<ul>
+<li>Assume read from left to right</li>
+<li>When reads second word, it takes information from what computed for first word, and so on <img src="/img/recurrentNN/RNN.png" alt="Recurrent Neural Network" /><br />
+</li>
+<li>Alternative representation, where square is one-step <img src="/img/recurrentNN/RNN_derowed.png" alt="Recurrent Neural Network (De-Rowed)" /><br />
+</li>
+<li>Parameters, <span class="math inline">\(W_{ax}\)</span>, <span class="math inline">\(W_{ay}\)</span> and <span class="math inline">\(W_{aa}\)</span>, for each time step are shared <img src="/img/recurrentNN/RNN_with_params.png" alt="RNN Parameters" /><br />
+</li>
+<li>Weakness: Only uses information that is earlier in the sequences, e.g. cannot determine “Teddy” is a name with only first word in the following sentences; need the later words: “Teddy Roosevelt was a great President” and “Teddy bears are on sale!”. Will look at bidrectional RNN (BRNN) later in course.</li>
+</ul>
+<p><img src="/img/recurrentNN/RNN.png" alt="Recurrent Neural Network" /><br />
+Forward propagation (unidirectional RNN)</p>
+<ul>
+<li>Start with initial activations, <span class="math inline">\(a^{&lt;0&gt;}\)</span> of zeros</li>
+<li>Activation at time step 1: generally use tanh (most common) or ReLU activation. Other ways of preventing vanishing gradient problem <span class="math display">\[a^{&lt;1&gt;} = g(W_{aa} a^{&lt;0&gt;} + W_{ax} x^{&lt;1&gt;} + b_a)\]</span></li>
+<li>Prediction at time set 1;
+<ul>
+<li>binary classification: sigmoid activation function</li>
+<li>k-way: softmax <span class="math display">\[\hat{y}^{&lt;i&gt;} =  g(W_{ya} a^{&lt;1&gt;} + b_y)\]</span></li>
+</ul></li>
+<li>More generally, at time <span class="math inline">\(t\)</span>: <span class="math display">\[\begin{aligned}
+a^{&lt;t&gt;}         &amp;= g(W_{aa} a^{&lt;t-1&gt;} + W_{ax} x^{&lt;t&gt;} + b_a) \\
+\hat{y}^{&lt;t&gt;}   &amp;=  g(W_{ya} a^{&lt;t&gt;} + b_y)
+\end{aligned}\]</span></li>
+</ul>
+<p>Can simplify as: <span class="math display">\[\begin{aligned}
+    a^{&lt;t&gt;}         &amp;= g(W_{a} [a^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_a) \\
+    \hat{y}^{&lt;t&gt;}   &amp;=  g(W_{ya} a^{&lt;t&gt;} + b_y)
+\end{aligned}\]</span></p>
+<p>where <span class="math display">\[\begin{aligned}
+    W_a &amp;= [W_{aa} | W_{ax}] \\
+    [a^{&lt;t-1&gt;}, x^{&lt;t&gt;}] &amp;= \begin{bmatrix} a^{&lt;t-1&gt;} \\ x^{&lt;t&gt;} \end{bmatrix} 
+\end{aligned}\]</span></p>
+<p>Example: If <span class="math inline">\(a\)</span> 100-dimensional and <span class="math inline">\(x\)</span> 10,000-dimensional, then</p>
+<ul>
+<li><span class="math inline">\(W_{aa}\)</span> would be 100 <span class="math inline">\(\times\)</span> 100</li>
+<li><span class="math inline">\(W_{ax}\)</span> would be 100 <span class="math inline">\(times\)</span> 10,000</li>
+<li><span class="math inline">\(W_a\)</span> would be 100 <span class="math inline">\(times\)</span> 10,100</li>
+<li><span class="math inline">\(a^{&lt;t-1&gt;}\)</span> would be 100 <span class="math inline">\(times\)</span> 1</li>
+<li><span class="math inline">\(x^{&lt;t&gt;}\)</span> would be $10,000 <span class="math inline">\(\times\)</span> 1</li>
+</ul>
+<p>Note:</p>
+<ul>
+<li><span class="math inline">\(b_a\)</span>: bias</li>
+<li><span class="math inline">\(W_\text{xy}\)</span> Multiply by some <span class="math inline">\(y\)</span>-like quantity to compute some <span class="math inline">\(x\)</span>-like quantity</li>
+</ul>
+</div>
+<div id="backpropagation-through-time" class="section level2">
+<h2>Backpropagation through time</h2>
+<ul>
+<li>Programming framework would automatically take care of backpropagation</li>
+<li>Given inputs <span class="math inline">\(x^{&lt;1&gt;}, x^{&lt;2&gt;}, \ldots, x^{&lt;T_x&gt;}\)</span>, initial activation <span class="math inline">\(a_0\)</span> and parameters <span class="math inline">\(W_a\)</span> and <span class="math inline">\(b_a\)</span>, calculate activations <span class="math inline">\(a^{&lt;1&gt;}, a^{&lt;2&gt;}, \ldots, a^{&lt;T_x&gt;}\)</span></li>
+<li>Given parameters <span class="math inline">\(W_y\)</span>, <span class="math inline">\(b_y\)</span> and activations, can calculate predictions <span class="math inline">\(\hat{y}^{&lt;1&gt;}, \hat{y}^{&lt;2&gt;}, \ldots, \hat{y}^{&lt;T_x&gt;}\)</span></li>
+<li>To perform back-propagation, require loss function, standard logistic regression loss function (aka cross-entropy loss) <span class="math display">\[\mathcal{L}(\hat{y}^{&lt;t&gt;}, y^{&lt;t&gt;}) = -y^{&lt;t&gt;} \log \hat{y}^{&lt;t&gt;}  - (1 - y^{&lt;t&gt;}) \log (1 - \hat{y}^{&lt;t&gt;})\]</span> <img src="/img/recurrentNN/BackpropThruTime.png" alt="Backpropagation Through Time" /></li>
+</ul>
+</div>
+<div id="different-types-of-rnns" class="section level2">
+<h2>Different types of RNNs</h2>
+</div>
+<div id="language-model-and-sequence-generation" class="section level2">
+<h2>Language model and sequence generation</h2>
+</div>
+<div id="sampling-novel-sequences" class="section level2">
+<h2>Sampling novel sequences</h2>
+</div>
+<div id="vanishing-gradients-with-rnns" class="section level2">
+<h2>Vanishing gradients with RNNs</h2>
+</div>
+<div id="gated-recurrent-unit-gru" class="section level2">
+<h2>Gated Recurrent Unit (GRU)</h2>
+</div>
+<div id="long-short-term-memory-lstm" class="section level2">
+<h2>Long Short Term Memory (LSTM)</h2>
+</div>
+<div id="bidirectional-rnn" class="section level2">
+<h2>Bidirectional RNN</h2>
+</div>
+<div id="deep-rnns" class="section level2">
+<h2>Deep RNNs</h2>
+</div>
+</div>
+<div id="week2" class="section level1">
+<h1>Natural Language Processing and Word Embeddings</h1>
+<div id="word-representation" class="section level2">
+<h2>Word Representation</h2>
+</div>
+<div id="using-word-embeddings" class="section level2">
+<h2>Using word embeddings</h2>
+</div>
+<div id="properties-of-word-embeddings" class="section level2">
+<h2>Properties of word embeddings</h2>
+</div>
+<div id="embedding-matrix" class="section level2">
+<h2>Embedding matrix</h2>
+</div>
+<div id="learning-word-embeddings" class="section level2">
+<h2>Learning word embeddings</h2>
+</div>
+<div id="word2vec" class="section level2">
+<h2>Word2Vec</h2>
+</div>
+<div id="negative-sampling" class="section level2">
+<h2>Negative Sampling</h2>
+</div>
+<div id="glove-word-vectors" class="section level2">
+<h2>GloVe word vectors</h2>
+</div>
+<div id="sentiment-classification" class="section level2">
+<h2>Sentiment Classification</h2>
+</div>
+<div id="debiasing-word-embeddings" class="section level2">
+<h2>Debiasing word embeddings</h2>
+</div>
+</div>
+<div id="week3" class="section level1">
+<h1>Sequence Models &amp; Attention Mechanism</h1>
+<div id="basic-models" class="section level2">
+<h2>Basic Models</h2>
+</div>
+<div id="picking-the-most-likely-sentence" class="section level2">
+<h2>Picking the most likely sentence</h2>
+</div>
+<div id="beam-search" class="section level2">
+<h2>Beam Search</h2>
+</div>
+<div id="refinements-to-beam-search" class="section level2">
+<h2>Refinements to Beam Search</h2>
+</div>
+<div id="error-analysis-in-beam-search" class="section level2">
+<h2>Error analysis in beam search</h2>
+</div>
+<div id="bleu-score-optional" class="section level2">
+<h2>Bleu Score (optional)</h2>
+</div>
+<div id="attention-model-intuition" class="section level2">
+<h2>Attention Model Intuition</h2>
+</div>
+<div id="attention-model" class="section level2">
+<h2>Attention Model</h2>
+</div>
+<div id="speech-recognition" class="section level2">
+<h2>Speech recognition</h2>
+</div>
+<div id="trigger-word-detection" class="section level2">
+<h2>Trigger Word Detection</h2>
+</div>
+<div id="conclusion-and-thank-you" class="section level2">
+<h2>Conclusion and thank you</h2>
+</div>
+</div>
