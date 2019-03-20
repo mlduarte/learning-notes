@@ -63,6 +63,7 @@ How to represent individual words in a sentence?
 $\begin{bmatrix} \text{a} \\ \vdots \\ \text{and} \\ \text{harry} \\ \vdots \\ \text{zulu} \end{bmatrix}$
 
 * Number each word in vobulary sequentially, e.g. with 10,000 words in dictionary (quite small); 30-50K more common.  100K not uncommon.  Internet companies: 1Million
+
 Word | Index
 ----------| -----
 a   | 1
@@ -137,9 +138,9 @@ where $$\begin{aligned}
 Example: If $a$ 100-dimensional and $x$ 10,000-dimensional, then
 
 * $W_{aa}$ would be 100 $\times$ 100
-* $W_{ax}$ would be 100 $times$ 10,000
-* $W_a$ would be 100 $times$ 10,100
-* $a^{<t-1>}$ would be 100 $times$ 1
+* $W_{ax}$ would be 100 $\times$ 10,000
+* $W_a$ would be 100 $\times$ 10,100
+* $a^{<t-1>}$ would be 100 $\times$ 1
 * $x^{<t>}$ would be $10,000 $\times$ 1
 
 Note: 
@@ -158,14 +159,227 @@ Note:
 ![Backpropagation Through Time](/img/recurrentNN/BackpropThruTime.png)    
 
 ## Different types of RNNs
+
+Wider range of RNN architectures, e.g. when output $T_x \neq T_y$ input sequence length
+
+* Many-to-many, $T_x,  T_y > 1$.  
+    * $T_x = T_y$; as per motivating example above
+    ![Many to many, same](/img/recurrentNN/architecture_many_to_many_same.png)   
+    * $T_x \neq T_y$, e.g machine translation, "como estas" $\rightarrow$ "how are you"
+    ![Many to many, same](/img/recurrentNN/architecture_many_to_many_diff.png)   
+* Many-to-one, e.g. output 0 or 1 (or a rating from 1 to 5) to indicate sentiment from sentence
+![Many to one](/img/recurrentNN/architecture_many_to_one.png)   
+* One-to-many, e.g. music generation where goal is to output set of notes from input such as genre
+![One to Many](/img/recurrentNN/architecture_one_to_many.png)   
+* One-to-one (standard)
+![One to One](/img/recurrentNN/architecture_one_to_one.png)  
+* attention-based (to discuss later)
+
+
 ## Language model and sequence generation
+
+
+
+* A language model takes as input a sentence (a sequence, but use notation $y$ rather than $x$) and determines the probability
+* To build a language model, 
+    1. Obtain  training set: large corpus (body) of english text
+    2. Require vocabulary (dictionary)
+    3. Map each word to the dictionary tokens using one-hot vectors
+        * Each word in sentence is represented as $y^{<1>}, y^{<2>}, \ldots$$
+        * May use <EOS> token for end of sentence (period)
+        * Use <UNK> for words not in vocabulary
+    4. What is the probability of each word in the sentence
+        * First word:   What is the probability of the first word being any word in the dictionary?  With 10,000-word, each output is a 10,000-way soft max output (incl. EOS and UNK).  As input, pass zero-vector
+        * Second word: What is probability of second word being each word in dictionary, given first word in sentence
+        * $\ldots$
+        * Each step looks at preceding words, RNN learns to predict one word a time going from left to right
+Note that 15 was considered a word
+![Cats average 15 hours of sleep a day](/img/recurrentNN/example_model_cats_sleep.png)  
+    
+* Cost function: at time t with tru word $y^{<t>}$ and prediction $\hat{y}^{<t>}$ then loss function is
+$$\begin{aligned}
+    \mathcal{L}(\hat{y}^{<t>}, y^{<t>}) &= -\sum_i y^{<t>}_i \log \hat{y}^{<t>}_i \\
+    \mathcal{L} &= \sum_t \mathcal{L}^{<t>}(\hat{y}^{<t>}, y^{<t>}) 
+\end{aligned}$$
+
+Note conditional probabilities used to determine the probability of a three-word sentence:
+$P(y^{<1>}, y^{<2>}, y^{<3>}) = P(y^{<1>})P(y^{<2>}|y^{<1>})P(y^{<2>})P(y^{<1>},y^{<2>})$
+
+
 ## Sampling novel sequences
+
+To get a sense of what is learned
+
+* Sample first word; randomly sample soft max distribution use` np.random.choice`
+* Take $x_2 = \hat{y}^{<1>}$ to predict $\hat{y}^{<2>}$
+* Sample until EOS token (but if no EOS, choose sentence length beforehand)
+* You may get an UNK token; can reject and resample until not UNK, or leave in output
+
+Character-level vocabulary
+
+* Have been using a word-level vocabulary; alternative is to  use a character-level vocabulary 
+* Example vocabulary: [a, b,c, $\ldots$, z, space, ., ;, 0, $\ldots$ 9, A, Z]
+* Can use corpus to determine complete vocabulary
+* Advantage: Don't have to worry about unknown tokens
+* Disadvantages: 
+    * Much longer sequences, 10-20 words = 100+ characters.  
+    * Harder to capture longer-range dependencies.  
+    * More computationally expensive
+* As computers are getting more efficient, people are starting to use character-level vocabularies, but practice not widely spread
+
+Sampling novel sentences from a model trained using newspaper corpuses gives very different results to those trained using a shakespear corpus.
+
+
 ## Vanishing gradients with RNNs
+
+* RNNs tend to run in to vanishing gradient problems
+* Consider:
+    * The __cat__, which already ate $\ldots$, __was__ full
+    * The __cats__, which already ate $\ldots$, __were__ full
+* Basic RNN not good at picking up very long-range dependency
+* Recall concept of vanishing gradients with very deep neural networks (e.g. 100 layers); gradient at last layer will have hard time impacting gradient at earlier level.  Similar occurs with basic RNN.  
+* Basic RNN has mainly local influences, i.e. preceding 1-3 words have much more influence than words preceding the current word by, e.g. 10 places
+* Exploding gradients
+    * Not as common as Vanishing
+    * But when exists, can be catestrophic
+    * If you see "NaN" in gradient vectors, can apply gradient clipping; i.e. set gradient = max(X, gradient)
+ 
+As vanishing gradient harder to deal with, will be discussed in next few sections.
+
+See [Improving Deep Learning Networks](/blog/2018/12/07/2018-12-07-improving-deep-learning-networks#vanishing)
+
 ## Gated Recurrent Unit (GRU)
+
+* Better than basic RNN at capturing long range connections and helps with vanishing gradient problems
+* Recall formula for activation at time $t$, $a^{<t>}  = g(W_{aa} a^{<t-1>} + W_{ax} x^{<t>} + b_a) $
+    * activation from last time step
+    * Input token
+    * g could be tahn activation function
+![Basic RNN activation function](/img/recurrentNN/basic_rnn_activation.png)  
+
+* Motivating example
+    * The __cat__, which already ate $\ldots$, __was__ full
+    * The __cats__, which already ate $\ldots$, __were__ full
+* Formulas:
+
+$$\begin{aligned}
+    \text{Candidate Memory Cell:} &   \tilde{c}^{<t>} &= \tanh(w_c[c^{<t-1>}, x^{<t>}] + b_c) \\
+    \text{Gate:}                    & \Gamma_u &= \sigma(w_u[c^{<t-1>}, x^{<t>}] + b_u\\
+    \text{Memory Cell:} & c^{<t>} &= \Gamma_u \tilde{c}^{<t>} +  (1-\Gamma_u) c^{<t-1>}\\
+\end{aligned}$$
+
+* Use $c$ for memory __c__ell
+* The GRU will output an activation that is the same as the memory cell, but this notation is used as these will differ for other models, e.g., LSTM
+\[c^{<t>} = a_{<t>}\]
+* At each time step, consider overriding memory cell with the candidate memory cell based on the value of the gate
+    * As the gate is a sigmoid function it will usually be practically zero or practically one
+    * If the gate function is 0, the memory cell $c^{<t>}$ remains the same as at $t-1$, i.e.,  $c^{<t>} =  c^{<t-1>}$.  If the gate function is 1, the memory cell is updated to the candidate value
+* For example, if the cell $c$ captures concept of plural/singular, the gate would have a value of 1 at the _cat_ token remain at zero until after a new noun captures after the word _was_.
+* The dimensions of the memory cell $c^{<t>}$, candidate memory cell $\tilde{c}^{<t>}$ and gate $\Gamma_u$ are the same.
+    * So if all are 100-dimensional vector; most are zeros or ones and tells which are the bits you want to update.  (in practice, may be in-between zero)
+    * The asterix is element-wise in the memory cell formula
+    * Different elements (bits) may be used for different concepts; i.e. one for singular/plural, another for the concept of food, etc.
+
+![Simplified GRU](/img/recurrentNN/simplified_gru.png)  
+
+Full GRU
+
+* Uses $r$ to measure the relevance of the current memory cell $c^{<t-1>}$ when calculating the candidate value $ \tilde{c}^{<t>}$
+
+$$\begin{aligned}
+    \text{Candidate Memory Cell:}\;\;\; &   \tilde{c}^{<t>} &&= \tanh(\color{blue}{\Gamma_r} * W_c[c^{<t-1>}, x^{<t>}] + b_c) \\
+    \text{Gate:}\;\;\;                & \Gamma_u &&= \sigma(W_u[c^{<t-1>}, x^{<t>}] + b_u\\
+    \color{blue}{\text{relevance:}}\;\;\;                & \color{blue}{\Gamma_r} &&= \color{blue}{\sigma(W_r[c^{<t-1>}, x^{<t>}] + b_r}\\
+    \text{Memory Cell:}\;\;\; & c^{<t>} &&= \Gamma_u * \tilde{c}^{<t>} +  (1-\Gamma_u) c^{<t-1>}\\
+\end{aligned}$$
+
+* Academic literature may use different notation, here used notation to be similar for GRU and LSTM
+    * candidate memory cell $\tilde{h}$
+    * Gate $u$
+    * Relevance $r$
+    * Memory cell $h$
+
+LSTM 
+
+* another instantiations of the same idea
+
+
 ## Long Short Term Memory (LSTM)
-## Bidirectional RNN
+
+* More powerful than GRU
+* Recall GRU equations
+
+$$\begin{aligned}
+    \text{Candidate Memory Cell:}\;\;\; &   \tilde{c}^{<t>} &&= \tanh(\Gamma_r * W_c[c^{<t-1>}, x^{<t>}] + b_c) \\
+    \text{Update Gate:}\;\;\;                & \Gamma_u &&= \sigma(W_u[c^{<t-1>}, x^{<t>}] + b_u\\
+    \text{Relevance Gate:}\;\;\;                & \Gamma_r &&= \sigma(W_r[c^{<t-1>}, x^{<t>}] + b_r\\
+    \text{Memory Cell:}\;\;\; & c^{<t>} &&= \Gamma_u * \tilde{c}^{<t>} +  (1-\Gamma_u) c^{<t-1>}\\
+    \text{Activation Value:}\;\;\; & a^{<t>} &&= c^{<t>}
+\end{aligned}$$
+
+
+LSTM
+
+* As, unlike for GRU, $a^{<t>} \neq c^{<t>}$, and so memory cell explicitly references the activation value, rather than the memory cell
+* Introduces a forget gate, which gives option of keeping old memory cell and adding to it.
+* Introduces output gate
+* So has three gates instead of two
+
+$$\begin{aligned}
+    \text{Candidate Memory Cell:}\;\;\; &   \tilde{c}^{<t>} &&= \tanh(W_c[a^{<t-1>}, x^{<t>}] + b_c) \\
+    \text{Update Gate:}\;\;\;                & \Gamma_u &&= \sigma(W_u[a^{<t-1>}, x^{<t>}] + b_u\\
+    \text{Forget Gate:}\;\;\;                & \Gamma_f &&= \sigma(W_f[a^{<t-1>}, x^{<t>}] + b_f\\
+    \text{Output Gate:}\;\;\;                & \Gamma_o &&= \sigma(W_o[a^{<t-1>}, x^{<t>}] + b_o\\
+    \text{Memory Cell:}\;\;\; & c^{<t>} &&= \Gamma_u * \tilde{c}^{<t>} +  \Gamma_f c^{<t-1>}\\
+    \text{Activation Value:}\;\;\; & a^{<t>} &&= \Gamma_o * \tanh c^{<t>}
+\end{aligned}$$
+
+![LSTM](/img/recurrentNN/LSTM.png) 
+
+* $a^{<t-1>}$ and $x^{<t>}$ used to calculate all the gates (forget, update, output) and also go through the tanh to calculate $\tilde{c}^{<t>}$
+
+![LSTM Network](/img/recurrentNN/LSTM_network.png) 
+
+* So long as you set forget and update gates appropriately, it is relatively easy for LSTM to have some value $c^{<0>}$ and have it passed all the way to the right so that $c^{<3>} = c^{<0>}$
+
+Variations
+
+* Have gate values also dependent on $c^{<t-1>}$, known as a _peephole connection_, e.g., for output gate:
+\[\Gamma_o = \sigma(W_o[a^{<t-1>}, x^{<t>}, c^{<t-1>}] + b_o\]
+
+
+When to use GRU vs LSTM?
+
+* LSTM became earlier than GRU (simplified version)
+* Different problems, different algorithm will win
+* Advantage of GRU is simpler and so easier to build bigger network (computationally faster and scales to building bigger models)
+* LSTM more flexible/powerful (historically more proven choice, although GRU usage is gaining momentum)
+
+## Bidirectional RNN (BRNN)
+
+* To take information earlier and later in sequence
+* Inputs $x^{<1>}, \ldots, x^{<4>}$
+* Forward recurrent components $\overrightarrow{a}^{<1>}, \overrightarrow{a}^{<2>}, \overrightarrow{a}^{<3>}, \overrightarrow{a}^{<4>}$
+* Backward recurrent components $\overleftarrow{a}^{<4>}, \overleftarrow{a}^{<3>}, \overleftarrow{a}^{<2>}, \overleftarrow{a}^{<1>}$.  This is still forward prop.
+* Predictions $\hat{y}^{<1>}, \ldots, \hat{y}^{<4>}$ where \[\hat{y}^{<t>} = g(W_y[\overrightarrow{a}^{<t>}, \overleftarrow{a}^{<t>}] + b_y)\]
+* Acyclic graph
+* BRNN can be with LSTM blocks both forward and backwards.  Similarly with GRU.
+* Disadvantage: Need entire sequence of data before can make a prediction.  Need to wait for person to stop talking, i.e. entire utterance.  Where can get entire sentence at a time this standard BRNN is suitable.
+
+
 ## Deep RNNs
 
+![Deep RNN](/img/recurrentNN/deep_rnn.png) 
+
+* May need to stack multiple layers of RNNs to build deeper RNNs
+* Use $a^{[\text{layer}]<\text{time}>}$
+* $a^{[2]<3>} = g(W_a^{[2]}[a^{[2]<2>}, a^{[1]<3>}] + b_a^{2}) $
+* First layer has parameters $W_a^{[1]}, b_a^{1}$; second layer has parameters $W_a^{[2]}, b_a^{2}$, and so on
+* Generally only have 3 recurrent layers (that is already pretty deep)
+* The recurrent blocks amy be RNN, GRU, LSTM
+* Sometimes have 3 recurrent layers, with additional non-connected layers on top
+
+![Deep RNN](/img/recurrentNN/deep_RNN_On_Steroids.png) 
 
 # Natural Language Processing and Word Embeddings {#week2}
 ## Word Representation

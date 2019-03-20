@@ -77,8 +77,58 @@ banner: img/banners/sequenceNN.png
 </ul>
 <p><span class="math inline">\(\begin{bmatrix} \text{a} \\ \vdots \\ \text{and} \\ \text{harry} \\ \vdots \\ \text{zulu} \end{bmatrix}\)</span></p>
 <ul>
-<li>Number each word in vobulary sequentially, e.g. with 10,000 words in dictionary (quite small); 30-50K more common. 100K not uncommon. Internet companies: 1Million Word | Index ———-| —– a | 1 aaron | 2 <span class="math inline">\(\vdots\)</span> | <span class="math inline">\(\dots\)</span> and | 367 <span class="math inline">\(\vdots\)</span> | <span class="math inline">\(\dots\)</span> harry | 4,075 <span class="math inline">\(\vdots\)</span> | <span class="math inline">\(\dots\)</span> potter | 6,830 <span class="math inline">\(\vdots\)</span> | <span class="math inline">\(\dots\)</span> zulu | 10,000</li>
+<li>Number each word in vobulary sequentially, e.g. with 10,000 words in dictionary (quite small); 30-50K more common. 100K not uncommon. Internet companies: 1Million</li>
 </ul>
+<table>
+<thead>
+<tr class="header">
+<th>Word</th>
+<th>Index</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>a</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>aaron</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\vdots\)</span></td>
+<td><span class="math inline">\(\dots\)</span></td>
+</tr>
+<tr class="even">
+<td>and</td>
+<td>367</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\vdots\)</span></td>
+<td><span class="math inline">\(\dots\)</span></td>
+</tr>
+<tr class="even">
+<td>harry</td>
+<td>4,075</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\vdots\)</span></td>
+<td><span class="math inline">\(\dots\)</span></td>
+</tr>
+<tr class="even">
+<td>potter</td>
+<td>6,830</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\vdots\)</span></td>
+<td><span class="math inline">\(\dots\)</span></td>
+</tr>
+<tr class="even">
+<td>zulu</td>
+<td>10,000</td>
+</tr>
+</tbody>
+</table>
 <p>Use one-hot representations:</p>
 <ul>
 <li><span class="math inline">\(x^{1}\)</span> would be a 10,000 length vector of zeros, with exception of the value 1 at index 4075 (<em>Harry</em>)</li>
@@ -133,9 +183,9 @@ a^{&lt;t&gt;}         &amp;= g(W_{aa} a^{&lt;t-1&gt;} + W_{ax} x^{&lt;t&gt;} + b
 <p>Example: If <span class="math inline">\(a\)</span> 100-dimensional and <span class="math inline">\(x\)</span> 10,000-dimensional, then</p>
 <ul>
 <li><span class="math inline">\(W_{aa}\)</span> would be 100 <span class="math inline">\(\times\)</span> 100</li>
-<li><span class="math inline">\(W_{ax}\)</span> would be 100 <span class="math inline">\(times\)</span> 10,000</li>
-<li><span class="math inline">\(W_a\)</span> would be 100 <span class="math inline">\(times\)</span> 10,100</li>
-<li><span class="math inline">\(a^{&lt;t-1&gt;}\)</span> would be 100 <span class="math inline">\(times\)</span> 1</li>
+<li><span class="math inline">\(W_{ax}\)</span> would be 100 <span class="math inline">\(\times\)</span> 10,000</li>
+<li><span class="math inline">\(W_a\)</span> would be 100 <span class="math inline">\(\times\)</span> 10,100</li>
+<li><span class="math inline">\(a^{&lt;t-1&gt;}\)</span> would be 100 <span class="math inline">\(\times\)</span> 1</li>
 <li><span class="math inline">\(x^{&lt;t&gt;}\)</span> would be $10,000 <span class="math inline">\(\times\)</span> 1</li>
 </ul>
 <p>Note:</p>
@@ -155,27 +205,255 @@ a^{&lt;t&gt;}         &amp;= g(W_{aa} a^{&lt;t-1&gt;} + W_{ax} x^{&lt;t&gt;} + b
 </div>
 <div id="different-types-of-rnns" class="section level2">
 <h2>Different types of RNNs</h2>
+<p>Wider range of RNN architectures, e.g. when output <span class="math inline">\(T_x \neq T_y\)</span> input sequence length</p>
+<ul>
+<li>Many-to-many, <span class="math inline">\(T_x, T_y &gt; 1\)</span>.
+<ul>
+<li><span class="math inline">\(T_x = T_y\)</span>; as per motivating example above <img src="/img/recurrentNN/architecture_many_to_many_same.png" alt="Many to many, same" /><br />
+</li>
+<li><span class="math inline">\(T_x \neq T_y\)</span>, e.g machine translation, “como estas” <span class="math inline">\(\rightarrow\)</span> “how are you” <img src="/img/recurrentNN/architecture_many_to_many_diff.png" alt="Many to many, same" /><br />
+</li>
+</ul></li>
+<li>Many-to-one, e.g. output 0 or 1 (or a rating from 1 to 5) to indicate sentiment from sentence <img src="/img/recurrentNN/architecture_many_to_one.png" alt="Many to one" /><br />
+</li>
+<li>One-to-many, e.g. music generation where goal is to output set of notes from input such as genre <img src="/img/recurrentNN/architecture_one_to_many.png" alt="One to Many" /><br />
+</li>
+<li>One-to-one (standard) <img src="/img/recurrentNN/architecture_one_to_one.png" alt="One to One" /><br />
+</li>
+<li>attention-based (to discuss later)</li>
+</ul>
 </div>
 <div id="language-model-and-sequence-generation" class="section level2">
 <h2>Language model and sequence generation</h2>
+<ul>
+<li>A language model takes as input a sentence (a sequence, but use notation <span class="math inline">\(y\)</span> rather than <span class="math inline">\(x\)</span>) and determines the probability</li>
+<li>To build a language model,
+<ol style="list-style-type: decimal">
+<li>Obtain training set: large corpus (body) of english text</li>
+<li>Require vocabulary (dictionary)</li>
+<li>Map each word to the dictionary tokens using one-hot vectors
+<ul>
+<li>Each word in sentence is represented as <span class="math inline">\(y^{&lt;1&gt;}, y^{&lt;2&gt;}, \ldots\)</span>$</li>
+<li>May use <EOS> token for end of sentence (period)</li>
+<li>Use <UNK> for words not in vocabulary</li>
+</ul></li>
+<li>What is the probability of each word in the sentence
+<ul>
+<li>First word: What is the probability of the first word being any word in the dictionary? With 10,000-word, each output is a 10,000-way soft max output (incl. EOS and UNK). As input, pass zero-vector</li>
+<li>Second word: What is probability of second word being each word in dictionary, given first word in sentence</li>
+<li><span class="math inline">\(\ldots\)</span></li>
+<li>Each step looks at preceding words, RNN learns to predict one word a time going from left to right Note that 15 was considered a word <img src="/img/recurrentNN/example_model_cats_sleep.png" alt="Cats average 15 hours of sleep a day" /></li>
+</ul></li>
+</ol></li>
+<li>Cost function: at time t with tru word <span class="math inline">\(y^{&lt;t&gt;}\)</span> and prediction <span class="math inline">\(\hat{y}^{&lt;t&gt;}\)</span> then loss function is <span class="math display">\[\begin{aligned}
+\mathcal{L}(\hat{y}^{&lt;t&gt;}, y^{&lt;t&gt;}) &amp;= -\sum_i y^{&lt;t&gt;}_i \log \hat{y}^{&lt;t&gt;}_i \\
+\mathcal{L} &amp;= \sum_t \mathcal{L}^{&lt;t&gt;}(\hat{y}^{&lt;t&gt;}, y^{&lt;t&gt;}) 
+\end{aligned}\]</span></li>
+</ul>
+<p>Note conditional probabilities used to determine the probability of a three-word sentence: <span class="math inline">\(P(y^{&lt;1&gt;}, y^{&lt;2&gt;}, y^{&lt;3&gt;}) = P(y^{&lt;1&gt;})P(y^{&lt;2&gt;}|y^{&lt;1&gt;})P(y^{&lt;2&gt;})P(y^{&lt;1&gt;},y^{&lt;2&gt;})\)</span></p>
 </div>
 <div id="sampling-novel-sequences" class="section level2">
 <h2>Sampling novel sequences</h2>
+<p>To get a sense of what is learned</p>
+<ul>
+<li>Sample first word; randomly sample soft max distribution use<code>np.random.choice</code></li>
+<li>Take <span class="math inline">\(x_2 = \hat{y}^{&lt;1&gt;}\)</span> to predict <span class="math inline">\(\hat{y}^{&lt;2&gt;}\)</span></li>
+<li>Sample until EOS token (but if no EOS, choose sentence length beforehand)</li>
+<li>You may get an UNK token; can reject and resample until not UNK, or leave in output</li>
+</ul>
+<p>Character-level vocabulary</p>
+<ul>
+<li>Have been using a word-level vocabulary; alternative is to use a character-level vocabulary</li>
+<li>Example vocabulary: [a, b,c, <span class="math inline">\(\ldots\)</span>, z, space, ., ;, 0, <span class="math inline">\(\ldots\)</span> 9, A, Z]</li>
+<li>Can use corpus to determine complete vocabulary</li>
+<li>Advantage: Don’t have to worry about unknown tokens</li>
+<li>Disadvantages:
+<ul>
+<li>Much longer sequences, 10-20 words = 100+ characters.<br />
+</li>
+<li>Harder to capture longer-range dependencies.<br />
+</li>
+<li>More computationally expensive</li>
+</ul></li>
+<li>As computers are getting more efficient, people are starting to use character-level vocabularies, but practice not widely spread</li>
+</ul>
+<p>Sampling novel sentences from a model trained using newspaper corpuses gives very different results to those trained using a shakespear corpus.</p>
 </div>
 <div id="vanishing-gradients-with-rnns" class="section level2">
 <h2>Vanishing gradients with RNNs</h2>
+<ul>
+<li>RNNs tend to run in to vanishing gradient problems</li>
+<li>Consider:
+<ul>
+<li>The <strong>cat</strong>, which already ate <span class="math inline">\(\ldots\)</span>, <strong>was</strong> full</li>
+<li>The <strong>cats</strong>, which already ate <span class="math inline">\(\ldots\)</span>, <strong>were</strong> full</li>
+</ul></li>
+<li>Basic RNN not good at picking up very long-range dependency</li>
+<li>Recall concept of vanishing gradients with very deep neural networks (e.g. 100 layers); gradient at last layer will have hard time impacting gradient at earlier level. Similar occurs with basic RNN.<br />
+</li>
+<li>Basic RNN has mainly local influences, i.e. preceding 1-3 words have much more influence than words preceding the current word by, e.g. 10 places</li>
+<li>Exploding gradients
+<ul>
+<li>Not as common as Vanishing</li>
+<li>But when exists, can be catestrophic</li>
+<li>If you see “NaN” in gradient vectors, can apply gradient clipping; i.e. set gradient = max(X, gradient)</li>
+</ul></li>
+</ul>
+<p>As vanishing gradient harder to deal with, will be discussed in next few sections.</p>
+<p>See <a href="/blog/2018/12/07/2018-12-07-improving-deep-learning-networks#vanishing">Improving Deep Learning Networks</a></p>
 </div>
 <div id="gated-recurrent-unit-gru" class="section level2">
 <h2>Gated Recurrent Unit (GRU)</h2>
+<ul>
+<li>Better than basic RNN at capturing long range connections and helps with vanishing gradient problems</li>
+<li>Recall formula for activation at time <span class="math inline">\(t\)</span>, $a^{<t>} = g(W_{aa} a^{<t-1>} + W_{ax} x^{<t>} + b_a) $
+<ul>
+<li>activation from last time step</li>
+<li>Input token</li>
+<li>g could be tahn activation function <img src="/img/recurrentNN/basic_rnn_activation.png" alt="Basic RNN activation function" /></li>
+</ul></li>
+<li>Motivating example
+<ul>
+<li>The <strong>cat</strong>, which already ate <span class="math inline">\(\ldots\)</span>, <strong>was</strong> full</li>
+<li>The <strong>cats</strong>, which already ate <span class="math inline">\(\ldots\)</span>, <strong>were</strong> full</li>
+</ul></li>
+<li>Formulas:</li>
+</ul>
+<p><span class="math display">\[\begin{aligned}
+    \text{Candidate Memory Cell:} &amp;   \tilde{c}^{&lt;t&gt;} &amp;= \tanh(w_c[c^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_c) \\
+    \text{Gate:}                    &amp; \Gamma_u &amp;= \sigma(w_u[c^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_u\\
+    \text{Memory Cell:} &amp; c^{&lt;t&gt;} &amp;= \Gamma_u \tilde{c}^{&lt;t&gt;} +  (1-\Gamma_u) c^{&lt;t-1&gt;}\\
+\end{aligned}\]</span></p>
+<ul>
+<li>Use <span class="math inline">\(c\)</span> for memory __c__ell</li>
+<li>The GRU will output an activation that is the same as the memory cell, but this notation is used as these will differ for other models, e.g., LSTM <span class="math display">\[c^{&lt;t&gt;} = a_{&lt;t&gt;}\]</span></li>
+<li>At each time step, consider overriding memory cell with the candidate memory cell based on the value of the gate
+<ul>
+<li>As the gate is a sigmoid function it will usually be practically zero or practically one</li>
+<li>If the gate function is 0, the memory cell <span class="math inline">\(c^{&lt;t&gt;}\)</span> remains the same as at <span class="math inline">\(t-1\)</span>, i.e., <span class="math inline">\(c^{&lt;t&gt;} = c^{&lt;t-1&gt;}\)</span>. If the gate function is 1, the memory cell is updated to the candidate value</li>
+</ul></li>
+<li>For example, if the cell <span class="math inline">\(c\)</span> captures concept of plural/singular, the gate would have a value of 1 at the <em>cat</em> token remain at zero until after a new noun captures after the word <em>was</em>.</li>
+<li>The dimensions of the memory cell <span class="math inline">\(c^{&lt;t&gt;}\)</span>, candidate memory cell <span class="math inline">\(\tilde{c}^{&lt;t&gt;}\)</span> and gate <span class="math inline">\(\Gamma_u\)</span> are the same.
+<ul>
+<li>So if all are 100-dimensional vector; most are zeros or ones and tells which are the bits you want to update. (in practice, may be in-between zero)</li>
+<li>The asterix is element-wise in the memory cell formula</li>
+<li>Different elements (bits) may be used for different concepts; i.e. one for singular/plural, another for the concept of food, etc.</li>
+</ul></li>
+</ul>
+<div class="figure">
+<img src="/img/recurrentNN/simplified_gru.png" alt="Simplified GRU" />
+<p class="caption">Simplified GRU</p>
+</div>
+<p>Full GRU</p>
+<ul>
+<li>Uses <span class="math inline">\(r\)</span> to measure the relevance of the current memory cell <span class="math inline">\(c^{&lt;t-1&gt;}\)</span> when calculating the candidate value $ ^{<t>}$</li>
+</ul>
+<p><span class="math display">\[\begin{aligned}
+    \text{Candidate Memory Cell:}\;\;\; &amp;   \tilde{c}^{&lt;t&gt;} &amp;&amp;= \tanh(\color{blue}{\Gamma_r} * W_c[c^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_c) \\
+    \text{Gate:}\;\;\;                &amp; \Gamma_u &amp;&amp;= \sigma(W_u[c^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_u\\
+    \color{blue}{\text{relevance:}}\;\;\;                &amp; \color{blue}{\Gamma_r} &amp;&amp;= \color{blue}{\sigma(W_r[c^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_r}\\
+    \text{Memory Cell:}\;\;\; &amp; c^{&lt;t&gt;} &amp;&amp;= \Gamma_u * \tilde{c}^{&lt;t&gt;} +  (1-\Gamma_u) c^{&lt;t-1&gt;}\\
+\end{aligned}\]</span></p>
+<ul>
+<li>Academic literature may use different notation, here used notation to be similar for GRU and LSTM
+<ul>
+<li>candidate memory cell <span class="math inline">\(\tilde{h}\)</span></li>
+<li>Gate <span class="math inline">\(u\)</span></li>
+<li>Relevance <span class="math inline">\(r\)</span></li>
+<li>Memory cell <span class="math inline">\(h\)</span></li>
+</ul></li>
+</ul>
+<p>LSTM</p>
+<ul>
+<li>another instantiations of the same idea</li>
+</ul>
 </div>
 <div id="long-short-term-memory-lstm" class="section level2">
 <h2>Long Short Term Memory (LSTM)</h2>
+<ul>
+<li>More powerful than GRU</li>
+<li>Recall GRU equations</li>
+</ul>
+<p><span class="math display">\[\begin{aligned}
+    \text{Candidate Memory Cell:}\;\;\; &amp;   \tilde{c}^{&lt;t&gt;} &amp;&amp;= \tanh(\Gamma_r * W_c[c^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_c) \\
+    \text{Update Gate:}\;\;\;                &amp; \Gamma_u &amp;&amp;= \sigma(W_u[c^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_u\\
+    \text{Relevance Gate:}\;\;\;                &amp; \Gamma_r &amp;&amp;= \sigma(W_r[c^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_r\\
+    \text{Memory Cell:}\;\;\; &amp; c^{&lt;t&gt;} &amp;&amp;= \Gamma_u * \tilde{c}^{&lt;t&gt;} +  (1-\Gamma_u) c^{&lt;t-1&gt;}\\
+    \text{Activation Value:}\;\;\; &amp; a^{&lt;t&gt;} &amp;&amp;= c^{&lt;t&gt;}
+\end{aligned}\]</span></p>
+<p>LSTM</p>
+<ul>
+<li>As, unlike for GRU, <span class="math inline">\(a^{&lt;t&gt;} \neq c^{&lt;t&gt;}\)</span>, and so memory cell explicitly references the activation value, rather than the memory cell</li>
+<li>Introduces a forget gate, which gives option of keeping old memory cell and adding to it.</li>
+<li>Introduces output gate</li>
+<li>So has three gates instead of two</li>
+</ul>
+<p><span class="math display">\[\begin{aligned}
+    \text{Candidate Memory Cell:}\;\;\; &amp;   \tilde{c}^{&lt;t&gt;} &amp;&amp;= \tanh(W_c[a^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_c) \\
+    \text{Update Gate:}\;\;\;                &amp; \Gamma_u &amp;&amp;= \sigma(W_u[a^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_u\\
+    \text{Forget Gate:}\;\;\;                &amp; \Gamma_f &amp;&amp;= \sigma(W_f[a^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_f\\
+    \text{Output Gate:}\;\;\;                &amp; \Gamma_o &amp;&amp;= \sigma(W_o[a^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_o\\
+    \text{Memory Cell:}\;\;\; &amp; c^{&lt;t&gt;} &amp;&amp;= \Gamma_u * \tilde{c}^{&lt;t&gt;} +  \Gamma_f c^{&lt;t-1&gt;}\\
+    \text{Activation Value:}\;\;\; &amp; a^{&lt;t&gt;} &amp;&amp;= \Gamma_o * \tanh c^{&lt;t&gt;}
+\end{aligned}\]</span></p>
+<div class="figure">
+<img src="/img/recurrentNN/LSTM.png" alt="LSTM" />
+<p class="caption">LSTM</p>
 </div>
-<div id="bidirectional-rnn" class="section level2">
-<h2>Bidirectional RNN</h2>
+<ul>
+<li><span class="math inline">\(a^{&lt;t-1&gt;}\)</span> and <span class="math inline">\(x^{&lt;t&gt;}\)</span> used to calculate all the gates (forget, update, output) and also go through the tanh to calculate <span class="math inline">\(\tilde{c}^{&lt;t&gt;}\)</span></li>
+</ul>
+<div class="figure">
+<img src="/img/recurrentNN/LSTM_network.png" alt="LSTM Network" />
+<p class="caption">LSTM Network</p>
+</div>
+<ul>
+<li>So long as you set forget and update gates appropriately, it is relatively easy for LSTM to have some value <span class="math inline">\(c^{&lt;0&gt;}\)</span> and have it passed all the way to the right so that <span class="math inline">\(c^{&lt;3&gt;} = c^{&lt;0&gt;}\)</span></li>
+</ul>
+<p>Variations</p>
+<ul>
+<li>Have gate values also dependent on <span class="math inline">\(c^{&lt;t-1&gt;}\)</span>, known as a <em>peephole connection</em>, e.g., for output gate: <span class="math display">\[\Gamma_o = \sigma(W_o[a^{&lt;t-1&gt;}, x^{&lt;t&gt;}, c^{&lt;t-1&gt;}] + b_o\]</span></li>
+</ul>
+<p>When to use GRU vs LSTM?</p>
+<ul>
+<li>LSTM became earlier than GRU (simplified version)</li>
+<li>Different problems, different algorithm will win</li>
+<li>Advantage of GRU is simpler and so easier to build bigger network (computationally faster and scales to building bigger models)</li>
+<li>LSTM more flexible/powerful (historically more proven choice, although GRU usage is gaining momentum)</li>
+</ul>
+</div>
+<div id="bidirectional-rnn-brnn" class="section level2">
+<h2>Bidirectional RNN (BRNN)</h2>
+<ul>
+<li>To take information earlier and later in sequence</li>
+<li>Inputs <span class="math inline">\(x^{&lt;1&gt;}, \ldots, x^{&lt;4&gt;}\)</span></li>
+<li>Forward recurrent components <span class="math inline">\(\overrightarrow{a}^{&lt;1&gt;}, \overrightarrow{a}^{&lt;2&gt;}, \overrightarrow{a}^{&lt;3&gt;}, \overrightarrow{a}^{&lt;4&gt;}\)</span></li>
+<li>Backward recurrent components <span class="math inline">\(\overleftarrow{a}^{&lt;4&gt;}, \overleftarrow{a}^{&lt;3&gt;}, \overleftarrow{a}^{&lt;2&gt;}, \overleftarrow{a}^{&lt;1&gt;}\)</span>. This is still forward prop.</li>
+<li>Predictions <span class="math inline">\(\hat{y}^{&lt;1&gt;}, \ldots, \hat{y}^{&lt;4&gt;}\)</span> where <span class="math display">\[\hat{y}^{&lt;t&gt;} = g(W_y[\overrightarrow{a}^{&lt;t&gt;}, \overleftarrow{a}^{&lt;t&gt;}] + b_y)\]</span></li>
+<li>Acyclic graph</li>
+<li>BRNN can be with LSTM blocks both forward and backwards. Similarly with GRU.</li>
+<li>Disadvantage: Need entire sequence of data before can make a prediction. Need to wait for person to stop talking, i.e. entire utterance. Where can get entire sentence at a time this standard BRNN is suitable.</li>
+</ul>
 </div>
 <div id="deep-rnns" class="section level2">
 <h2>Deep RNNs</h2>
+<div class="figure">
+<img src="/img/recurrentNN/deep_rnn.png" alt="Deep RNN" />
+<p class="caption">Deep RNN</p>
+</div>
+<ul>
+<li>May need to stack multiple layers of RNNs to build deeper RNNs</li>
+<li>Use <span class="math inline">\(a^{[\text{layer}]&lt;\text{time}&gt;}\)</span></li>
+<li>$a^{[2]&lt;3&gt;} = g(W_a^{[2]}[a^{[2]&lt;2&gt;}, a^{[1]&lt;3&gt;}] + b_a^{2}) $</li>
+<li>First layer has parameters <span class="math inline">\(W_a^{[1]}, b_a^{1}\)</span>; second layer has parameters <span class="math inline">\(W_a^{[2]}, b_a^{2}\)</span>, and so on</li>
+<li>Generally only have 3 recurrent layers (that is already pretty deep)</li>
+<li>The recurrent blocks amy be RNN, GRU, LSTM</li>
+<li>Sometimes have 3 recurrent layers, with additional non-connected layers on top</li>
+</ul>
+<div class="figure">
+<img src="/img/recurrentNN/deep_RNN_On_Steroids.png" alt="Deep RNN" />
+<p class="caption">Deep RNN</p>
+</div>
 </div>
 </div>
 <div id="week2" class="section level1">

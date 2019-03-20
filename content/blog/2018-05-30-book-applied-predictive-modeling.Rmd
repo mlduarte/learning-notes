@@ -3008,15 +3008,18 @@ Alternative cut-offs does not impact overall predictive effectiveness of the mod
     * To up-sample the minority class, SMOTE synthesises new data points based on its KNNs.  
     * Down-sampling based on random sampling
 
-**Warning re: Sampling Methods:** When using modified versions of the training set, resampled estimates of model performance can become biased, i.e., if data up-sampled, resampling procedures likely to have same sample in he cases that are used to build the model as well as the holdout set, leading to optimistic results.  Despite this, resampling methods can be effective at tuning the models.
+**Warning re: Sampling Methods:** When using modified versions of the training set, resampled estimates of model performance can become biased, i.e., if data up-sampled, resampling procedures likely to have same sample in the cases that are used to build the model as well as the holdout set, leading to optimistic results.  Despite this, resampling methods can be effective at tuning the models.
 
 **Findings re: Sampling Methods**: Sampling approaches have benefit of enabling better trade-offs between sensitivity and specificity.
 
 
 * **Cost-Sensitivty Training**:  instead of optimising accuracy/impurity, can instead optimise cost or loss function that deferentially weights specific types of errors.  By assigning higher cost to misrepresented true cases (false negatives) may bias model to under-represented class.  This method has the potential to make true improvements to classifier, rather than simply altering the cut-off to make trade-offs between sensitivity and specificity.  
 
-    * With SVM, can specify costs for specific classes.  In current implementation will not be able to perform ROC curve, instead use Kappa, sensitivity or specificity.  TODO check: apply cost to class not specific type of error.
-    * Many classification trees (CART and C5.0) can also incorporate differential costs.
+* With SVM, can specify costs for specific classes.  In current implementation will not be able to perform ROC curve, instead use Kappa, sensitivity or specificity.  TODO check: apply cost to class not specific type of error.
+* Many classification trees (CART and C5.0) can also incorporate differential costs.
+ 
+ 
+ 
  
  
  TODO: READ CH. 14   
@@ -3029,24 +3032,167 @@ Use $p_i$ as estimate of $Pr[j|i]$
 
 For given sample, classify into class 1 if  \frac{p_1}{p_2} > \frac{\pi}{}
 
-```{r loadTicdata}
+```{r getTicdata, eval=FALSE, include = FALSE}
 load("../../static/datasets/ticdata.rda")
 head(ticdata)
-```
-
-```{r formatTicdata}
-recodeLevels <- function(x)
-{
-    x <- as.numeric(x)
-    ## Add zeros to the text version:
-    x <- gsub(" ", "0",format(as.numeric(x)))
-    factor(x)
-}
 
 ## Find which columns are regular factors or ordered factors
 isOrdered <- unlist(lapply(ticdata, is.ordered))
 isFactor <- unlist(lapply(ticdata, is.factor))
 convertCols <- names(isOrdered)[isOrdered | isFactor]
+convertCols <- convertCols[convertCols != "CARAVAN"]
+
+for(i in convertCols) ticdata[,i] <- factor(gsub(" ", "0",format(as.numeric(ticdata[,i]))))
+
+ticdata$CARAVAN <- factor(as.character(ticdata$CARAVAN),
+                          levels = rev(levels(ticdata$CARAVAN)))
+
+### Split the data into three sets: training, test and evaluation. 
+library(caret)
+set.seed(156)
+split1 <- createDataPartition(ticdata$CARAVAN, p = .7)[[1]]
+other     <- ticdata[-split1,]
+training  <- ticdata[ split1,]
+
+set.seed(934)
+split2 <- createDataPartition(other$CARAVAN, p = 1/3)[[1]]
+evaluation  <- other[ split2,]
+testing     <- other[-split2,]
+
+predictors <- names(training)[names(training) != "CARAVAN"]
+
+testResults <- data.frame(CARAVAN = testing$CARAVAN)
+evalResults <- data.frame(CARAVAN = evaluation$CARAVAN)
+
+# Some algorithms cannot have more than a given number of factor levels; so convert to dummy variables
+trainingInd <- data.frame(model.matrix(CARAVAN ~ ., data = training))[,-1]
+evaluationInd <- data.frame(model.matrix(CARAVAN ~ ., data = evaluation))[,-1]
+testingInd <- data.frame(model.matrix(CARAVAN ~ ., data = testing))[,-1]
+
+trainingInd$CARAVAN <- training$CARAVAN
+evaluationInd$CARAVAN <- evaluation$CARAVAN
+testingInd$CARAVAN <- testing$CARAVAN
+
+isNZV <- nearZeroVar(trainingInd)
+noNZVSet <- names(trainingInd)[-isNZV]
+
+testResults <- data.frame(CARAVAN = testing$CARAVAN)
+evalResults <- data.frame(CARAVAN = evaluation$CARAVAN)
+```
+
+
+```{r runBaselineTicDataModels, eval=FALSE, include=FALSE}
+
+### These functions are used to measure performance
+fiveStats <- function(...) c(twoClassSummary(...), defaultSummary(...))
+fourStats <- function (data, lev = levels(data$obs), model = NULL)
+{
+
+  accKapp <- postResample(data[, "pred"], data[, "obs"])
+  out <- c(accKapp,
+           sensitivity(data[, "pred"], data[, "obs"], lev[1]),
+           specificity(data[, "pred"], data[, "obs"], lev[2]))
+  names(out)[3:4] <- c("Sens", "Spec")
+  out
+}
+
+ctrl <- trainControl(method = "cv",
+                     classProbs = TRUE,
+                     summaryFunction = fiveStats)
+
+ctrlNoProb <- ctrl
+ctrlNoProb$summaryFunction <- fourStats
+ctrlNoProb$classProbs <- FALSE
+
+
+# Random Forest
+set.seed(1410) # 8 minutes
+start <- Sys.time()
+rfFit <- train(CARAVAN ~ ., data = trainingInd,
+               method = "rf",
+               trControl = trainControl(method = "none", classProbs = TRUE, summaryFunction = fiveStats), #ctrl,
+               ntree = 500, #1500
+               tuneLength = 1, #5
+               metric = "ROC")
+Sys.time() - start
+rfFit
+
+start <- Sys.time() # 3.8 minutes
+rfModel <- randomForest(trainingInd[,1:ncol(trainingInd)-1], trainingInd[,ncol(trainingInd)])
+Sys.time() - start
+
+
+evalResults$RF <- predict(rfFit, evaluationInd, type = "prob")[,1]
+testResults$RF <- predict(rfFit, testingInd, type = "prob")[,1]
+rfROC <- roc(evalResults$CARAVAN, evalResults$RF,
+             levels = rev(levels(evalResults$CARAVAN)))
+rfROC
+
+library(pROC)
+rfEvalCM <- confusionMatrix(predict(rfFit, evaluationInd), evalResults$CARAVAN)
+rfEvalCM
+
+# Logistic Regression
+set.seed(1410)
+lrFit <- train(CARAVAN ~ .,
+               data = trainingInd[, noNZVSet],
+               method = "glm",
+               trControl = ctrl,
+               metric = "ROC")
+lrFit
+
+evalResults$LogReg <- predict(lrFit, evaluationInd[, noNZVSet], type = "prob")[,1]
+testResults$LogReg <- predict(lrFit, testingInd[, noNZVSet], type = "prob")[,1]
+lrROC <- roc(evalResults$CARAVAN, evalResults$LogReg,
+             levels = rev(levels(evalResults$CARAVAN)))
+lrROC
+
+lrEvalCM <- confusionMatrix(predict(lrFit, evaluationInd), evalResults$CARAVAN)
+lrEvalCM
+
+# Flexible Discriminant Analaysis
+set.seed(1401)
+fdaFit <- train(CARAVAN ~ ., data = training,
+                method = "fda",
+                tuneGrid = data.frame(degree = 1, nprune = 1:25),
+                metric = "ROC",
+                trControl = ctrl)
+# fdaFit
+# 
+# evalResults$FDA <- predict(fdaFit, evaluation[, predictors], type = "prob")[,1]
+# testResults$FDA <- predict(fdaFit, testing[, predictors], type = "prob")[,1]
+# fdaROC <- roc(evalResults$CARAVAN, evalResults$FDA,
+#               levels = rev(levels(evalResults$CARAVAN)))
+# fdaROC
+# 
+# fdaEvalCM <- confusionMatrix(predict(fdaFit, evaluation[, predictors]), evalResults$CARAVAN)
+# fdaEvalCM
+
+
+# Summarise Baseline Models
+labs <- c(RF = "Random Forest", LogReg = "Logistic Regression")
+          #,          FDA = "FDA (MARS)")
+lift1 <- caret::lift(CARAVAN ~ RF + LogReg , data = evalResults, labels = labs)
+
+plotTheme <- caretTheme()
+
+#plot(fdaROC, type = "S", col = plotTheme$superpose.line$col[3], legacy.axes = TRUE)
+plot(rfROC, type = "S", col = plotTheme$superpose.line$col[1], legacy.axes = TRUE)
+plot(lrROC, type = "S", col = plotTheme$superpose.line$col[2], add = TRUE, legacy.axes = TRUE)
+legend(.7, .25,
+       c("Random Forest", "Logistic Regression"),
+       cex = .85,
+       col = plotTheme$superpose.line$col[1:3],
+       lwd = rep(2, 3),
+       lty = rep(1, 3))
+
+xyplot(lift1,
+       ylab = "%Events Found",
+       xlab =  "%Customers Evaluated",
+       lwd = 2,
+       type = "l")
+
+
 
 ```
 

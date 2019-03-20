@@ -2928,117 +2928,17 @@ see <a href="http://uc-r.github.io/mars" class="uri">http://uc-r.github.io/mars<
 <li>Down-sampling based on random sampling</li>
 </ul></li>
 </ul>
-<p><strong>Warning re: Sampling Methods:</strong> When using modified versions of the training set, resampled estimates of model performance can become biased, i.e., if data up-sampled, resampling procedures likely to have same sample in he cases that are used to build the model as well as the holdout set, leading to optimistic results. Despite this, resampling methods can be effective at tuning the models.</p>
+<p><strong>Warning re: Sampling Methods:</strong> When using modified versions of the training set, resampled estimates of model performance can become biased, i.e., if data up-sampled, resampling procedures likely to have same sample in the cases that are used to build the model as well as the holdout set, leading to optimistic results. Despite this, resampling methods can be effective at tuning the models.</p>
 <p><strong>Findings re: Sampling Methods</strong>: Sampling approaches have benefit of enabling better trade-offs between sensitivity and specificity.</p>
 <ul>
-<li><p><strong>Cost-Sensitivty Training</strong>: instead of optimising accuracy/impurity, can instead optimise cost or loss function that deferentially weights specific types of errors. By assigning higher cost to misrepresented true cases (false negatives) may bias model to under-represented class. This method has the potential to make true improvements to classifier, rather than simply altering the cut-off to make trade-offs between sensitivity and specificity.</p>
-<ul>
+<li><p><strong>Cost-Sensitivty Training</strong>: instead of optimising accuracy/impurity, can instead optimise cost or loss function that deferentially weights specific types of errors. By assigning higher cost to misrepresented true cases (false negatives) may bias model to under-represented class. This method has the potential to make true improvements to classifier, rather than simply altering the cut-off to make trade-offs between sensitivity and specificity.</p></li>
 <li>With SVM, can specify costs for specific classes. In current implementation will not be able to perform ROC curve, instead use Kappa, sensitivity or specificity. TODO check: apply cost to class not specific type of error.</li>
-<li>Many classification trees (CART and C5.0) can also incorporate differential costs.</li>
-</ul></li>
+<li><p>Many classification trees (CART and C5.0) can also incorporate differential costs.</p></li>
 </ul>
 <p>TODO: READ CH. 14<br />
 <span class="math inline">\(\text{Pr(misclassification)} = Pr[2|1]\pi_1 + Pr[1|2]\pi_2\)</span> where * <span class="math inline">\(pi_i\)</span> = prior probability of sample being in class <span class="math inline">\(i\)</span> * $Pr[j|i] = probability of mistakenly predicting a class <span class="math inline">\(i\)</span> as class <span class="math inline">\(j\)</span>.</p>
 <p>Use <span class="math inline">\(p_i\)</span> as estimate of <span class="math inline">\(Pr[j|i]\)</span></p>
 <p>For given sample, classify into class 1 if  &gt; </p>
-<pre class="r"><code>load(&quot;../../static/datasets/ticdata.rda&quot;)
-head(ticdata)</code></pre>
-<pre><code>##                        STYPE MAANTHUI MGEMOMV MGEMLEEF
-## 1 Lower class large families        1       3    30-40
-## 2  Mixed small town dwellers        1       2    30-40
-## 3  Mixed small town dwellers        1       2    30-40
-## 4  Modern, complete families        1       3    40-50
-## 5         Large family farms        1       4    30-40
-## 6           Young and rising        1       2    20-30
-##                MOSHOOFD   MGODRK   MGODPR   MGODOV   MGODGE   MRELGE
-## 1 Family with grown ups       0% 50 - 62%  1 - 10% 24 - 36% 76 - 88%
-## 2 Family with grown ups  1 - 10% 37 - 49%  1 - 10% 37 - 49% 63 - 75%
-## 3 Family with grown ups       0% 37 - 49% 11 - 23% 37 - 49% 24 - 36%
-## 4        Average Family 11 - 23% 24 - 36% 11 - 23% 37 - 49% 50 - 62%
-## 5               Farmers  1 - 10% 37 - 49%  1 - 10% 37 - 49% 76 - 88%
-## 6           Living well       0% 50 - 62%       0% 50 - 62%       0%
-##     MRELSA   MRELOV MFALLEEN MFGEKIND MFWEKIND MOPLHOOG MOPLMIDD MOPLLAAG
-## 1       0% 11 - 23%  1 - 10% 11 - 23% 63 - 75%  1 - 10% 11 - 23% 76 - 88%
-## 2 11 - 23% 11 - 23%       0% 37 - 49% 50 - 62%       0% 50 - 62% 37 - 49%
-## 3 11 - 23% 37 - 49% 37 - 49% 37 - 49% 11 - 23%       0% 50 - 62% 37 - 49%
-## 4 11 - 23% 11 - 23% 11 - 23% 24 - 36% 37 - 49% 24 - 36% 37 - 49% 11 - 23%
-## 5  1 - 10% 11 - 23% 11 - 23% 37 - 49% 37 - 49% 50 - 62% 37 - 49%       0%
-## 6 63 - 75% 24 - 36% 24 - 36% 50 - 62% 11 - 23%       0% 50 - 62% 37 - 49%
-##   MBERHOOG MBERZELF MBERBOER MBERMIDD MBERARBG MBERARBO     MSKA    MSKB1
-## 1  1 - 10%       0%  1 - 10% 11 - 23% 50 - 62% 11 - 23%  1 - 10%  1 - 10%
-## 2       0%       0%       0% 50 - 62%       0% 37 - 49%       0% 11 - 23%
-## 3       0%       0%       0% 76 - 88%       0% 11 - 23%       0% 50 - 62%
-## 4 37 - 49%       0%       0% 24 - 36%  1 - 10% 11 - 23% 24 - 36% 11 - 23%
-## 5       0% 50 - 62% 37 - 49%       0%       0%       0%     100%       0%
-## 6 11 - 23%       0%       0% 37 - 49% 11 - 23% 11 - 23% 11 - 23% 11 - 23%
-##      MSKB2     MSKC     MSKD   MHHUUR   MHKOOP    MAUT1    MAUT2    MAUT0
-## 1 11 - 23% 63 - 75%  1 - 10%  1 - 10% 89 - 99% 89 - 99%       0%  1 - 10%
-## 2 24 - 36% 50 - 62%       0% 11 - 23% 76 - 88% 76 - 88%  1 - 10% 11 - 23%
-## 3       0% 37 - 49%       0% 76 - 88% 11 - 23% 76 - 88%       0% 11 - 23%
-## 4  1 - 10% 37 - 49%       0% 50 - 62% 37 - 49%     100%       0%       0%
-## 5       0%       0%       0% 37 - 49% 50 - 62% 63 - 75% 11 - 23%  1 - 10%
-## 6 11 - 23% 37 - 49% 11 - 23%     100%       0% 50 - 62% 24 - 36% 24 - 36%
-##    MZFONDS   MZPART  MINKM30 MINK3045 MINK4575 MINK7512 MINK123M  MINKGEM
-## 1 89 - 99%  1 - 10%       0% 37 - 49% 50 - 62%       0%       0% 37 - 49%
-## 2 63 - 75% 24 - 36% 11 - 23%       0% 50 - 62% 11 - 23%       0% 50 - 62%
-## 3     100%       0% 37 - 49% 50 - 62%       0%       0%       0% 24 - 36%
-## 4 76 - 88% 11 - 23%  1 - 10% 50 - 62% 24 - 36%       0%       0% 37 - 49%
-## 5 50 - 62% 37 - 49%       0%       0%     100%       0%       0% 63 - 75%
-## 6     100%       0% 50 - 62% 11 - 23% 24 - 36%       0%       0% 24 - 36%
-##   MKOOPKLA PWAPART PWABEDR PWALAND    PPERSAUT PBESAUT PMOTSCO AAUT
-## 1 24 - 36%     f 0     f 0     f 0 f 1000-4999     f 0     f 0  f 0
-## 2 37 - 49% f 50-99     f 0     f 0         f 0     f 0     f 0  f 0
-## 3 37 - 49% f 50-99     f 0     f 0 f 1000-4999     f 0     f 0  f 0
-## 4 37 - 49%     f 0     f 0     f 0 f 1000-4999     f 0     f 0  f 0
-## 5 24 - 36%     f 0     f 0     f 0         f 0     f 0     f 0  f 0
-## 6 24 - 36%     f 0     f 0     f 0 f 1000-4999     f 0     f 0  f 0
-##   PAANHANG PTRACTOR PWERKT PBROM PLEVEN PPERSONG PGEZONG PWAOREG
-## 1      f 0      f 0    f 0   f 0    f 0      f 0     f 0     f 0
-## 2      f 0      f 0    f 0   f 0    f 0      f 0     f 0     f 0
-## 3      f 0      f 0    f 0   f 0    f 0      f 0     f 0     f 0
-## 4      f 0      f 0    f 0   f 0    f 0      f 0     f 0     f 0
-## 5      f 0      f 0    f 0   f 0    f 0      f 0     f 0     f 0
-## 6      f 0      f 0    f 0   f 0    f 0      f 0     f 0     f 0
-##        PBRAND PZEILPL PPLEZIER PFIETS PINBOED PBYSTAND AWAPART AWABEDR
-## 1   f 500-999     f 0      f 0    f 0     f 0      f 0       0       0
-## 2     f 50-99     f 0      f 0    f 0     f 0      f 0       2       0
-## 3     f 50-99     f 0      f 0    f 0     f 0      f 0       1       0
-## 4     f 50-99     f 0      f 0    f 0     f 0      f 0       0       0
-## 5 f 1000-4999     f 0      f 0    f 0     f 0      f 0       0       0
-## 6         f 0     f 0      f 0    f 0     f 0      f 0       0       0
-##   AWALAND APERSAUT ABESAUT AMOTSCO AVRAAUT AAANHANG ATRACTOR AWERKT ABROM
-## 1       0        1       0       0       0        0        0      0     0
-## 2       0        0       0       0       0        0        0      0     0
-## 3       0        1       0       0       0        0        0      0     0
-## 4       0        1       0       0       0        0        0      0     0
-## 5       0        0       0       0       0        0        0      0     0
-## 6       0        1       0       0       0        0        0      0     0
-##   ALEVEN APERSONG AGEZONG AWAOREG ABRAND AZEILPL APLEZIER AFIETS AINBOED
-## 1      0        0       0       0      1       0        0      0       0
-## 2      0        0       0       0      1       0        0      0       0
-## 3      0        0       0       0      1       0        0      0       0
-## 4      0        0       0       0      1       0        0      0       0
-## 5      0        0       0       0      1       0        0      0       0
-## 6      0        0       0       0      0       0        0      0       0
-##   ABYSTAND     CARAVAN
-## 1        0 noinsurance
-## 2        0 noinsurance
-## 3        0 noinsurance
-## 4        0 noinsurance
-## 5        0 noinsurance
-## 6        0 noinsurance</code></pre>
-<pre class="r"><code>recodeLevels &lt;- function(x)
-{
-    x &lt;- as.numeric(x)
-    ## Add zeros to the text version:
-    x &lt;- gsub(&quot; &quot;, &quot;0&quot;,format(as.numeric(x)))
-    factor(x)
-}
-
-## Find which columns are regular factors or ordered factors
-isOrdered &lt;- unlist(lapply(ticdata, is.ordered))
-isFactor &lt;- unlist(lapply(ticdata, is.factor))
-convertCols &lt;- names(isOrdered)[isOrdered | isFactor]</code></pre>
 </div>
 </div>
 <div id="new-r-commands" class="section level1">

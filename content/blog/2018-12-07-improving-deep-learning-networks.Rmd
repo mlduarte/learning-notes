@@ -277,7 +277,7 @@ Normalisation is done because:
 
 Normalisation not so important when features on similar scales; but normalisation won't hurt so may as well do.
 
-### Vanishing/exploding gradients
+### Vanishing/exploding gradients{#vanishing}
 
 Problem with training deep NN is vanishing/exploding gradients - slopes can get very very big or very very small which makes training small.  
 

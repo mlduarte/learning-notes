@@ -50,5 +50,18 @@ banner: "img/banners/online_courses.jpg"
     + **Time to Complete**: 4 weeks of study, 3-6 hours a week  
     + **Comments**: Clear explanations and spoon-fed assignments.    
     
+* **[Improving Deep Neural Networks: Hyperparameter tuning, Regularization and Optimization (Course 2 Deep Learning Specialisation)](https://www.coursera.org/learn/deep-neural-network)** by Coursera
+    + **Cost**: Free to audit
+    + **Topics**: Initialization, L2 and dropout regularization, Batch normalization, gradient checking.
+Optimization algorithms: mini-batch gradient descent, Momentum, RMSprop and Adam.  TensorFlow. 
+    + **Programming Language**: Python
+    + **Time to Complete**: 3 weeks, 3-6 hours per week   
+    
+* **[Structuring Machine Learning Projects (Course 3 Deep Learning Specialisation)](https://www.coursera.org/learn/machine-learning-projects)** by Coursera
+    + **Cost**: Free to audit
+    + **Topics**: How to build a successful machine learning project
+    + **Programming Language**: Python
+    + **Time to Complete**: 2 weeks of study, 3-4 hours/week         
+    
     
 Credits: I borrowed the layout of this page from [Amber Thomas](http://amber.rbind.io/blog/2016/12/17/dscourses/)

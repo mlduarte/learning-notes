@@ -3,10 +3,14 @@ title: Coursera Deep Learning Specialisation
 author: ''
 date: '2018-10-15'
 slug: coursera-deep-learning-specialisation
-categories: []
-tags: []
+categories: [Study-Notes]
+tags: 
+- Coursera
+- Study-Notes
 banner: img/banners/DLS.png
 ---
+
+
 
 Note: Quizzes and notebooks have not been uploaded to GitHub in order to comply with the honor code.
 
@@ -66,6 +70,8 @@ Note: Quizzes and notebooks have not been uploaded to GitHub in order to comply 
 
 * Course 5: Sequence models
     * Week 1: Recurrent neural networks
+        * [Study notes](/blog/2019/03/04/2019-03-04-sequence-models#week1)
     * Week 2: Natural language processing and word embeddings
+        * [Study notes](/blog/2019/03/04/2019-03-04-sequence-models#week2)
     * Week 3: Sequence models and attention mechanism
-    
+        * [Study notes](/blog/2019/03/04/2019-03-04-sequence-models#week3)
