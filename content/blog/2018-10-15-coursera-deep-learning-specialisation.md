@@ -1,7 +1,7 @@
 ---
 title: Coursera Deep Learning Specialisation
 author: ''
-date: '2018-10-15'
+date: '2018-10-15T13:39:46+02:00'
 slug: coursera-deep-learning-specialisation
 categories: [Study-Notes]
 tags: 

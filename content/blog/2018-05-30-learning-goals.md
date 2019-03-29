@@ -1,7 +1,7 @@
 ---
 title: Learning Goals
 author: Marie
-date: '2018-05-30'
+date: 2018-05-30T13:39:46+02:00
 slug: learning-goals
 categories: [My-Learning-Path]
 tags: []

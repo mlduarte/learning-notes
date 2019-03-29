@@ -1,7 +1,7 @@
 ---
 title: Linear Algebra Recap
 author: ''
-date: '2018-06-20'
+date: '2018-06-20T13:39:46+02:00'
 slug: linear-algebra-recap
 banner: "img/banners/linear_algebra.png"
 categories:

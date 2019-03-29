@@ -1,7 +1,7 @@
 ---
 title: Sequence Models
 author: ''
-date: '2019-03-04'
+date: 2019-03-04T13:39:46+02:00
 slug: sequence-models
 categories: [Study-Notes]
 tags: 
@@ -9,6 +9,7 @@ tags:
 - Study-Notes
 banner: img/banners/sequenceNN.png
 ---
+
 
 # Recurrent Neural Networks {#week1}
 

@@ -1,7 +1,7 @@
 ---
 title: Improving Deep Learning Networks
 author: ''
-date: '2018-12-07'
+date: 2018-12-07T13:39:46+02:00
 slug: improving-deep-learning-networks
 categories: [Study-Notes]
 tags: 

@@ -1,7 +1,7 @@
 ---
 title: 'Book: Using Multivariate Statistics'
 author: Marie
-date: '2018-06-11'
+date: 2018-06-11T13:39:46+02:00
 slug: book-using-multivariate-statistics
 banner: "img/banners/tabachnick.png"
 categories:
