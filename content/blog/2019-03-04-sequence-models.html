@@ -209,16 +209,16 @@ a^{&lt;t&gt;}         &amp;= g(W_{aa} a^{&lt;t-1&gt;} + W_{ax} x^{&lt;t&gt;} + b
 <ul>
 <li>Many-to-many, <span class="math inline">\(T_x, T_y &gt; 1\)</span>.
 <ul>
-<li><span class="math inline">\(T_x = T_y\)</span>; as per motivating example above <img src="/img/recurrentNN/architecture_many_to_many_same.png" alt="Many to many, same" /><br />
+<li><span class="math inline">\(T_x = T_y\)</span>; as per motivating example above </br> <img src="/img/recurrentNN/architecture_many_to_many_same.png" alt="Many to many, same" /><br />
 </li>
-<li><span class="math inline">\(T_x \neq T_y\)</span>, e.g machine translation, “como estas” <span class="math inline">\(\rightarrow\)</span> “how are you” <img src="/img/recurrentNN/architecture_many_to_many_diff.png" alt="Many to many, same" /><br />
+<li><span class="math inline">\(T_x \neq T_y\)</span>, e.g machine translation, “como estas” <span class="math inline">\(\rightarrow\)</span> “how are you”</br> <img src="/img/recurrentNN/architecture_many_to_many_diff.png" alt="Many to many, same" /><br />
 </li>
 </ul></li>
-<li>Many-to-one, e.g. output 0 or 1 (or a rating from 1 to 5) to indicate sentiment from sentence <img src="/img/recurrentNN/architecture_many_to_one.png" alt="Many to one" /><br />
+<li>Many-to-one, e.g. output 0 or 1 (or a rating from 1 to 5) to indicate sentiment from sentence</br> <img src="/img/recurrentNN/architecture_many_to_one.png" alt="Many to one" /><br />
 </li>
-<li>One-to-many, e.g. music generation where goal is to output set of notes from input such as genre <img src="/img/recurrentNN/architecture_one_to_many.png" alt="One to Many" /><br />
+<li>One-to-many, e.g. music generation where goal is to output set of notes from input such as genre</br> <img src="/img/recurrentNN/architecture_one_to_many.png" alt="One to Many" /><br />
 </li>
-<li>One-to-one (standard) <img src="/img/recurrentNN/architecture_one_to_one.png" alt="One to One" /><br />
+<li>One-to-one (standard)</br> <img src="/img/recurrentNN/architecture_one_to_one.png" alt="One to One" /><br />
 </li>
 <li>attention-based (to discuss later)</li>
 </ul>
@@ -306,7 +306,7 @@ a^{&lt;t&gt;}         &amp;= g(W_{aa} a^{&lt;t-1&gt;} + W_{ax} x^{&lt;t&gt;} + b
 <h2>Gated Recurrent Unit (GRU)</h2>
 <ul>
 <li>Better than basic RNN at capturing long range connections and helps with vanishing gradient problems</li>
-<li>Recall formula for activation at time <span class="math inline">\(t\)</span>, $a^{<t>} = g(W_{aa} a^{<t-1>} + W_{ax} x^{<t>} + b_a) $
+<li>Recall formula for activation at time <span class="math inline">\(t\)</span>, <span class="math display">\[a^{&lt;t&gt;}  = g(W_{aa} a^{&lt;t-1&gt;} + W_{ax} x^{&lt;t&gt;} + b_a)\]</span>
 <ul>
 <li>activation from last time step</li>
 <li>Input token</li>
@@ -325,8 +325,8 @@ a^{&lt;t&gt;}         &amp;= g(W_{aa} a^{&lt;t-1&gt;} + W_{ax} x^{&lt;t&gt;} + b
     \text{Memory Cell:} &amp; c^{&lt;t&gt;} &amp;= \Gamma_u \tilde{c}^{&lt;t&gt;} +  (1-\Gamma_u) c^{&lt;t-1&gt;}\\
 \end{aligned}\]</span></p>
 <ul>
-<li>Use <span class="math inline">\(c\)</span> for memory __c__ell</li>
-<li>The GRU will output an activation that is the same as the memory cell, but this notation is used as these will differ for other models, e.g., LSTM <span class="math display">\[c^{&lt;t&gt;} = a_{&lt;t&gt;}\]</span></li>
+<li>Use <span class="math inline">\(c\)</span> for memory _c_ell</li>
+<li>The GRU will output an activation that is the same as the memory cell, but this notation is used as these will differ for other models, e.g., LSTM <span class="math display">\[c^{&lt;t&gt;} = a^{&lt;t&gt;}\]</span></li>
 <li>At each time step, consider overriding memory cell with the candidate memory cell based on the value of the gate
 <ul>
 <li>As the gate is a sigmoid function it will usually be practically zero or practically one</li>
@@ -346,7 +346,7 @@ a^{&lt;t&gt;}         &amp;= g(W_{aa} a^{&lt;t-1&gt;} + W_{ax} x^{&lt;t&gt;} + b
 </div>
 <p>Full GRU</p>
 <ul>
-<li>Uses <span class="math inline">\(r\)</span> to measure the relevance of the current memory cell <span class="math inline">\(c^{&lt;t-1&gt;}\)</span> when calculating the candidate value $ ^{<t>}$</li>
+<li>Uses <span class="math inline">\(r\)</span> to measure the relevance of the current memory cell <span class="math inline">\(c^{&lt;t-1&gt;}\)</span> when calculating the candidate value <span class="math inline">\(\tilde{c}^{&lt;t&gt;}\)</span></li>
 </ul>
 <p><span class="math display">\[\begin{aligned}
     \text{Candidate Memory Cell:}\;\;\; &amp;   \tilde{c}^{&lt;t&gt;} &amp;&amp;= \tanh(\color{blue}{\Gamma_r} * W_c[c^{&lt;t-1&gt;}, x^{&lt;t&gt;}] + b_c) \\

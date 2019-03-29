@@ -163,15 +163,15 @@ Note:
 Wider range of RNN architectures, e.g. when output $T_x \neq T_y$ input sequence length
 
 * Many-to-many, $T_x,  T_y > 1$.  
-    * $T_x = T_y$; as per motivating example above
+    * $T_x = T_y$; as per motivating example above </br>
     ![Many to many, same](/img/recurrentNN/architecture_many_to_many_same.png)   
-    * $T_x \neq T_y$, e.g machine translation, "como estas" $\rightarrow$ "how are you"
+    * $T_x \neq T_y$, e.g machine translation, "como estas" $\rightarrow$ "how are you"</br>
     ![Many to many, same](/img/recurrentNN/architecture_many_to_many_diff.png)   
-* Many-to-one, e.g. output 0 or 1 (or a rating from 1 to 5) to indicate sentiment from sentence
+* Many-to-one, e.g. output 0 or 1 (or a rating from 1 to 5) to indicate sentiment from sentence</br>
 ![Many to one](/img/recurrentNN/architecture_many_to_one.png)   
-* One-to-many, e.g. music generation where goal is to output set of notes from input such as genre
+* One-to-many, e.g. music generation where goal is to output set of notes from input such as genre</br>
 ![One to Many](/img/recurrentNN/architecture_one_to_many.png)   
-* One-to-one (standard)
+* One-to-one (standard)</br>
 ![One to One](/img/recurrentNN/architecture_one_to_one.png)  
 * attention-based (to discuss later)
 
@@ -251,7 +251,7 @@ See [Improving Deep Learning Networks](/blog/2018/12/07/2018-12-07-improving-dee
 ## Gated Recurrent Unit (GRU)
 
 * Better than basic RNN at capturing long range connections and helps with vanishing gradient problems
-* Recall formula for activation at time $t$, $a^{<t>}  = g(W_{aa} a^{<t-1>} + W_{ax} x^{<t>} + b_a) $
+* Recall formula for activation at time $t$, \[a^{<t>}  = g(W_{aa} a^{<t-1>} + W_{ax} x^{<t>} + b_a)\]
     * activation from last time step
     * Input token
     * g could be tahn activation function
@@ -268,9 +268,9 @@ $$\begin{aligned}
     \text{Memory Cell:} & c^{<t>} &= \Gamma_u \tilde{c}^{<t>} +  (1-\Gamma_u) c^{<t-1>}\\
 \end{aligned}$$
 
-* Use $c$ for memory __c__ell
+* Use $c$ for memory _c_ell
 * The GRU will output an activation that is the same as the memory cell, but this notation is used as these will differ for other models, e.g., LSTM
-\[c^{<t>} = a_{<t>}\]
+\[c^{<t>} = a^{<t>}\]
 * At each time step, consider overriding memory cell with the candidate memory cell based on the value of the gate
     * As the gate is a sigmoid function it will usually be practically zero or practically one
     * If the gate function is 0, the memory cell $c^{<t>}$ remains the same as at $t-1$, i.e.,  $c^{<t>} =  c^{<t-1>}$.  If the gate function is 1, the memory cell is updated to the candidate value
@@ -284,7 +284,7 @@ $$\begin{aligned}
 
 Full GRU
 
-* Uses $r$ to measure the relevance of the current memory cell $c^{<t-1>}$ when calculating the candidate value $ \tilde{c}^{<t>}$
+* Uses $r$ to measure the relevance of the current memory cell $c^{<t-1>}$ when calculating the candidate value $\tilde{c}^{<t>}$
 
 $$\begin{aligned}
     \text{Candidate Memory Cell:}\;\;\; &   \tilde{c}^{<t>} &&= \tanh(\color{blue}{\Gamma_r} * W_c[c^{<t-1>}, x^{<t>}] + b_c) \\
