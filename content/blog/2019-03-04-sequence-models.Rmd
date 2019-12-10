@@ -382,15 +382,286 @@ When to use GRU vs LSTM?
 
 ![Deep RNN](/img/recurrentNN/deep_RNN_On_Steroids.png) 
 
-# Natural Language Processing and Word Embeddings {#week2}
+# Introduction to Word Embeddings {#week2}
+
 ## Word Representation
+### 1-Hot Representation
+1-hot representation: all zeros, with 1 for word.  Use $O_{i}$ to represent 1-hot vector of zeros with a 1 at position $i$
+
+Weakness:
+
+* Each word treated as a thing (and doesn't allow algorithm to generalise across words)
+* E.g. algorithm could learn that I want a glass of orange __juice__ as a likely sentence, but it won't be able to generalise that apple juice is a popular phrase
+* Inner product of King-Queen is zero and of Apple-Orange is also zero.  I.e. doesn't know that orange-apple are more similar than orange-king
+
+### Word embedding
+Featurised representation; learn set of features for each word
+
+Feature | Man | Woman | King | Queen | Apple | Orange
+--------| ----| ------| -----| ------| ------| ------
+1-Hot Position | (5391) | (9853) | (4914) | (7157) | (456) | (657)
+Gender  | -1 | 1 | -0.95 | 0 | 0
+Royal | 0.01 | 0.02 | 0.93 | 0.95 | -0.01 | 0.01
+Age | 0.03 | 0.02 | 0.7 | 0.69 | 0.03 | -0.02
+Food | 0.09 | 0.01 | 0.02 | 0.01 | 9.95 | 0.97
+
+Other features may include size, cost, colour...
+
+Consider that there are 300 features, then use $e_{5391}$ to represent the 300-dimensional embedding vector for man.
+
+You will notice that the embedding vectors for apple and orange to be similar, this will allow a algorithm that has learnt that orange juice to then know that apple juice is also a thing.
+
+The components within the embedding vectors will not be easy to determine that they correspond to for example, gender, royal, etc. but the embedding vectors do help the algorithm.
+
+#### Visualising word embeddings
+
+t-SNE algorithm can be used to convert the 300 dimensional embedding for each word to a 2D space so that can visualise and show that word embedding algorithms can learn similar features for related concepts/words.  The 300dimensional vectors are known as embeddings.
+
+E.g. Word orange gets embedded into a point in the 300D space and apple gets embedded into another point in the 300-d space.
+
 ## Using word embeddings
+
+
+How to plug embeddings into NLP applications.
+Example: Named entity recognition example to determine which words are person's names 
+
+Given the following  sentences:
+
+* Sally Johnson is an orange farmer
+* Robert Lin is an apple farmer
+* Harry James is a durian cultivator
+ 
+With word embeddings knowing that orange, apple and durian are fruit, and that farmer is like cultivator, if the NLP algorithm (named entity recognition) has learned that Sally Lin is a person, it can then deduce that Robert Lin and Harry James are also people.
+
+Algorithms to learn word embeddings can examine very large text corpus's (e.g. up to 100 billion words off Internet) so can know that durian is a fruit, cultivate is like a farmer (even though durian and cultivator might not be in NLP training set).  I.e. named entity recognition task might have a much smaller training set.  This is an example of transfer learning where you take information learned from large unlabelled data sets and transfer it to a named entity recognition task.
+
+
+### Transfer learning and word embeddings
+
+1. Learn word embeddings from large text corpus (1-100B words), or download pre-trained embedding online
+2.  Transfer embedding to a new task with smaller training set (say 100K).  Rather than using a 10,000 dimensional 1-hot vector can now use a lower-dimension, e.g. 300-dimensional dense  vector
+3.  Optional: Continue to fine-tune the word embeddings with new data (in practice would only do with a large data set for the NLP problem, i.e. task 3)
+
+Similar to transfer learning, most useful when have a tonne of data for task 1 and less for task 2.
+
+
+Embedding has been used for the following NLP tasks:
+
+* Named entity recognition
+* Text summarisation
+* Co-reference resolution
+* Parsing
+
+Embedding less useful for:
+
+* Language modelling machine translation
+
+### Relation to face encoding
+
+For face-recognition; the term encoding is similar to embedding (word).
+
+Difference:
+
+* For face recognition, input = any face picture (unlimited sea of pictures)
+* Learning word embedding, input= fixed vocabulary (limited sea of words) and learn $e_1, \ldots, e_{10,000}$ learn embedding.
+
 ## Properties of word embeddings
+
+Can help with analogy reasoning, Man $\rightarrow$ Woman as King $\rightarrow$ Queen.
+
+In above example, $e_\textrm{man} - e_\text{woman} \approx [-2 0 0 0]^T$.  Similarly,  $e_\textrm{king} - e_\text{queen} \approx [-2 0 0 0]^T$, i.e. main difference is gender.
+
+### Analogies using word vectors
+
+Man is to woman as king is to what: 
+$e_\textrm{man} - e_\text{woman} \approx e_\textrm{king} - ?$
+
+* Find word $w$ such that $\arg \max\limits_{w} \text{sim}(e_w, e_\text{king} - e_\textrm{man} - e_\text{woman})$
+
+Currently, get 30-75% accuracy on analogy where an analogy attempt is correct only if it guesses the exact right word.
+
+Clarification of t-SNE.
+
+* Mapping is very complex and non-linear
+* Cannot count on visualisation to show the parallels between words (this exists in the larger, e.g. 300-D, dimensional space)
+
+Similarity function:
+
+* Most commonly used is cosine similarity
+\[\text{sim}(u,v) = \frac{u^Tv}{||u||_2 ||v||_2}\]
+
+Ignoring the denominator, this is basically the inner product between $u$ and $v$. if very similar, the inner product will be large.  
+
+This is the cosine of the angle between the two vectors.  
+
+For angle $\phi$, then formula is cosine of angle.
+
+* If $\phi$ = 0, then $\cos \phi$ = 1
+* If $\phi$ = 90, then $\cos \phi$ = 0
+* if $\phi$ = 180, then  $\cos \phi$ = -1
+
+* Can also use Euclidean distance which is a technically a measure of dissimilarity, so would need to take negative \[||u - v||^2\]
+
+Word embeddings can learn:
+
+* Man:Woman as Boy:Girl
+* Ottawa:Canada as Nairobi:Kenya
+* Big:Bigger as Tall:Taller
+* Yen:Japan as Ruble:Russia
+
 ## Embedding matrix
+
+Algorithm to learn embedding results in embedding matrix.
+
+e.g. with 10,000 words and unknown token and 300 features, get 300 $\times$ 10,001 embedding matrix.
+
+Notation:
+
+* $O_j$ to denote the 1-hot vector with 0s with a 1 in position $j$.  This will be a 10,001 vector.  
+* $E$ for embedding matrix, e.g. dimension 300, 10001
+* $e_j$ = $E \centerdot O_j$ will be of dimension  (300,10001)(100001, 1) = (300,1) and so is grabbing the embedding vector for the word in position $j$.  This is the embedding vector for word $j$.
+* In practice, do not implement as matrix multiplication (inefficient), but rather use a specialised function to look up an embedding.  
+* In Keras, use Embedding layer
+
 ## Learning word embeddings
+
+Example: Building language model using a neural network, e.g. to predict the word in sentence _I want a glass of orange ...._
+
+Word: | I | want | a | glass | of | orange
+------| ----| -----| -----| -----|-----| ----------
+Dictionary Position: | 4343 | 9665 | 1 | 163 | 6257
+One hot vector: | $o_{4343}$ | $o_{9665}$ |$o_1$ |$o_{163}$ | $o_{6257}$
+Embedding vector: | $e_{4343}$ | $e_{9665}$ |$e_1$ |$e_{163}$ | $e_{6257}$
+
+
+* Feed embedding vector into NN which will feed to a softmax (with its own parameters) of 10,000.
+* May only wish to use the last 4 words, which would mean would input a 1200 dimensional layer (as opposed to 1800).
+* Use backprop to perform gradient descent to maximize the likelihood of your training set to  repeatedly predict the next word given four words in a sequence
+
+{EmbeddingMatrix.png}
+
+Note: Same matrix $E$ used regardless of position
+
+Contexts:
+
+* Last 4 words (to predict next word)
+* 4 words on left & right (to predict word in middle)
+* Last 1 word, predict next word (would feed in embedding of previous word)
+* Nearby 1 word; what is a word that will be near glass (skip gram model)
+
+Posing these contexts allow you to learn good word embeddings
+
 ## Word2Vec
+Simple method to learn word embeddings
+
+### Skip-grams model
+
+* Randomly pick a word to be the context word
+* Randomly pick a word within some window of the context word which will be the target word, e.g. 
+
+Context | Target
+-------| ---------
+orange | juice
+orange | glass
+orange | my
+
+Goal of setting up this supervised learning problem is not to predict words within an $x$-word window but to learn the embeddings. (so even if do not so well with the supervised learning problem, the output will be useful as an embedding!)
+
+Model:
+
+* Vocab size = 10,000
+* Goal: Learn mapping from context word $c$ to some target $t$, $o_c \rightarrow E \rightarrow e_c \rightarrow \text{Softmax} \rightarrow \hat{y}$
+* Context
+* Softmax: \[p(t|c) = \frac{e^{\theta_t^Te_c}}{\sum^{10,000}_{j=1}e^{\theta_j^T e_c} }\]
+
+where $\theta_t$ = parameter associated with output $t$.
+
+Noting that loss function is \[\mathcal{L}(\hat{y}, y) = -\sum^{10,000}_{i=1} y_i\log\hat{y}_i\]
+
+Problem = Computational speed: everytime you want to evaluate the probability, need to sum over all 10,000 words in vocabulary.  
+
+
+Solutions to speed up softmax classification:
+
+* Hierarchical softmax classifier: 1 classifier which says whether word is within 5,000 words, and then split, until you get to where it is.  scales to log vocab size, rather than linear.  Doesn't generally use equal words in each branch , typically most common words are up the top so that need only a few traversals for those.  Many algorithms exist to construct the tree.
+
+
+How to sample the context $c$?  
+
+* Sample randomly from training corpus, but there are some words such as the, of, a, and, to, $\ldots$ that occur frequently.  Then embedding will be updated many for those.
+* Heuristics exist to balance out sampling from common and less common words
+
+
+Two versions of Word2Vec algorithm within original paper: Skip-Gram and CBow
+
+
+
 ## Negative Sampling
+* Modified learning problem that allows you to do something similar to skip-gram with much more efficient learning algorithm (cf Softmax.
+*  Example sentence: _I want a glass of orange juice to go along with my cereal_
+* Sample context word, look around a window of $\pm$10 words
+* Choose random words from dictionary to get negative targets to get, e.g..
+
+Source| Context (c) | Word (t) | Target (y) 
+-------| -------| ------| --------
+$\pm 10$ word | orange | juice | 1
+dictionary | orange | king | 0
+dictionary | orange | book | 0
+dictionary | orange | the | 0
+dictionary | orange | of | 0
+$\vdots$ | $\vdots$ | $\vdots$ | $\vdots$ 
+$k$ |$k$ |$k$ |$k$ 
+
+
+Choose $k$ = 2-5 for larger data set and $k$ = 5-20 for smaller datasets.  In above example $k$ = 4 (i.e. number of words taken from dictionary)
+
+Recall, softmax: \[p(t|c) = \frac{e^{\theta_t^Te_c}}{\sum^{10,000}_{j=1}e^{\theta_j^T e_c} }\]
+
+Model as logistic model:
+\[P(y = 1|c,t) = \sigma (\theta_t^T, e_c)\]
+
+Training data:
+
+* $k$:1 negative:positive examples
+* If input word is orange (position 6257 in vocab), input one-hot vector pass through E and do multiplication to get embedding vector, i.e.
+  \[o_{6257} \rightarrow E \rightarrow e_{6257}\]
+  So have 10,000 possible logistic regression classification regression classifiers but only train $k + 1$  So instead of having one giant 10,000 way Softmax which is very expensive to compute, have turned it into 10,000 binary classification problems.  On every iteration we're only going to train $k + 1$ of them.  
+* Called negative sampling, because you have a positive example and generate negative examples for which to train $k$ additional binary classifiers.  
+  
+Sampling the negative words:
+  
+* Sample according to the empirical frequency of words in your corpus, $p(w_i)$ but again get high representation of words like the, of, and, etc.
+* Other extreme is to use $p(w_i) =  1/vocab size$, sample the negative examples uniformly at random
+* Middle ground: Take heuristic value of sampling between empirical and uniform, $p(w_i) = \frac{f(w_i)^{3/4}}{\sum^{10000}_{j=1}f(w_j)^{3/4}}$.  Not theoretically justified but seems to work well
+
+There are pre-trained word vectors and open source code.
+
+
+
 ## GloVe word vectors
+
+* Previously sampled pairs of words that appeared in close proximity to each other within the corpus
+* $c,t$: context, target
+* $x_{ij}$: number of times $i$ (the target, $t$) appears in context of $j$ (the context, $c$), i.e. how often two words appear close to each other
+* If within $\pm 10$, then $X_{ij} = X_{ji}$
+
+Model:
+
+* minimise 
+\[\sum^{10,000}_{i=1}\sum^{10,000}_{j=1} f(X_{ij}) (\theta^T_i e_j + b_i + b_j^\prime -\log X_{ij})^2\]
+
+* Solve $\theta$ and $e$ using gradient descent
+* Don't want to sum over terms where $X_{ij} = 0$, so use weighting term  $f(X_{ij}) = 0$ if $x_ij = 0$, assume $0 \log 0 = 0$.  It is also used to weight less common and more frequent words appropriately.  
+* Note that $\theta_i$ and $e_j$ are symmetric, so can 
+* Can initialise $\theta$ and $e$ 
+* For given word $w$ let $e_w^\text{final} = \frac{e_w + \theta_w}{2}$
+
+
+### Properties
+
+* Started with featurization view of word embeddings, but cannot guarantee that individual components of embedding are interpretable
+* Note that $(\theta^T_i e_j$ can be replaced by $(A \theta_i)^T(A^T e_j)$ where A is invertible. i.e. first component might be combination of gender, royal, age, etc. due to this linear transformation
+
 ## Sentiment Classification
 ## Debiasing word embeddings
 

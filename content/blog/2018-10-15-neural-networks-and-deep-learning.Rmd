@@ -10,10 +10,14 @@ tags:
 banner: "img/banners/NNandDL.png"
 ---
 
-```{r init, message=FALSE, warning=FALSE, echo = FALSE}
-require(tidyverse)
-require(latex2exp)
-require(reticulate)
+```{r init_nn_dl, message=FALSE, warning=FALSE, echo = FALSE}
+if (!requireNamespace("tidyverse")) install.packages("tidyverse") 
+library(tidyverse)
+
+if (!requireNamespace("latex2exp")) install.packages("latex2exp") 
+
+if (!requireNamespace("reticulate")) install.packages("reticulate") 
+library(reticulate)
 ```
 
 
@@ -187,8 +191,8 @@ data.frame(yhat = seq(0,1,0.001)) %>%
     mutate(cost = -log(yhat)) %>%
     ggplot(aes(yhat,cost)) + 
     geom_line() + 
-    xlab(TeX("$\\hat{y}$")) + 
-    ylab(TeX("$-\\log \\;\\hat{y}$"))
+    xlab(latex2exp::TeX("$\\hat{y}$")) + 
+    ylab(latex2exp::TeX("$-\\log \\;\\hat{y}$"))
 ```   
 
 if $y=0$, $\mathcal{L}(\hat{y}, y) = -\log(1-\hat{y})$
@@ -203,8 +207,8 @@ data.frame(yhat = seq(0,1,0.001)) %>%
     mutate(cost = -log(1-yhat)) %>%
     ggplot(aes(yhat,cost)) + 
     geom_line() + 
-    xlab(TeX("$\\hat{y}$")) + 
-    ylab(TeX("$-\\log \\;(1-\\hat{y})$"))
+    xlab(latex2exp::TeX("$\\hat{y}$")) + 
+    ylab(latex2exp::TeX("$-\\log \\;(1-\\hat{y})$"))
 ```
 
 

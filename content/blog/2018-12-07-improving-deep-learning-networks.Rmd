@@ -10,7 +10,7 @@ tags:
 banner: img/banners/improvingDNN.png
 ---
 
-```{r init, message=FALSE, warning=FALSE, echo = FALSE}
+```{r init_idln, message=FALSE, warning=FALSE, echo = FALSE}
 library(tidyverse)
 library(knitr)
 library(reticulate)

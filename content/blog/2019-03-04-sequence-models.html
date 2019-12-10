@@ -457,30 +457,403 @@ a^{&lt;t&gt;}         &amp;= g(W_{aa} a^{&lt;t-1&gt;} + W_{ax} x^{&lt;t&gt;} + b
 </div>
 </div>
 <div id="week2" class="section level1">
-<h1>Natural Language Processing and Word Embeddings</h1>
+<h1>Introduction to Word Embeddings</h1>
 <div id="word-representation" class="section level2">
 <h2>Word Representation</h2>
+<div id="hot-representation" class="section level3">
+<h3>1-Hot Representation</h3>
+<p>1-hot representation: all zeros, with 1 for word. Use <span class="math inline">\(O_{i}\)</span> to represent 1-hot vector of zeros with a 1 at position <span class="math inline">\(i\)</span></p>
+<p>Weakness:</p>
+<ul>
+<li>Each word treated as a thing (and doesn’t allow algorithm to generalise across words)</li>
+<li>E.g. algorithm could learn that I want a glass of orange <strong>juice</strong> as a likely sentence, but it won’t be able to generalise that apple juice is a popular phrase</li>
+<li>Inner product of King-Queen is zero and of Apple-Orange is also zero. I.e. doesn’t know that orange-apple are more similar than orange-king</li>
+</ul>
+</div>
+<div id="word-embedding" class="section level3">
+<h3>Word embedding</h3>
+<p>Featurised representation; learn set of features for each word</p>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Man</th>
+<th>Woman</th>
+<th>King</th>
+<th>Queen</th>
+<th>Apple</th>
+<th>Orange</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1-Hot Position</td>
+<td>(5391)</td>
+<td>(9853)</td>
+<td>(4914)</td>
+<td>(7157)</td>
+<td>(456)</td>
+<td>(657)</td>
+</tr>
+<tr class="even">
+<td>Gender</td>
+<td>-1</td>
+<td>1</td>
+<td>-0.95</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Royal</td>
+<td>0.01</td>
+<td>0.02</td>
+<td>0.93</td>
+<td>0.95</td>
+<td>-0.01</td>
+<td>0.01</td>
+</tr>
+<tr class="even">
+<td>Age</td>
+<td>0.03</td>
+<td>0.02</td>
+<td>0.7</td>
+<td>0.69</td>
+<td>0.03</td>
+<td>-0.02</td>
+</tr>
+<tr class="odd">
+<td>Food</td>
+<td>0.09</td>
+<td>0.01</td>
+<td>0.02</td>
+<td>0.01</td>
+<td>9.95</td>
+<td>0.97</td>
+</tr>
+</tbody>
+</table>
+<p>Other features may include size, cost, colour…</p>
+<p>Consider that there are 300 features, then use <span class="math inline">\(e_{5391}\)</span> to represent the 300-dimensional embedding vector for man.</p>
+<p>You will notice that the embedding vectors for apple and orange to be similar, this will allow a algorithm that has learnt that orange juice to then know that apple juice is also a thing.</p>
+<p>The components within the embedding vectors will not be easy to determine that they correspond to for example, gender, royal, etc. but the embedding vectors do help the algorithm.</p>
+<div id="visualising-word-embeddings" class="section level4">
+<h4>Visualising word embeddings</h4>
+<p>t-SNE algorithm can be used to convert the 300 dimensional embedding for each word to a 2D space so that can visualise and show that word embedding algorithms can learn similar features for related concepts/words. The 300dimensional vectors are known as embeddings.</p>
+<p>E.g. Word orange gets embedded into a point in the 300D space and apple gets embedded into another point in the 300-d space.</p>
+</div>
+</div>
 </div>
 <div id="using-word-embeddings" class="section level2">
 <h2>Using word embeddings</h2>
+<p>How to plug embeddings into NLP applications. Example: Named entity recognition example to determine which words are person’s names</p>
+<p>Given the following sentences:</p>
+<ul>
+<li>Sally Johnson is an orange farmer</li>
+<li>Robert Lin is an apple farmer</li>
+<li>Harry James is a durian cultivator</li>
+</ul>
+<p>With word embeddings knowing that orange, apple and durian are fruit, and that farmer is like cultivator, if the NLP algorithm (named entity recognition) has learned that Sally Lin is a person, it can then deduce that Robert Lin and Harry James are also people.</p>
+<p>Algorithms to learn word embeddings can examine very large text corpus’s (e.g. up to 100 billion words off Internet) so can know that durian is a fruit, cultivate is like a farmer (even though durian and cultivator might not be in NLP training set). I.e. named entity recognition task might have a much smaller training set. This is an example of transfer learning where you take information learned from large unlabelled data sets and transfer it to a named entity recognition task.</p>
+<div id="transfer-learning-and-word-embeddings" class="section level3">
+<h3>Transfer learning and word embeddings</h3>
+<ol style="list-style-type: decimal">
+<li>Learn word embeddings from large text corpus (1-100B words), or download pre-trained embedding online</li>
+<li>Transfer embedding to a new task with smaller training set (say 100K). Rather than using a 10,000 dimensional 1-hot vector can now use a lower-dimension, e.g. 300-dimensional dense vector</li>
+<li>Optional: Continue to fine-tune the word embeddings with new data (in practice would only do with a large data set for the NLP problem, i.e. task 3)</li>
+</ol>
+<p>Similar to transfer learning, most useful when have a tonne of data for task 1 and less for task 2.</p>
+<p>Embedding has been used for the following NLP tasks:</p>
+<ul>
+<li>Named entity recognition</li>
+<li>Text summarisation</li>
+<li>Co-reference resolution</li>
+<li>Parsing</li>
+</ul>
+<p>Embedding less useful for:</p>
+<ul>
+<li>Language modelling machine translation</li>
+</ul>
+</div>
+<div id="relation-to-face-encoding" class="section level3">
+<h3>Relation to face encoding</h3>
+<p>For face-recognition; the term encoding is similar to embedding (word).</p>
+<p>Difference:</p>
+<ul>
+<li>For face recognition, input = any face picture (unlimited sea of pictures)</li>
+<li>Learning word embedding, input= fixed vocabulary (limited sea of words) and learn <span class="math inline">\(e_1, \ldots, e_{10,000}\)</span> learn embedding.</li>
+</ul>
+</div>
 </div>
 <div id="properties-of-word-embeddings" class="section level2">
 <h2>Properties of word embeddings</h2>
+<p>Can help with analogy reasoning, Man <span class="math inline">\(\rightarrow\)</span> Woman as King <span class="math inline">\(\rightarrow\)</span> Queen.</p>
+<p>In above example, <span class="math inline">\(e_\textrm{man} - e_\text{woman} \approx [-2 0 0 0]^T\)</span>. Similarly, <span class="math inline">\(e_\textrm{king} - e_\text{queen} \approx [-2 0 0 0]^T\)</span>, i.e. main difference is gender.</p>
+<div id="analogies-using-word-vectors" class="section level3">
+<h3>Analogies using word vectors</h3>
+<p>Man is to woman as king is to what: <span class="math inline">\(e_\textrm{man} - e_\text{woman} \approx e_\textrm{king} - ?\)</span></p>
+<ul>
+<li>Find word <span class="math inline">\(w\)</span> such that <span class="math inline">\(\arg \max\limits_{w} \text{sim}(e_w, e_\text{king} - e_\textrm{man} - e_\text{woman})\)</span></li>
+</ul>
+<p>Currently, get 30-75% accuracy on analogy where an analogy attempt is correct only if it guesses the exact right word.</p>
+<p>Clarification of t-SNE.</p>
+<ul>
+<li>Mapping is very complex and non-linear</li>
+<li>Cannot count on visualisation to show the parallels between words (this exists in the larger, e.g. 300-D, dimensional space)</li>
+</ul>
+<p>Similarity function:</p>
+<ul>
+<li>Most commonly used is cosine similarity <span class="math display">\[\text{sim}(u,v) = \frac{u^Tv}{||u||_2 ||v||_2}\]</span></li>
+</ul>
+<p>Ignoring the denominator, this is basically the inner product between <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>. if very similar, the inner product will be large.</p>
+<p>This is the cosine of the angle between the two vectors.</p>
+<p>For angle <span class="math inline">\(\phi\)</span>, then formula is cosine of angle.</p>
+<ul>
+<li>If <span class="math inline">\(\phi\)</span> = 0, then <span class="math inline">\(\cos \phi\)</span> = 1</li>
+<li>If <span class="math inline">\(\phi\)</span> = 90, then <span class="math inline">\(\cos \phi\)</span> = 0</li>
+<li><p>if <span class="math inline">\(\phi\)</span> = 180, then <span class="math inline">\(\cos \phi\)</span> = -1</p></li>
+<li><p>Can also use Euclidean distance which is a technically a measure of dissimilarity, so would need to take negative <span class="math display">\[||u - v||^2\]</span></p></li>
+</ul>
+<p>Word embeddings can learn:</p>
+<ul>
+<li>Man:Woman as Boy:Girl</li>
+<li>Ottawa:Canada as Nairobi:Kenya</li>
+<li>Big:Bigger as Tall:Taller</li>
+<li>Yen:Japan as Ruble:Russia</li>
+</ul>
+</div>
 </div>
 <div id="embedding-matrix" class="section level2">
 <h2>Embedding matrix</h2>
+<p>Algorithm to learn embedding results in embedding matrix.</p>
+<p>e.g. with 10,000 words and unknown token and 300 features, get 300 <span class="math inline">\(\times\)</span> 10,001 embedding matrix.</p>
+<p>Notation:</p>
+<ul>
+<li><span class="math inline">\(O_j\)</span> to denote the 1-hot vector with 0s with a 1 in position <span class="math inline">\(j\)</span>. This will be a 10,001 vector.<br />
+</li>
+<li><span class="math inline">\(E\)</span> for embedding matrix, e.g. dimension 300, 10001</li>
+<li><span class="math inline">\(e_j\)</span> = <span class="math inline">\(E \centerdot O_j\)</span> will be of dimension (300,10001)(100001, 1) = (300,1) and so is grabbing the embedding vector for the word in position <span class="math inline">\(j\)</span>. This is the embedding vector for word <span class="math inline">\(j\)</span>.</li>
+<li>In practice, do not implement as matrix multiplication (inefficient), but rather use a specialised function to look up an embedding.<br />
+</li>
+<li>In Keras, use Embedding layer</li>
+</ul>
 </div>
 <div id="learning-word-embeddings" class="section level2">
 <h2>Learning word embeddings</h2>
+<p>Example: Building language model using a neural network, e.g. to predict the word in sentence <em>I want a glass of orange ….</em></p>
+<table>
+<thead>
+<tr class="header">
+<th>Word:</th>
+<th>I</th>
+<th>want</th>
+<th>a</th>
+<th>glass</th>
+<th>of</th>
+<th>orange</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dictionary Position:</td>
+<td>4343</td>
+<td>9665</td>
+<td>1</td>
+<td>163</td>
+<td>6257</td>
+</tr>
+<tr class="even">
+<td>One hot vector:</td>
+<td><span class="math inline">\(o_{4343}\)</span></td>
+<td><span class="math inline">\(o_{9665}\)</span></td>
+<td><span class="math inline">\(o_1\)</span></td>
+<td><span class="math inline">\(o_{163}\)</span></td>
+<td><span class="math inline">\(o_{6257}\)</span></td>
+</tr>
+<tr class="odd">
+<td>Embedding vector:</td>
+<td><span class="math inline">\(e_{4343}\)</span></td>
+<td><span class="math inline">\(e_{9665}\)</span></td>
+<td><span class="math inline">\(e_1\)</span></td>
+<td><span class="math inline">\(e_{163}\)</span></td>
+<td><span class="math inline">\(e_{6257}\)</span></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Feed embedding vector into NN which will feed to a softmax (with its own parameters) of 10,000.</li>
+<li>May only wish to use the last 4 words, which would mean would input a 1200 dimensional layer (as opposed to 1800).</li>
+<li>Use backprop to perform gradient descent to maximize the likelihood of your training set to repeatedly predict the next word given four words in a sequence</li>
+</ul>
+<p>{EmbeddingMatrix.png}</p>
+<p>Note: Same matrix <span class="math inline">\(E\)</span> used regardless of position</p>
+<p>Contexts:</p>
+<ul>
+<li>Last 4 words (to predict next word)</li>
+<li>4 words on left &amp; right (to predict word in middle)</li>
+<li>Last 1 word, predict next word (would feed in embedding of previous word)</li>
+<li>Nearby 1 word; what is a word that will be near glass (skip gram model)</li>
+</ul>
+<p>Posing these contexts allow you to learn good word embeddings</p>
 </div>
 <div id="word2vec" class="section level2">
 <h2>Word2Vec</h2>
+<p>Simple method to learn word embeddings</p>
+<div id="skip-grams-model" class="section level3">
+<h3>Skip-grams model</h3>
+<ul>
+<li>Randomly pick a word to be the context word</li>
+<li>Randomly pick a word within some window of the context word which will be the target word, e.g.</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Context</th>
+<th>Target</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>orange</td>
+<td>juice</td>
+</tr>
+<tr class="even">
+<td>orange</td>
+<td>glass</td>
+</tr>
+<tr class="odd">
+<td>orange</td>
+<td>my</td>
+</tr>
+</tbody>
+</table>
+<p>Goal of setting up this supervised learning problem is not to predict words within an <span class="math inline">\(x\)</span>-word window but to learn the embeddings. (so even if do not so well with the supervised learning problem, the output will be useful as an embedding!)</p>
+<p>Model:</p>
+<ul>
+<li>Vocab size = 10,000</li>
+<li>Goal: Learn mapping from context word <span class="math inline">\(c\)</span> to some target <span class="math inline">\(t\)</span>, <span class="math inline">\(o_c \rightarrow E \rightarrow e_c \rightarrow \text{Softmax} \rightarrow \hat{y}\)</span></li>
+<li>Context</li>
+<li>Softmax: <span class="math display">\[p(t|c) = \frac{e^{\theta_t^Te_c}}{\sum^{10,000}_{j=1}e^{\theta_j^T e_c} }\]</span></li>
+</ul>
+<p>where <span class="math inline">\(\theta_t\)</span> = parameter associated with output <span class="math inline">\(t\)</span>.</p>
+<p>Noting that loss function is <span class="math display">\[\mathcal{L}(\hat{y}, y) = -\sum^{10,000}_{i=1} y_i\log\hat{y}_i\]</span></p>
+<p>Problem = Computational speed: everytime you want to evaluate the probability, need to sum over all 10,000 words in vocabulary.</p>
+<p>Solutions to speed up softmax classification:</p>
+<ul>
+<li>Hierarchical softmax classifier: 1 classifier which says whether word is within 5,000 words, and then split, until you get to where it is. scales to log vocab size, rather than linear. Doesn’t generally use equal words in each branch , typically most common words are up the top so that need only a few traversals for those. Many algorithms exist to construct the tree.</li>
+</ul>
+<p>How to sample the context <span class="math inline">\(c\)</span>?</p>
+<ul>
+<li>Sample randomly from training corpus, but there are some words such as the, of, a, and, to, <span class="math inline">\(\ldots\)</span> that occur frequently. Then embedding will be updated many for those.</li>
+<li>Heuristics exist to balance out sampling from common and less common words</li>
+</ul>
+<p>Two versions of Word2Vec algorithm within original paper: Skip-Gram and CBow</p>
+</div>
 </div>
 <div id="negative-sampling" class="section level2">
 <h2>Negative Sampling</h2>
+<ul>
+<li>Modified learning problem that allows you to do something similar to skip-gram with much more efficient learning algorithm (cf Softmax.</li>
+<li>Example sentence: <em>I want a glass of orange juice to go along with my cereal</em></li>
+<li>Sample context word, look around a window of $$10 words</li>
+<li>Choose random words from dictionary to get negative targets to get, e.g..</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>Context (c)</th>
+<th>Word (t)</th>
+<th>Target (y)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\pm 10\)</span> word</td>
+<td>orange</td>
+<td>juice</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>dictionary</td>
+<td>orange</td>
+<td>king</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>dictionary</td>
+<td>orange</td>
+<td>book</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>dictionary</td>
+<td>orange</td>
+<td>the</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>dictionary</td>
+<td>orange</td>
+<td>of</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\vdots\)</span></td>
+<td><span class="math inline">\(\vdots\)</span></td>
+<td><span class="math inline">\(\vdots\)</span></td>
+<td><span class="math inline">\(\vdots\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(k\)</span></td>
+<td><span class="math inline">\(k\)</span></td>
+<td><span class="math inline">\(k\)</span></td>
+<td><span class="math inline">\(k\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Choose <span class="math inline">\(k\)</span> = 2-5 for larger data set and <span class="math inline">\(k\)</span> = 5-20 for smaller datasets. In above example <span class="math inline">\(k\)</span> = 4 (i.e. number of words taken from dictionary)</p>
+<p>Recall, softmax: <span class="math display">\[p(t|c) = \frac{e^{\theta_t^Te_c}}{\sum^{10,000}_{j=1}e^{\theta_j^T e_c} }\]</span></p>
+<p>Model as logistic model: <span class="math display">\[P(y = 1|c,t) = \sigma (\theta_t^T, e_c)\]</span></p>
+<p>Training data:</p>
+<ul>
+<li><span class="math inline">\(k\)</span>:1 negative:positive examples</li>
+<li>If input word is orange (position 6257 in vocab), input one-hot vector pass through E and do multiplication to get embedding vector, i.e. <span class="math display">\[o_{6257} \rightarrow E \rightarrow e_{6257}\]</span> So have 10,000 possible logistic regression classification regression classifiers but only train <span class="math inline">\(k + 1\)</span> So instead of having one giant 10,000 way Softmax which is very expensive to compute, have turned it into 10,000 binary classification problems. On every iteration we’re only going to train <span class="math inline">\(k + 1\)</span> of them.<br />
+</li>
+<li>Called negative sampling, because you have a positive example and generate negative examples for which to train <span class="math inline">\(k\)</span> additional binary classifiers.</li>
+</ul>
+<p>Sampling the negative words:</p>
+<ul>
+<li>Sample according to the empirical frequency of words in your corpus, <span class="math inline">\(p(w_i)\)</span> but again get high representation of words like the, of, and, etc.</li>
+<li>Other extreme is to use <span class="math inline">\(p(w_i) = 1/vocab size\)</span>, sample the negative examples uniformly at random</li>
+<li>Middle ground: Take heuristic value of sampling between empirical and uniform, <span class="math inline">\(p(w_i) = \frac{f(w_i)^{3/4}}{\sum^{10000}_{j=1}f(w_j)^{3/4}}\)</span>. Not theoretically justified but seems to work well</li>
+</ul>
+<p>There are pre-trained word vectors and open source code.</p>
 </div>
 <div id="glove-word-vectors" class="section level2">
 <h2>GloVe word vectors</h2>
+<ul>
+<li>Previously sampled pairs of words that appeared in close proximity to each other within the corpus</li>
+<li><span class="math inline">\(c,t\)</span>: context, target</li>
+<li><span class="math inline">\(x_{ij}\)</span>: number of times <span class="math inline">\(i\)</span> (the target, <span class="math inline">\(t\)</span>) appears in context of <span class="math inline">\(j\)</span> (the context, <span class="math inline">\(c\)</span>), i.e. how often two words appear close to each other</li>
+<li>If within <span class="math inline">\(\pm 10\)</span>, then <span class="math inline">\(X_{ij} = X_{ji}\)</span></li>
+</ul>
+<p>Model:</p>
+<ul>
+<li><p>minimise <span class="math display">\[\sum^{10,000}_{i=1}\sum^{10,000}_{j=1} f(X_{ij}) (\theta^T_i e_j + b_i + b_j^\prime -\log X_{ij})^2\]</span></p></li>
+<li>Solve <span class="math inline">\(\theta\)</span> and <span class="math inline">\(e\)</span> using gradient descent</li>
+<li>Don’t want to sum over terms where <span class="math inline">\(X_{ij} = 0\)</span>, so use weighting term <span class="math inline">\(f(X_{ij}) = 0\)</span> if <span class="math inline">\(x_ij = 0\)</span>, assume <span class="math inline">\(0 \log 0 = 0\)</span>. It is also used to weight less common and more frequent words appropriately.<br />
+</li>
+<li>Note that <span class="math inline">\(\theta_i\)</span> and <span class="math inline">\(e_j\)</span> are symmetric, so can</li>
+<li>Can initialise <span class="math inline">\(\theta\)</span> and <span class="math inline">\(e\)</span></li>
+<li><p>For given word <span class="math inline">\(w\)</span> let <span class="math inline">\(e_w^\text{final} = \frac{e_w + \theta_w}{2}\)</span></p></li>
+</ul>
+<div id="properties" class="section level3">
+<h3>Properties</h3>
+<ul>
+<li>Started with featurization view of word embeddings, but cannot guarantee that individual components of embedding are interpretable</li>
+<li>Note that <span class="math inline">\((\theta^T_i e_j\)</span> can be replaced by <span class="math inline">\((A \theta_i)^T(A^T e_j)\)</span> where A is invertible. i.e. first component might be combination of gender, royal, age, etc. due to this linear transformation</li>
+</ul>
+</div>
 </div>
 <div id="sentiment-classification" class="section level2">
 <h2>Sentiment Classification</h2>

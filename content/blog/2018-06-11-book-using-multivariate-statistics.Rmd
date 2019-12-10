@@ -13,23 +13,30 @@ tags:
 
 ```{r load_packages, message=FALSE, warning=FALSE, include=FALSE}
 if (!requireNamespace("tidyverse")) install.packages("tidyverse")
-require("tidyverse")
+library("tidyverse")
 
 if (!requireNamespace("knitr")) install.packages("knitr")
-require("knitr")
+library("knitr")
 
 if (!requireNamespace("psych")) install.packages("psych")
-require("psych")
+library("psych")
 
 if (!requireNamespace("GPArotation")) install.packages("GPArotation")
-require("GPArotation")
+library("GPArotation")
 
 if (!requireNamespace("DiagrammeR")) install.packages("DiagrammeR")
+library(DiagrammeR)
 
-require(DiagrammeR)
+if (!requireNamespace("DiagrammeR")) install.packages("DiagrammeRsvg")
 library(DiagrammeRsvg)
+
+if (!requireNamespace("DiagrammeR")) install.packages("magrittr")
 library(magrittr)
+
+if (!requireNamespace("DiagrammeR")) install.packages("rsvg")
 library(rsvg)
+
+if (!requireNamespace("DiagrammeR")) install.packages("png")
 library(png)
 
 
@@ -530,7 +537,7 @@ From Phi, see that correlation between first factor and second factor is quite l
 ### Comparison of PCA to FA
 
 
-```{r store_charts, include=FALSE}
+```{r store_diagrammercharts, include=FALSE}
 
 export_svg(DiagrammeR::grViz("../../static/graphs/fa.dot", height=200, width=200)) %>%
   charToRaw %>% rsvg %>% png::writePNG('../../static/graphs/fa.png')

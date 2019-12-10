@@ -1,9 +1,8 @@
 ---
 title: 'Book: Applied Predictive Modeling (Part I)'
 author: "Marie"
-date: 2018-05-30T13:39:46+02:00
-categories:
-  - Study-Notes
+date: '2018-05-30T13:39:46+02:00'
+categories: Study-Notes
 slug: book-applied-predictive-modeling
 tags:
 - R
@@ -41,7 +40,7 @@ The combined force of predictive modelling and intuition will be better than the
 
 ```{r load_libraries, include=FALSE}
 if (!requireNamespace("AppliedPredictiveModeling")) install.packages("AppliedPredictiveModeling")
-require("AppliedPredictiveModeling")
+library("AppliedPredictiveModeling")
 
 # Source: https://github.com/gimoya/theBioBucket-Archives/blob/master/R/Functions/instant_pkgs.R#L7
 # e.g. loadPackages(c("base", "jpeg"))
@@ -52,7 +51,7 @@ loadPackages <- function(pkgs) {
   
   #install and load packages not installed
   if (length(pkgs_miss) > 0) {
-    install.packages(pkgs_miss, dependencies = c("Depends", "Suggests"))
+    install.packages(pkgs_miss, dependencies = c("Depends", "Suggests"), repos = "http://cran.us.r-project.org")
   }
 
   # load packages not already loaded
@@ -62,7 +61,7 @@ loadPackages <- function(pkgs) {
   #return(need_to_attach)
   
   if (length(need_to_attach) > 0) {
-    for (i in 1:length(need_to_attach)) suppressPackageStartupMessages(require(need_to_attach[i],character.only=TRUE))
+    for (i in 1:length(need_to_attach)) suppressPackageStartupMessages(library(need_to_attach[i],character.only=TRUE))
   }
 }
 
@@ -504,7 +503,7 @@ Options:
     * KNN popular to impute by finding samples in training set closest to it and averages nearby points to fill it.  Advantage: Confined to training set. Disadvantage: KNN requires entire training set and number of neighbours and method of determining "closeness" are tuning parameters.
     
 ```{r segmentation_imputation_knn}
-require(AppliedPredictiveModeling)
+library(AppliedPredictiveModeling)
 data(segmentationOriginal)
 
 ## Retain the original training set
@@ -761,7 +760,7 @@ of seven class categories. There are nine predictors, including the refractive
 index and percentages of eight elements: Na, Mg, Al, Si, K, Ca, Ba, and Fe.
 
 ```{r load_glass_data, message=FALSE, warning=FALSE}
-require(mlbench)
+library(mlbench)
 data(Glass)
 str(Glass)
 
@@ -785,7 +784,7 @@ ggplot(GlassPredictors, aes(x = Value)) +
 ```
 
 ```{r glass_predictor_scatter, message=FALSE, warning=FALSE}
-require(GGally)
+library(GGally)
 ggpairs(select(Glass, -Type))
 ```
 
@@ -854,7 +853,7 @@ conditions (e.g., temperature, precipitation) and plant conditions (e.g., left
 spots, mold growth). The outcome labels consist of 19 distinct classes.
 
 ```{r ex3_2_load_data, message=FALSE, warning=FALSE, include=FALSE}
-require(mlbench)
+library(mlbench)
 data(Soybean)
 #?Soybean
 ```
@@ -896,8 +895,8 @@ ggpairs(select(Soybean, date, precip, temp), diag = 'blankDiag', upper = list(di
 ```
 
 ```{r soybean_mosaic, message=FALSE, warning=FALSE}
-require(vcd)
-#require(ggmosaic)
+library(vcd)
+#library(ggmosaic)
 #detach("package:kernlab", unload=TRUE)
 Soybean2 <- Soybean %>%
   mutate(date = fct_recode(date, Apr = "0", May = "1", Jun = "2", Jul = "3", Aug = "4", Sep = "5", Oct = "6"), 
@@ -1012,7 +1011,7 @@ compounds. 134 descriptors were measured for each compound.
 
 (a) Start R and use these commands to load the data:
 ```{r bloodbrain_data}
-#require(caret); require(tidyverse); require(e1071)
+#library(caret); library(tidyverse); library(e1071)
 data(BloodBrain)
 # use ?BloodBrain to see more details
 ```
@@ -1174,7 +1173,7 @@ Other methods to remove correlated variables and search for quality subsets incl
 
 
 ```{r bloodBrain_trim_for_anneal_and_genetic, collapse = TRUE}
-require(subselect)
+library(subselect)
 ncol(bbb_cor_raw)
 trimmed <- trim.matrix(bbb_cor_raw, tolval=1000*.Machine$double.eps)$trimmedmat
 ncol(trimmed)
@@ -1493,6 +1492,21 @@ svmFit <- train(Class ~ .,
 svmFit
 
 rm(inTrain)
+
+
+
+
+
+svmFit <- train(Class ~ .,
+    data = GermanCreditTrain,
+    method = "svmRadial",
+    preProc = c("center", "scale"),
+    tuneLength = 10,  
+    trControl = trainControl(method = "cv",   # default is bootstrap
+                             number = 2,
+                             classProbs = TRUE))
+
+
 ```
 
 Line plot of the average performance profile of the SVM classification model:
@@ -1528,8 +1542,11 @@ set.seed(1056)
 lrFit <- train(Class ~ .,
     data = GermanCreditTrain,
     method = "glm",
-    trControl = trainControl(method = "repeatedcv",  
-                             repeats = 5))
+    trControl = trainControl(method = "cv",  
+                             number = 2))
+
+
+
 lrFit
 ```
 
@@ -1705,10 +1722,8 @@ Plot of observed vs predicted values: to understand how model fits
 ggplot(data.frame(observed, predicted), aes(observed, predicted)) + 
   geom_point() + 
   expand_limits(
-    x =  min(observed, predicted),
-    x =  max(observed, predicted),
-    y = min(observed, predicted), 
-    y = max(observed, predicted)) + 
+    x =  c(min(observed, predicted), max(observed, predicted)),
+    y = c(min(observed, predicted), max(observed, predicted))) + 
   geom_abline(intercept = 0, slope = 1)
 ```
 
@@ -2919,6 +2934,87 @@ Splitting categorical predictors: Options:
 ## Cubist
 
 # Chapter 11: Measuring Performance in Classification Models
+
+```{r}
+library(tidyverse)
+library(datasets)
+library(caret)
+# load the iris dataset
+data(iris)
+split_index <- createDataPartition(iris$Species, p=0.80, list=FALSE)
+# use  80% of data to train model
+iris_tr <- iris[split_index,]
+
+# use 20% of the data for validation
+iris_te <- iris[-split_index,]
+
+# define training control
+train_control <- trainControl(method="repeatedcv", number=10, repeats=3)
+# train the model
+model <- train(Species~., data=select(iris_tr, Sepal.Length, Sepal.Width, Species), trControl=train_control, method="rf")
+# summarize results
+print(model)
+
+predictions <- predict(model, iris_te, type = "prob")
+predictions.class <- predictions %>%  mutate('class'=names(.)[apply(., 1, which.max)]) %>% dplyr::select(class) %>%
+    mutate(class = as.factor(class)) %>% pull()
+
+confusionMatrix(predictions.class, iris_te$Species)
+
+
+getMultinomialCM <- function(prediction, target){
+    data <- cbind(prediction, target)
+    
+    cm <- with(dat, table(target, prediction))
+    # recall
+    recall <- diag(cm / apply(cm, 1, sum))
+    # precision
+    precision <- diag(cm/apply(cm, 2, sum))
+    # accuracy
+    accuracy <- sum(diag(cm))/sum(cm)
+    
+    cm <- cm %>% cbind(recall) %>%
+        rbind(precision = c(precision, accuracy))
+    cm
+}
+getMultinomialCM(predictions.class, iris_te$Species)
+
+```
+
+Calibration Plots
+```{r}
+
+obs <- model.matrix( ~Species-1, data = iris_te %>% dplyr::select(Species))
+
+i <- 1
+cal <- NULL
+for (i in 1:ncol(predictions)){
+    dat <- data.frame(obs = obs[,i], pred = predictions[,i]) 
+    dat$pred_bin <- cut(dat$pred, breaks = c(-0.001, seq(0.1, 1, 0.1)))
+    dat$midpoint <- seq(.1/2, 1-.1/2, by = 0.1)[as.numeric(dat$pred_bin)]
+    
+    dat <- dat %>% group_by(midpoint) %>%
+        summarise(n = n(), 
+                  events = sum(obs)) %>%
+        mutate(event_rate = events / n)
+    
+    dat$class <- names(predictions)[i]
+    cal <- bind_rows(cal, dat)
+}
+
+ggplot(cal, aes(midpoint, event_rate, colour = class)) + 
+    geom_line() + 
+    geom_point()
+```
+Heatmap
+```{r}
+cbind(predictions, Target = iris_te$Species) %>%
+    gather(Pred_Species, Pred_Probability, -Target) %>%
+    ggplot(aes(Pred_Species, Target, fill = Pred_Probability)) + 
+           geom_tile(colour = "white") + 
+    scale_fill_gradient(low = "white", high = "steelblue")
+```
+
 
 # Chapter 12: Discriminant Analysis and Other Linear Classification Models
 

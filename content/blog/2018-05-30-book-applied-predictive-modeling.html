@@ -1,9 +1,8 @@
 ---
 title: 'Book: Applied Predictive Modeling (Part I)'
 author: "Marie"
-date: 2018-05-30T13:39:46+02:00
-categories:
-  - Study-Notes
+date: '2018-05-30T13:39:46+02:00'
+categories: Study-Notes
 slug: book-applied-predictive-modeling
 tags:
 - R
@@ -124,9 +123,20 @@ segMetrics &lt;- segTrainX %&gt;%
   extract(key, c(&quot;variable&quot;, &quot;metric&quot;), &quot;(.*)_(skewness|n_distinct|max|min)&quot;) %&gt;%
   spread(metric, value) %&gt;%
   mutate(max_min_ratio = ifelse(min==0, (max+1)/(min+1), max/min)) %&gt;%
-  select(variable, n_distinct, skewness, max_min_ratio, min, max)
-
-## Use caret&#39;s preProcess function to transform for skewness
+  select(variable, n_distinct, skewness, max_min_ratio, min, max)</code></pre>
+<pre><code>## Warning: funs() is soft deprecated as of dplyr 0.8.0
+## Please use a list of either functions or lambdas: 
+## 
+##   # Simple named list: 
+##   list(mean = mean, median = median)
+## 
+##   # Auto named with `tibble::lst()`: 
+##   tibble::lst(mean, median)
+## 
+##   # Using lambdas
+##   list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))
+## This warning is displayed once per session.</code></pre>
+<pre class="r"><code>## Use caret&#39;s preProcess function to transform for skewness
 segPP &lt;- caret::preProcess(segTrainX, method = &quot;BoxCox&quot;)
 
 ## Apply the transformations
@@ -401,7 +411,7 @@ lattice::splom(~segRot[, 1:3],
 <li>KNN popular to impute by finding samples in training set closest to it and averages nearby points to fill it. Advantage: Confined to training set. Disadvantage: KNN requires entire training set and number of neighbours and method of determining “closeness” are tuning parameters.</li>
 </ul></li>
 </ul>
-<pre class="r"><code>require(AppliedPredictiveModeling)
+<pre class="r"><code>library(AppliedPredictiveModeling)
 data(segmentationOriginal)
 
 ## Retain the original training set
@@ -418,7 +428,7 @@ obs &lt;- segTrainX[ind_miss, ]
 segTrainX$PerimCh1[ind_miss] &lt;- NA
 summary(segTrainX$PerimCh1)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#39;s 
-##   47.74   64.92   79.09   92.20  103.67  459.77      50</code></pre>
+##   47.74   64.37   79.02   91.95  103.86  459.77      50</code></pre>
 <pre class="r"><code># Predict the missing values
 set.seed(100)
 knnTrans &lt;- preProcess(segTrainX, method = c(&quot;center&quot;, &quot;scale&quot;, &quot;knnImpute&quot;))
@@ -431,14 +441,14 @@ ggplot(data.frame(obs = obsTrans, pred), aes(x=obs, y=pred)) +
   geom_smooth(method=&#39;lm&#39;)</code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_imputation_knn-1.png" width="672" /></p>
 <pre class="r"><code>cor(obsTrans, pred)</code></pre>
-<pre><code>## [1] 0.8817321</code></pre>
+<pre><code>## [1] 0.9097433</code></pre>
 <pre class="r"><code>#if(&quot;PerimCh1&quot; %in% preProcValues$method$scale) pred &lt;- pred * preProcValues$std[&quot;PerimCh1&quot;]
 #if(&quot;PerimCh1&quot; %in% preProcValues$method$center) pred &lt;- pred + preProcValues$mean[&quot;PerimCh1&quot;]</code></pre>
 <pre class="r"><code># use cell fiber lengtha nd cell size. to predict.  
 segCorr &lt;- cor(segTrainX, use = &quot;pairwise.complete.obs&quot;)[,&quot;PerimCh1&quot;]
 sort(segCorr, decreasing = TRUE)[2:3]</code></pre>
 <pre><code>## FiberLengthCh1      LengthCh1 
-##      0.9855599      0.9223834</code></pre>
+##      0.9859845      0.9218499</code></pre>
 <pre class="r"><code>mod &lt;- lm(PerimCh1 ~ FiberLengthCh1 + LengthCh1, data = segTrainX[-ind_miss, ])
 pred &lt;- predict(mod, segTrainX[ind_miss, ])
 ggplot(data.frame(obs = obsTrans, pred), aes(x=obs, y=pred)) + 
@@ -446,7 +456,7 @@ ggplot(data.frame(obs = obsTrans, pred), aes(x=obs, y=pred)) +
   geom_smooth(method=&#39;lm&#39;)</code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/segmentation_imputation_regression-1.png" width="672" /></p>
 <pre class="r"><code>cor(pred, obsTrans)</code></pre>
-<pre><code>## [1] 0.9752604</code></pre>
+<pre><code>## [1] 0.9664605</code></pre>
 </div>
 <div id="removing-predictors" class="section level2">
 <h2>Removing Predictors</h2>
@@ -683,20 +693,27 @@ withInteraction</code></pre>
 ## Factor variable names will be removed
 ## A less than full rank encoding is used</code></pre>
 <pre class="r"><code>predict(withInteraction, head(carSubset))</code></pre>
-<pre><code>##   Mileage convertible coupe hatchback sedan wagon Mileage:convertible
-## 1   20105           0     0         0     1     0                   0
-## 2   13457           0     1         0     0     0                   0
-## 3   31655           1     0         0     0     0               31655
-## 4   22479           1     0         0     0     0               22479
-## 5   17590           1     0         0     0     0               17590
-## 6   23635           1     0         0     0     0               23635
-##   Mileage:coupe Mileage:hatchback Mileage:sedan Mileage:wagon
-## 1             0                 0         20105             0
-## 2         13457                 0             0             0
-## 3             0                 0             0             0
-## 4             0                 0             0             0
-## 5             0                 0             0             0
-## 6             0                 0             0             0</code></pre>
+<pre><code>##   Mileage convertible coupe hatchback sedan wagon Mileage:Typeconvertible
+## 1   20105           0     0         0     1     0                       0
+## 2   13457           0     1         0     0     0                       0
+## 3   31655           1     0         0     0     0                   31655
+## 4   22479           1     0         0     0     0                   22479
+## 5   17590           1     0         0     0     0                   17590
+## 6   23635           1     0         0     0     0                   23635
+##   Mileage:Typecoupe Mileage:Typehatchback Mileage:Typesedan
+## 1                 0                     0             20105
+## 2             13457                     0                 0
+## 3                 0                     0                 0
+## 4                 0                     0                 0
+## 5                 0                     0                 0
+## 6                 0                     0                 0
+##   Mileage:Typewagon
+## 1                 0
+## 2                 0
+## 3                 0
+## 4                 0
+## 5                 0
+## 6                 0</code></pre>
 </div>
 </div>
 <div id="chapter-3-exercises" class="section level2">
@@ -704,7 +721,7 @@ withInteraction</code></pre>
 <div id="exercise-3.1" class="section level3">
 <h3>Exercise 3.1</h3>
 <p>The UC Irvine Machine Learning Repository contains a data set related to glass identification. The data consist of 214 glass samples labeled as one of seven class categories. There are nine predictors, including the refractive index and percentages of eight elements: Na, Mg, Al, Si, K, Ca, Ba, and Fe.</p>
-<pre class="r"><code>require(mlbench)
+<pre class="r"><code>library(mlbench)
 data(Glass)
 str(Glass)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    214 obs. of  10 variables:
@@ -731,7 +748,7 @@ str(Glass)</code></pre>
   geom_density() + 
   facet_wrap(~Predictor, scales = &quot;free&quot;)</code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/glass_dens-1.png" width="672" /></p>
-<pre class="r"><code>require(GGally)
+<pre class="r"><code>library(GGally)
 ggpairs(select(Glass, -Type))</code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/glass_predictor_scatter-1.png" width="672" /></p>
 <ol start="2" style="list-style-type: lower-alpha">
@@ -817,8 +834,8 @@ ggpairs(glassCSSSData)</code></pre>
 <p>A mosaic plot, fluctuation diagram, or faceted bar chart may be used to display two categorical variable, as detailed in <a href="https://vita.had.co.nz/papers/gpp.pdf">The Generalized Pairs Plot</a></p>
 <pre class="r"><code>ggpairs(select(Soybean, date, precip, temp), diag = &#39;blankDiag&#39;, upper = list(discrete = &quot;ratio&quot;))</code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/soybean_pairs-1.png" width="672" /></p>
-<pre class="r"><code>require(vcd)
-#require(ggmosaic)
+<pre class="r"><code>library(vcd)
+#library(ggmosaic)
 #detach(&quot;package:kernlab&quot;, unload=TRUE)
 Soybean2 &lt;- Soybean %&gt;%
   mutate(date = fct_recode(date, Apr = &quot;0&quot;, May = &quot;1&quot;, Jun = &quot;2&quot;, Jul = &quot;3&quot;, Aug = &quot;4&quot;, Sep = &quot;5&quot;, Oct = &quot;6&quot;), 
@@ -933,19 +950,19 @@ Soybean %&gt;%
   select(Class, variable, prop_nulls) %&gt;%
   spread(Class, prop_nulls)</code></pre>
 <pre><code>## # A tibble: 35 x 5
-##    variable      `2-4-d-injury` `diaporthe-pod-&amp;-stem-b… `herbicide-injur…
-##    &lt;chr&gt;                  &lt;dbl&gt;                    &lt;dbl&gt;             &lt;dbl&gt;
-##  1 area.dam              0.0625                      0                   0
-##  2 canker.lesion         1                           0                   1
-##  3 crop.hist             1                           0                   0
-##  4 date                  0.0625                      0                   0
-##  5 ext.decay             1                           0                   1
-##  6 fruit.pods            1                           0                   0
-##  7 fruit.spots           1                           0                   1
-##  8 fruiting.bod…         1                           0                   1
-##  9 germ                  1                           0.4                 1
-## 10 hail                  1                           1                   1
-## # ... with 25 more rows, and 1 more variable: `phytophthora-rot` &lt;dbl&gt;</code></pre>
+##    variable `2-4-d-injury` `diaporthe-pod-… `herbicide-inju…
+##    &lt;chr&gt;             &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+##  1 area.dam         0.0625              0                  0
+##  2 canker.…         1                   0                  1
+##  3 crop.hi…         1                   0                  0
+##  4 date             0.0625              0                  0
+##  5 ext.dec…         1                   0                  1
+##  6 fruit.p…         1                   0                  0
+##  7 fruit.s…         1                   0                  1
+##  8 fruitin…         1                   0                  1
+##  9 germ             1                   0.4                1
+## 10 hail             1                   1                  1
+## # … with 25 more rows, and 1 more variable: `phytophthora-rot` &lt;dbl&gt;</code></pre>
 <p>This shows that many predictors are completely missing for some cases, e.g. the class 2-4-d-injury has no observations of the predictor canker.lesion, crop.hist, ext.decay, fruit.pots, etc.</p>
 <ol start="3" style="list-style-type: lower-alpha">
 <li>Develop a strategy for handling missing data, either by eliminating predictors or imputation.</li>
@@ -989,7 +1006,7 @@ sparsity %&gt;%
 <ol style="list-style-type: lower-alpha">
 <li>Start R and use these commands to load the data:</li>
 </ol>
-<pre class="r"><code>#require(caret); require(tidyverse); require(e1071)
+<pre class="r"><code>#library(caret); library(tidyverse); library(e1071)
 data(BloodBrain)
 # use ?BloodBrain to see more details</code></pre>
 <p>The numeric outcome is contained in the vector logBBB while the predictors are in the data frame bbbDescr.</p>
@@ -1155,8 +1172,7 @@ ggplot(corrData, aes(x = threshold, y = value)) +
   facet_wrap(~ what, scales = &quot;free&quot;)</code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/bloodBrain_corr_heuristic-1.png" width="672" /></p>
 <p>Other methods to remove correlated variables and search for quality subsets include simulated annealing and genetic algorithms, e.g. via the <code>subselect</code> package. These require that the correlation matrix is well-conditioned, which is possible using the <code>subselect::trim.matrix</code> function. This function is a less greedy method to remove perfect pair-wise correlations and relationships between three or more predictors.</p>
-<pre class="r"><code>require(subselect)
-## Loading required package: subselect
+<pre class="r"><code>library(subselect)
 ncol(bbb_cor_raw)
 ## [1] 127
 trimmed &lt;- trim.matrix(bbb_cor_raw, tolval=1000*.Machine$double.eps)$trimmedmat
@@ -1353,11 +1369,11 @@ testPredictors &lt;- predictors[-trainingRows, ]
 testClasses &lt;- classes[-trainingRows]
 str(trainPredictors); str(testPredictors)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    167 obs. of  2 variables:
-##  $ PredictorA: num  0.158 0.655 0.706 0.199 0.395 ...
-##  $ PredictorB: num  0.1609 0.4918 0.6333 0.0881 0.4152 ...</code></pre>
+##  $ PredictorA: num  0.1582 0.6552 0.706 0.0658 0.3086 ...
+##  $ PredictorB: num  0.161 0.492 0.633 0.179 0.28 ...</code></pre>
 <pre><code>## &#39;data.frame&#39;:    41 obs. of  2 variables:
-##  $ PredictorA: num  0.0658 0.1056 0.2909 0.4129 0.0472 ...
-##  $ PredictorB: num  0.1786 0.0801 0.3021 0.2869 0.0414 ...</code></pre>
+##  $ PredictorA: num  0.1992 0.3952 0.425 0.0847 0.2909 ...
+##  $ PredictorB: num  0.0881 0.4152 0.2988 0.0548 0.3021 ...</code></pre>
 </div>
 <div id="resampling" class="section level3">
 <h3>Resampling</h3>
@@ -1373,29 +1389,29 @@ str(trainPredictors); str(testPredictors)</code></pre>
 repeatedSplits &lt;- createDataPartition(trainClasses, p = 0.8, times = 3)
 str(repeatedSplits)</code></pre>
 <pre><code>## List of 3
-##  $ Resample1: int [1:135] 1 2 4 5 6 8 9 10 11 12 ...
-##  $ Resample2: int [1:135] 2 3 4 6 7 8 9 11 14 15 ...
-##  $ Resample3: int [1:135] 4 5 6 7 8 9 11 13 14 15 ...</code></pre>
+##  $ Resample1: int [1:135] 1 2 3 4 6 7 9 10 11 12 ...
+##  $ Resample2: int [1:135] 1 2 3 4 5 6 7 9 10 11 ...
+##  $ Resample3: int [1:135] 1 2 3 4 5 7 8 9 11 12 ...</code></pre>
 <p>The following code creates indicators for 10-fold cross-validation, where each fold is <span class="math inline">\((k-1)/k%\)</span> of the data.</p>
 <pre class="r"><code>set.seed(1)
 cvSplits &lt;- createFolds(trainClasses, k = 10, returnTrain = TRUE)
 str(cvSplits)</code></pre>
 <pre><code>## List of 10
-##  $ Fold01: int [1:151] 2 3 4 5 6 7 11 12 13 14 ...
-##  $ Fold02: int [1:150] 1 2 3 4 5 6 7 8 9 10 ...
-##  $ Fold03: int [1:150] 1 2 3 4 5 6 7 8 9 10 ...
-##  $ Fold04: int [1:151] 1 2 3 4 5 7 8 9 10 11 ...
-##  $ Fold05: int [1:150] 1 2 3 5 6 7 8 9 10 11 ...
-##  $ Fold06: int [1:150] 1 2 3 4 5 6 8 9 10 11 ...
-##  $ Fold07: int [1:150] 1 3 4 5 6 7 8 9 10 11 ...
-##  $ Fold08: int [1:151] 1 2 3 4 5 6 7 8 9 10 ...
-##  $ Fold09: int [1:150] 1 2 4 5 6 7 8 9 10 12 ...
-##  $ Fold10: int [1:150] 1 2 3 4 6 7 8 9 10 11 ...</code></pre>
+##  $ Fold01: int [1:150] 1 2 4 5 6 7 8 10 11 13 ...
+##  $ Fold02: int [1:150] 1 2 3 4 6 7 8 9 10 11 ...
+##  $ Fold03: int [1:150] 1 3 4 5 6 7 8 9 10 11 ...
+##  $ Fold04: int [1:150] 1 2 3 4 5 6 7 8 9 10 ...
+##  $ Fold05: int [1:150] 2 3 4 5 6 7 8 9 10 11 ...
+##  $ Fold06: int [1:150] 1 2 3 4 5 6 7 8 9 11 ...
+##  $ Fold07: int [1:150] 1 2 3 4 5 6 7 9 10 12 ...
+##  $ Fold08: int [1:151] 1 2 3 4 5 6 8 9 10 11 ...
+##  $ Fold09: int [1:151] 1 2 3 5 6 7 8 9 10 11 ...
+##  $ Fold10: int [1:151] 1 2 3 4 5 7 8 9 10 11 ...</code></pre>
 <pre class="r"><code>fold1 &lt;- cvSplits[[1]]
 cvPredictors1 &lt;- trainPredictors[fold1, ]
 cvClasses1 &lt;- trainClasses[fold1]
 scales::percent(nrow(cvPredictors1)/nrow(trainPredictors))</code></pre>
-<pre><code>## [1] &quot;90.4%&quot;</code></pre>
+<pre><code>## [1] &quot;89.8%&quot;</code></pre>
 </div>
 <div id="basic-model-building-in-r" class="section level3">
 <h3>Basic Model Building in R</h3>
@@ -1423,7 +1439,7 @@ knnFit</code></pre>
 ##     89     78</code></pre>
 <pre class="r"><code>testPredictions &lt;- predict(knnFit, newdata = testPredictors, type  = &quot;class&quot;)
 head(testPredictions)</code></pre>
-<pre><code>## [1] Class2 Class2 Class1 Class1 Class2 Class2
+<pre><code>## [1] Class2 Class1 Class1 Class2 Class1 Class2
 ## Levels: Class1 Class2</code></pre>
 <div id="determination-of-tuning-parameters" class="section level4">
 <h4>Determination of Tuning Parameters</h4>
@@ -1473,7 +1489,20 @@ svmFit &lt;- train(Class ~ .,
                              classProbs = TRUE))
 svmFit
 
-rm(inTrain)</code></pre>
+rm(inTrain)
+
+
+
+
+
+svmFit &lt;- train(Class ~ .,
+    data = GermanCreditTrain,
+    method = &quot;svmRadial&quot;,
+    preProc = c(&quot;center&quot;, &quot;scale&quot;),
+    tuneLength = 10,  
+    trControl = trainControl(method = &quot;cv&quot;,   # default is bootstrap
+                             number = 2,
+                             classProbs = TRUE))</code></pre>
 <pre><code>## Support Vector Machines with Radial Basis Function Kernel 
 ## 
 ## 800 samples
@@ -1486,20 +1515,20 @@ rm(inTrain)</code></pre>
 ## Resampling results across tuning parameters:
 ## 
 ##   C       Accuracy  Kappa    
-##     0.25  0.74300   0.3542454
-##     0.50  0.74250   0.3542944
-##     1.00  0.74325   0.3292659
-##     2.00  0.74625   0.3309138
-##     4.00  0.75325   0.3320549
-##     8.00  0.74925   0.3181382
-##    16.00  0.74475   0.2953169
-##    32.00  0.74375   0.2984285
-##    64.00  0.74075   0.2929082
-##   128.00  0.73800   0.2841027
+##     0.25  0.74950   0.3639204
+##     0.50  0.75075   0.3707124
+##     1.00  0.75900   0.3723114
+##     2.00  0.76375   0.3744096
+##     4.00  0.75875   0.3470181
+##     8.00  0.75425   0.3381316
+##    16.00  0.74900   0.3217375
+##    32.00  0.74400   0.3002030
+##    64.00  0.74200   0.2972872
+##   128.00  0.73575   0.2794031
 ## 
-## Tuning parameter &#39;sigma&#39; was held constant at a value of 0.01418087
+## Tuning parameter &#39;sigma&#39; was held constant at a value of 0.01478465
 ## Accuracy was used to select the optimal model using the largest value.
-## The final values used for the model were sigma = 0.01418087 and C = 4.</code></pre>
+## The final values used for the model were sigma = 0.01478465 and C = 2.</code></pre>
 <p>Line plot of the average performance profile of the SVM classification model:</p>
 <pre class="r"><code>plot(svmFit, scales = list(x = list(log = 2)))</code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/plotGermanCreditSVMTuneFit-1.png" width="672" /></p>
@@ -1507,18 +1536,18 @@ rm(inTrain)</code></pre>
 <pre class="r"><code>predictedClasses &lt;- predict(svmFit, GermanCreditTest)
 str(predictedClasses)
 rm(predictedClasses)</code></pre>
-<pre><code>##  Factor w/ 2 levels &quot;Bad&quot;,&quot;Good&quot;: 1 1 2 2 1 2 2 2 1 1 ...</code></pre>
+<pre><code>##  Factor w/ 2 levels &quot;Bad&quot;,&quot;Good&quot;: 2 2 2 2 2 2 2 2 1 2 ...</code></pre>
 <p>Class probabilities</p>
 <pre class="r"><code>predictedProbs &lt;- predict(svmFit, newdata = GermanCreditTest, type = &quot;prob&quot;)
 head(predictedProbs)
 rm(predictedProbs)</code></pre>
-<pre><code>##         Bad      Good
-## 1 0.5712094 0.4287906
-## 2 0.5030683 0.4969317
-## 3 0.3377723 0.6622277
-## 4 0.1025021 0.8974979
-## 5 0.6227635 0.3772365
-## 6 0.1498071 0.8501929</code></pre>
+<pre><code>##          Bad      Good
+## 1 0.40170150 0.5982985
+## 2 0.09469587 0.9053041
+## 3 0.12603008 0.8739699
+## 4 0.29888025 0.7011197
+## 5 0.35828615 0.6417139
+## 6 0.08472826 0.9152717</code></pre>
 <p>Other R packages/functions to estimate performance via resampling:</p>
 <ul>
 <li>Design::validate</li>
@@ -1532,8 +1561,11 @@ rm(predictedProbs)</code></pre>
 lrFit &lt;- train(Class ~ .,
     data = GermanCreditTrain,
     method = &quot;glm&quot;,
-    trControl = trainControl(method = &quot;repeatedcv&quot;,  
-                             repeats = 5))
+    trControl = trainControl(method = &quot;cv&quot;,  
+                             number = 2))
+
+
+
 lrFit</code></pre>
 <pre><code>## Generalized Linear Model 
 ## 
@@ -1542,12 +1574,12 @@ lrFit</code></pre>
 ##   2 classes: &#39;Bad&#39;, &#39;Good&#39; 
 ## 
 ## No pre-processing
-## Resampling: Cross-Validated (10 fold, repeated 5 times) 
-## Summary of sample sizes: 720, 720, 720, 720, 720, 720, ... 
+## Resampling: Cross-Validated (2 fold) 
+## Summary of sample sizes: 400, 400 
 ## Resampling results:
 ## 
 ##   Accuracy  Kappa    
-##   0.748     0.3573223</code></pre>
+##   0.735     0.3243985</code></pre>
 <ul>
 <li>Use <code>resamples</code> function to compare models based on cross-validation statistics</li>
 <li>Use same seed so get same resamples as per SVM and therefore paired accuracy measurements exist.</li>
@@ -1560,20 +1592,17 @@ summary(resamp)</code></pre>
 ## summary.resamples(object = resamp)
 ## 
 ## Models: SVM, Logistic 
-## Number of resamples: 50 
+## Number of resamples: 2 
 ## 
 ## Accuracy 
-##            Min.  1st Qu.  Median    Mean 3rd Qu.   Max. NA&#39;s
-## SVM      0.6875 0.725000 0.75625 0.75325  0.7750 0.8250    0
-## Logistic 0.6250 0.715625 0.75000 0.74800  0.7875 0.8375    0
+##           Min.  1st Qu.  Median    Mean  3rd Qu.   Max. NA&#39;s
+## SVM      0.740 0.745625 0.75125 0.75125 0.756875 0.7625    0
+## Logistic 0.735 0.735000 0.73500 0.73500 0.735000 0.7350    0
 ## 
 ## Kappa 
-##                 Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
-## SVM       0.11971831 0.2774423 0.3436717 0.3320549 0.3729167 0.5270270
-## Logistic -0.01351351 0.2797677 0.3670683 0.3573223 0.4471501 0.5886076
-##          NA&#39;s
-## SVM         0
-## Logistic    0</code></pre>
+##               Min.   1st Qu.    Median      Mean   3rd Qu.      Max. NA&#39;s
+## SVM      0.2896175 0.2999596 0.3103017 0.3103017 0.3206438 0.3309859    0
+## Logistic 0.2679558 0.2961771 0.3243985 0.3243985 0.3526198 0.3808411    0</code></pre>
 <p>Visualisation of paired values:</p>
 <pre class="r"><code>p1 &lt;- xyplot(resamp)
 p2 &lt;- parallelplot(resamp)
@@ -1582,8 +1611,9 @@ p4 &lt;- densityplot(resamp)
 p5 &lt;- bwplot(resamp)
 p6 &lt;- dotplot(resamp)
 p7 &lt;- ggplot(resamp)
-gridExtra::grid.arrange(p1, p3, p2, p4, p5, p6, p7, ncol = 2)
-rm(list = ls(pattern = &quot;^p\\d$&quot;)) </code></pre>
+gridExtra::grid.arrange(p1, p3, p2, p4, p5, p6, p7, ncol = 2)</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_errorbar).</code></pre>
+<pre class="r"><code>rm(list = ls(pattern = &quot;^p\\d$&quot;)) </code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/modelComparisonResamplePlot-1.png" width="768" /></p>
 <p>To assess possible differences:</p>
 <pre class="r"><code>modelDifferences &lt;- diff(resamp)
@@ -1598,14 +1628,14 @@ summary(modelDifferences)</code></pre>
 ## 
 ## Accuracy 
 ##          SVM    Logistic
-## SVM             0.00525 
-## Logistic 0.3474         
+## SVM             0.01625 
+## Logistic 0.3855         
 ## 
 ## Kappa 
-##          SVM     Logistic
-## SVM              -0.02527
-## Logistic 0.08531</code></pre>
-<p>The p-values for the model comparisons are 0.347 for Accuracy and 0.085 for Kappa. Note that the Kappa statistic (chapter 11:) was originally designed to assess the agreement between 2 raters <span class="math display">\[\text{Kappa} = \frac{O-E}{1-E}\]</span> where <span class="math inline">\(O\)</span> = observed accuracy and <span class="math inline">\(E\)</span> is expected accuracy based on marginal totals of the confusion matrix. Statistic takes values between -1 and 1;</p>
+##          SVM    Logistic
+## SVM             -0.0141 
+## Logistic 0.8849</code></pre>
+<p>The p-values for the model comparisons are 0.386 for Accuracy and 0.885 for Kappa. Note that the Kappa statistic (chapter 11:) was originally designed to assess the agreement between 2 raters <span class="math display">\[\text{Kappa} = \frac{O-E}{1-E}\]</span> where <span class="math inline">\(O\)</span> = observed accuracy and <span class="math inline">\(E\)</span> is expected accuracy based on marginal totals of the confusion matrix. Statistic takes values between -1 and 1;</p>
 <ul>
 <li>0 :no agreement between observed and predicted</li>
 <li>1: perfect concordance</li>
@@ -1660,7 +1690,7 @@ data(ChemicalManufacturingProcess)</code></pre>
 <li><strong>Coefficient of Determination (<span class="math inline">\(R^2\)</span>)</strong>: Proportion of variation in data explained by model; usually equal to squared value of correlation between observed and predicted values.
 <ul>
 <li>Measure of correlation not accuracy. Looking at plot of observed vs predicted values may show that is under- or over- predicts for subsets of the data</li>
-<li>Dependent on sample variance (and therefore unit of measurement) of response variable , e.g. with RMSE = 1 and <span class="math inline">\(s^2 = 4.2\)</span> gives <span class="math inline">\(R^2 = 1 - RMSE/s^2\)</span> = 76.2%, but with <span class="math inline">\(s^2 = 3\)</span>, the RSE is 50%</li>
+<li>Dependent on sample variance (and therefore unit of measurement) of response variable , e.g. with RMSE = 1 and <span class="math inline">\(s^2 = 4.2\)</span> gives <span class="math inline">\(R^2 = 1 - RMSE/s^2\)</span> = 76.2%, but with <span class="math inline">\(s^2 = 3\)</span>, the RSE is 50.0%</li>
 </ul></li>
 <li><strong>Spearman’s Rank Correlation</strong>: Correlation coefficient between ranks of observed and predicted outcomes, when focus is on ranking ability of model rather than predictive accuracy.</li>
 </ul>
@@ -1693,10 +1723,8 @@ summary(residualValues)</code></pre>
 <pre class="r"><code>ggplot(data.frame(observed, predicted), aes(observed, predicted)) + 
   geom_point() + 
   expand_limits(
-    x =  min(observed, predicted),
-    x =  max(observed, predicted),
-    y = min(observed, predicted), 
-    y = max(observed, predicted)) + 
+    x =  c(min(observed, predicted), max(observed, predicted)),
+    y = c(min(observed, predicted), max(observed, predicted))) + 
   geom_abline(intercept = 0, slope = 1)</code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/perf_plot_obs_pred-1.png" width="672" /></p>
 <p>Plot of residuals vs predicted values: to check for any systematic patterns in predictions</p>
@@ -2038,14 +2066,14 @@ The lasso constraint has corners and so will often intersect at the corner (and 
 <li><p>Solubility (response value) for each compound contained in <code>solTrainY</code> and <code>solTestY</code></p></li>
 <li>Each column of data corresponds to a predictor and the rows correspond to compounds. There are 228 columns in the data. Random sample of column names below:
 <ul>
-<li>FP043</li>
+<li>FP085</li>
+<li>FP207</li>
+<li>FP198</li>
+<li>FP006</li>
 <li>FP160</li>
-<li>FP130</li>
-<li>FP038</li>
-<li>NumBonds</li>
-<li>NumNonHAtoms</li>
-<li>FP029</li>
-<li>FP185</li>
+<li>FP136</li>
+<li>FP017</li>
+<li>FP093</li>
 </ul></li>
 </ul>
 <p>Predictors:</p>
@@ -2077,7 +2105,7 @@ res &lt;- as.data.frame(res) %&gt;%
     arrange(desc(AbsCorrelation))
 
 # sum(res$Correlation &gt; 0.9)</code></pre>
-<p>On average, descriptors are uncorrelated (average absolute correlation = 0.14), however there are 47 pairs of descriptors with a correlation greater than 0.9. One pair of descriptors (SurfaceArea1 and SurfaceArea2) are identical for 87% of compounds, but small differences can contain certain information for prediction.</p>
+<p>On average, descriptors are uncorrelated (average absolute correlation = 0.14), however there are 47 pairs of descriptors with a correlation greater than 0.9. One pair of descriptors (SurfaceArea1 and SurfaceArea2) are identical for 87.0% of compounds, but small differences can contain certain information for prediction.</p>
 <p>The relationship between Solubility and</p>
 <ol style="list-style-type: lower-alpha">
 <li>Molecular Weight; as molecular weight increases, solubility generally decreases</li>
@@ -2208,11 +2236,11 @@ lmFit1 &lt;- train(x = solTrainXtrans, y = solTrainY, method = &quot;lm&quot;, t
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 856, 857, 855, 856, 856, 855, ... 
+## Summary of sample sizes: 856, 855, 857, 856, 856, 855, ... 
 ## Resampling results:
 ## 
 ##   RMSE       Rsquared   MAE      
-##   0.7210355  0.8768359  0.5401102
+##   0.7170016  0.8792751  0.5298775
 ## 
 ## Tuning parameter &#39;intercept&#39; was held constant at a value of TRUE</code></pre>
 <ul>
@@ -2265,11 +2293,11 @@ rm(tooHigh, trainXfiltered, testXfiltered, corrPred, corThresh)</code></pre>
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 856, 857, 855, 856, 856, 855, ... 
+## Summary of sample sizes: 856, 855, 857, 856, 856, 855, ... 
 ## Resampling results:
 ## 
-##   RMSE       Rsquared   MAE      
-##   0.7113935  0.8793396  0.5410503
+##   RMSE       Rsquared   MAE    
+##   0.7112743  0.8805826  0.53382
 ## 
 ## Tuning parameter &#39;intercept&#39; was held constant at a value of TRUE</code></pre>
 <table>
@@ -2299,7 +2327,7 @@ rm(tooHigh, trainXfiltered, testXfiltered, corrPred, corThresh)</code></pre>
 <tr class="even">
 <td>Test (Filtered)</td>
 <td>0.711</td>
-<td>0.879</td>
+<td>0.881</td>
 </tr>
 </tbody>
 </table>
@@ -2321,16 +2349,16 @@ rlmPCA</code></pre>
 ## Pre-processing: principal component signal extraction (228),
 ##  centered (228), scaled (228) 
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 856, 857, 855, 856, 856, 855, ... 
+## Summary of sample sizes: 856, 855, 857, 856, 856, 855, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   intercept  psi           RMSE       Rsquared   MAE      
-##   FALSE      psi.huber     2.8286338  0.8538783  2.7191188
-##   FALSE      psi.hampel    2.8286444  0.8539038  2.7191374
-##   FALSE      psi.bisquare  2.8286614  0.8539357  2.7191316
-##    TRUE      psi.huber     0.7818718  0.8537373  0.5969894
-##    TRUE      psi.hampel    0.7808088  0.8541390  0.5970951
-##    TRUE      psi.bisquare  0.7851791  0.8524107  0.5982541
+##   FALSE      psi.huber     2.8259554  0.8512363  2.7142644
+##   FALSE      psi.hampel    2.8258408  0.8512527  2.7141467
+##   FALSE      psi.bisquare  2.8261587  0.8511998  2.7144914
+##    TRUE      psi.huber     0.7943194  0.8499849  0.6054924
+##    TRUE      psi.hampel    0.7929511  0.8505782  0.6062351
+##    TRUE      psi.bisquare  0.7993123  0.8480131  0.6076413
 ## 
 ## RMSE was used to select the optimal model using the smallest value.
 ## The final values used for the model were intercept = TRUE and psi
@@ -2354,7 +2382,7 @@ rlmPCA</code></pre>
 <p>Given that many predictors highly correlated and overall information within predictors space contained in smaller number of dimensions, predictor conditions are favourable for applying PLS.</p>
 <p>Use cross validation to determine optimal number of PLS components to retain in order to minimise RMSE.</p>
 <p>In the following code, PCR is performed using the same cross-validation sets to compare its performance to PLS.</p>
-<p>A comparison of PLS to PCR is below; PLS found a minimum RMSE (0.708) with 14 components, whereas PCR found a minimum RMSE (0.731) with 35 components.</p>
+<p>A comparison of PLS to PCR is below; PLS found a minimum RMSE (0.698) with 20 components, whereas PCR found a minimum RMSE (0.734) with 35 components.</p>
 <pre class="r"><code>plsResamples &lt;- plsTune$results
 plsResamples$Model &lt;- &quot;PLS&quot;
 
@@ -2371,7 +2399,7 @@ xyplot(RMSE ~ ncomp,
        groups = Model,
        type = c(&quot;o&quot;, &quot;g&quot;))</code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/solubilityPlsVsPCR-1.png" width="672" /></p>
-<p>Although predictive ability is similar, PLS finds a simpler model that uses far fewer components than PCR. Using the one-standard error method (simpler solution within 1 standard error of numerically optimal value) reduces this to 8 components for PLS and 33 for PCR</p>
+<p>Although predictive ability is similar, PLS finds a simpler model that uses far fewer components than PCR. Using the one-standard error method (simpler solution within 1 standard error of numerically optimal value) reduces this to 9 components for PLS and 33 for PCR</p>
 <p>The following figure shows the relationship between the first two components of both PLS and PCR; the correlation is greater for the PLS components and illustrates why PLS is more quickly steered towards underlying relationship with the response.</p>
 <pre class="r"><code>as.data.frame(unclass(plsTune$finalModel$scores)) %&gt;%
     mutate(Model = &quot;PLS&quot;, Solubility = solTrainY) %&gt;%
@@ -2447,29 +2475,29 @@ print(update(plot(ridgeRegFit ), xlab = &quot;Penalty&quot;))</code></pre>
 ## 
 ## Pre-processing: centered (228), scaled (228) 
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 856, 857, 855, 856, 856, 855, ... 
+## Summary of sample sizes: 856, 855, 857, 856, 856, 855, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   lambda       RMSE       Rsquared   MAE      
-##   0.000000000  0.7207131  0.8769711  0.5398035
-##   0.007142857  0.7047552  0.8818659  0.5352468
-##   0.014285714  0.6964731  0.8847911  0.5298526
-##   0.021428571  0.6925923  0.8862699  0.5270496
-##   0.028571429  0.6908607  0.8870609  0.5260082
-##   0.035714286  0.6904220  0.8874561  0.5260650
-##   0.042857143  0.6908548  0.8875998  0.5267354
-##   0.050000000  0.6919152  0.8875759  0.5277925
-##   0.057142857  0.6934719  0.8874300  0.5291986
-##   0.064285714  0.6954114  0.8872009  0.5308565
-##   0.071428571  0.6976723  0.8869096  0.5327291
-##   0.078571429  0.7002069  0.8865723  0.5347215
-##   0.085714286  0.7029801  0.8862009  0.5368744
-##   0.092857143  0.7059656  0.8858041  0.5391389
-##   0.100000000  0.7091432  0.8853885  0.5415401
+##   0.000000000  0.7169416  0.8793300  0.5298092
+##   0.007142857  0.6966645  0.8852028  0.5254374
+##   0.014285714  0.6888520  0.8877355  0.5221313
+##   0.021428571  0.6861436  0.8886873  0.5216569
+##   0.028571429  0.6856894  0.8889716  0.5225741
+##   0.035714286  0.6864634  0.8889140  0.5242680
+##   0.042857143  0.6879978  0.8886625  0.5264494
+##   0.050000000  0.6900472  0.8882942  0.5287584
+##   0.057142857  0.6924712  0.8878533  0.5310894
+##   0.064285714  0.6951834  0.8873666  0.5335339
+##   0.071428571  0.6981285  0.8868514  0.5361135
+##   0.078571429  0.7012695  0.8863189  0.5388772
+##   0.085714286  0.7045812  0.8857770  0.5416857
+##   0.092857143  0.7080454  0.8852307  0.5447911
+##   0.100000000  0.7116491  0.8846838  0.5480085
 ## 
 ## RMSE was used to select the optimal model using the smallest value.
-## The final value used for the model was lambda = 0.03571429.</code></pre>
-<p>with no <span class="math inline">\(\lambda\)</span> the error is inflated, when increased, the error drops from 0.7207131 to 0.7091432</p>
+## The final value used for the model was lambda = 0.02857143.</code></pre>
+<p>with no <span class="math inline">\(\lambda\)</span> the error is inflated, when increased, the error drops from 0.7169416 to 0.7116491</p>
 <p>Lasso model</p>
 <ul>
 <li>lars::lars</li>
@@ -2525,8 +2553,8 @@ as.data.frame(unclass(coeffs$coefficients)) %&gt;%
     theme(legend.position = &quot;bottom&quot;)</code></pre>
 <p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/lassoTune-2.png" width="672" /></p>
 <pre class="r"><code>rm(coeffs, enetGrid)</code></pre>
-<p>In the end, the optimal performance was associated with the lasso model (<span class="math inline">\(\lambda = 0\)</span>) with a fraction of 0.15, corresponding to 130 predictors out of a possible 228.</p>
-<p>Note: To extract the coefficients used in the final model, use the following code, either specify the optimal fraction (s = 0.15) or enter programmatically as follows:</p>
+<p>In the end, the optimal performance was associated with the lasso model (<span class="math inline">\(\lambda = 0\)</span>) with a fraction of 0.6, corresponding to 18 predictors out of a possible 228.</p>
+<p>Note: To extract the coefficients used in the final model, use the following code, either specify the optimal fraction (s = 0.6) or enter programmatically as follows:</p>
 <pre class="r"><code>sum(predict.enet(enetTune$finalModel, s=enetTune$bestTune[1, &quot;fraction&quot;], type=&quot;coef&quot;, mode=&quot;fraction&quot;)$coefficients != 0)
 
 rm(enetTune)</code></pre>
@@ -2825,6 +2853,125 @@ see <a href="http://uc-r.github.io/mars" class="uri">http://uc-r.github.io/mars<
 </div>
 <div id="chapter-11-measuring-performance-in-classification-models" class="section level1">
 <h1>Chapter 11: Measuring Performance in Classification Models</h1>
+<pre class="r"><code>library(tidyverse)
+library(datasets)
+library(caret)
+# load the iris dataset
+data(iris)
+split_index &lt;- createDataPartition(iris$Species, p=0.80, list=FALSE)
+# use  80% of data to train model
+iris_tr &lt;- iris[split_index,]
+
+# use 20% of the data for validation
+iris_te &lt;- iris[-split_index,]
+
+# define training control
+train_control &lt;- trainControl(method=&quot;repeatedcv&quot;, number=10, repeats=3)
+# train the model
+model &lt;- train(Species~., data=select(iris_tr, Sepal.Length, Sepal.Width, Species), trControl=train_control, method=&quot;rf&quot;)</code></pre>
+<pre><code>## note: only 1 unique complexity parameters in default grid. Truncating the grid to 1 .</code></pre>
+<pre class="r"><code># summarize results
+print(model)</code></pre>
+<pre><code>## Random Forest 
+## 
+## 120 samples
+##   2 predictor
+##   3 classes: &#39;setosa&#39;, &#39;versicolor&#39;, &#39;virginica&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold, repeated 3 times) 
+## Summary of sample sizes: 108, 108, 108, 108, 108, 108, ... 
+## Resampling results:
+## 
+##   Accuracy   Kappa
+##   0.7166667  0.575
+## 
+## Tuning parameter &#39;mtry&#39; was held constant at a value of 2</code></pre>
+<pre class="r"><code>predictions &lt;- predict(model, iris_te, type = &quot;prob&quot;)
+predictions.class &lt;- predictions %&gt;%  mutate(&#39;class&#39;=names(.)[apply(., 1, which.max)]) %&gt;% dplyr::select(class) %&gt;%
+    mutate(class = as.factor(class)) %&gt;% pull()
+
+confusionMatrix(predictions.class, iris_te$Species)</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##             Reference
+## Prediction   setosa versicolor virginica
+##   setosa         10          0         0
+##   versicolor      0          3         2
+##   virginica       0          7         8
+## 
+## Overall Statistics
+##                                          
+##                Accuracy : 0.7            
+##                  95% CI : (0.506, 0.8527)
+##     No Information Rate : 0.3333         
+##     P-Value [Acc &gt; NIR] : 4.433e-05      
+##                                          
+##                   Kappa : 0.55           
+##                                          
+##  Mcnemar&#39;s Test P-Value : NA             
+## 
+## Statistics by Class:
+## 
+##                      Class: setosa Class: versicolor Class: virginica
+## Sensitivity                 1.0000            0.3000           0.8000
+## Specificity                 1.0000            0.9000           0.6500
+## Pos Pred Value              1.0000            0.6000           0.5333
+## Neg Pred Value              1.0000            0.7200           0.8667
+## Prevalence                  0.3333            0.3333           0.3333
+## Detection Rate              0.3333            0.1000           0.2667
+## Detection Prevalence        0.3333            0.1667           0.5000
+## Balanced Accuracy           1.0000            0.6000           0.7250</code></pre>
+<pre class="r"><code>getMultinomialCM &lt;- function(prediction, target){
+    data &lt;- cbind(prediction, target)
+    
+    cm &lt;- with(dat, table(target, prediction))
+    # recall
+    recall &lt;- diag(cm / apply(cm, 1, sum))
+    # precision
+    precision &lt;- diag(cm/apply(cm, 2, sum))
+    # accuracy
+    accuracy &lt;- sum(diag(cm))/sum(cm)
+    
+    cm &lt;- cm %&gt;% cbind(recall) %&gt;%
+        rbind(precision = c(precision, accuracy))
+    cm
+}
+getMultinomialCM(predictions.class, iris_te$Species)</code></pre>
+<pre><code>##            setosa versicolor virginica recall
+## setosa         10        0.0 0.0000000    1.0
+## versicolor      0        3.0 7.0000000    0.3
+## virginica       0        2.0 8.0000000    0.8
+## precision       1        0.6 0.5333333    0.7</code></pre>
+<p>Calibration Plots</p>
+<pre class="r"><code>obs &lt;- model.matrix( ~Species-1, data = iris_te %&gt;% dplyr::select(Species))
+
+i &lt;- 1
+cal &lt;- NULL
+for (i in 1:ncol(predictions)){
+    dat &lt;- data.frame(obs = obs[,i], pred = predictions[,i]) 
+    dat$pred_bin &lt;- cut(dat$pred, breaks = c(-0.001, seq(0.1, 1, 0.1)))
+    dat$midpoint &lt;- seq(.1/2, 1-.1/2, by = 0.1)[as.numeric(dat$pred_bin)]
+    
+    dat &lt;- dat %&gt;% group_by(midpoint) %&gt;%
+        summarise(n = n(), 
+                  events = sum(obs)) %&gt;%
+        mutate(event_rate = events / n)
+    
+    dat$class &lt;- names(predictions)[i]
+    cal &lt;- bind_rows(cal, dat)
+}
+
+ggplot(cal, aes(midpoint, event_rate, colour = class)) + 
+    geom_line() + 
+    geom_point()</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/unnamed-chunk-3-1.png" width="672" /> Heatmap</p>
+<pre class="r"><code>cbind(predictions, Target = iris_te$Species) %&gt;%
+    gather(Pred_Species, Pred_Probability, -Target) %&gt;%
+    ggplot(aes(Pred_Species, Target, fill = Pred_Probability)) + 
+           geom_tile(colour = &quot;white&quot;) + 
+    scale_fill_gradient(low = &quot;white&quot;, high = &quot;steelblue&quot;)</code></pre>
+<p><img src="/blog/2018-05-30-book-applied-predictive-modeling_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="chapter-12-discriminant-analysis-and-other-linear-classification-models" class="section level1">
 <h1>Chapter 12: Discriminant Analysis and Other Linear Classification Models</h1>

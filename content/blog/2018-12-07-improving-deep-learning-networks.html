@@ -726,7 +726,7 @@ data.frame(epoch = c(1, 2, 3, 4)) %&gt;%
 <li>Number of layers, <span class="math inline">\(L = 2, ldots, 4\)</span>. May sample uniformly at random, or over grid for values 2, 3, and 4</li>
 <li>Learning rate, <span class="math inline">\(\alpha = 0.0001, \ldots, 1\)</span>
 <ul>
-<li>With uniformly at random, 10% of sampled values would be between 0.001 and 0.1 and 90% would be between 0.1 and 1</li>
+<li>With uniformly at random, 10.0% of sampled values would be between 0.001 and 0.1 and 90.0% would be between 0.1 and 1</li>
 <li>By sampling the log scale, would get
 <ul>
 <li>25% between 0.0001 and 0.001</li>
@@ -770,10 +770,12 @@ rm(p1, p2)</code></pre>
 <pre class="python"><code>import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+
 x = 0.0001
 y = 1
 r = np.random.uniform(x, y, size = 1000)
 alpha = 10**r
+
 df = pd.DataFrame(alpha, columns = [&#39;alpha&#39;])</code></pre>
 <pre class="r"><code>library(ggplot2)
 library(gridExtra)
@@ -1041,9 +1043,12 @@ Y &amp;= [y^{(1)} y^{(2)}, \ldots, y^{(m)}] \\
 <li><p>Motivating problem: minimise cost function <span class="math display">\[J(w) = w^2 - 10w + 25,\]</span> which, using algebra, you see you can minimised at <span class="math inline">\(w = 5\)</span></p>
 <pre class="python"><code>import numpy as np
 import tensorflow as tf
+
 coefficients = np.array([[1], [-10], [25]])
+
 w = tf.Variable(0, dtype = tf.float32)
 x = tf.placeholder(tf.float32, [3, 1])
+
 #cost = tf.add(w**2, tf.multiply(-10., w), 25)
 #cost = w**2 - 10*w + 25
 cost = x[0][0]*w**2 + x[1][0]*w + x[2][0]
